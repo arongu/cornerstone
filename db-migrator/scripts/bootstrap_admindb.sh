@@ -1,0 +1,7 @@
+#!/bin/bash -xe
+
+mysql <<SQL
+CREATE DATABASE ${admindb};
+CREATE USER \'${DB_USER}\'@\'${FROM_HOST}\' IDENTIFIED BY \'${PASSWORD}\';
+GRANT SELECT,INSERT,DELETE,UPDATE,SHOW VIEW ON ${admindb}.accounts TO '${DB_USER}'@'${FROM_HOST}';
+SQL

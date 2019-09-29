@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <artifactId>db-migrator-parent</artifactId>
+        <groupId>cornerstone.db-migrator</groupId>
+        <version>1.0</version>
+    </parent>
+
+    <artifactId>admindb-migrator</artifactId>
+    <version>1.0</version>
+
+    <profiles>
+        <!-- localhost development profile -->
+        <profile>
+            <id>local</id>
+            <activation>
+                <property>
+                    <name>local</name>
+                </property>
+            </activation>
+            <properties>
+                <flyway.schemas>admindb</flyway.schemas>
+                <!--suppress UnresolvedMavenProperty -->
+                <flyway.url>${mariadb-server-url}</flyway.url>
+                <flyway.locations>filesystem:db/migration</flyway.locations>
+            </properties>
+        </profile>
+    </profiles>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.flywaydb</groupId>
+                <artifactId>flyway-maven-plugin</artifactId>
+                <configuration>
+                    <!--suppress UnresolvedMavenProperty -->
+                    <serverId>${mariadb-server-id}</serverId>
+                    <baselineOnMigrate>true</baselineOnMigrate>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>
