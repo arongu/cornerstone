@@ -5,8 +5,10 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>cornerstone</groupId>
-    <artifactId>cornerstone-parent</artifactId>
+    <artifactId>cornerstone</artifactId>
     <version>1.0</version>
+    <name>cornerstone: java11, jdbc parent of [e-business, db-migrator]</name>
+    <description>The project root, provides jdbc and java properties for the modules.</description>
     <packaging>pom</packaging>
 
     <properties>
@@ -19,8 +21,17 @@
     <modules>
         <module>e-business</module>
         <module>db-migrator</module>
-        <module>lib</module>
     </modules>
 
+    <dependencyManagement>
+        <dependencies>
+            <!-- jdbc -->
+            <dependency>
+                <groupId>org.mariadb.jdbc</groupId>
+                <artifactId>mariadb-java-client</artifactId>
+                <version>2.4.4</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 </project>
 

@@ -4,13 +4,15 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <artifactId>cornerstone-parent</artifactId>
+        <artifactId>cornerstone</artifactId>
         <groupId>cornerstone</groupId>
         <version>1.0</version>
     </parent>
 
-    <artifactId>db-migrator-parent</artifactId>
+    <artifactId>db-migrator</artifactId>
     <groupId>cornerstone.db-migrator</groupId>
+    <name>db-migrator: parent of [admindb-migrator, datadb-migrator]</name>
+    <description>The parent project of all db migrators.</description>
     <packaging>pom</packaging>
 
     <modules>
@@ -23,12 +25,10 @@
         <mariadb-server-url>jdbc:mariadb://192.168.122.131:3306?useMysqlMetadata=true</mariadb-server-url>
     </properties>
 
-    <!-- common dependencies -->
     <dependencies>
         <dependency>
             <groupId>org.mariadb.jdbc</groupId>
             <artifactId>mariadb-java-client</artifactId>
-            <version>2.4.4</version>
         </dependency>
     </dependencies>
 

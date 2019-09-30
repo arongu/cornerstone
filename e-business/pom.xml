@@ -5,20 +5,64 @@
 
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <artifactId>cornerstone-parent</artifactId>
+        <artifactId>cornerstone</artifactId>
         <groupId>cornerstone</groupId>
         <version>1.0</version>
     </parent>
 
-    <artifactId>e-business-parent</artifactId>
+    <artifactId>e-business</artifactId>
     <groupId>cornerstone.e-business</groupId>
     <version>1.0</version>
     <packaging>pom</packaging>
+    <name>e-business: parent of [lib, cli-configtool, rest-api]</name>
 
     <modules>
+        <module>lib</module>
         <module>cli-configtool</module>
         <module>rest-api</module>
     </modules>
+
+    <dependencyManagement>
+        <dependencies>
+            <!-- compiler plugin cli-configtool, lib -->
+            <dependency>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.1</version>
+            </dependency>
+            <!-- logging -->
+            <dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-classic</artifactId>
+                <version>1.2.3</version>
+            </dependency>
+            <!-- testing -->
+<!--            <dependency>-->
+<!--                <groupId>org.apache.maven.plugins</groupId>-->
+<!--                <artifactId>maven-surefire-plugin</artifactId>-->
+<!--                <version>3.0.0-M3</version>-->
+<!--            </dependency>-->
+            <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter-api</artifactId>
+                <version>5.5.2</version>
+                <scope>test</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>3.0.0-M3</version>
+                </plugin>
+            </plugins>
+
+        </pluginManagement>
+    </build>
 
     <profiles>
         <!-- localhost development profile -->
