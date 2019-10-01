@@ -90,9 +90,29 @@
 
         <!-- database -->
         <dependency>
+            <groupId>org.mariadb.jdbc</groupId>
+            <artifactId>mariadb-java-client</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-dbcp2</artifactId>
             <version>2.7.0</version>
         </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.tomcat.maven</groupId>
+                <artifactId>tomcat7-maven-plugin</artifactId>
+                <version>2.2</version>
+
+                <configuration>
+                    <url>http://localhost:8080/manager/text</url>
+                    <server>local-tomcat</server>
+                    <path>/api</path>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>

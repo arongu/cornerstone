@@ -7,7 +7,7 @@
     <groupId>cornerstone</groupId>
     <artifactId>cornerstone</artifactId>
     <version>1.0</version>
-    <description>The project root, provides jdbc and java properties for the modules.</description>
+    <description>The project root java properties for the modules.</description>
     <packaging>pom</packaging>
 
     <properties>

@@ -16,6 +16,6 @@ import org.glassfish.jersey.server.ResourceConfig;
 public class JerseyConfiguration extends ResourceConfig {
     public JerseyConfiguration() {
         register(new JerseyBinder());
-        packages("com.aron.jcore");
+        packages("cornerstone.workflow.restapi");
     }
 }
