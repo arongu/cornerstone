@@ -20,7 +20,7 @@ public class ConfigurationProvider {
     }
 
     public void loadConfig() throws IOException {
-        byte[] ba = ConfigReaderWriter.loadKeyFromFile(keyFile);
+        byte[] ba = ConfigReaderWriter.loadAESKeyFromFile(keyFile);
         this.properties = ConfigReaderWriter.decryptFile(new SecretKeySpec(ba, "AES"), confFile);
     }
 

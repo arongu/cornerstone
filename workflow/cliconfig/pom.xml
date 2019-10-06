@@ -9,7 +9,7 @@
         <version>1.0</version>
     </parent>
 
-    <artifactId>configurtion_encryptor</artifactId>
+    <artifactId>cliconfig</artifactId>
     <name>Config Tool (Business Logic)</name>
     <description>Tool to create encrypted configuration for the API</description>
     <packaging>jar</packaging>

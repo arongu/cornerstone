@@ -16,7 +16,7 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>admin</module>
+        <module>userdb</module>
         <module>data</module>
     </modules>
 
