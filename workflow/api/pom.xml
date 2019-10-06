@@ -33,16 +33,12 @@
         </dependency>
         <!-- workflow -->
 
-        <!-- lib && AESTool -->
+        <!-- Lib: AESTool -->
         <dependency>
             <groupId>cornerstone.workflow</groupId>
             <artifactId>lib</artifactId>
             <version>1.0</version>
         </dependency>
-<!--        <dependency>-->
-<!--            <groupId>org.bouncycastle</groupId>-->
-<!--            <artifactId>bcprov-jdk15on</artifactId>-->
-<!--        </dependency>-->
 
         <!-- Jersey -->
         <dependency>

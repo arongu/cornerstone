@@ -18,7 +18,7 @@
 
     <modules>
         <module>api</module>
-        <module>conf</module>
+        <module>cliconfig</module>
         <module>lib</module>
     </modules>
 

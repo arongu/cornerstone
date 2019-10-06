@@ -1,8 +1,8 @@
-package cornerstone.workflow.conf;
+package cornerstone.workflow.cliconfig;
 
 import java.util.regex.Pattern;
 
-public class ConfigTool {
+public class ArgumentParser {
     private static final Pattern patternEncrypt = Pattern.compile("^([a-zA-Z0-9-_]+)(?:\\s*)=(?:\\s*)ENC_(.+)$");
     private static final Pattern patternDecrypt = Pattern.compile("^([a-zA-Z0-9-_]+)(?:\\s*)=(?:\\s*)AES_(.+)$");
 

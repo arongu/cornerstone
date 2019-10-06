@@ -1,4 +1,4 @@
-package cornerstone.workflow.restapi.config;
+package cornerstone.workflow.lib.config;
 
 import cornerstone.workflow.lib.crypto.AESTool;
 import org.slf4j.Logger;
@@ -16,11 +16,18 @@ import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public final class ConfigLoader {
+public final class ConfigReaderWriter {
     private static final String aesPrefix = "AES_";
+    private static final String encPrefix = "ENC_";
     private static final Pattern pattern = Pattern.compile("^([a-zA-Z0-9-_]+)(?:\\s*)=(?:\\s*)(.+)$");
-    private static final Logger log = LoggerFactory.getLogger(ConfigLoader.class);
+    private static final Logger log = LoggerFactory.getLogger(ConfigReaderWriter.class);
 
+    /**
+     * Opens the key file, and returns the decoded AES key as a byte array.
+     * @param path Key file path.
+     * Reads the first line of the file.
+     * Which must be the 256 bit AES key stored as base64 string.
+     */
     public static byte[] loadKeyFile(final String path) throws IOException {
         try (BufferedReader br = new BufferedReader(new FileReader(path))) {
             String line = br.readLine();
@@ -31,12 +38,17 @@ public final class ConfigLoader {
         }
     }
 
+    /**
+     * Loads an encrypted config file and returns the decrypted fields in a Properties object.
+     * @param key Decryption key.
+     * @param path Encrypted config file path.
+     */
     public static Properties loadEncryptedConfig(final SecretKey key, final String path) throws IOException {
         try {
             final List<String> allLines = Files.readAllLines(Paths.get(path));
             final Properties properties = new Properties();
 
-            int lineNo = 1;
+            int lineNumber = 1;
             for (String line : allLines) {
                 Matcher m = pattern.matcher(line);
                 if (m.find()){
@@ -61,9 +73,9 @@ public final class ConfigLoader {
                         log.info("... '{}' = '{}'", k, v);
                     }
                 } else {
-                    log.info("... Ignoring line @ {}", lineNo);
+                    log.info("... Ignoring line @ {}", lineNumber);
                 }
-                lineNo++;
+                lineNumber++;
             }
 
             return properties;
@@ -72,5 +84,13 @@ public final class ConfigLoader {
             log.error(e.getMessage());
             throw e;
         }
+    }
+
+    public static void decryptFile(){
+
+    }
+
+    public static void encryptFile(final SecretKey key, final String sourcePath, final String destinationPath) throws IOException {
+
     }
 }
