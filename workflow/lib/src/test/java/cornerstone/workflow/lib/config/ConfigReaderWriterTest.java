@@ -16,7 +16,7 @@ public class ConfigReaderWriterTest {
         final String originalKeyAsHex = "a3224844f478d92cf2c81cf262fddfa379c74fff91a17651df24c601cab6be4b";
         final URL keyFileUrl = getClass().getClassLoader().getResource("key.txt");
 
-        final byte[] bytes = ConfigReaderWriter.loadKeyFile(keyFileUrl.getPath());
+        final byte[] bytes = ConfigReaderWriter.loadAESKeyFromFile(keyFileUrl.getPath());
         final String loadedKeyAsHex = Hex.encodeHexString(bytes);
 
         assertEquals(originalKeyAsHex, loadedKeyAsHex);

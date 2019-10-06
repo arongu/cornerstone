@@ -14,32 +14,32 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class AESToolTest {
+public class AESEncryptionDecryptionTest {
     @Test
     @DisplayName("derive256BitKey() exception tests")
     public void derive256bitKey_ThrowTest() {
-        assertThrows(AESTool.AESToolException.class, () -> {
-            AESTool.derive256BitKey(null, null);
+        assertThrows(AESEncryptionDecryption.AESToolException.class, () -> {
+            AESEncryptionDecryption.derive256BitKey(null, null);
         });
-        assertThrows(AESTool.AESToolException.class, () -> {
-            AESTool.derive256BitKey("password", null);
+        assertThrows(AESEncryptionDecryption.AESToolException.class, () -> {
+            AESEncryptionDecryption.derive256BitKey("password", null);
         });
-        assertThrows(AESTool.AESToolException.class, () -> {
-            AESTool.derive256BitKey(null, "short");
+        assertThrows(AESEncryptionDecryption.AESToolException.class, () -> {
+            AESEncryptionDecryption.derive256BitKey(null, "short");
         });
-        assertThrows(AESTool.AESToolException.class, () -> {
-            AESTool.derive256BitKey("password", "abcdef0123456789-");
+        assertThrows(AESEncryptionDecryption.AESToolException.class, () -> {
+            AESEncryptionDecryption.derive256BitKey("password", "abcdef0123456789-");
         });
-        assertThrows(AESTool.AESToolException.class, () -> {
-            AESTool.derive256BitKey("", "abcdef0123456789");
+        assertThrows(AESEncryptionDecryption.AESToolException.class, () -> {
+            AESEncryptionDecryption.derive256BitKey("", "abcdef0123456789");
         });
     }
 
     @Test
     @DisplayName("derive256BitKey() Java, GO key derivation test")
-    public void derive256bitKey_test_against_go() throws AESTool.AESToolException, DecoderException {
+    public void derive256bitKey_test_against_go() throws AESEncryptionDecryption.AESToolException, DecoderException {
         byte[] expected = Hex.decodeHex("1D9E9E7E2BD8B7840124A79F4D486ECD81BD53E2511DA83BEE3F3642A5C7A0AD".toCharArray());
-        SecretKeySpec key = AESTool.derive256BitKey("password", "abcdef0123456789");
+        SecretKeySpec key = AESEncryptionDecryption.derive256BitKey("password", "abcdef0123456789");
 
         byte[] ba = key.getEncoded();
         for (int i = 0; i < ba.length; i++) {
@@ -57,13 +57,13 @@ public class AESToolTest {
 
     @Test
     @DisplayName("encryptByteArray() -> decryptByteArray test")
-    public void encryptDecryptTest() throws AESTool.AESToolException {
-        final SecretKeySpec key = AESTool.derive256BitKey("password", "abcdef0123456789");
+    public void encryptDecryptTest() throws AESEncryptionDecryption.AESToolException {
+        final SecretKeySpec key = AESEncryptionDecryption.derive256BitKey("password", "abcdef0123456789");
         final String text = "this is my super-secret text with ~!@#$%^&*()_+ all sort of characters";
 
         byte[] data = text.getBytes(StandardCharsets.UTF_8);
-        byte[] encrypted = AESTool.encryptByteArray(key, data);
-        byte[] decrypted = AESTool.decryptByteArray(key, encrypted);
+        byte[] encrypted = AESEncryptionDecryption.encryptByteArrayWithKey(key, data);
+        byte[] decrypted = AESEncryptionDecryption.decryptCipherArrayWithKey(key, encrypted);
         String str = new String(decrypted);
 
         System.out.println("text    (original) : " + text);
@@ -78,8 +78,8 @@ public class AESToolTest {
 
     @Test
     @DisplayName("alma x5 encrypt() -> decrypt() test, IV should change")
-    public void testIvChangeWhenBulk() throws AESTool.AESToolException {
-        SecretKeySpec key = AESTool.derive256BitKey("password", "abcdef0123456789");
+    public void testIvChangeWhenBulk() throws AESEncryptionDecryption.AESToolException {
+        SecretKeySpec key = AESEncryptionDecryption.derive256BitKey("password", "abcdef0123456789");
         byte[] ba = key.getEncoded();
         String base64key = Base64.getEncoder().encodeToString(ba);
 
@@ -89,12 +89,12 @@ public class AESToolTest {
             lst.add(text);
         }
 
-        List<String> encryptedBase64List = AESTool.encrypt(base64key, lst);
+        List<String> encryptedBase64List = AESEncryptionDecryption.encryptStringsWithBase64KeyToBase64CipherTexts(base64key, lst);
         for (String b64 : encryptedBase64List) {
             System.out.println(b64);
         }
 
-        List<String> decryptedStrings = AESTool.decrypt(base64key, encryptedBase64List);
+        List<String> decryptedStrings = AESEncryptionDecryption.decryptBase64CipherTextsWithBase64KeyToStrings(base64key, encryptedBase64List);
         for (String s : decryptedStrings) {
             System.out.println(s);
             assertEquals(text, s);

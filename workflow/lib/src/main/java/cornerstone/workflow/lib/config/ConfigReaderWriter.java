@@ -1,6 +1,6 @@
 package cornerstone.workflow.lib.config;
 
-import cornerstone.workflow.lib.crypto.AESTool;
+import cornerstone.workflow.lib.crypto.AESEncryptionDecryption;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,12 +24,12 @@ public final class ConfigReaderWriter {
 
     /**
      * Opens the key file, and returns the decoded AES key as a byte array.
-     * @param path Key file path.
+     * @param filePath Key file path.
      * Reads the first line of the file.
      * Which must be the 256 bit AES key stored as base64 string.
      */
-    public static byte[] loadKeyFile(final String path) throws IOException {
-        try (BufferedReader br = new BufferedReader(new FileReader(path))) {
+    public static byte[] loadAESKeyFromFile(final String filePath) throws IOException {
+        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
             String line = br.readLine();
             return Base64.getDecoder().decode(line);
         } catch (IOException e){
@@ -43,7 +43,7 @@ public final class ConfigReaderWriter {
      * @param key Decryption key.
      * @param path Encrypted config file path.
      */
-    public static Properties loadEncryptedConfig(final SecretKey key, final String path) throws IOException {
+    public static Properties decryptFile(final SecretKey key, final String path) throws IOException {
         try {
             final List<String> allLines = Files.readAllLines(Paths.get(path));
             final Properties properties = new Properties();
@@ -59,12 +59,12 @@ public final class ConfigReaderWriter {
                         try {
                             String ba64 = v.substring(aesPrefix.length());
                             byte[] encrypted = Base64.getDecoder().decode(ba64);
-                            byte[] decrypted = AESTool.decryptByteArray(key, encrypted);
+                            byte[] decrypted = AESEncryptionDecryption.decryptCipherArrayWithKey(key, encrypted);
                             String value = new String(decrypted);
                             properties.put(k, value);
                             log.info("... '{}' = *****", k);
 
-                        } catch (AESTool.AESToolException e){
+                        } catch (AESEncryptionDecryption.AESToolException e){
                             properties.put(k, null);
                             log.error("... Failed to decrypt: '{}' = '{}' (value set to null)", k, v);
                         }
@@ -86,11 +86,12 @@ public final class ConfigReaderWriter {
         }
     }
 
-    public static void decryptFile(){
-
-    }
-
-    public static void encryptFile(final SecretKey key, final String sourcePath, final String destinationPath) throws IOException {
-
+    /**
+     * Loads an encrypted config file and returns the decrypted fields in a Properties object.
+     * @param key Decryption key.
+     * @param path Encrypted config file path.
+     */
+    public static Properties encryptFile(final SecretKey key, final String path) throws IOException {
+        return  null;
     }
 }
