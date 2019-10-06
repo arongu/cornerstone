@@ -5,12 +5,14 @@
 
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <artifactId>dbmigrators</artifactId>
+        <artifactId>database_migration</artifactId>
         <groupId>cornerstone.db</groupId>
         <version>1.0</version>
     </parent>
 
     <artifactId>admindb_migrator</artifactId>
+    <name>AdminDB migrator (Database Migration)</name>
+    <packaging>pom</packaging>
     <version>1.0</version>
 
     <profiles>

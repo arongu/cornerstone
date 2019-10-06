@@ -12,32 +12,37 @@
 
     <artifactId>lib</artifactId>
     <version>1.0</version>
+    <name>Lib (Business Logic)</name>
+    <packaging>jar</packaging>
+    <description>Supplementary classes for the business logic, which could work independently.</description>
 
     <dependencies>
-        <!-- compiler -->
+        <!-- Compile -->
         <dependency>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-compiler-plugin</artifactId>
         </dependency>
-
-        <!-- log -->
+        <!-- Logging -->
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
         </dependency>
 
-        <!--  testing -->
+        <dependency>
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
+        </dependency>
+
+        <!-- Testing  -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
             <scope>test</scope>
         </dependency>
-
-        <!-- commons codec -->
         <dependency>
-            <groupId>commons-codec</groupId>
-            <artifactId>commons-codec</artifactId>
-            <version>1.13</version>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 </project>

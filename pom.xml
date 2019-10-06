@@ -6,8 +6,8 @@
 
     <groupId>cornerstone</groupId>
     <artifactId>cornerstone</artifactId>
+    <name>Cornerstone (All Dependencies)</name>
     <version>1.0</version>
-    <description>The project root java properties for the modules.</description>
     <packaging>pom</packaging>
 
     <properties>
@@ -17,9 +17,141 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
+
     <modules>
         <module>workflow</module>
-        <module>dbmigrators</module>
+        <module>database_migration</module>
     </modules>
+
+    <dependencyManagement>
+        <dependencies>
+            <!-- compiler -->
+            <!-- Lib, Config Tool -->
+            <dependency>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.1</version>
+            </dependency>
+
+            <!-- war plugin -->
+            <!-- Rest API -->
+            <dependency>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>3.2.3</version>
+            </dependency>
+
+            <!-- logging -->
+            <!-- Rest API -->
+            <dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-classic</artifactId>
+                <version>1.2.3</version>
+            </dependency>
+
+            <!-- testing -->
+            <!-- Lib, Config Tool, Rest API  -->
+            <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter-api</artifactId>
+                <version>5.5.2</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter-params</artifactId>
+                <version>5.5.2</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter-engine</artifactId>
+                <version>5.5.2</version>
+                <scope>test</scope>
+            </dependency>
+            <!-- end of testing -->
+
+            <!-- apache commons -->
+            <!-- Database Migration  -->
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-dbcp2</artifactId>
+                <version>2.7.0</version>
+            </dependency>
+            <!-- Lib: AESTool -->
+            <dependency>
+                <groupId>commons-codec</groupId>
+                <artifactId>commons-codec</artifactId>
+                <version>1.13</version>
+            </dependency>
+            <!-- end of apache commons -->
+
+            <!-- jdbc -->
+            <!-- Rest API, Database Migration -->
+            <dependency>
+                <groupId>org.mariadb.jdbc</groupId>
+                <artifactId>mariadb-java-client</artifactId>
+                <version>2.4.4</version>
+            </dependency>
+            <!-- end of jdbc -->
+
+            <!-- Jersey -->
+            <!-- Rest API -->
+            <dependency>
+                <groupId>org.glassfish.jersey.containers</groupId>
+                <artifactId>jersey-container-servlet</artifactId>
+                <version>2.29</version>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.jersey.inject</groupId>
+                <artifactId>jersey-hk2</artifactId>
+                <version>2.29</version>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.jersey.media</groupId>
+                <artifactId>jersey-media-json-jackson</artifactId>
+                <version>2.29</version>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.jersey.media</groupId>
+                <artifactId>jersey-media-json-processing</artifactId>
+                <version>2.29</version>
+            </dependency>
+            <!-- end of Jersey -->
+
+            <!-- JJWT -->
+            <!-- Rest API -->
+            <dependency>
+                <groupId>io.jsonwebtoken</groupId>
+                <artifactId>jjwt-api</artifactId>
+                <version>0.10.7</version>
+            </dependency>
+            <dependency>
+                <groupId>io.jsonwebtoken</groupId>
+                <artifactId>jjwt-impl</artifactId>
+                <version>0.10.7</version>
+                <scope>runtime</scope>
+            </dependency>
+            <dependency>
+                <groupId>io.jsonwebtoken</groupId>
+                <artifactId>jjwt-jackson</artifactId>
+                <version>0.10.7</version>
+                <scope>runtime</scope>
+            </dependency>
+            <!-- end of JJWT -->
+        </dependencies>
+    </dependencyManagement>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>2.22.2</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
 </project>
 

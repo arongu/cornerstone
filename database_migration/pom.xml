@@ -9,14 +9,15 @@
         <version>1.0</version>
     </parent>
 
-    <artifactId>dbmigrators</artifactId>
+    <artifactId>database_migration</artifactId>
     <groupId>cornerstone.db</groupId>
-    <description>The parent project of all db migrators.</description>
+    <name>Database Migration</name>
+    <description>The parent project of all db migrators. To run sql scripts with maven, to easily update database structure changes.</description>
     <packaging>pom</packaging>
 
     <modules>
-        <module>admindb_migrator</module>
-        <module>datadb_migrator</module>
+        <module>admin</module>
+        <module>data</module>
     </modules>
 
     <properties>
@@ -28,17 +29,18 @@
         <dependency>
             <groupId>org.mariadb.jdbc</groupId>
             <artifactId>mariadb-java-client</artifactId>
-            <version>2.4.4</version>
         </dependency>
     </dependencies>
 
     <build>
-        <plugins>
-            <plugin>
-                <groupId>org.flywaydb</groupId>
-                <artifactId>flyway-maven-plugin</artifactId>
-                <version>5.2.4</version>
-            </plugin>
-        </plugins>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.flywaydb</groupId>
+                    <artifactId>flyway-maven-plugin</artifactId>
+                    <version>5.2.4</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
     </build>
 </project>

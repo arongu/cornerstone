@@ -18,26 +18,36 @@ public class AESToolTest {
     @Test
     @DisplayName("derive256BitKey() exception tests")
     public void derive256bitKey_ThrowTest() {
-        assertThrows(AESTool.AESToolException.class, () -> { AESTool.derive256BitKey(null,null); });
-        assertThrows(AESTool.AESToolException.class, () -> { AESTool.derive256BitKey("password",null); });
-        assertThrows(AESTool.AESToolException.class, () -> { AESTool.derive256BitKey(null,"short"); });
-        assertThrows(AESTool.AESToolException.class, () -> { AESTool.derive256BitKey("password","abcdef0123456789-"); });
-        assertThrows(AESTool.AESToolException.class, () -> { AESTool.derive256BitKey("","abcdef0123456789"); });
+        assertThrows(AESTool.AESToolException.class, () -> {
+            AESTool.derive256BitKey(null, null);
+        });
+        assertThrows(AESTool.AESToolException.class, () -> {
+            AESTool.derive256BitKey("password", null);
+        });
+        assertThrows(AESTool.AESToolException.class, () -> {
+            AESTool.derive256BitKey(null, "short");
+        });
+        assertThrows(AESTool.AESToolException.class, () -> {
+            AESTool.derive256BitKey("password", "abcdef0123456789-");
+        });
+        assertThrows(AESTool.AESToolException.class, () -> {
+            AESTool.derive256BitKey("", "abcdef0123456789");
+        });
     }
 
     @Test
-    @DisplayName("derive256BitKey() Java vs GO test")
+    @DisplayName("derive256BitKey() Java, GO key derivation test")
     public void derive256bitKey_test_against_go() throws AESTool.AESToolException, DecoderException {
         byte[] expected = Hex.decodeHex("1D9E9E7E2BD8B7840124A79F4D486ECD81BD53E2511DA83BEE3F3642A5C7A0AD".toCharArray());
         SecretKeySpec key = AESTool.derive256BitKey("password", "abcdef0123456789");
 
         byte[] ba = key.getEncoded();
-        for (int i = 0; i < ba.length; i++){
+        for (int i = 0; i < ba.length; i++) {
             System.out.printf("%02X ", ba[i]);
         }
         System.out.println();
 
-        for (int i = 0; i < expected.length; i++){
+        for (int i = 0; i < expected.length; i++) {
             System.out.printf("%02X ", expected[i]);
         }
         System.out.println();
@@ -67,7 +77,7 @@ public class AESToolTest {
     }
 
     @Test
-    @DisplayName("alma x100 encrypt() -> decrypt() test, IV should change")
+    @DisplayName("alma x5 encrypt() -> decrypt() test, IV should change")
     public void testIvChangeWhenBulk() throws AESTool.AESToolException {
         SecretKeySpec key = AESTool.derive256BitKey("password", "abcdef0123456789");
         byte[] ba = key.getEncoded();
@@ -75,62 +85,20 @@ public class AESToolTest {
 
         String text = "alma";
         List<String> lst = new LinkedList<>();
-        for ( int i = 0; i < 100; i++){
+        for (int i = 0; i < 5; i++) {
             lst.add(text);
         }
 
         List<String> encryptedBase64List = AESTool.encrypt(base64key, lst);
-        for ( String b64 : encryptedBase64List){
+        for (String b64 : encryptedBase64List) {
             System.out.println(b64);
         }
 
         List<String> decryptedStrings = AESTool.decrypt(base64key, encryptedBase64List);
-        for ( String s : decryptedStrings){
+        for (String s : decryptedStrings) {
             System.out.println(s);
             assertEquals(text, s);
         }
     }
-
-//    @Test
-//    public void doit() throws AESToolException {
-//        Key key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
-//        String base64key = Base64.getEncoder().encodeToString(key.getEncoded());
-//
-//        String encrypted = encrypt( "","");
-//        System.out.println(base64key);
-//        System.out.println(encrypted);
-//    }
-
-//    @Test
-//    @DisplayName("256 bit key encryption comparison with Go")
-//    void derive256bitKeyByteArrayComparison() throws AESTool.AESToolException {
-//        SecretKeySpec key = derive256BitKey("password", "abcdef0123456789");
-//
-//        //d108c7e7e61ec413b2007d1f4fd7ec1ca96c99a7e8005d80062b29e177673909
-//        byte[] encrypted = encryptByteArray(key, "data".getBytes());
-//        for (int i = 0; i < encrypted.length; i++){
-//            System.out.printf("%02X", encrypted[i]);
-//        }
-//    }
-
-//    @Test
-//    @DisplayName("encrypt-decrypt base64")
-//    void encryptDecryptBase64Test() throws AESToolException {
-//        SecretKeySpec key = derive256BitKey("password", "abcdef0123456789");
-//        String text = "Hello Go, this is Java 11 :) using AES256 encryption";
-//        byte[] data = text.getBytes(StandardCharsets.UTF_8);
-//
-//        List<byte[]> aa = new LinkedList<>();
-//        aa.add(data);
-//
-//        List<String> l = encryptByteArraysToBase64Strings(key, aa);
-//        for (String s : l){
-//            System.out.println(l);
-//        }
-//
-//        aa = decryptBase64StringsToByteArrays(key, l);
-//        for ( byte[] bb : aa ) {
-//            System.out.println(new String(bb));
-//        }
-//    }
 }
+
