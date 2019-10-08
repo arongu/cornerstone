@@ -6,7 +6,7 @@
 
     <groupId>cornerstone</groupId>
     <artifactId>cornerstone</artifactId>
-    <name>Cornerstone (All Dependencies)</name>
+    <name>cornerstone (All Dependencies)</name>
     <version>1.0</version>
     <packaging>pom</packaging>
 
@@ -20,7 +20,7 @@
 
     <modules>
         <module>workflow</module>
-        <module>dbmigration</module>
+        <module>dbmigrators</module>
     </modules>
 
     <dependencyManagement>

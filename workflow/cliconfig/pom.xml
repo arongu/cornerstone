@@ -10,7 +10,7 @@
     </parent>
 
     <artifactId>cliconfig</artifactId>
-    <name>Config Tool (Business Logic)</name>
+    <name>cli (Workflow)</name>
     <description>Tool to create encrypted configuration for the API</description>
     <packaging>jar</packaging>
 

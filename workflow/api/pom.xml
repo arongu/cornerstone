@@ -12,7 +12,7 @@
 
     <artifactId>restapi</artifactId>
     <version>1.0</version>
-    <name>Rest API (Business Logic)</name>
+    <name>api (Workflow)</name>
     <packaging>war</packaging>
 
     <dependencies>

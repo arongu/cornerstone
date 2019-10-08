@@ -5,11 +5,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.security.Key;
 import java.util.Base64;
 import java.util.List;
 import java.util.Properties;
@@ -23,15 +25,16 @@ public final class ConfigReaderWriter {
     private static final Logger log = LoggerFactory.getLogger(ConfigReaderWriter.class);
 
     /**
-     * Opens the key file, and returns the decoded AES key as a byte array.
+     * Opens the key file, reads the first line and returns the decoded AES key as a byte array.
      * @param filePath Key file path.
      * Reads the first line of the file.
      * Which must be the 256 bit AES key stored as base64 string.
      */
-    public static byte[] loadAESKeyFromFile(final String filePath) throws IOException {
+    public static Key loadAESKeyFromFile(final String filePath) throws IOException {
         try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
-            String line = br.readLine();
-            return Base64.getDecoder().decode(line);
+            final String line = br.readLine();
+            final byte[] ba = Base64.getDecoder().decode(line);
+            return  new SecretKeySpec(ba, "AES");
         } catch (IOException e){
             log.error(e.getMessage());
             throw e;
