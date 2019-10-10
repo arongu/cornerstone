@@ -9,10 +9,11 @@
         <version>1.0</version>
     </parent>
 
-    <artifactId>cliconfig</artifactId>
+    <artifactId>cli</artifactId>
     <name>cli (Workflow)</name>
     <description>Tool to create encrypted configuration for the API</description>
     <packaging>jar</packaging>
+    <!--TODO BUNDLE INTO A SINGULAR JAR FILE-->
 
     <dependencies>
         <dependency>
@@ -29,5 +30,29 @@
             <artifactId>junit-jupiter-params</artifactId>
             <scope>test</scope>
         </dependency>
+
+        <!-- Local dependency -->
+        <dependency>
+            <groupId>cornerstone.workflow</groupId>
+            <artifactId>lib</artifactId>
+            <version>1.0</version>
+        </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.1.2</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <mainClass>cornerstone.workflow.cliconfig.CliConfigTool</mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>

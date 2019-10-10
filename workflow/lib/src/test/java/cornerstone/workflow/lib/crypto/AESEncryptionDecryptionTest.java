@@ -106,9 +106,14 @@ public class AESEncryptionDecryptionTest {
     @DisplayName("encryptByteArraysWithKey() -> decryptCipherArraysWithKey()")
     public void encryptByteArraysWithKeyTest() throws AESEncryptionDecryption.AESToolException {
         final SecretKey key = AESEncryptionDecryption.derive256BitKey("mypassword", "abcdef0123456789");
-        final List<byte[]> list = Arrays.asList( "alma".getBytes(), "repa".getBytes(), "kontos".getBytes(), "12".getBytes());
-        final List<byte[]> encryptedList = AESEncryptionDecryption.encryptByteArraysWithKey(key, list);
 
+        final List<byte[]> originalList = Arrays.asList( "alma".getBytes(), "repa".getBytes(), "kontos".getBytes(), "12".getBytes());
+        final List<byte[]> encryptedList = AESEncryptionDecryption.encryptByteArraysWithKey(key, originalList);
+        final List<byte[]> decryptedList = AESEncryptionDecryption.decryptCipherArraysWithKey(key, encryptedList);
+
+        for ( int i = 0; i < encryptedList.size(); i++){
+            assertArrayEquals(originalList.get(i), decryptedList.get(i));
+        }
     }
 }
 

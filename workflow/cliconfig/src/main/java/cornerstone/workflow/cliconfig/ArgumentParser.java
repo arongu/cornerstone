@@ -1,52 +1,59 @@
 package cornerstone.workflow.cliconfig;
 
-import java.util.regex.Pattern;
-
 public class ArgumentParser {
-    private static final Pattern patternEncrypt = Pattern.compile("^([a-zA-Z0-9-_]+)(?:\\s*)=(?:\\s*)ENC_(.+)$");
-    private static final Pattern patternDecrypt = Pattern.compile("^([a-zA-Z0-9-_]+)(?:\\s*)=(?:\\s*)AES_(.+)$");
+    private String configFile, keyFile, mode;
 
-    private String configFile, keyFile;
+    public String getConfigFile() {
+        return configFile;
+    }
+
+    public String getKeyFile() {
+        return keyFile;
+    }
+
+    public String getMode() {
+        return mode;
+    }
 
     public void readArguments(final String[] args) throws IllegalArgumentException{
-        boolean valueExpected = false;
-
-        if (args == null){
+        if ( args == null || args.length == 0){
             throw new IllegalArgumentException("No argument to work with!");
         }
 
-        if ( args.length % 2 != 0){
+        if ( args.length != 6){
             throw new IllegalArgumentException("Argument number mismatch!");
         }
 
+        boolean expectingValue = false;
         String switchArg = null;
+
         for ( String arg : args){
-            if ( ! valueExpected && arg != null && arg.startsWith("--")){
-                valueExpected = true;
-                switchArg = arg;
-            } else if (valueExpected){
+            if ( ! expectingValue && arg != null && arg.startsWith("-")){
+                expectingValue = true;
+                switchArg = arg;    // the next argument should be a value an option usually followed by value
+            } else if (expectingValue){
                 switch (switchArg){
-                    case "--config-file" : {
+                    case "--config-file": case "-c": {
                         this.configFile = arg;
                         break;
                     }
 
-                    case "--key-file" : {
+                    case "--key-file" : case "-k": {
                         this.keyFile = arg;
                         break;
                     }
 
-                    case "--help" : {
-                        System.out.println("Help message....");
+                    case "--mode": case "-m": {
+                        this.mode = arg;
                         break;
                     }
 
                     default : {
-                        throw new IllegalArgumentException("Illegal argument: '" + arg + "'");
+                        throw new IllegalArgumentException("Illegal option: '" + arg + "'");
                     }
                 }
 
-                valueExpected = false;
+                expectingValue = false;
             }
         }
     }
