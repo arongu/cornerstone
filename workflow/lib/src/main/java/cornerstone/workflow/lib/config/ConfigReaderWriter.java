@@ -108,16 +108,16 @@ public final class ConfigReaderWriter {
                     if ( v.startsWith(encPrefix)){
                         try {
                             String encrypted = aesPrefix + AESEncryptionDecryption.encryptStringWithKeyToBase64CipherText(key, v);
-                            encryptedLines.add(encrypted);
+                            encryptedLines.add(k + "=" + encrypted);
                             log.info("... '{}' = '{}'", k, encrypted);
                         } catch (AESEncryptionDecryption.AESToolException e){
                             encryptedLines.add("n/a");
                             log.error("... Failed to encrypt: '{}' = '****' (value set to n/a)", k);
                         }
                     }
-                } else {
-                    encryptedLines.add(line);
                 }
+
+                encryptedLines.add(line);
             }
 
             return encryptedLines;
