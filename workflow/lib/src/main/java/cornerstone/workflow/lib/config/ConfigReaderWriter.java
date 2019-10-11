@@ -21,7 +21,7 @@ import java.util.regex.Pattern;
 public final class ConfigReaderWriter {
     private static final String aesPrefix = "AES_";
     private static final String encPrefix = "ENC_";
-    private static final Pattern linePattern = Pattern.compile("^([a-zA-Z0-9-_]+)(?:\\s*)=(?:\\s*)(.+)$");
+    private static final Pattern linePattern = Pattern.compile("^([a-zA-Z0-9-_]+)(\\s*)=(\\s*)(.+)$");
     private static final Logger log = LoggerFactory.getLogger(ConfigReaderWriter.class);
 
     /**
@@ -101,23 +101,31 @@ public final class ConfigReaderWriter {
 
             for (String line : allLines) {
                 Matcher m = linePattern.matcher(line);
+                String encryptedLine;
+
                 if (m.find()){
                     String k = m.group(1);
-                    String v = m.group(2);
+                    String v = m.group(4);
+                    encryptedLine = m.group(1) + m.group(2) + "=" + m.group(3);
 
                     if ( v.startsWith(encPrefix)){
                         try {
-                            String encrypted = aesPrefix + AESEncryptionDecryption.encryptStringWithKeyToBase64CipherText(key, v);
-                            encryptedLines.add(k + "=" + encrypted);
-                            log.info("... '{}' = '{}'", k, encrypted);
+                            String encryptedValue = aesPrefix + AESEncryptionDecryption.encryptStringWithKeyToBase64CipherText(key, v);
+                            encryptedLine += encryptedValue;
+                            log.info("... '{}' = '{}'", k, encryptedValue);
                         } catch (AESEncryptionDecryption.AESToolException e){
-                            encryptedLines.add("n/a");
+                            encryptedLine += "n/a";
                             log.error("... Failed to encrypt: '{}' = '****' (value set to n/a)", k);
                         }
+                    } else {
+                        encryptedLine = line;
                     }
+
+                } else {
+                    encryptedLine = line;
                 }
 
-                encryptedLines.add(line);
+                encryptedLines.add(encryptedLine);
             }
 
             return encryptedLines;
