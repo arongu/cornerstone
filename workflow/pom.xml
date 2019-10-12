@@ -12,7 +12,7 @@
 
     <artifactId>workflow</artifactId>
     <groupId>cornerstone.workflow</groupId>
-    <name>Workflow (Business Logic Root)</name>
+    <name>workflow</name>
     <version>1.0</version>
     <packaging>pom</packaging>
 

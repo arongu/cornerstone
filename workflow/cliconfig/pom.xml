@@ -9,10 +9,11 @@
         <version>1.0</version>
     </parent>
 
-    <artifactId>configurtion_encryptor</artifactId>
-    <name>Config Tool (Business Logic)</name>
+    <artifactId>cliconfig</artifactId>
+    <name>cliconfig (Workflow)</name>
     <description>Tool to create encrypted configuration for the API</description>
     <packaging>jar</packaging>
+    <!--TODO BUNDLE INTO A SINGULAR JAR FILE-->
 
     <dependencies>
         <dependency>
@@ -29,5 +30,40 @@
             <artifactId>junit-jupiter-params</artifactId>
             <scope>test</scope>
         </dependency>
+
+        <!-- Local dependency -->
+        <dependency>
+            <groupId>cornerstone.workflow</groupId>
+            <artifactId>lib</artifactId>
+            <version>1.0</version>
+        </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>3.1.1</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <mainClass>cornerstone.workflow.cliconfig.CliConfigTool</mainClass>
+                        </manifest>
+                    </archive>
+                    <descriptorRefs>
+                        <descriptorRef>jar-with-dependencies</descriptorRef>
+                    </descriptorRefs>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>make-assembly</id> <!-- this is used for inheritance merges -->
+                        <phase>package</phase> <!-- bind to the packaging phase -->
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>
