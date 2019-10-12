@@ -54,10 +54,11 @@ public final class AESEncryptionDecryption {
             final byte[] enc = cipher.doFinal(ba);
 
             // Add iv, encrypt and store data
-            byte[] cb = new byte[iv.length + enc.length];
-            System.arraycopy(iv, 0, cb, 0, iv.length);
-            System.arraycopy(enc, 0, cb, iv.length, enc.length);
-            return cb;
+            byte[] cipherBytes = new byte[iv.length + enc.length];
+            System.arraycopy(iv, 0, cipherBytes, 0, iv.length);
+            System.arraycopy(enc, 0, cipherBytes, iv.length, enc.length);
+
+            return cipherBytes;
 
         } catch (InvalidKeyException | NoSuchPaddingException | NoSuchAlgorithmException | InvalidParameterSpecException | BadPaddingException | IllegalBlockSizeException e){
             log.error(e.getMessage());
@@ -107,10 +108,12 @@ public final class AESEncryptionDecryption {
                 System.arraycopy(iv, 0, cb, 0, iv.length);
                 System.arraycopy(enc, 0, cb, iv.length, enc.length);
                 cbList.add(cb);
+
             } catch (BadPaddingException | IllegalBlockSizeException | InvalidParameterSpecException | InvalidKeyException e) {
                 log.error("Failed to encrypt data at index {} - {}", index, e.getMessage());
                 cbList.add(null);
             }
+
             index++;
         }
 
@@ -184,18 +187,21 @@ public final class AESEncryptionDecryption {
     public static String decryptBase64CipherTextWithKeyToString(final SecretKey key, final String cipherText) throws AESToolException {
         final byte[] ba = Base64.getDecoder().decode(cipherText);
         final byte[] decrypted = decryptCipherArrayWithKey(key, ba);
+
         return new String(decrypted);
     }
 
     public static String encryptStringWithBase64KeyToBase64CipherText(final String keyAsBase64, final String text) throws AESToolException {
         final byte[] keyBa = Base64.getDecoder().decode(keyAsBase64);
         final SecretKeySpec key = new SecretKeySpec(keyBa, "AES");
+
         return encryptStringWithKeyToBase64CipherText(key, text);
     }
 
     public static String decryptBase64CipherTextWithBase64KeyToString(final String keyAsBase64, final String base64CipherText) throws AESToolException {
         final byte[] keyBa = Base64.getDecoder().decode(keyAsBase64);
         final SecretKeySpec key = new SecretKeySpec(keyBa, "AES");
+
         return decryptBase64CipherTextWithKeyToString(key, base64CipherText);
     }
 

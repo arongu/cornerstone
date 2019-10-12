@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Properties;
 
 public class CliConfigTool {
+    // TODO
     private static final String helpMessage = "Usage: java -jar cliconfig --config-file|-c <configFile> --key-file|-k <keyFile> --mode|m <enc|dec>";
 
     private String keyFile, configFile, mode, saveTo;

@@ -13,7 +13,6 @@
     <name>cliconfig (Workflow)</name>
     <description>Tool to create encrypted configuration for the API</description>
     <packaging>jar</packaging>
-    <!--TODO BUNDLE INTO A SINGULAR JAR FILE-->
 
     <dependencies>
         <dependency>

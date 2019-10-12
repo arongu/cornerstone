@@ -80,18 +80,22 @@ public final class ConfigReaderWriter {
                             properties.put(k, "n/a");
                             logger.error(messageDecryptionFailed, String.format("%03d" , lineNumber), k, v);
                         }
+
                     } else {
                         properties.put(k, v);
                         logger.info(messageAdd, String.format("%03d" , lineNumber), k, v);
                     }
+
                 } else {
                     logger.info(messageIgnore, String.format("%03d" , lineNumber), line);
                 }
+
                 lineNumber++;
             }
+
             return properties;
-        }
-        catch (IOException e) {
+
+        } catch (IOException e) {
             logger.error(e.getMessage());
             throw e;
         }
@@ -122,6 +126,7 @@ public final class ConfigReaderWriter {
                             String encryptedValue = aesPrefix + AESEncryptionDecryption.encryptStringWithKeyToBase64CipherText(key, toEncrypt);
                             encryptedLine = m.group(1) + m.group(2) + "=" + m.group(3) + encryptedValue;
                             logger.info(messageEncrypted, String.format("%03d" , lineNumber), k);
+
                         } catch (AESEncryptionDecryption.AESToolException e){
                             encryptedLine += "n/a";
                             logger.error(messageEncryptionFailed, String.format("%03d" , lineNumber), k);
