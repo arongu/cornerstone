@@ -21,7 +21,7 @@ public class ConfigurationProvider {
 
     public void loadConfig() throws IOException {
         final SecretKey key = ConfigReaderWriter.loadAESKeyFromFile(keyFile);
-        this.properties = ConfigReaderWriter.loadEncryptedConfig(key, confFile);
+        this.properties = ConfigReaderWriter.decryptConfig(key, confFile);
     }
 
     public Properties getProperties() {
