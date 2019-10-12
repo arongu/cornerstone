@@ -5,6 +5,9 @@ import cornerstone.workflow.lib.config.ConfigReaderWriter;
 import javax.crypto.SecretKey;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
 
 public class CliConfigTool {
     private static final String helpMessage = "Usage: java -jar cliconfig --config-file|-c <configFile> --key-file|-k <keyFile> --mode|m <enc|dec>";
@@ -58,10 +61,29 @@ public class CliConfigTool {
 
         try {
             final SecretKey key = ConfigReaderWriter.loadAESKeyFromFile(cliConfigTool.keyFile);
-            final List<String> list = ConfigReaderWriter.readAndEncryptLines(key, cliConfigTool.configFile);
 
-            for (String em : list){
-                System.out.println(em);
+            switch (cliConfigTool.mode){
+                case "enc" : {
+                    final List<String> list = ConfigReaderWriter.loadAndEncryptLines(key, cliConfigTool.configFile);
+                    for (String em : list){
+                        System.out.println(em);
+                    }
+                    break;
+                }
+
+                case "dec" : {
+                    try {
+                        final Properties properties = ConfigReaderWriter.loadEncryptedConfig(key, cliConfigTool.configFile);
+//                        final Set<Map.Entry<Object, Object>> entries = properties.entrySet();
+//                        for (Map.Entry<Object, Object> entry : entries) {
+//                            System.out.println(entry.getKey() + " = " + entry.getValue());
+//                        }
+                    }
+                    catch (IOException e){
+                        System.err.println("gebasz " + e.getMessage());
+                    }
+                    break;
+                }
             }
 
         } catch (IOException e){

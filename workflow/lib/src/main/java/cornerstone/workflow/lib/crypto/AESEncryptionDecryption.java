@@ -39,6 +39,7 @@ public final class AESEncryptionDecryption {
             return new SecretKeySpec(key.getEncoded(), "AES");
 
         } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
+            log.error(e.getMessage());
             throw new AESToolException(e.getMessage());
         }
     }
@@ -59,6 +60,7 @@ public final class AESEncryptionDecryption {
             return cb;
 
         } catch (InvalidKeyException | NoSuchPaddingException | NoSuchAlgorithmException | InvalidParameterSpecException | BadPaddingException | IllegalBlockSizeException e){
+            log.error(e.getMessage());
             throw new AESToolException(e.getMessage());
         }
     }
@@ -77,15 +79,17 @@ public final class AESEncryptionDecryption {
             return cipher.doFinal(encrypted);
 
         } catch (InvalidKeyException | NoSuchPaddingException | NoSuchAlgorithmException | BadPaddingException | IllegalBlockSizeException | InvalidAlgorithmParameterException e){
+            log.error(e.getMessage());
             throw new AESToolException(e.getMessage());
         }
     }
 
     public static List<byte[]> encryptByteArraysWithKey(final SecretKey key, final List<byte[]> byteArrays) throws AESToolException {
-        Cipher cipher;
+        final Cipher cipher;
         try {
             cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING");
         } catch (NoSuchPaddingException | NoSuchAlgorithmException e){
+            log.error(e.getMessage());
             throw new AESToolException(e.getMessage());
         }
 
@@ -104,7 +108,7 @@ public final class AESEncryptionDecryption {
                 System.arraycopy(enc, 0, cb, iv.length, enc.length);
                 cbList.add(cb);
             } catch (BadPaddingException | IllegalBlockSizeException | InvalidParameterSpecException | InvalidKeyException e) {
-                log.error("Failed to encrypt data at index {}", index);
+                log.error("Failed to encrypt data at index {} - {}", index, e.getMessage());
                 cbList.add(null);
             }
             index++;
@@ -118,6 +122,7 @@ public final class AESEncryptionDecryption {
         try {
             cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING");
         } catch (NoSuchPaddingException | NoSuchAlgorithmException e){
+            log.error(e.getMessage());
             throw new AESToolException(e.getMessage());
         }
 
@@ -137,7 +142,7 @@ public final class AESEncryptionDecryption {
                 decryptedList.add(ba);
 
             } catch (BadPaddingException | IllegalBlockSizeException | InvalidAlgorithmParameterException | InvalidKeyException e) {
-                log.error("Failed to decrypt data at index {}", index);
+                log.error("Failed to decrypt data at index {} - {}", index, e.getMessage());
                 decryptedList.add(null);
             }
             index++;
@@ -177,8 +182,9 @@ public final class AESEncryptionDecryption {
     }
 
     public static String decryptBase64CipherTextWithKeyToString(final SecretKey key, final String cipherText) throws AESToolException {
-        final byte[] ba = decryptCipherArrayWithKey(key, cipherText.getBytes());
-        return new String(ba);
+        final byte[] ba = Base64.getDecoder().decode(cipherText);
+        final byte[] decrypted = decryptCipherArrayWithKey(key, ba);
+        return new String(decrypted);
     }
 
     public static String encryptStringWithBase64KeyToBase64CipherText(final String keyAsBase64, final String text) throws AESToolException {

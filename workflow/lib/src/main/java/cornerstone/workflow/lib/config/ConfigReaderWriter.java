@@ -21,7 +21,7 @@ import java.util.regex.Pattern;
 public final class ConfigReaderWriter {
     private static final String aesPrefix = "AES_";
     private static final String encPrefix = "ENC_";
-    private static final Pattern linePattern = Pattern.compile("^([a-zA-Z0-9-_]+)(\\s*)=(\\s*)(.+)$");
+    private static final Pattern configLinePattern = Pattern.compile("^([a-zA-Z0-9-_]+)(\\s*)=(\\s*)(.+)$");
     private static final Logger log = LoggerFactory.getLogger(ConfigReaderWriter.class);
 
     /**
@@ -48,36 +48,36 @@ public final class ConfigReaderWriter {
      * @param key Decryption key.
      * @param path Encrypted config file path.
      */
-    public static Properties decryptFile(final SecretKey key, final String path) throws IOException {
+    public static Properties loadEncryptedConfig(final SecretKey key, final String path) throws IOException {
         try {
             final List<String> allLines = Files.readAllLines(Paths.get(path));
             final Properties properties = new Properties();
 
             int lineNumber = 1;
             for (String line : allLines) {
-                Matcher m = linePattern.matcher(line);
+                Matcher m = configLinePattern.matcher(line);
 
                 if (m.find()){
                     String k = m.group(1);
-                    String v = m.group(2);
+                    String v = m.group(4);
 
                     if ( v.startsWith(aesPrefix)){
                         try {
                             String cipherText = v.substring(aesPrefix.length());
                             String decrypted = AESEncryptionDecryption.decryptBase64CipherTextWithKeyToString(key, cipherText);
                             properties.put(k, decrypted);
-                            log.info("... '{}' = *****", k);
+                            log.info("... decrypt @ {} '{}' = *****", lineNumber,k);
 
                         } catch (AESEncryptionDecryption.AESToolException e){
-                            properties.put(k, null);
-                            log.error("... Failed to decrypt: '{}' = '{}' (value set to null)", k, v);
+                            properties.put(k, "n/a");
+                            log.error("... decrypt FAILED @ {} '{}' = '{}' (value set to null)", lineNumber, k, v);
                         }
                     } else {
                         properties.put(k, v);
-                        log.info("... '{}' = '{}'", k, v);
+                        log.info("... add @ {} '{}' = '{}'", lineNumber, k, v);
                     }
                 } else {
-                    log.info("... Ignoring line @ {}", lineNumber);
+                    log.info("... ignore @ {}", lineNumber);
                 }
                 lineNumber++;
             }
@@ -94,35 +94,29 @@ public final class ConfigReaderWriter {
      * @param key Decryption key.
      * @param path Encrypted config file path.
      */
-    public static List<String> readAndEncryptLines(final SecretKey key, final String path) throws IOException {
+    public static List<String> loadAndEncryptLines(final SecretKey key, final String path) throws IOException {
         try {
             final List<String> allLines = Files.readAllLines(Paths.get(path));
             final List<String> encryptedLines = new LinkedList<>();
 
             for (String line : allLines) {
-                Matcher m = linePattern.matcher(line);
-                String encryptedLine;
+                Matcher m = configLinePattern.matcher(line);
+                String encryptedLine = line;
 
                 if (m.find()){
                     String k = m.group(1);
                     String v = m.group(4);
-                    encryptedLine = m.group(1) + m.group(2) + "=" + m.group(3);
 
                     if ( v.startsWith(encPrefix)){
                         try {
                             String encryptedValue = aesPrefix + AESEncryptionDecryption.encryptStringWithKeyToBase64CipherText(key, v);
-                            encryptedLine += encryptedValue;
+                            encryptedLine = m.group(1) + m.group(2) + "=" + m.group(3) + encryptedValue;
                             log.info("... '{}' = '{}'", k, encryptedValue);
                         } catch (AESEncryptionDecryption.AESToolException e){
                             encryptedLine += "n/a";
                             log.error("... Failed to encrypt: '{}' = '****' (value set to n/a)", k);
                         }
-                    } else {
-                        encryptedLine = line;
                     }
-
-                } else {
-                    encryptedLine = line;
                 }
 
                 encryptedLines.add(encryptedLine);
