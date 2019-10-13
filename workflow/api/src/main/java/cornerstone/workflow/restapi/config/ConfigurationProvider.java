@@ -7,9 +7,6 @@ import java.io.IOException;
 import java.util.Properties;
 
 public class ConfigurationProvider {
-    private static final String keyFile = "/home/aron/cc/key.txt";
-    private static final String confFile = "/home/aron/cc/jcore/conf.txt";
-
     private Properties properties, mainDBproperties, adminDBproperties;
 
     public ConfigurationProvider() throws IOException {
@@ -20,8 +17,8 @@ public class ConfigurationProvider {
     }
 
     public void loadConfig() throws IOException {
-        final SecretKey key = ConfigEncryptDecrypt.loadAESKeyFromFile(keyFile);
-        this.properties = ConfigEncryptDecrypt.decryptConfig(key, confFile);
+        final SecretKey key = ConfigEncryptDecrypt.loadAESKeyFromFile("/var/opt/cornerstone/key.conf");
+        this.properties = ConfigEncryptDecrypt.decryptConfig(key, "/var/opt/cornerstone/app.conf");
     }
 
     public Properties getProperties() {
