@@ -7,45 +7,51 @@ import java.util.Properties;
 
 public class DBConfigurationParser {
     private static final Logger logger = LoggerFactory.getLogger(DBConfigurationParser.class);
-    private Properties mainDB, adminDB;
+    private static final String infoMessage = "... {} '{}' = '{}'";
+    private static final String infoSecretMessage = "... {} '{}' = *****";
+    private static final String errorMessage = "... '{}' is not set !";
+    private static final String ignoreMessage = "... '{}' is ignored";
+
+    private Properties mainDB, userDB;
 
     public DBConfigurationParser(final Properties properties) {
        processProperties(properties);
     }
 
-    public void processProperties(final Properties properties){
+    public void processProperties(final Properties properties) {
         this.mainDB = new Properties();
-        this.adminDB = new Properties();
+        this.userDB = new Properties();
 
-        for ( DBConfigurationField field : DBConfigurationField.values()){
+        for ( DBConfigurationField field : DBConfigurationField.values()) {
             String key = field.getKey();
-            if ( key.startsWith(DBConfigurationField.mainPrefix) || key.startsWith(DBConfigurationField.mgmtPrefix)) {
+
+            if ( key.startsWith(DBConfigurationField.mainPrefix) || key.startsWith(DBConfigurationField.userPrefix)) {
                 String value = properties.getProperty(key);
 
                 if ( value != null && ! value.isEmpty()) {
                     if ( key.startsWith(DBConfigurationField.mainPrefix)) {
                         this.mainDB.setProperty(key, value);
-                        if ( !key.contains("password")){
-                            logger.info("... main DB '{}' = '{}'", key, value);
+                        if ( ! key.contains("password")) {
+                            logger.info(infoMessage, DBConfigurationField.mainPrefix, key, value);
                         } else {
-                            logger.info("... main DB '{}' = '*****'", key);
+                            logger.info(infoSecretMessage, DBConfigurationField.mainPrefix, key);
                         }
                     }
-                    else if ( key.startsWith(DBConfigurationField.mgmtPrefix)) {
-                        this.adminDB.setProperty(key, value);
-                        if ( !key.contains("password")){
-                            logger.info("... admin DB '{}' = '{}'", key, value);
+                    else if ( key.startsWith(DBConfigurationField.userPrefix)) {
+                        this.userDB.setProperty(key, value);
+                        if ( ! key.contains("password")) {
+                            logger.info(infoMessage, DBConfigurationField.userPrefix, key, value);
                         } else {
-                            logger.info("... admin DB '{}' = '*****'", key);
+                            logger.info(infoSecretMessage, DBConfigurationField.userPrefix, key);
                         }
                     }
                 }
                 else {
-                    logger.error("... !!! '{}' is not set !!!", key);
+                    logger.error(errorMessage, key);
                 }
             }
             else {
-                logger.info("... Ignoring '{}' .", key);
+                logger.info(ignoreMessage, key);
             }
         }
     }
@@ -54,7 +60,7 @@ public class DBConfigurationParser {
         return new Properties(mainDB);
     }
 
-    public Properties getAdminDB() {
-        return new Properties(adminDB);
+    public Properties getUserDB() {
+        return new Properties(userDB);
     }
 }

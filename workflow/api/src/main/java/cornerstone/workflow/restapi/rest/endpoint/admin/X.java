@@ -1,4 +1,4 @@
-package cornerstone.workflow.restapi.rest.endpoint.x;
+package cornerstone.workflow.restapi.rest.endpoint.admin;
 
 import cornerstone.workflow.restapi.config.ConfigurationProvider;
 
@@ -8,7 +8,6 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import java.sql.SQLException;
 import java.util.Properties;
 
 @Path("/x")
@@ -23,7 +22,7 @@ public class X {
     }
 
     @GET
-    public Properties gg() throws SQLException {
+    public Properties gg() {
         return configurationProvider.getProperties();
     }
 }

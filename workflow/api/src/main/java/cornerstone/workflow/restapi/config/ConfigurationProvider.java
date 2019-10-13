@@ -13,7 +13,7 @@ public class ConfigurationProvider {
         loadConfig();
         final DBConfigurationParser dbConfigurationParser = new DBConfigurationParser(properties);
         mainDBproperties = dbConfigurationParser.getMainDB();
-        adminDBproperties = dbConfigurationParser.getAdminDB();
+        adminDBproperties = dbConfigurationParser.getUserDB();
     }
 
     public void loadConfig() throws IOException {
