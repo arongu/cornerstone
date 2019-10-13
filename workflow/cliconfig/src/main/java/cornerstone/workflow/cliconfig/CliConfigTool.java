@@ -93,12 +93,17 @@ public class CliConfigTool {
                     }
                     break;
                 }
+
+                default: {
+                    System.err.println("Unrecognized command '" + cliConfigTool.command + "'");
+                    System.exit(4);
+                }
             }
 
         } catch (IOException e) {
             e.printStackTrace();
             System.err.println(e.getMessage());
-            System.exit(4);
+            System.exit(5);
         }
     }
 }

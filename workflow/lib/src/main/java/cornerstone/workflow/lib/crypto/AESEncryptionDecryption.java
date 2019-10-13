@@ -28,7 +28,7 @@ public final class AESEncryptionDecryption {
 
     public static SecretKeySpec derive256BitKey(final String password, final String salt) throws AESToolException {
 
-        if (password == null || salt == null || password.getBytes().length == 0 || salt.getBytes().length != 16) {
+        if ( password == null || salt == null || password.getBytes().length == 0 || salt.getBytes().length != 16) {
             throw new AESToolException("Password and salt cannot be null or empty, salt must be 16 bytes long!");
         }
 
@@ -105,8 +105,8 @@ public final class AESEncryptionDecryption {
 
                 // Add iv, encrypt and store data
                 byte[] cb = new byte[iv.length + enc.length];
-                System.arraycopy(iv, 0, cb, 0, iv.length);
-                System.arraycopy(enc, 0, cb, iv.length, enc.length);
+                System.arraycopy(iv,0, cb,0, iv.length);
+                System.arraycopy(enc,0, cb, iv.length, enc.length);
                 cbList.add(cb);
 
             } catch (BadPaddingException | IllegalBlockSizeException | InvalidParameterSpecException | InvalidKeyException e) {
@@ -131,23 +131,24 @@ public final class AESEncryptionDecryption {
 
         final List<byte[]> decryptedList = new LinkedList<>();
         int index = 0;
-        for ( byte[] cba : cypherArrays) {
+        for ( byte[] cypherBytes : cypherArrays) {
             try {
                 byte[] iv = new byte[16];
-                System.arraycopy(cba, 0, iv, 0,16);
+                System.arraycopy(cypherBytes,0, iv,0,16);
 
-                byte[] encrypted = new byte[cba.length - 16];
-                System.arraycopy(cba, 16, encrypted, 0, encrypted.length);
+                byte[] encrypted = new byte[cypherBytes.length - 16];
+                System.arraycopy(cypherBytes,16, encrypted,0, encrypted.length);
 
                 cipher.init(Cipher.DECRYPT_MODE, key, new IvParameterSpec(iv));
-                byte[] ba = cipher.doFinal(encrypted);
+                byte[] encryptedBa = cipher.doFinal(encrypted);
 
-                decryptedList.add(ba);
+                decryptedList.add(encryptedBa);
 
             } catch (BadPaddingException | IllegalBlockSizeException | InvalidAlgorithmParameterException | InvalidKeyException e) {
                 log.error("Failed to decrypt data at index {} - {}", index, e.getMessage());
                 decryptedList.add(null);
             }
+
             index++;
         }
 
@@ -159,7 +160,7 @@ public final class AESEncryptionDecryption {
         final List<String> base64cipherTexts = new LinkedList<>();
 
         final Base64.Encoder base64encoder = Base64.getEncoder();
-        for ( byte[] ba : cbList){
+        for ( byte[] ba : cbList) {
             String ba64 = base64encoder.encodeToString(ba);
             base64cipherTexts.add(ba64);
         }
@@ -171,7 +172,7 @@ public final class AESEncryptionDecryption {
         final List<byte[]> cbList = new LinkedList<>();
 
         final Base64.Decoder base64decoder = Base64.getDecoder();
-        for ( String ba64 : base64CipherTexts){
+        for ( String ba64 : base64CipherTexts) {
             byte[] ba = base64decoder.decode(ba64);
             cbList.add(ba);
         }
