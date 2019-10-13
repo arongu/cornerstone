@@ -17,8 +17,8 @@ import java.util.Base64;
 import java.util.LinkedList;
 import java.util.List;
 
-public final class AESEncryptionDecryption {
-    private static final Logger log = LoggerFactory.getLogger(AESEncryptionDecryption.class);
+public final class AESEncryptDecrypt {
+    private static final Logger log = LoggerFactory.getLogger(AESEncryptDecrypt.class);
 
     public static class AESToolException extends Exception {
         AESToolException(final String message) {

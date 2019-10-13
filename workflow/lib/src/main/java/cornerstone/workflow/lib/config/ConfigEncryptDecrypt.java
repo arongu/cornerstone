@@ -1,6 +1,6 @@
 package cornerstone.workflow.lib.config;
 
-import cornerstone.workflow.lib.crypto.AESEncryptionDecryption;
+import cornerstone.workflow.lib.crypto.AESEncryptDecrypt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,11 +18,11 @@ import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public final class ConfigEncrypterDecrypter {
+public final class ConfigEncryptDecrypt {
     private static final String aesPrefix = "AES_";
     private static final String encPrefix = "ENC_";
 
-    private static final String messageEncrypted = "[ ENCRYPT ]        @ {}  '{}' = '*****'";
+    private static final String messageEncrypted = "[ ENCRYPT ]        @ {}  '{}' = *****";
     private static final String messageEncryptionFailed = "[ ENCRYPT FAILED ] @ {}  '{}' = '****' (value set to n/a)";
     private static final String messageDecrypted = "[ DECRYPT, ADD ]   @ {}  '{}' = *****";
     private static final String messageDecryptionFailed = "[ DECRYPT FAILED ] @ {}  '{}' = '{}'";
@@ -30,7 +30,7 @@ public final class ConfigEncrypterDecrypter {
     private static final String messageIgnore = "[ IGNORE ]         @ {}  '{}'";
 
     private static final Pattern configLinePattern = Pattern.compile("^([a-zA-Z0-9-_]+)(\\s*)=(\\s*)(.+)$");
-    private static final Logger logger = LoggerFactory.getLogger(ConfigEncrypterDecrypter.class);
+    private static final Logger logger = LoggerFactory.getLogger(ConfigEncryptDecrypt.class);
 
     /**
      * Opens the key file, reads the first line and returns the decoded AES key as a byte array.
@@ -72,11 +72,11 @@ public final class ConfigEncrypterDecrypter {
                     if ( v.startsWith(aesPrefix)) {
                         try {
                             String cipherText = v.substring(aesPrefix.length());
-                            String decrypted = AESEncryptionDecryption.decryptBase64CipherTextWithKeyToString(key, cipherText);
+                            String decrypted = AESEncryptDecrypt.decryptBase64CipherTextWithKeyToString(key, cipherText);
                             properties.put(k, decrypted);
                             logger.info(messageDecrypted, String.format("%03d" , lineNumber), k);
 
-                        } catch (AESEncryptionDecryption.AESToolException e) {
+                        } catch (AESEncryptDecrypt.AESToolException e) {
                             properties.put(k, "n/a");
                             logger.error(messageDecryptionFailed, String.format("%03d" , lineNumber), k, v);
                         }
@@ -123,11 +123,11 @@ public final class ConfigEncrypterDecrypter {
                     if ( v.startsWith(encPrefix)) {
                         try {
                             String toEncrypt = v.substring(encPrefix.length());
-                            String encryptedValue = aesPrefix + AESEncryptionDecryption.encryptStringWithKeyToBase64CipherText(key, toEncrypt);
+                            String encryptedValue = aesPrefix + AESEncryptDecrypt.encryptStringWithKeyToBase64CipherText(key, toEncrypt);
                             encryptedLine = m.group(1) + m.group(2) + "=" + m.group(3) + encryptedValue;
                             logger.info(messageEncrypted, String.format("%03d" , lineNumber), k);
 
-                        } catch (AESEncryptionDecryption.AESToolException e) {
+                        } catch (AESEncryptDecrypt.AESToolException e) {
                             encryptedLine += "n/a";
                             logger.error(messageEncryptionFailed, String.format("%03d" , lineNumber), k);
                         }
