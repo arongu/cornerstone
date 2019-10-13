@@ -9,14 +9,14 @@ import java.net.URL;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class ConfigReaderWriterTest {
+public class ConfigEncrypterDecrypterTest {
     @Test
     @DisplayName("Open and load the key from file.")
     void loadKeyFileTest() throws IOException {
         final String originalKeyAsHex = "a3224844f478d92cf2c81cf262fddfa379c74fff91a17651df24c601cab6be4b";
         final URL keyFileUrl = getClass().getClassLoader().getResource("key.txt");
 
-        final byte[] bytes = ConfigReaderWriter.loadAESKeyFromFile(keyFileUrl.getPath()).getEncoded();
+        final byte[] bytes = ConfigEncrypterDecrypter.loadAESKeyFromFile(keyFileUrl.getPath()).getEncoded();
         final String loadedKeyAsHex = Hex.encodeHexString(bytes);
 
         assertEquals(originalKeyAsHex, loadedKeyAsHex);

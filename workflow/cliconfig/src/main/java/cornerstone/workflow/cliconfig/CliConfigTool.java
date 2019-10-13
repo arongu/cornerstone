@@ -1,6 +1,6 @@
 package cornerstone.workflow.cliconfig;
 
-import cornerstone.workflow.lib.config.ConfigReaderWriter;
+import cornerstone.workflow.lib.config.ConfigEncrypterDecrypter;
 
 import javax.crypto.SecretKey;
 import java.io.BufferedWriter;
@@ -10,25 +10,36 @@ import java.util.List;
 import java.util.Properties;
 
 public class CliConfigTool {
-    // TODO
-    private static final String helpMessage = "Usage: java -jar cliconfig --config-file|-c <configFile> --key-file|-k <keyFile> --mode|m <enc|dec>";
+    private static final String helpMessage =
+            "Usage:\njava -jar cli.jar <enc|e|dec|d> <--config-file|-c> CONFIG_FILE <--key-file|-k> KEY_FILE <--save|-s> SAVE_TO" +
+                    "\njava -jar cli.jar enc -c raw.conf -k key.txt -s encrypted.conf" +
+                    "\njava -jar cli.jar d -c encrypted.conf -k key.txt -s decrypted.txt";
 
-    private String keyFile, configFile, mode, saveTo;
+    private String command, keyFile, configFile, saveTo;
 
     private void readArguments(final String[] args) {
-        if ( args == null || args.length != 8){
+        if ( args == null || args.length != 7) {
             System.err.println("Not enough arguments!");
             System.out.println(helpMessage);
             System.exit(1);
         }
 
+        command = args[0];
+        if ( ! (command.equals("enc") || command.equals("e") || command.equals("dec") || command.equals("d"))) {
+            System.err.println("First argument most be <enc|e|dec|d> !");
+            System.exit(2);
+        }
+
+
         boolean expectingValue = false;
         String switchArg = null;
+        for ( int i = 1; i < args.length; i++){
+            String arg = args[i];
 
-        for ( String arg : args){
-            if ( ! expectingValue && arg != null && arg.startsWith("-")){
+            if ( ! expectingValue && arg != null && arg.startsWith("-")) {
                 expectingValue = true;
-                switchArg = arg;    // the next argument should be a value an option usually followed by value
+                switchArg = arg;
+
             } else if (expectingValue){
                 switch (switchArg){
                     case "--config-file": case "-c": {
@@ -41,11 +52,6 @@ public class CliConfigTool {
                         break;
                     }
 
-                    case "--mode": case "-m": {
-                        this.mode = arg;
-                        break;
-                    }
-
                     case "--save": case "-s": {
                         this.saveTo = arg;
                         break;
@@ -53,7 +59,7 @@ public class CliConfigTool {
 
                     default : {
                         System.err.println("Illegal option: '" + arg + "'");
-                        System.exit(2);
+                        System.exit(3);
                     }
                 }
 
@@ -62,49 +68,37 @@ public class CliConfigTool {
         }
     }
 
-    private void saveConfig(final List<String> lines){
-        try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(saveTo))){;
-            for(String line : lines){
-                bufferedWriter.write(line + "\n");
-            }
-        } catch (IOException e){
-            System.err.println(e.getMessage());
-            System.exit(3);
-        }
-    }
-
     public static void main(String[] args) {
         final CliConfigTool cliConfigTool = new CliConfigTool();
         cliConfigTool.readArguments(args);
 
         try {
-            final SecretKey key = ConfigReaderWriter.loadAESKeyFromFile(cliConfigTool.keyFile);
+            final SecretKey key = ConfigEncrypterDecrypter.loadAESKeyFromFile(cliConfigTool.keyFile);
 
-            switch (cliConfigTool.mode){
+            switch (cliConfigTool.command){
                 case "enc": case "e": {
-                    final List<String> list = ConfigReaderWriter.encryptConfig(key, cliConfigTool.configFile);
-                    cliConfigTool.saveConfig(list);
+                    try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(cliConfigTool.saveTo))) {
+                        final List<String> lines = ConfigEncrypterDecrypter.encryptConfig(key, cliConfigTool.configFile);
+                        for (String line : lines) {
+                            bufferedWriter.write(line + "\n");
+                        }
+                    }
                     break;
                 }
 
                 case "dec": case "d": {
-                    try {
-                        final Properties properties = ConfigReaderWriter.decryptConfig(key, cliConfigTool.configFile);
-                        try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(cliConfigTool.saveTo))) {
-                            properties.store(bufferedWriter, null);
-                        }
-                    }
-                    catch (IOException e){
-                        System.err.println(e.getMessage());
-                        System.exit(4);
+                    try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(cliConfigTool.saveTo))) {
+                        final Properties properties = ConfigEncrypterDecrypter.decryptConfig(key, cliConfigTool.configFile);
+                        properties.store(bufferedWriter, null);
                     }
                     break;
                 }
             }
 
-        } catch (IOException e){
+        } catch (IOException e) {
+            e.printStackTrace();
             System.err.println(e.getMessage());
-            System.exit(5);
+            System.exit(4);
         }
     }
 }

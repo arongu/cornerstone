@@ -18,7 +18,7 @@ import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public final class ConfigReaderWriter {
+public final class ConfigEncrypterDecrypter {
     private static final String aesPrefix = "AES_";
     private static final String encPrefix = "ENC_";
 
@@ -30,7 +30,7 @@ public final class ConfigReaderWriter {
     private static final String messageIgnore = "[ IGNORE ]         @ {}  '{}'";
 
     private static final Pattern configLinePattern = Pattern.compile("^([a-zA-Z0-9-_]+)(\\s*)=(\\s*)(.+)$");
-    private static final Logger logger = LoggerFactory.getLogger(ConfigReaderWriter.class);
+    private static final Logger logger = LoggerFactory.getLogger(ConfigEncrypterDecrypter.class);
 
     /**
      * Opens the key file, reads the first line and returns the decoded AES key as a byte array.
@@ -69,14 +69,14 @@ public final class ConfigReaderWriter {
                     String k = m.group(1);
                     String v = m.group(4);
 
-                    if ( v.startsWith(aesPrefix)){
+                    if ( v.startsWith(aesPrefix)) {
                         try {
                             String cipherText = v.substring(aesPrefix.length());
                             String decrypted = AESEncryptionDecryption.decryptBase64CipherTextWithKeyToString(key, cipherText);
                             properties.put(k, decrypted);
                             logger.info(messageDecrypted, String.format("%03d" , lineNumber), k);
 
-                        } catch (AESEncryptionDecryption.AESToolException e){
+                        } catch (AESEncryptionDecryption.AESToolException e) {
                             properties.put(k, "n/a");
                             logger.error(messageDecryptionFailed, String.format("%03d" , lineNumber), k, v);
                         }
@@ -116,18 +116,18 @@ public final class ConfigReaderWriter {
                 Matcher m = configLinePattern.matcher(line);
                 String encryptedLine = line;
 
-                if ( m.find()){
+                if ( m.find()) {
                     String k = m.group(1);
                     String v = m.group(4);
 
-                    if ( v.startsWith(encPrefix)){
+                    if ( v.startsWith(encPrefix)) {
                         try {
                             String toEncrypt = v.substring(encPrefix.length());
                             String encryptedValue = aesPrefix + AESEncryptionDecryption.encryptStringWithKeyToBase64CipherText(key, toEncrypt);
                             encryptedLine = m.group(1) + m.group(2) + "=" + m.group(3) + encryptedValue;
                             logger.info(messageEncrypted, String.format("%03d" , lineNumber), k);
 
-                        } catch (AESEncryptionDecryption.AESToolException e){
+                        } catch (AESEncryptionDecryption.AESToolException e) {
                             encryptedLine += "n/a";
                             logger.error(messageEncryptionFailed, String.format("%03d" , lineNumber), k);
                         }

@@ -1,6 +1,6 @@
 package cornerstone.workflow.restapi.config;
 
-import cornerstone.workflow.lib.config.ConfigReaderWriter;
+import cornerstone.workflow.lib.config.ConfigEncrypterDecrypter;
 
 import javax.crypto.SecretKey;
 import java.io.IOException;
@@ -20,8 +20,8 @@ public class ConfigurationProvider {
     }
 
     public void loadConfig() throws IOException {
-        final SecretKey key = ConfigReaderWriter.loadAESKeyFromFile(keyFile);
-        this.properties = ConfigReaderWriter.decryptConfig(key, confFile);
+        final SecretKey key = ConfigEncrypterDecrypter.loadAESKeyFromFile(keyFile);
+        this.properties = ConfigEncrypterDecrypter.decryptConfig(key, confFile);
     }
 
     public Properties getProperties() {
