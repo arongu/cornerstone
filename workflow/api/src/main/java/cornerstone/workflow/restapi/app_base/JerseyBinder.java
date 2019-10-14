@@ -1,8 +1,8 @@
 package cornerstone.workflow.restapi.app_base;
 
 import cornerstone.workflow.restapi.config.ConfigurationProvider;
-import cornerstone.workflow.restapi.datasource.DBAdmin;
-import cornerstone.workflow.restapi.datasource.DBMain;
+import cornerstone.workflow.restapi.datasource.UserDB;
+import cornerstone.workflow.restapi.datasource.MainDB;
 import cornerstone.workflow.restapi.service.admin.AccountManager;
 import cornerstone.workflow.restapi.service.admin.AccountManagerImpl;
 import cornerstone.workflow.restapi.service.login.LoginManager;
@@ -24,8 +24,8 @@ public class JerseyBinder extends AbstractBinder {
             bind(configurationProvider).to(ConfigurationProvider.class).in(Singleton.class);
 
             // DB Pool bindings
-            bind(new DBMain(configurationProvider)).to(DBMain.class).in(Singleton.class);
-            bind(new DBAdmin(configurationProvider)).to(DBAdmin.class).in(Singleton.class);
+            bind(new MainDB(configurationProvider)).to(MainDB.class).in(Singleton.class);
+            bind(new UserDB(configurationProvider)).to(UserDB.class).in(Singleton.class);
 
             // Admin, Login
             bind(AccountManagerImpl.class).to(AccountManager.class).in(Singleton.class);

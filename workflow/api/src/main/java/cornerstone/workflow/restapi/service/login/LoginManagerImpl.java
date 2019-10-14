@@ -1,7 +1,7 @@
 package cornerstone.workflow.restapi.service.login;
 
 import cornerstone.workflow.restapi.config.ConfigurationProvider;
-import cornerstone.workflow.restapi.datasource.DBAdmin;
+import cornerstone.workflow.restapi.datasource.UserDB;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.apache.commons.codec.digest.Crypt;
@@ -24,8 +24,8 @@ public class LoginManagerImpl implements LoginManager {
     private final Key key;
 
     @Inject
-    public LoginManagerImpl(final DBAdmin DBAdmin, final ConfigurationProvider configurationProvider) {
-        this.dataSource = DBAdmin;
+    public LoginManagerImpl(final UserDB UserDB, final ConfigurationProvider configurationProvider) {
+        this.dataSource = UserDB;
         String base64key = (String) configurationProvider.getProperties().get("api_hmac_key");
         byte[] ba = Base64.getDecoder().decode(base64key);
         key = Keys.hmacShaKeyFor(ba);

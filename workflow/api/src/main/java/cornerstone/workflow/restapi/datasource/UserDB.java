@@ -7,9 +7,9 @@ import org.apache.commons.dbcp2.BasicDataSource;
 import javax.inject.Inject;
 import java.util.Properties;
 
-public class DBAdmin extends BasicDataSource {
+public class UserDB extends BasicDataSource {
     @Inject
-    public DBAdmin(final ConfigurationProvider configurationProvider){
+    public UserDB(final ConfigurationProvider configurationProvider){
         super();
         Properties properties = configurationProvider.getAdminDBproperties();
         this.setDriverClassName(properties.getProperty(DBConfigurationField.DB_ADMIN_DRIVER.getKey()));

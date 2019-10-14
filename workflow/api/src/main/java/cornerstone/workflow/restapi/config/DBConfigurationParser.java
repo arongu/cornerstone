@@ -7,8 +7,8 @@ import java.util.Properties;
 
 public class DBConfigurationParser {
     private static final Logger logger = LoggerFactory.getLogger(DBConfigurationParser.class);
-    private static final String infoMessage = "[ {} ] :: '{}' = '{}'";
-    private static final String infoSecretMessage = "[ {} ] :: '{}' = *****";
+    private static final String infoMessage = "[ {} ] <-- '{}' = '{}'";
+    private static final String infoSecretMessage = "[ {} ] <-- '{}' = *****";
     private static final String errorMessage = "'{}' is not set";
     private static final String ignoreMessage = "'{}' is ignored";
 

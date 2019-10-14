@@ -1,6 +1,6 @@
 package cornerstone.workflow.restapi.rest.endpoint.brand;
 
-import cornerstone.workflow.restapi.datasource.DBMain;
+import cornerstone.workflow.restapi.datasource.MainDB;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,8 +20,8 @@ public class BrandServiceImpl implements BrandService {
     private final BasicDataSource dataSource;
 
     @Inject
-    public BrandServiceImpl(DBMain DBMain) {
-        this.dataSource = DBMain;
+    public BrandServiceImpl(MainDB MainDB) {
+        this.dataSource = MainDB;
     }
 
     public static List<Map<String,String>> extractResultSet(final ResultSet rs) throws SQLException {

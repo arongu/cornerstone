@@ -1,6 +1,6 @@
 package cornerstone.workflow.restapi.service.admin;
 
-import cornerstone.workflow.restapi.datasource.DBAdmin;
+import cornerstone.workflow.restapi.datasource.UserDB;
 import cornerstone.workflow.restapi.rest.endpoint.admin.AccountDTO;
 import org.apache.commons.codec.digest.Crypt;
 import org.apache.commons.dbcp2.BasicDataSource;
@@ -19,8 +19,8 @@ public class AccountManagerImpl implements AccountManager {
     private final BasicDataSource dataSource;
 
     @Inject
-    public AccountManagerImpl(final DBAdmin DBAdmin) {
-        this.dataSource = DBAdmin;
+    public AccountManagerImpl(final UserDB UserDB) {
+        this.dataSource = UserDB;
     }
 
     @Override
