@@ -24,7 +24,7 @@ public class CliConfigTool {
     private String command, keyFile, configFile, saveTo;
 
     // Reads arguments passed from the command line.
-    private void readArguments(final String[] args) {
+    public void readArguments(final String[] args) {
         if ( args == null || args.length != 7) {
             System.err.println("Not enough arguments!");
             System.out.println(helpMessage);

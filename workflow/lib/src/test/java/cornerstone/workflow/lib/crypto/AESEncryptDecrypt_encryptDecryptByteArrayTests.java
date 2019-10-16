@@ -5,6 +5,10 @@ import org.junit.jupiter.api.Test;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
@@ -47,5 +51,26 @@ public class AESEncryptDecrypt_encryptDecryptByteArrayTests {
         for ( int i = 0; i < encryptedList.size(); i++){
             assertArrayEquals(originalList.get(i), decryptedList.get(i));
         }
+    }
+
+    @Test
+    @DisplayName("encryptStringWithBase64KeyToBase64CipherText() -> decryptBase64CipherTextWithBase64KeyToString()")
+    public void encryptDecryptStringWithBase64KeyTest() throws IOException, AESEncryptDecrypt.AESToolException {
+        final URL keyFileUrl = getClass().getClassLoader().getResource("key.txt");
+
+        final String base64key;
+        try (BufferedReader reader = new BufferedReader(new FileReader(keyFileUrl.getPath()))) {
+            base64key = reader.readLine();
+        }
+
+        String toEncrypt = "ENcryptThisText1230~~~#";
+        String encrypted = AESEncryptDecrypt.encryptStringWithBase64KeyToBase64CipherText(base64key, toEncrypt);
+        String decrypted = AESEncryptDecrypt.decryptBase64CipherTextWithBase64KeyToString(base64key, encrypted);
+
+        System.out.println(base64key);
+        System.out.println(toEncrypt);
+        System.out.println(encrypted);
+        System.out.println(decrypted);
+        assertEquals(toEncrypt, decrypted);
     }
 }
