@@ -5,30 +5,27 @@
 
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <artifactId>dbmigrators</artifactId>
+        <artifactId>dbmigrator</artifactId>
         <groupId>cornerstone.db</groupId>
         <version>1.0</version>
     </parent>
 
-    <artifactId>admindb_migrator</artifactId>
+    <artifactId>userdb</artifactId>
     <name>userdb (Database Migration)</name>
     <packaging>pom</packaging>
     <version>1.0</version>
 
     <profiles>
-        <!-- localhost development profile -->
         <profile>
             <id>local</id>
+            <!-- local profile, active by default -->
             <activation>
-                <property>
-                    <name>local</name>
-                </property>
+                <activeByDefault>true</activeByDefault>
             </activation>
             <properties>
-                <flyway.schemas>admindb</flyway.schemas>
-                <!--suppress UnresolvedMavenProperty -->
-                <flyway.url>${mariadb-server-url}</flyway.url>
-                <flyway.locations>filesystem:db/migration</flyway.locations>
+                <!-- .m2/settings.xml provides credentials for local.postgres server -->
+                <server.postgres.id>local.postgres</server.postgres.id>
+                <flyway.url>${local.flyway.url}</flyway.url>
             </properties>
         </profile>
     </profiles>
@@ -39,8 +36,13 @@
                 <groupId>org.flywaydb</groupId>
                 <artifactId>flyway-maven-plugin</artifactId>
                 <configuration>
-                    <!--suppress UnresolvedMavenProperty -->
-                    <serverId>${mariadb-server-id}</serverId>
+                    <!-- cornerstone/dbmigrators/userdb/db/migration, this is where the sql files are located-->
+                    <locations>filesystem:db/migration</locations>
+                    <url>${flyway.url}</url>
+                    <schemas>
+                        <schema>userdb</schema>
+                    </schemas>
+                    <serverId>${server.postgres.id}</serverId>
                     <baselineOnMigrate>true</baselineOnMigrate>
                 </configuration>
             </plugin>

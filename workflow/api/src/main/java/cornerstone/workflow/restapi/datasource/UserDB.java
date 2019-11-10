@@ -7,6 +7,7 @@ import org.apache.commons.dbcp2.BasicDataSource;
 import javax.inject.Inject;
 import java.util.Properties;
 
+// user database connection provider (singleton -- consult with JerseyBinder.class)
 public class UserDB extends BasicDataSource {
     @Inject
     public UserDB(final ConfigurationProvider configurationProvider){

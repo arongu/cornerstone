@@ -9,9 +9,9 @@
         <version>1.0</version>
     </parent>
 
-    <artifactId>dbmigrators</artifactId>
+    <artifactId>dbmigrator</artifactId>
     <groupId>cornerstone.db</groupId>
-    <name>dbmigrators</name>
+    <name>dbmigrator</name>
     <description>The parent project of all db migrators. To run sql scripts with maven, to easily update database structure changes.</description>
     <packaging>pom</packaging>
 
@@ -20,15 +20,11 @@
         <module>maindb</module>
     </modules>
 
-    <properties>
-        <mariadb-server-id>local-db</mariadb-server-id>
-        <mariadb-server-url>jdbc:mariadb://192.168.122.131:3306?useMysqlMetadata=true</mariadb-server-url>
-    </properties>
-
+    <!-- dependency for Flyway   -->
     <dependencies>
         <dependency>
-            <groupId>org.mariadb.jdbc</groupId>
-            <artifactId>mariadb-java-client</artifactId>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
         </dependency>
     </dependencies>
 
@@ -38,7 +34,7 @@
                 <plugin>
                     <groupId>org.flywaydb</groupId>
                     <artifactId>flyway-maven-plugin</artifactId>
-                    <version>5.2.4</version>
+                    <version>6.0.3</version>
                 </plugin>
             </plugins>
         </pluginManagement>
