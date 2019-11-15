@@ -15,21 +15,6 @@
     <packaging>pom</packaging>
     <version>1.0</version>
 
-    <profiles>
-        <profile>
-            <id>local</id>
-            <!-- local profile, active by default -->
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-            <properties>
-                <!-- .m2/settings.xml provides credentials for local.postgres server -->
-                <server.postgres.id>local.postgres</server.postgres.id>
-                <flyway.url>${local.flyway.url}</flyway.url>
-            </properties>
-        </profile>
-    </profiles>
-
     <build>
         <plugins>
             <plugin>
@@ -42,7 +27,7 @@
                     <schemas>
                         <schema>userdb</schema>
                     </schemas>
-                    <serverId>${server.postgres.id}</serverId>
+                    <serverId>${postgres.server.id}</serverId>
                     <baselineOnMigrate>true</baselineOnMigrate>
                 </configuration>
             </plugin>

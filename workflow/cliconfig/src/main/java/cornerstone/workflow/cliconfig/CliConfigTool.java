@@ -17,16 +17,16 @@ public class CliConfigTool {
             "This tool encrypts 'ENC_' prefixed and decrypts 'AES_' prefixed key, value pairs in a config file with the given AES key." +
                     "\nThe first line of the key file should store the AES key as a base64 string." +
                     "\n\nUsage:" +
-                    "\njava -jar cli.jar <enc|e|dec|d> <--config-file|-c> CONFIG_FILE <--key-file|-k> KEY_FILE <--save|-s> SAVE_TO" +
-                    "\njava -jar cli.jar enc -c raw.conf -k key.txt -s encrypted.conf" +
-                    "\njava -jar cli.jar d -c encrypted.conf -k key.txt -s decrypted.txt";
+                    "\n  java -jar cli.jar enc|e|dec|d --config-file|-c <CONFIG_FILE> --key-file|-k <KEY_FILE> --save|-s <SAVE_TO>" +
+                    "\n  java -jar cli.jar enc -c rawconfig.conf -k key.txt -s encrypted.conf" +
+                    "\n  java -jar cli.jar   d -c encrypted.conf -k key.txt -s decrypted.txt";
 
     private String command, keyFile, configFile, saveTo;
 
     // Reads arguments passed from the command line.
     public void readArguments(final String[] args) {
         if ( args == null || args.length != 7) {
-            System.err.println("Not enough arguments!");
+            System.err.println("Not enough arguments!\n");
             System.out.println(helpMessage);
             System.exit(1);
         }
