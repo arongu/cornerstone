@@ -25,18 +25,18 @@ public class AccountManagerImpl implements AccountManager {
 
     @Override
     public void createAccount(final String email, final String password) {
-        try (Connection c = dataSource.getConnection()) {
-            try (PreparedStatement ps = c.prepareStatement(AccountManagerSQL.SQL_CREATE_ACCOUNT)) {
-                String trueString = Boolean.toString(true);
-                ps.setString(1, Crypt.crypt(password));;
-                ps.setString(2, email.toLowerCase());
-                ps.setString(3, "1");
-                ps.setString(4, "0");
-                ps.executeUpdate();
-            }
-        } catch (SQLException e) {
-            logger.error("Failed to create account: '{}' due to the following error: '{}' errorCode: '{}'", email, e.getMessage(), e.getErrorCode());
-        }
+//        try (Connection c = dataSource.getConnection()) {
+//            try (PreparedStatement ps = c.prepareStatement(AccountManagerSQL.SQL_CREATE_ACCOUNT)) {
+//                String trueString = Boolean.toString(true);
+//                ps.setString(1, Crypt.crypt(password));;
+//                ps.setString(2, email.toLowerCase());
+//                ps.setString(3, "1");
+//                ps.setString(4, "0");
+//                ps.executeUpdate();
+//            }
+//        } catch (SQLException e) {
+//            logger.error("Failed to create account: '{}' due to the following error: '{}' errorCode: '{}'", email, e.getMessage(), e.getErrorCode());
+//        }
     }
 
     @Override
@@ -49,8 +49,8 @@ public class AccountManagerImpl implements AccountManager {
                     try {
                         ps.setString(1, Crypt.crypt(accountDTO.getPassword()));
                         ps.setString(2, accountDTO.getEmail().toLowerCase());
-                        ps.setString(3, "1");
-                        ps.setString(4, "0");
+                        ps.setBoolean(3, true);
+                        ps.setBoolean(4, false);
                         ps.executeUpdate();
                     }
                     catch (SQLException e) {
