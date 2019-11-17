@@ -1,8 +1,8 @@
-CREATE sequence IF NOT EXISTS users_account_id_seq;
-CREATE TABLE IF NOT EXISTS public.users
+CREATE sequence IF NOT EXISTS accounts_account_id_seq;
+CREATE TABLE IF NOT EXISTS public.accounts
 (
-    account_id integer NOT NULL DEFAULT nextval('users_account_id_seq'::regclass),
-    registration_date timestamptz NOT NULL DEFAULT NOW(),
+    account_id integer NOT NULL DEFAULT nextval('accounts_account_id_seq'::regclass),
+    account_registration_ts timestamptz NOT NULL DEFAULT NOW(),
     -- account enable / disable
     account_enabled boolean NOT NULL,
     account_enabled_ts timestamptz NOT NULL DEFAULT NOW(),
@@ -29,7 +29,7 @@ CREATE FUNCTION update_account_enabled_ts()
 $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER trigger_account_enabled
-    AFTER UPDATE OF account_enabled ON public.users
+    AFTER UPDATE OF account_enabled ON public.accounts
     FOR EACH ROW
     EXECUTE PROCEDURE update_account_enabled_ts();
 -- end of account_enabled
@@ -43,7 +43,7 @@ CREATE FUNCTION update_email_address_ts()
 $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER trigger_email_address
-    AFTER UPDATE OF email_address ON public.users
+    AFTER UPDATE OF email_address ON public.accounts
     FOR EACH ROW
     EXECUTE PROCEDURE update_email_address_ts();
 -- end of email_address
@@ -57,7 +57,7 @@ CREATE FUNCTION update_password_hash_ts()
 $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER trigger_password_hash
-    AFTER UPDATE OF password_hash ON public.users
+    AFTER UPDATE OF password_hash ON public.accounts
     FOR EACH ROW
     EXECUTE PROCEDURE update_password_hash_ts();
 -- end of password_hash_last
@@ -71,7 +71,7 @@ CREATE FUNCTION update_email_address_verified_ts()
 $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER trigger_email_address_verified
-    AFTER UPDATE OF email_address_verified ON public.users
+    AFTER UPDATE OF email_address_verified ON public.accounts
     FOR EACH ROW
     EXECUTE PROCEDURE update_email_address_verified_ts();
 -- end of email_address_verified

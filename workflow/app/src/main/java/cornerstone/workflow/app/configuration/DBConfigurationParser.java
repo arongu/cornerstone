@@ -26,7 +26,7 @@ public class DBConfigurationParser {
             String key = field.getKey();
 
             if ( key.startsWith(DBConfigurationField.mainPrefix) || key.startsWith(DBConfigurationField.userPrefix)) {
-                String value = properties.getProperty(key);
+                final String value = properties.getProperty(key);
 
                 if ( value != null && ! value.isEmpty()) {
                     if ( key.startsWith(DBConfigurationField.mainPrefix)) {
@@ -60,7 +60,7 @@ public class DBConfigurationParser {
         return new Properties(mainDB);
     }
 
-    public Properties getUserDB() {
+    public Properties getAccountDB() {
         return new Properties(userDB);
     }
 }

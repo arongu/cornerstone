@@ -1,8 +1,8 @@
 package cornerstone.workflow.app.jersey;
 
 import cornerstone.workflow.app.configuration.ConfigurationProvider;
-import cornerstone.workflow.app.datasource.UserDB;
-import cornerstone.workflow.app.datasource.MainDB;
+import cornerstone.workflow.app.datasource.AccountDB;
+import cornerstone.workflow.app.datasource.DataDB;
 import cornerstone.workflow.app.services.admin.AccountManager;
 import cornerstone.workflow.app.services.admin.AccountManagerImpl;
 import cornerstone.workflow.app.services.login.LoginManager;
@@ -24,8 +24,8 @@ public class JerseyBinder extends AbstractBinder {
             bind(configurationProvider).to(ConfigurationProvider.class).in(Singleton.class);
 
             // DB Pool bindings
-            bind(new MainDB(configurationProvider)).to(MainDB.class).in(Singleton.class);
-            bind(new UserDB(configurationProvider)).to(UserDB.class).in(Singleton.class);
+            bind(new DataDB(configurationProvider)).to(DataDB.class).in(Singleton.class);
+            bind(new AccountDB(configurationProvider)).to(AccountDB.class).in(Singleton.class);
 
             // Admin, Login
             bind(AccountManagerImpl.class).to(AccountManager.class).in(Singleton.class);

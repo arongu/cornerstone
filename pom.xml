@@ -20,7 +20,7 @@
 
     <modules>
         <module>workflow</module>
-        <module>dbmigrator</module>
+        <module>db_migration</module>
     </modules>
 
     <dependencyManagement>

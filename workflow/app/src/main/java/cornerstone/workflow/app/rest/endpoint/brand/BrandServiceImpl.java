@@ -1,6 +1,6 @@
 package cornerstone.workflow.app.rest.endpoint.brand;
 
-import cornerstone.workflow.app.datasource.MainDB;
+import cornerstone.workflow.app.datasource.DataDB;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,8 +20,8 @@ public class BrandServiceImpl implements BrandService {
     private final BasicDataSource dataSource;
 
     @Inject
-    public BrandServiceImpl(MainDB MainDB) {
-        this.dataSource = MainDB;
+    public BrandServiceImpl(DataDB DataDB) {
+        this.dataSource = DataDB;
     }
 
     public static List<Map<String,String>> extractResultSet(final ResultSet rs) throws SQLException {

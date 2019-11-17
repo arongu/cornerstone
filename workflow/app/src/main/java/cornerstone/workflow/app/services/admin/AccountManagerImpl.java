@@ -1,6 +1,6 @@
 package cornerstone.workflow.app.services.admin;
 
-import cornerstone.workflow.app.datasource.UserDB;
+import cornerstone.workflow.app.datasource.AccountDB;
 import cornerstone.workflow.app.rest.endpoint.admin.AccountDTO;
 import org.apache.commons.codec.digest.Crypt;
 import org.apache.commons.dbcp2.BasicDataSource;
@@ -18,31 +18,33 @@ public class AccountManagerImpl implements AccountManager {
     private static final Logger logger = LoggerFactory.getLogger(AccountManagerImpl.class);
     private final BasicDataSource dataSource;
 
+    private static final String SQL_CREATE_ACCOUNT = "INSERT INTO accounts (password_hash, email_address, account_enabled, email_address_verified) VALUES(?,?,?,?)";
+    private static final String SQL_DELETE_ACCOUNT = "DELETE FROM accounts WHERE email_address=(?)";
+
     @Inject
-    public AccountManagerImpl(final UserDB UserDB) {
-        this.dataSource = UserDB;
+    public AccountManagerImpl(final AccountDB AccountDB) {
+        this.dataSource = AccountDB;
     }
 
     @Override
     public void createAccount(final String email, final String password) {
-//        try (Connection c = dataSource.getConnection()) {
-//            try (PreparedStatement ps = c.prepareStatement(AccountManagerSQL.SQL_CREATE_ACCOUNT)) {
-//                String trueString = Boolean.toString(true);
-//                ps.setString(1, Crypt.crypt(password));;
-//                ps.setString(2, email.toLowerCase());
-//                ps.setString(3, "1");
-//                ps.setString(4, "0");
-//                ps.executeUpdate();
-//            }
-//        } catch (SQLException e) {
-//            logger.error("Failed to create account: '{}' due to the following error: '{}' errorCode: '{}'", email, e.getMessage(), e.getErrorCode());
-//        }
+        try (Connection c = dataSource.getConnection()) {
+            try (PreparedStatement ps = c.prepareStatement(SQL_CREATE_ACCOUNT)) {
+                ps.setString(1, Crypt.crypt(password));;
+                ps.setString(2, email.toLowerCase());
+                ps.setBoolean(3, true);
+                ps.setBoolean(4, false);
+                ps.executeUpdate();
+            }
+        } catch (SQLException e) {
+            logger.error("Failed to create account: '{}' due to the following error: '{}' errorCode: '{}'", email, e.getMessage(), e.getErrorCode());
+        }
     }
 
     @Override
     public void createAccounts(final List<AccountDTO> accountDTOS) throws SQLException {
         try (Connection c = dataSource.getConnection()) {
-            try (PreparedStatement ps = c.prepareStatement(AccountManagerSQL.SQL_CREATE_ACCOUNT)) {
+            try (PreparedStatement ps = c.prepareStatement(SQL_CREATE_ACCOUNT)) {
                 List<AccountManagerError> errors = null;
 
                 for (AccountDTO accountDTO : accountDTOS) {
@@ -79,7 +81,7 @@ public class AccountManagerImpl implements AccountManager {
     @Override
     public void deleteAccount(final String email) {
         try (Connection c = dataSource.getConnection()) {
-            try (PreparedStatement ps = c.prepareStatement(AccountManagerSQL.SQL_DELETE_ACCOUNT)) {
+            try (PreparedStatement ps = c.prepareStatement(SQL_DELETE_ACCOUNT)) {
                 ps.setString(1, email);
                 ps.executeUpdate();
             }
@@ -91,7 +93,7 @@ public class AccountManagerImpl implements AccountManager {
     @Override
     public void deleteAccounts(List<String> emails) {
         try (Connection c = dataSource.getConnection()) {
-            try (PreparedStatement ps = c.prepareStatement(AccountManagerSQL.SQL_DELETE_ACCOUNT)) {
+            try (PreparedStatement ps = c.prepareStatement(SQL_DELETE_ACCOUNT)) {
                 for (String email : emails) {
                     try {
                         ps.setString(1, email);

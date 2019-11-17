@@ -1,7 +1,7 @@
 package cornerstone.workflow.app.services.login;
 
 import cornerstone.workflow.app.configuration.ConfigurationProvider;
-import cornerstone.workflow.app.datasource.UserDB;
+import cornerstone.workflow.app.datasource.AccountDB;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.apache.commons.codec.digest.Crypt;
@@ -24,8 +24,8 @@ public class LoginManagerImpl implements LoginManager {
     private final Key key;
 
     @Inject
-    public LoginManagerImpl(final UserDB UserDB, final ConfigurationProvider configurationProvider) {
-        this.dataSource = UserDB;
+    public LoginManagerImpl(final AccountDB AccountDB, final ConfigurationProvider configurationProvider) {
+        this.dataSource = AccountDB;
         String base64key = (String) configurationProvider.getProperties().get("api_hmac_key");
         byte[] ba = Base64.getDecoder().decode(base64key);
         key = Keys.hmacShaKeyFor(ba);

@@ -7,13 +7,13 @@ import java.io.IOException;
 import java.util.Properties;
 
 public class ConfigurationProvider {
-    private Properties properties, mainDBproperties, adminDBproperties;
+    private Properties properties, main_db_properties, account_db_properties;
 
     public ConfigurationProvider() throws IOException {
         loadConfig();
         final DBConfigurationParser dbConfigurationParser = new DBConfigurationParser(properties);
-        mainDBproperties = dbConfigurationParser.getMainDB();
-        adminDBproperties = dbConfigurationParser.getUserDB();
+        main_db_properties = dbConfigurationParser.getMainDB();
+        account_db_properties = dbConfigurationParser.getAccountDB();
     }
 
     public void loadConfig() throws IOException {
@@ -25,11 +25,11 @@ public class ConfigurationProvider {
         return properties;
     }
 
-    public Properties getMainDBproperties() {
-        return mainDBproperties;
+    public Properties get_data_db_properties() {
+        return main_db_properties;
     }
 
-    public Properties getAdminDBproperties() {
-        return adminDBproperties;
+    public Properties get_account_db_properties() {
+        return account_db_properties;
     }
 }
