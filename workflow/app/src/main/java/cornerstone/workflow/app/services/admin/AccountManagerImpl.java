@@ -36,7 +36,8 @@ public class AccountManagerImpl implements AccountManager {
                 ps.setBoolean(4, false);
                 ps.executeUpdate();
             }
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
+            // TODO throw exception to send JSON error
             logger.error("Failed to create account: '{}' due to the following error: '{}' errorCode: '{}'", email, e.getMessage(), e.getErrorCode());
         }
     }
@@ -55,24 +56,22 @@ public class AccountManagerImpl implements AccountManager {
                         ps.setBoolean(4, false);
                         ps.executeUpdate();
                     }
-                    catch (SQLException e) {
+                    catch (final SQLException e) {
                         logger.error(e.getMessage());
-                        if (errors == null) {
+                        if (errors != null) {
+                            errors.add(new AccountManagerError(accountDTO.getEmail(), e.getMessage()));
+                        } else {
                             errors = new LinkedList<>();
                         }
-
-                        errors.add(
-                                new AccountManagerError(accountDTO.getEmail(), e.getMessage())
-                        );
                     }
                 }
 
                 if (errors != null) {
-                    logger.error("{}", errors);
                     // TODO throw exception here
+                    // TODO send back json of the failed inserts
                 }
             }
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
             logger.error(e.getMessage());
             throw  e;
         }
@@ -86,6 +85,7 @@ public class AccountManagerImpl implements AccountManager {
                 ps.executeUpdate();
             }
         } catch (SQLException e) {
+            // TODO throw and send json
             logger.error("Failed to delete account: '{}' due to the following error: '{}'", email, e.getMessage());
         }
     }

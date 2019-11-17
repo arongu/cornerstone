@@ -1,6 +1,5 @@
 CREATE sequence IF NOT EXISTS accounts_account_id_seq;
-CREATE TABLE IF NOT EXISTS public.accounts
-(
+CREATE TABLE IF NOT EXISTS public.accounts(
     account_id integer NOT NULL DEFAULT nextval('accounts_account_id_seq'::regclass),
     account_registration_ts timestamptz NOT NULL DEFAULT NOW(),
     -- account enable / disable
@@ -16,9 +15,13 @@ CREATE TABLE IF NOT EXISTS public.accounts
     password_hash character varying(128) NOT NULL UNIQUE,
     password_hash_ts timestamptz NOT NULL DEFAULT NOW(),
     -- constraints
-    CONSTRAINT users_pkey PRIMARY KEY (account_id),
-    CONSTRAINT email_address UNIQUE (email_address)
+    CONSTRAINT pkey_account_id PRIMARY KEY (account_id),
+    CONSTRAINT uniq_email_address UNIQUE (email_address)
 );
+
+-- indices
+CREATE INDEX IF NOT EXISTS index_email_address ON public.accounts(email_address);
+CREATE INDEX IF NOT EXISTS index_account_id ON public.accounts(account_id);
 
 -- trigger for account_enabled
 CREATE FUNCTION update_account_enabled_ts()

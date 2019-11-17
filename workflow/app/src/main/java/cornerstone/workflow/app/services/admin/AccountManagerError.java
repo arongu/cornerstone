@@ -1,9 +1,9 @@
 package cornerstone.workflow.app.services.admin;
 
 public class AccountManagerError {
-    public String email, cause;
+    public final String email, cause;
 
-    public AccountManagerError(String email, String cause) {
+    public AccountManagerError(final String email, final String cause) {
         this.email = email;
         this.cause = cause;
     }
