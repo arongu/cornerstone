@@ -1,4 +1,4 @@
-package cornerstone.workflow.app.rest.endpoint.admin;
+package cornerstone.workflow.app.rest.endpoints;
 
 import cornerstone.workflow.app.configuration.ConfigurationProvider;
 

@@ -3,12 +3,10 @@ package cornerstone.workflow.app.jersey;
 import cornerstone.workflow.app.configuration.ConfigurationProvider;
 import cornerstone.workflow.app.datasource.AccountDB;
 import cornerstone.workflow.app.datasource.DataDB;
-import cornerstone.workflow.app.services.admin.AccountManager;
-import cornerstone.workflow.app.services.admin.AccountManagerImpl;
-import cornerstone.workflow.app.services.login.LoginManager;
-import cornerstone.workflow.app.services.login.LoginManagerImpl;
-import cornerstone.workflow.app.rest.endpoint.brand.BrandService;
-import cornerstone.workflow.app.rest.endpoint.brand.BrandServiceImpl;
+import cornerstone.workflow.app.services.account_service.AccountService;
+import cornerstone.workflow.app.services.account_service.AccountServiceImpl;
+import cornerstone.workflow.app.services.login_service.LoginService;
+import cornerstone.workflow.app.services.login_service.LoginServiceImpl;
 import org.glassfish.jersey.internal.inject.AbstractBinder;
 
 import javax.inject.Singleton;
@@ -28,13 +26,10 @@ public class JerseyBinder extends AbstractBinder {
             bind(new AccountDB(configurationProvider)).to(AccountDB.class).in(Singleton.class);
 
             // Admin, Login
-            bind(AccountManagerImpl.class).to(AccountManager.class).in(Singleton.class);
-            bind(LoginManagerImpl.class).to(LoginManager.class).in(Singleton.class);
+            bind(AccountServiceImpl.class).to(AccountService.class).in(Singleton.class);
+            bind(LoginServiceImpl.class).to(LoginService.class).in(Singleton.class);
 
-            // REST services
-            bind(BrandServiceImpl.class).to(BrandService.class).in(Singleton.class);
-
-        } catch (IOException e) {
+        } catch (final IOException e) {
             e.printStackTrace();
         }
     }
