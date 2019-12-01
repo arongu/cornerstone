@@ -19,32 +19,37 @@ import java.util.Base64;
 import java.util.Objects;
 
 public class LoginServiceImpl implements LoginService {
+    private static final Logger logger = LoggerFactory.getLogger(LoginServiceImpl.class);
     private static final String SQL_GET_ACCOUNT_ENABLED_AND_PASSWORD = "SELECT account_enabled, password_hash FROM accounts WHERE email_address=(?)";
 
-    private static final Logger logger = LoggerFactory.getLogger(LoginServiceImpl.class);
+    private BasicDataSource dataSource;
+    private Key key;
 
-    private final BasicDataSource dataSource;
-    private final Key key;
+    public void loadKey(final ConfigurationProvider configurationProvider){
+        final String base64key = (String) configurationProvider.getProperties().get("api_hmac_key");
+        if ( null !=  base64key){
+            this.key = Keys.hmacShaKeyFor(Base64.getDecoder().decode(base64key));
+        }else {
+            logger.error("HMAC key for JWT token generation is set to null, the app will not work correctly!");
+        }
+    }
 
     @Inject
-    public LoginServiceImpl(final AccountDB AccountDB, final ConfigurationProvider configurationProvider) {
-        this.dataSource = AccountDB;
-        String base64key = (String) configurationProvider.getProperties().get("api_hmac_key");
-        byte[] ba = Base64.getDecoder().decode(base64key);
-        key = Keys.hmacShaKeyFor(ba);
+    public LoginServiceImpl(final AccountDB accountDB, final ConfigurationProvider configurationProvider) {
+        this.dataSource = accountDB;
+        loadKey(configurationProvider);
     }
 
     @Override
     public boolean authenticate(final String email, final String password) {
-        try (Connection c = dataSource.getConnection()) {
-            try (PreparedStatement ps = c.prepareStatement(SQL_GET_ACCOUNT_ENABLED_AND_PASSWORD)) {
+        try (final Connection conn = dataSource.getConnection()) {
+            try (final PreparedStatement ps = conn.prepareStatement(SQL_GET_ACCOUNT_ENABLED_AND_PASSWORD)) {
                 ps.setString(1, email.toLowerCase());
 
-                ResultSet rs = ps.executeQuery();
+                final ResultSet rs = ps.executeQuery();
                 if (rs.next()) {
-                    String enabled = rs.getString("account_enabled");
-                    if ( enabled != null && Integer.parseInt(enabled) == 1) {
-                        String storedPasswordHash = rs.getString("password_hash");
+                    if ( Objects.equals(rs.getString("account_enabled"), "t")) {
+                        final String storedPasswordHash = rs.getString("password_hash");
                         return Objects.equals(
                                 storedPasswordHash,
                                 Crypt.crypt(password, storedPasswordHash)

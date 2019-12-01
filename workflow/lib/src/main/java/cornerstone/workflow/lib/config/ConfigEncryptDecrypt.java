@@ -63,16 +63,16 @@ public final class ConfigEncryptDecrypt {
 
             int lineNumber = 1;
             for (String line : allLines) {
-                Matcher m = configLinePattern.matcher(line);
+                final Matcher m = configLinePattern.matcher(line);
 
                 if ( m.find()){
-                    String k = m.group(1);
-                    String v = m.group(4);
+                    final String k = m.group(1);
+                    final String v = m.group(4);
 
                     if ( v.startsWith(aesPrefix)) {
                         try {
-                            String cipherText = v.substring(aesPrefix.length());
-                            String decrypted = AESEncryptDecrypt.decryptBase64CipherTextWithKeyToString(key, cipherText);
+                            final String cipherText = v.substring(aesPrefix.length());
+                            final String decrypted = AESEncryptDecrypt.decryptBase64CipherTextWithKeyToString(key, cipherText);
                             properties.put(k, decrypted);
                             logger.info(messageDecrypted, String.format("%03d" , lineNumber), k);
 
@@ -113,17 +113,17 @@ public final class ConfigEncryptDecrypt {
 
             int lineNumber = 1;
             for ( String line : lines) {
-                Matcher m = configLinePattern.matcher(line);
+                final Matcher m = configLinePattern.matcher(line);
                 String encryptedLine = line;
 
                 if ( m.find()) {
-                    String k = m.group(1);
-                    String v = m.group(4);
+                    final String k = m.group(1);
+                    final String v = m.group(4);
 
                     if ( v.startsWith(encPrefix)) {
                         try {
-                            String toEncrypt = v.substring(encPrefix.length());
-                            String encryptedValue = aesPrefix + AESEncryptDecrypt.encryptStringWithKeyToBase64CipherText(key, toEncrypt);
+                            final String toEncrypt = v.substring(encPrefix.length());
+                            final String encryptedValue = aesPrefix + AESEncryptDecrypt.encryptStringWithKeyToBase64CipherText(key, toEncrypt);
                             encryptedLine = m.group(1) + m.group(2) + "=" + m.group(3) + encryptedValue;
                             logger.info(messageEncrypted, String.format("%03d" , lineNumber), k);
 
