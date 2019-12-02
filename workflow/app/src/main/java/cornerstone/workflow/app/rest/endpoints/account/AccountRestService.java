@@ -9,9 +9,11 @@ import javax.inject.Singleton;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.ext.Provider;
 import java.util.List;
 
 @Singleton
+@Provider
 @Path("/account")
 public class AccountRestService {
     private AccountService accountService;

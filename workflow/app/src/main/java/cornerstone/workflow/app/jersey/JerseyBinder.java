@@ -3,6 +3,7 @@ package cornerstone.workflow.app.jersey;
 import cornerstone.workflow.app.configuration.ConfigurationProvider;
 import cornerstone.workflow.app.datasource.AccountDB;
 import cornerstone.workflow.app.datasource.DataDB;
+import cornerstone.workflow.app.rest.endpoints.account.AccountRestService;
 import cornerstone.workflow.app.services.account_service.AccountService;
 import cornerstone.workflow.app.services.account_service.AccountServiceImpl;
 import cornerstone.workflow.app.services.login_service.LoginService;

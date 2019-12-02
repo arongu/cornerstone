@@ -25,15 +25,6 @@ public class LoginServiceImpl implements LoginService {
     private BasicDataSource dataSource;
     private Key key;
 
-    public void loadKey(final ConfigurationProvider configurationProvider){
-        final String base64key = (String) configurationProvider.getProperties().get("api_hmac_key");
-        if ( null !=  base64key){
-            this.key = Keys.hmacShaKeyFor(Base64.getDecoder().decode(base64key));
-        }else {
-            logger.error("HMAC key for JWT token generation is set to null, the app will not work correctly!");
-        }
-    }
-
     @Inject
     public LoginServiceImpl(final AccountDB accountDB, final ConfigurationProvider configurationProvider) {
         this.dataSource = accountDB;
@@ -67,5 +58,14 @@ public class LoginServiceImpl implements LoginService {
     @Override
     public String issueJWT(final String email) {
         return Jwts.builder().setSubject(email).signWith(key).compact();
+    }
+
+    public void loadKey(final ConfigurationProvider configurationProvider){
+        final String base64key = (String) configurationProvider.getProperties().get("api_hmac_key");
+        if ( null !=  base64key){
+            this.key = Keys.hmacShaKeyFor(Base64.getDecoder().decode(base64key));
+        }else {
+            logger.error("HMAC key for JWT token generation is set to null, the app will not work correctly!");
+        }
     }
 }
