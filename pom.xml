@@ -20,7 +20,7 @@
 
     <modules>
         <module>workflow</module>
-        <module>dbmigrators</module>
+        <module>db_migration</module>
     </modules>
 
     <dependencyManagement>
@@ -89,9 +89,9 @@
             <!-- jdbc -->
             <!-- Rest API, Database Migration -->
             <dependency>
-                <groupId>org.mariadb.jdbc</groupId>
-                <artifactId>mariadb-java-client</artifactId>
-                <version>2.4.4</version>
+                <groupId>org.postgresql</groupId>
+                <artifactId>postgresql</artifactId>
+                <version>42.2.8</version>
             </dependency>
             <!-- end of jdbc -->
 

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <artifactId>cornerstone</artifactId>
+        <groupId>cornerstone</groupId>
+        <version>1.0</version>
+    </parent>
+
+    <artifactId>dbmigrator</artifactId>
+    <groupId>cornerstone.db</groupId>
+    <name>db_migration</name>
+    <description>The parent project of all db migrators. To run sql scripts with maven, to easily update database structure changes.</description>
+    <packaging>pom</packaging>
+
+    <modules>
+        <module>account</module>
+        <module>data</module>
+    </modules>
+
+    <!-- dependency for Flyway   -->
+    <dependencies>
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.flywaydb</groupId>
+                    <artifactId>flyway-maven-plugin</artifactId>
+                    <version>6.0.3</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+</project>
