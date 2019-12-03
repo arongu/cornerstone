@@ -17,8 +17,8 @@ public class AccountServiceImpl implements AccountService {
     private static final Logger logger = LoggerFactory.getLogger(AccountServiceImpl.class);
     private final BasicDataSource dataSource;
 
-    private static final String CREATE_ACCOUNT_ERROR_MESSAGE = "Failed to create account: '%s', message: '%s', error code: '%d'";
-    private static final String DELETE_ACCOUNT_ERROR_MESSAGE = "Failed to delete account: '%s' due to the following error: '%s'";
+    private static final String CREATE_ACCOUNT_ERROR_MESSAGE = "Failed to create account: '%s', message: '%s', SQL state: '%s'";
+    private static final String DELETE_ACCOUNT_ERROR_MESSAGE = "Failed to delete account: '%s', message: '%s', SQL state: '%s'";
 
     private static final String SQL_CREATE_ACCOUNT = "INSERT INTO accounts (password_hash, email_address, account_enabled, email_address_verified) VALUES(?,?,?,?)";
     private static final String SQL_DELETE_ACCOUNT = "DELETE FROM accounts WHERE email_address=(?)";
@@ -39,7 +39,7 @@ public class AccountServiceImpl implements AccountService {
                 ps.executeUpdate();
             }
         } catch (final SQLException e) {
-            final String msg = String.format(CREATE_ACCOUNT_ERROR_MESSAGE, emailAddress, e.getMessage(), e.getErrorCode());
+            final String msg = String.format(CREATE_ACCOUNT_ERROR_MESSAGE, emailAddress, e.getMessage(), e.getSQLState());
             logger.error(msg);
 
             throw new AccountServiceException(e.getMessage());
@@ -53,21 +53,23 @@ public class AccountServiceImpl implements AccountService {
         try (final Connection conn = dataSource.getConnection()) {
             try (final PreparedStatement ps = conn.prepareStatement(SQL_CREATE_ACCOUNT)) {
                 for (AccountDTO account : accounts) {
-                    try {
-                        ps.setString(1, Crypt.crypt(account.getPassword()));
-                        ps.setString(2, account.getEmail().toLowerCase());
-                        ps.setBoolean(3, true);
-                        ps.setBoolean(4, false);
-                        ps.executeUpdate();
-                    }
-                    catch (final SQLException e) {
-                        final String msg = String.format(CREATE_ACCOUNT_ERROR_MESSAGE, account.getEmail(), e.getMessage(), e.getErrorCode());
-                        logger.error(msg);
+                    if ( null != account) {
+                        try {
+                            ps.setString(1, Crypt.crypt(account.getPassword()));
+                            ps.setString(2, account.getEmail().toLowerCase());
+                            ps.setBoolean(3, true);
+                            ps.setBoolean(4, false);
+                            ps.executeUpdate();
+                        } catch (final SQLException e) {
+                            final String msg = String.format(CREATE_ACCOUNT_ERROR_MESSAGE, account.getEmail(), e.getMessage(), e.getSQLState());
+                            logger.error(msg);
 
-                        if (accountServiceBulkException == null) {
-                            accountServiceBulkException = new AccountServiceBulkException();
+                            if (accountServiceBulkException == null) {
+                                accountServiceBulkException = new AccountServiceBulkException();
+                            }
+
+                            accountServiceBulkException.addException(new AccountServiceException(e.getMessage()));
                         }
-                        accountServiceBulkException.addException(new AccountServiceException(e.getMessage()));
                     }
                 }
             }
@@ -93,7 +95,7 @@ public class AccountServiceImpl implements AccountService {
                 ps.executeUpdate();
             }
         } catch (final SQLException e) {
-            final String msg = String.format(DELETE_ACCOUNT_ERROR_MESSAGE, emailAddress, e.getMessage());
+            final String msg = String.format(DELETE_ACCOUNT_ERROR_MESSAGE, emailAddress, e.getMessage(), e.getSQLState());
             logger.error(msg);
 
             throw new AccountServiceException(e.getMessage());
@@ -111,7 +113,7 @@ public class AccountServiceImpl implements AccountService {
                         ps.setString(1, email);
                         ps.executeUpdate();
                     } catch (final SQLException e) {
-                        final String msg = String.format(DELETE_ACCOUNT_ERROR_MESSAGE, email, e.getMessage());
+                        final String msg = String.format(DELETE_ACCOUNT_ERROR_MESSAGE, email, e.getMessage(), e.getSQLState());
                         logger.error(msg);
 
                         if (accountServiceBulkException == null) {

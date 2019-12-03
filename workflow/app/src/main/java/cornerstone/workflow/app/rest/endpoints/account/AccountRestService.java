@@ -1,5 +1,6 @@
 package cornerstone.workflow.app.rest.endpoints.account;
 
+import cornerstone.workflow.app.rest.RestMessageTemplate;
 import cornerstone.workflow.app.services.account_service.AccountService;
 import cornerstone.workflow.app.services.account_service.AccountServiceBulkException;
 import cornerstone.workflow.app.services.account_service.AccountServiceException;
@@ -12,9 +13,11 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.Provider;
 import java.util.List;
 
-@Singleton
 @Provider
+@Singleton
 @Path("/account")
+@Consumes(MediaType.APPLICATION_JSON)
+@Produces(MediaType.APPLICATION_JSON)
 public class AccountRestService {
     private AccountService accountService;
 
@@ -24,8 +27,6 @@ public class AccountRestService {
     }
 
     @POST
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
     public Response createAccount(final AccountDTO account) throws AccountServiceException {
         accountService.createAccount(account.getEmail(), account.getPassword());
         return Response.status(Response.Status.CREATED)
@@ -34,8 +35,6 @@ public class AccountRestService {
     }
 
     @DELETE
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
     public Response deleteAccount(final String emailAddress) throws AccountServiceException {
         accountService.deleteAccount(emailAddress);
         return Response.status(Response.Status.OK)
@@ -45,19 +44,18 @@ public class AccountRestService {
 
     // /mass
     @POST
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
     @Path("/mass")
     public Response createAccounts(final List<AccountDTO> accounts) throws AccountServiceBulkException {
-        accountService.createAccounts(accounts);
-        return Response.status(Response.Status.OK)
-                .entity(accounts)
-                .build();
+        if ( null != accounts && ! accounts.isEmpty()) {
+            accountService.createAccounts(accounts);
+            return Response.status(Response.Status.OK).entity(accounts).build();
+        } else {
+            final String badRequest = RestMessageTemplate.getHttpStatusMessageAsJSON("BAD_REQUEST", Response.Status.BAD_REQUEST.getStatusCode());
+            return Response.status(Response.Status.BAD_REQUEST).entity(badRequest).build();
+        }
     }
 
     @DELETE
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
     @Path("/mass")
     public Response deleteAccounts(final List<String> emailAddresses) throws AccountServiceBulkException {
         accountService.deleteAccounts(emailAddresses);

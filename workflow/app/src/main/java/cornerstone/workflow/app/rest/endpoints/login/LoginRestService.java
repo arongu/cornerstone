@@ -1,7 +1,7 @@
 package cornerstone.workflow.app.rest.endpoints.login;
 
-import cornerstone.workflow.app.services.login_service.LoginService;
 import cornerstone.workflow.app.rest.endpoints.account.AccountDTO;
+import cornerstone.workflow.app.services.login_service.LoginService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

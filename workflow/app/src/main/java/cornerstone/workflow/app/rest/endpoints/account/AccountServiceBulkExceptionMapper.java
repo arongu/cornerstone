@@ -1,4 +1,4 @@
-package cornerstone.workflow.app.rest.exception_mappers;
+package cornerstone.workflow.app.rest.endpoints.account;
 
 import cornerstone.workflow.app.services.account_service.AccountServiceBulkException;
 import cornerstone.workflow.app.services.account_service.AccountServiceException;
