@@ -1,4 +1,4 @@
-package cornerstone.workflow.app.rest.endpoints;
+package cornerstone.workflow.app.rest.info;
 
 import cornerstone.workflow.app.configuration.ConfigurationProvider;
 
@@ -10,19 +10,19 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import java.util.Properties;
 
-@Path("/x")
+@Path("/info")
 @Singleton
 @Produces(MediaType.APPLICATION_JSON)
-public class X {
+public class Info {
     private ConfigurationProvider configurationProvider;
 
     @Inject
-    public X(ConfigurationProvider configurationProvider) {
+    public Info(ConfigurationProvider configurationProvider) {
         this.configurationProvider = configurationProvider;
     }
 
     @GET
-    public Properties gg() {
+    public Properties getProperties() {
         return configurationProvider.getProperties();
     }
 }

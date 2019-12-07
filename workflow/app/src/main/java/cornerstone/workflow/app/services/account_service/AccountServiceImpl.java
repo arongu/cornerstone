@@ -1,7 +1,7 @@
 package cornerstone.workflow.app.services.account_service;
 
 import cornerstone.workflow.app.datasource.AccountDB;
-import cornerstone.workflow.app.rest.endpoints.account.AccountDTO;
+import cornerstone.workflow.app.rest.account.AccountDTO;
 import org.apache.commons.codec.digest.Crypt;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.slf4j.Logger;

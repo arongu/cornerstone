@@ -1,6 +1,6 @@
 package cornerstone.workflow.app.services.account_service;
 
-import cornerstone.workflow.app.rest.endpoints.account.AccountDTO;
+import cornerstone.workflow.app.rest.account.AccountDTO;
 
 import java.util.List;
 

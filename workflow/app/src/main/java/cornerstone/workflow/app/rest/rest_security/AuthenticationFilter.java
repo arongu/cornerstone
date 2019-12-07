@@ -1,4 +1,4 @@
-package cornerstone.workflow.app.rest.security;
+package cornerstone.workflow.app.rest.rest_security;
 
 import javax.annotation.Priority;
 import javax.ws.rs.Priorities;
