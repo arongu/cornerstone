@@ -10,7 +10,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import java.util.Properties;
 
-@Path("/info")
+@Path("/")
 @Singleton
 @Produces(MediaType.APPLICATION_JSON)
 public class Info {

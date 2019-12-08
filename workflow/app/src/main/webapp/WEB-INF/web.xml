@@ -15,6 +15,11 @@
         </init-param>
     </servlet>
 
+    <!-- tomcat7 plugin sets the application's root url path!
+         url-pattern appends what has been set by tomcat-plugin
+         tomcat-plugin + <url-pattern>
+         e.g.:   /aaa + /bbb => /aaa/bbb
+        -->
     <servlet-mapping>
         <servlet-name>workflow</servlet-name>
         <url-pattern>/*</url-pattern>
