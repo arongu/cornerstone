@@ -12,7 +12,7 @@ import javax.ws.rs.ext.Provider;
 @Provider
 public class AccountServiceExceptionMapper implements ExceptionMapper<AccountServiceException> {
     @Override
-    public Response toResponse(AccountServiceException e) {
+    public Response toResponse(final AccountServiceException e) {
         return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                 .entity(e.getMessage())
                 .type(MediaType.APPLICATION_JSON)

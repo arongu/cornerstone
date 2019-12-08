@@ -1,10 +1,9 @@
 package cornerstone.workflow.app.rest.account;
 
+import cornerstone.workflow.app.rest.rest_exceptions.BadRequestException;
 import cornerstone.workflow.app.services.account_service.AccountService;
 import cornerstone.workflow.app.services.account_service.AccountServiceBulkException;
 import cornerstone.workflow.app.services.account_service.AccountServiceException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -20,7 +19,6 @@ import java.util.List;
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 public class AccountRestService {
-    private static final Logger logger = LoggerFactory.getLogger(AccountRestService.class);
     private AccountService accountService;
 
     @Inject
@@ -41,7 +39,7 @@ public class AccountRestService {
     }
 
     @DELETE
-    public Response deleteAccount(final String emailAddress) throws AccountServiceException {
+    public Response deleteAccount(final String emailAddress) throws AccountServiceException, BadRequestException {
         if ( null != emailAddress ) {
             accountService.deleteAccount(emailAddress);
             return Response.status(Response.Status.OK)
@@ -68,7 +66,7 @@ public class AccountRestService {
 
     @DELETE
     @Path("/mass")
-    public Response deleteAccounts(final List<String> emailAddresses) throws AccountServiceBulkException {
+    public Response deleteAccounts(final List<String> emailAddresses) throws AccountServiceBulkException, BadRequestException {
         if ( null != emailAddresses ) {
             accountService.deleteAccounts(emailAddresses);
             return Response.status(Response.Status.OK)

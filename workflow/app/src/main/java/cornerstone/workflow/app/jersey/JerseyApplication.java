@@ -1,9 +1,5 @@
 package cornerstone.workflow.app.jersey;
 
-import cornerstone.workflow.app.rest.account.AccountServiceBulkExceptionMapper;
-import cornerstone.workflow.app.rest.account.AccountServiceExceptionMapper;
-import cornerstone.workflow.app.rest.rest_exceptions.BadRequestExceptionMapper;
-import cornerstone.workflow.app.services.account_service.AccountServiceBulkException;
 import org.glassfish.jersey.server.ResourceConfig;
 
 /*
@@ -17,11 +13,9 @@ import org.glassfish.jersey.server.ResourceConfig;
    https://stackoverflow.com/questions/45625925/what-exactly-is-the-resourceconfig-class-in-jersey-2
 
 */
-public class JerseyConfiguration extends ResourceConfig {
-    public JerseyConfiguration() {
+public class JerseyApplication extends ResourceConfig {
+    public JerseyApplication() {
         register(new JerseyBinder());
-        packages("cornerstone.workflow.app.datasource");
-        packages("cornerstone.workflow.app.services");
-        packages("cornerstone.workflow.app.rest");
+        packages("cornerstone.workflow.app");
     }
 }

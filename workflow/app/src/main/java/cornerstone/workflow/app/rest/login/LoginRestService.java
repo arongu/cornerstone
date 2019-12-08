@@ -46,7 +46,7 @@ public class LoginRestService {
             }
             else {
                 return Response.status(Response.Status.FORBIDDEN)
-                        .entity("FORBIDDEN")
+                        .entity(Response.Status.FORBIDDEN.toString())
                         .build();
             }
         } catch (final Exception e) {

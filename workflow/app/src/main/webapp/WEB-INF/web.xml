@@ -4,22 +4,23 @@
          http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
          version="3.1">
 
-    <display-name>workflow</display-name>
+    <display-name>workflow-rest</display-name>
     <servlet>
         <servlet-name>workflow</servlet-name>
         <servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>
         <init-param>
             <!-- This is your bootstrap class -->
             <param-name>javax.ws.rs.Application</param-name>
-            <param-value>cornerstone.workflow.app.jersey.JerseyConfiguration</param-value>
+            <param-value>cornerstone.workflow.app.jersey.JerseyApplication</param-value>
         </init-param>
+        <load-on-startup>1</load-on-startup>
     </servlet>
 
     <!-- tomcat7 plugin sets the application's root url path!
          url-pattern appends what has been set by tomcat-plugin
          tomcat-plugin + <url-pattern>
          e.g.:   /aaa + /bbb => /aaa/bbb
-        -->
+    -->
     <servlet-mapping>
         <servlet-name>workflow</servlet-name>
         <url-pattern>/*</url-pattern>
