@@ -41,10 +41,7 @@ public class LoginServiceImpl implements LoginService {
                 if (rs.next()) {
                     if ( Objects.equals(rs.getString("account_enabled"), "t")) {
                         final String storedPasswordHash = rs.getString("password_hash");
-                        return Objects.equals(
-                                storedPasswordHash,
-                                Crypt.crypt(password, storedPasswordHash)
-                        );
+                        return Objects.equals(storedPasswordHash, Crypt.crypt(password, storedPasswordHash));
                     }
                 }
             }
@@ -62,9 +59,9 @@ public class LoginServiceImpl implements LoginService {
 
     public void loadKey(final ConfigurationProvider configurationProvider){
         final String base64key = (String) configurationProvider.getProperties().get("api_hmac_key");
-        if ( null !=  base64key){
+        if ( null !=  base64key ) {
             this.key = Keys.hmacShaKeyFor(Base64.getDecoder().decode(base64key));
-        }else {
+        } else {
             logger.error("HMAC key for JWT token generation is set to null, the app will not work correctly!");
         }
     }
