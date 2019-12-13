@@ -15,7 +15,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.Instant;
 import java.util.Base64;
+import java.util.Date;
 import java.util.Objects;
 
 public class LoginServiceImpl implements LoginService {
@@ -54,7 +56,14 @@ public class LoginServiceImpl implements LoginService {
 
     @Override
     public String issueJWT(final String email) {
-        return Jwts.builder().setSubject(email).signWith(key).compact();
+        return Jwts.builder()
+                .setIssuer(this.getClass().getName())
+                .setSubject(email)
+                .claim("scope", "user")
+                .setIssuedAt(Date.from(Instant.ofEpochSecond(Instant.now().getEpochSecond())))
+                .setExpiration(Date.from(Instant.ofEpochSecond(Instant.now().getEpochSecond() + 86400L)))
+                .signWith(key)
+                .compact();
     }
 
     public void loadKey(final ConfigurationProvider configurationProvider){
