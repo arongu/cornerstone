@@ -5,7 +5,7 @@ readonly db_account_schema='accounts_schema'
 readonly db_user='robot'
 
 
-if [ -z ${1} ]; then
+if [ -z "${1}" ]; then
   echo "Argument 1 must be set -- this will be db password!"
   exit 1
 else
