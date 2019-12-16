@@ -23,9 +23,9 @@
                 <configuration>
                     <!-- cornerstone/dbmigrators/userdb/db/migration, this is where the sql files are located-->
                     <locations>filesystem:db/migration</locations>
-                    <url>${flyway.url}</url>
+                    <url>${account_db_url}</url>
                     <schemas>
-                        <schema>userdb</schema>
+                        <schema>accounts_schema</schema>
                     </schemas>
                     <serverId>${postgres.server.id}</serverId>
                     <baselineOnMigrate>true</baselineOnMigrate>

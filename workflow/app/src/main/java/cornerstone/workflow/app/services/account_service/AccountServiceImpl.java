@@ -20,8 +20,8 @@ public class AccountServiceImpl implements AccountService {
     private static final String CREATE_ACCOUNT_ERROR_MESSAGE = "Failed to create account: '%s', message: '%s', SQL state: '%s'";
     private static final String DELETE_ACCOUNT_ERROR_MESSAGE = "Failed to delete account: '%s', message: '%s', SQL state: '%s'";
 
-    private static final String SQL_CREATE_ACCOUNT = "INSERT INTO accounts (password_hash, email_address, account_enabled, email_address_verified) VALUES(?,?,?,?)";
-    private static final String SQL_DELETE_ACCOUNT = "DELETE FROM accounts WHERE email_address=(?)";
+    private static final String SQL_CREATE_ACCOUNT = "INSERT INTO accounts_schema.accounts (password_hash, email_address, account_enabled, email_address_verified) VALUES(?,?,?,?)";
+    private static final String SQL_DELETE_ACCOUNT = "DELETE FROM accounts_schema.accounts WHERE email_address=(?)";
 
     @Inject
     public AccountServiceImpl(final AccountDB AccountDB) {

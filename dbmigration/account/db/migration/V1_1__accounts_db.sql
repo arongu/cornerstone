@@ -2,7 +2,7 @@
 -- Table for accounts
 ----------------------------------------------------------------------------
 CREATE sequence IF NOT EXISTS accounts_account_id_seq;
-CREATE TABLE IF NOT EXISTS public.accounts(
+CREATE TABLE IF NOT EXISTS accounts_schema.accounts(
     account_id integer NOT NULL DEFAULT nextval('accounts_account_id_seq'::regclass),
     account_registration_ts timestamptz NOT NULL DEFAULT NOW(),
     -- account enable / disable
@@ -23,8 +23,8 @@ CREATE TABLE IF NOT EXISTS public.accounts(
 );
 
 -- indices
-CREATE INDEX IF NOT EXISTS index_email_address ON public.accounts(email_address);
-CREATE INDEX IF NOT EXISTS index_account_id ON public.accounts(account_id);
+CREATE INDEX IF NOT EXISTS index_email_address ON accounts_schema.accounts(email_address);
+CREATE INDEX IF NOT EXISTS index_account_id ON accounts_schema.accounts(account_id);
 
 -- trigger for account_enabled
 CREATE OR REPLACE FUNCTION update_account_enabled_ts()
@@ -34,9 +34,9 @@ CREATE OR REPLACE FUNCTION update_account_enabled_ts()
     END
 $$ LANGUAGE plpgsql;
 
-DROP TRIGGER IF EXISTS trigger_account_enabled ON public.accounts;
+DROP TRIGGER IF EXISTS trigger_account_enabled ON accounts_schema.accounts;
 CREATE TRIGGER trigger_account_enabled
-    AFTER UPDATE OF account_enabled ON public.accounts
+    AFTER UPDATE OF account_enabled ON accounts_schema.accounts
     FOR EACH ROW
     EXECUTE PROCEDURE update_account_enabled_ts();
 -- end of account_enabled
@@ -49,9 +49,9 @@ CREATE OR REPLACE FUNCTION update_email_address_ts()
     END
 $$ LANGUAGE plpgsql;
 
-DROP TRIGGER IF EXISTS trigger_email_address ON public.accounts;
+DROP TRIGGER IF EXISTS trigger_email_address ON accounts_schema.accounts;
 CREATE TRIGGER trigger_email_address
-    AFTER UPDATE OF email_address ON public.accounts
+    AFTER UPDATE OF email_address ON accounts_schema.accounts
     FOR EACH ROW
     EXECUTE PROCEDURE update_email_address_ts();
 -- end of email_address
@@ -64,9 +64,9 @@ CREATE OR REPLACE FUNCTION update_password_hash_ts()
     END
 $$ LANGUAGE plpgsql;
 
-DROP TRIGGER IF EXISTS trigger_password_hash ON public.accounts;
+DROP TRIGGER IF EXISTS trigger_password_hash ON accounts_schema.accounts;
 CREATE TRIGGER trigger_password_hash
-    AFTER UPDATE OF password_hash ON public.accounts
+    AFTER UPDATE OF password_hash ON accounts_schema.accounts
     FOR EACH ROW
     EXECUTE PROCEDURE update_password_hash_ts();
 -- end of password_hash_last
@@ -79,9 +79,9 @@ CREATE OR REPLACE FUNCTION update_email_address_verified_ts()
     END
 $$ LANGUAGE plpgsql;
 
-DROP TRIGGER IF EXISTS trigger_email_address_verified ON public.accounts;
+DROP TRIGGER IF EXISTS trigger_email_address_verified ON accounts_schema.accounts;
 CREATE TRIGGER trigger_email_address_verified
-    AFTER UPDATE OF email_address_verified ON public.accounts
+    AFTER UPDATE OF email_address_verified ON accounts_schema.accounts
     FOR EACH ROW
     EXECUTE PROCEDURE update_email_address_verified_ts();
 -- end of email_address_verified
@@ -92,13 +92,13 @@ CREATE TRIGGER trigger_email_address_verified
 -- Table for account features
 ----------------------------------------------------------------------------
 -- table accounts_features
-CREATE TABLE IF NOT EXISTS public.accounts_features(
+CREATE TABLE IF NOT EXISTS accounts_schema.accounts_features(
     account_id integer NOT NULL,
     administrator boolean NOT NULL DEFAULT false,
     administrator_ts timestamptz NOT NULL DEFAULT NOW(),
     -- constraints
     CONSTRAINT fk_account_id FOREIGN KEY (account_id)
-        REFERENCES public.accounts (account_id)
+        REFERENCES accounts_schema.accounts (account_id)
 );
 
 -- trigger for administrator
@@ -109,9 +109,21 @@ CREATE OR REPLACE FUNCTION update_administrator_ts()
     END
 $$ LANGUAGE plpgsql;
 
-DROP TRIGGER IF EXISTS trigger_administrator ON public.accounts;
+DROP TRIGGER IF EXISTS trigger_administrator ON accounts_schema.accounts;
 CREATE TRIGGER trigger_administrator
-    AFTER UPDATE OF administrator ON public.accounts_features
+    AFTER UPDATE OF administrator ON accounts_schema.accounts_features
     FOR EACH ROW
 EXECUTE PROCEDURE update_administrator_ts();
 ----------------------------------------------------------------------------
+
+----------------------------------------------------------------------------
+-- POST CONFIG : grant access to 'robot' after the database structure created
+----------------------------------------------------------------------------
+GRANT USAGE ON SCHEMA accounts_schema TO robot;
+-- sequences, function grants
+-- usage is required to call nextval function
+GRANT USAGE, SELECT ON SEQUENCE accounts_account_id_seq TO robot;
+GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA accounts_schema TO robot;
+-- tables
+GRANT SELECT, INSERT, UPDATE, DELETE ON accounts_schema.accounts TO robot;
+GRANT SELECT, INSERT, UPDATE, DELETE ON accounts_schema.accounts_features TO robot;
