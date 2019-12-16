@@ -2,5 +2,3 @@ target
 .idea
 *.iml
 
-# Ignore all sql file(s)
-*.sql

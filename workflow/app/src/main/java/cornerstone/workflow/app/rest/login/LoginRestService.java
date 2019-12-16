@@ -32,6 +32,7 @@ public class LoginRestService {
         this.loginService = loginService;
     }
 
+    // TODO token message
     @POST
     public Response authenticateUser(final AccountDTO accountDTO) throws BadRequestException {
         if ( null != accountDTO && null != accountDTO.getEmail() && null != accountDTO.getPassword()) {

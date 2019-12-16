@@ -23,7 +23,7 @@
                 <configuration>
                     <!-- cornerstone/dbmigrators/userdb/db/migration, this is where the sql files are located-->
                     <locations>filesystem:db/migration</locations>
-                    <url>${account_db_url}</url>
+                    <url>${db.account.url}</url>
                     <schemas>
                         <schema>accounts_schema</schema>
                     </schemas>

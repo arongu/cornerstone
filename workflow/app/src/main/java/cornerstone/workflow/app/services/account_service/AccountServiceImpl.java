@@ -19,9 +19,15 @@ public class AccountServiceImpl implements AccountService {
 
     private static final String CREATE_ACCOUNT_ERROR_MESSAGE = "Failed to create account: '%s', message: '%s', SQL state: '%s'";
     private static final String DELETE_ACCOUNT_ERROR_MESSAGE = "Failed to delete account: '%s', message: '%s', SQL state: '%s'";
+    private static final String PASSWORD_UPDATE_ERROR_MESSAGE = "Failed to update password for account: '%s', message: '%s', SQL state: '%s'";
+    private static final String EMAIL_ADDRESS_CHANGE_ERROR_MESSAGE = "Failed to change email address of account: '%s' to '%s', message: '%s', SQL state: '%s'";
+    private static final String ACCOUNT_ENABLED_UPDATE_ERROR_MESSAGE = "Failed to change enabled of account: '%s to '%s'', message: '%s', SQL state: '%s'";
 
     private static final String SQL_CREATE_ACCOUNT = "INSERT INTO accounts_schema.accounts (password_hash, email_address, account_enabled, email_address_verified) VALUES(?,?,?,?)";
     private static final String SQL_DELETE_ACCOUNT = "DELETE FROM accounts_schema.accounts WHERE email_address=(?)";
+    private static final String SQL_UPDATE_ACCOUNT_PASSWORD = "UPDATE accounts_schema.accounts SET password=(?) WHERE email_address =(?)";
+    private static final String SQL_UPDATE_ACCOUNT_EMAIL_ADDRESS  = "UPDATE accounts_schema.accounts SET email_address=(?) WHERE email_address =(?)";
+    private static final String SQL_UPDATE_ACCOUNT_ENABLED  = "UPDATE accounts_schema.accounts SET accounts_enabled=(?) WHERE email_address =(?)";
 
     @Inject
     public AccountServiceImpl(final AccountDB AccountDB) {
@@ -103,7 +109,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public void deleteAccounts(List<String> emailAddresses) throws AccountServiceBulkException {
+    public void deleteAccounts(final List<String> emailAddresses) throws AccountServiceBulkException {
         AccountServiceBulkException accountServiceBulkException = null;
 
         try (final Connection conn = dataSource.getConnection()) {
@@ -137,21 +143,51 @@ public class AccountServiceImpl implements AccountService {
         }
     }
 
-//    @Override
-//    public boolean changeAccountPassword(final String email, final String password) {
-//        final String sqlUpdate = "UPDATE accounts SET password=(?) WHERE email=(?);";
-//
-//        try (Connection c = DBpool.getAdminDbConnection()) {
-//            try (PreparedStatement ps = c.prepareStatement(sqlUpdate)){
-//                ps.setString(1, Crypt.crypt(password));
-//                ps.setString(2, email);
-//                return ps.executeUpdate() == 1;
-//            }
-//        }
-//        catch (SQLException e){
-//            logger.error("Failed to update password for account : '{}' due to the following error: '{}'", email, e.getMessage());
-//        }
-//
-//        return false;
-//    }
+    @Override
+    public void setAccountPassword(final String emailAddress, final String password) throws AccountServiceException {
+        try (final Connection conn = dataSource.getConnection()) {
+            try (final PreparedStatement ps = conn.prepareStatement(SQL_UPDATE_ACCOUNT_PASSWORD)){
+                ps.setString(1, Crypt.crypt(password));
+                ps.setString(2, emailAddress);
+                ps.execute();
+            }
+        } catch (final SQLException e){
+            final String msg = String.format(PASSWORD_UPDATE_ERROR_MESSAGE, emailAddress, e.getMessage(), e.getSQLState());
+            logger.error(msg);
+
+            throw new AccountServiceException(msg);
+        }
+    }
+
+    @Override
+    public void setAccountEmailAddress(final String emailAddress, final String newEmailAddress) throws AccountServiceException {
+        try (final Connection conn = dataSource.getConnection()) {
+            try (final PreparedStatement ps = conn.prepareStatement(SQL_UPDATE_ACCOUNT_EMAIL_ADDRESS)) {
+                ps.setString(1, emailAddress);
+                ps.setString(2, newEmailAddress);
+                ps.executeUpdate();
+            }
+        } catch (final SQLException e) {
+            final String msg = String.format(EMAIL_ADDRESS_CHANGE_ERROR_MESSAGE, emailAddress, newEmailAddress, e.getMessage(), e.getSQLState());
+            logger.error(msg);
+
+            throw new AccountServiceException(e.getMessage());
+        }
+    }
+
+    @Override
+    public void setAccountEnabled(final String emailAddress, final boolean enabled) throws AccountServiceException {
+        try (final Connection conn = dataSource.getConnection()) {
+            try (final PreparedStatement ps = conn.prepareStatement(SQL_UPDATE_ACCOUNT_ENABLED)) {
+                ps.setString(1, emailAddress);
+                ps.setBoolean(2, enabled);
+                ps.executeUpdate();
+            }
+        } catch (final SQLException e) {
+            final String msg = String.format(ACCOUNT_ENABLED_UPDATE_ERROR_MESSAGE, emailAddress, enabled, e.getMessage(), e.getSQLState());
+            logger.error(msg);
+
+            throw new AccountServiceException(e.getMessage());
+        }
+    }
 }

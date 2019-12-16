@@ -34,10 +34,10 @@ public class LoginServiceImpl implements LoginService {
     }
 
     @Override
-    public boolean authenticate(final String email, final String password) {
+    public boolean authenticate(final String emailAddress, final String password) {
         try (final Connection conn = dataSource.getConnection()) {
             try (final PreparedStatement ps = conn.prepareStatement(SQL_GET_ACCOUNT_ENABLED_AND_PASSWORD)) {
-                ps.setString(1, email.toLowerCase());
+                ps.setString(1, emailAddress.toLowerCase());
 
                 final ResultSet rs = ps.executeQuery();
                 if (rs.next()) {
@@ -48,17 +48,17 @@ public class LoginServiceImpl implements LoginService {
                 }
             }
         } catch (final SQLException e) {
-            logger.error("Failed to query password for account: '{}' due to the following error: '{}'", email, e.getMessage());
+            logger.error("Failed to query password for account: '{}' due to the following error: '{}'", emailAddress, e.getMessage());
         }
 
         return false;
     }
 
     @Override
-    public String issueJWT(final String email) {
+    public String issueJWT(final String emailAddress) {
         return Jwts.builder()
                 .setIssuer(this.getClass().getName())
-                .setSubject(email)
+                .setSubject(emailAddress)
                 .claim("scope", "user")
                 .setIssuedAt(Date.from(Instant.ofEpochSecond(Instant.now().getEpochSecond())))
                 .setExpiration(Date.from(Instant.ofEpochSecond(Instant.now().getEpochSecond() + 86400L)))
