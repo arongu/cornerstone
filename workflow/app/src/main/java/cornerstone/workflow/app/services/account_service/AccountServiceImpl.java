@@ -25,7 +25,7 @@ public class AccountServiceImpl implements AccountService {
 
     private static final String SQL_CREATE_ACCOUNT = "INSERT INTO accounts_schema.accounts (password_hash, email_address, account_enabled, email_address_verified) VALUES(?,?,?,?)";
     private static final String SQL_DELETE_ACCOUNT = "DELETE FROM accounts_schema.accounts WHERE email_address=(?)";
-    private static final String SQL_UPDATE_ACCOUNT_PASSWORD = "UPDATE accounts_schema.accounts SET password=(?) WHERE email_address =(?)";
+    private static final String SQL_UPDATE_ACCOUNT_PASSWORD = "UPDATE accounts_schema.accounts SET password_hash=(?) WHERE email_address =(?)";
     private static final String SQL_UPDATE_ACCOUNT_EMAIL_ADDRESS  = "UPDATE accounts_schema.accounts SET email_address=(?) WHERE email_address =(?)";
     private static final String SQL_UPDATE_ACCOUNT_ENABLED  = "UPDATE accounts_schema.accounts SET accounts_enabled=(?) WHERE email_address =(?)";
 

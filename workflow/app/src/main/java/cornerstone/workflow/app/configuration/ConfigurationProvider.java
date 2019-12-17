@@ -11,11 +11,11 @@ import java.util.Properties;
 public class ConfigurationProvider {
     private static final Logger logger = LoggerFactory.getLogger(ConfigurationProvider.class);
     // Properties to look for
-    static final String SYSTEM_PROPERTY_KEY_FILE = "keyFile";
-    static final String SYSTEM_PROPERTY_CONF_FILE = "confFile";
+    public static final String SYSTEM_PROPERTY_KEY_FILE = "keyFile";
+    public static final String SYSTEM_PROPERTY_CONF_FILE = "confFile";
     // Default paths
-    static final String PATH_DEFAULT_KEY_FILE = "/var/opt/cornerstone/key.conf";
-    static final String PATH_DEFAULT_CONF_FILE = "/var/opt/cornerstone/app.conf";
+    public static final String PATH_DEFAULT_KEY_FILE = "/var/opt/cornerstone/key.conf";
+    public static final String PATH_DEFAULT_CONF_FILE = "/var/opt/cornerstone/app.conf";
     // Logging
     private static final String LOG_MESSAGE_PROPERTY_SET = "[ System.getProperty ][ '{}' ] = '{}'";
     private static final String LOG_MESSAGE_PROPERTY_NOT_SET = "[ System.getProperty ][ '{}' ] is not set, using default value : '{}'";

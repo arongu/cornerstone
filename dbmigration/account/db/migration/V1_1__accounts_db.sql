@@ -60,7 +60,8 @@ CREATE TRIGGER trigger_email_address
 CREATE OR REPLACE FUNCTION update_password_hash_ts()
     RETURNS TRIGGER AS $$
     BEGIN
-        RETURN NEW.password_hash_ts = NOW();
+        NEW.password_hash_ts := NOW();
+        RETURN NEW;
     END
 $$ LANGUAGE plpgsql;
 
@@ -75,7 +76,8 @@ CREATE TRIGGER trigger_password_hash
 CREATE OR REPLACE FUNCTION update_email_address_verified_ts()
     RETURNS TRIGGER AS $$
     BEGIN
-        RETURN NEW.email_address_verified_ts = NOW();
+        NEW.email_address_verified_ts = NOW();
+        RETURN NEW;
     END
 $$ LANGUAGE plpgsql;
 
