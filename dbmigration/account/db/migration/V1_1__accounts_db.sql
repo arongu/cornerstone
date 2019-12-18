@@ -125,3 +125,12 @@ GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA accounts_schema TO robot;
 -- tables
 GRANT SELECT, INSERT, UPDATE, DELETE, TRIGGER ON accounts_schema.accounts TO robot;
 GRANT SELECT, INSERT, UPDATE, DELETE, TRIGGER ON accounts_schema.accounts_features TO robot;
+
+-- TODO create trigger when new account is created history table should be generated
+-- TODO account enabled reason
+-- TODO password reset email
+-- TODO email chang email with password confirmation
+-- TODO no admin users!!!! that is not a feature
+-- TODO tokens with settable rights as many as they want
+-- TODO the root user password comes from the config !!!!
+
