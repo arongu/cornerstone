@@ -1,6 +1,6 @@
 package cornerstone.workflow.app.configuration;
 
-public enum DBConfigurationField {
+public enum ConfigurationField {
     DB_DATA_DRIVER("db_data_driver"),
     DB_DATA_URL("db_data_url"),
     DB_DATA_USER("db_data_username"),
@@ -15,11 +15,14 @@ public enum DBConfigurationField {
     DB_ACCOUNT_PASSWORD("db_account_password"),
     DB_ACCOUNT_MIN_IDLE("db_account_min_idle"),
     DB_ACCOUNT_MAX_IDLE("db_account_max_idle"),
-    DB_ACCOUNT_MAX_OPEN("db_account_max_open");
+    DB_ACCOUNT_MAX_OPEN("db_account_max_open"),
+
+    APP_ADMIN_USER("app_admin_user"),
+    APP_HMAC_KEY("app_hmac_key");
 
     private String key;
 
-    DBConfigurationField(final String key) {
+    ConfigurationField(final String key) {
         this.key = key;
     }
 
@@ -29,4 +32,5 @@ public enum DBConfigurationField {
 
     public static final String mainPrefix = "db_data";
     public static final String userPrefix = "db_account";
+    public static final String appPrefix = "app_";
 }

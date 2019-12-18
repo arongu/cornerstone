@@ -8,6 +8,7 @@ CREATE TABLE IF NOT EXISTS accounts_schema.accounts(
     -- account enable / disable
     account_enabled boolean NOT NULL,
     account_enabled_ts timestamptz NOT NULL DEFAULT NOW(),
+    account_disable_reason character varying(128),
     -- email address
     email_address character varying(250) COLLATE pg_catalog."default" NOT NULL,
     email_address_ts timestamptz NOT NULL DEFAULT NOW(),
@@ -91,26 +92,10 @@ CREATE TRIGGER trigger_email_address_verified
 -- table accounts_features
 CREATE TABLE IF NOT EXISTS accounts_schema.accounts_features(
     account_id integer NOT NULL,
-    administrator boolean NOT NULL DEFAULT false,
-    administrator_ts timestamptz NOT NULL DEFAULT NOW(),
     -- constraints
     CONSTRAINT fk_account_id FOREIGN KEY (account_id)
         REFERENCES accounts_schema.accounts (account_id)
 );
-
--- function && trigger for administrator update
-CREATE OR REPLACE FUNCTION update_administrator_ts() RETURNS TRIGGER AS $$
-    BEGIN
-        NEW.administrator_ts = NOW();
-        RETURN NEW;
-    END
-$$ LANGUAGE plpgsql;
-
-DROP TRIGGER IF EXISTS trigger_administrator ON accounts_schema.accounts;
-CREATE TRIGGER trigger_administrator
-    BEFORE UPDATE OF administrator ON accounts_schema.accounts_features
-    FOR EACH ROW
-    EXECUTE PROCEDURE update_administrator_ts();
 ----------------------------------------------------------------------------
 
 
@@ -125,12 +110,4 @@ GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA accounts_schema TO robot;
 -- tables
 GRANT SELECT, INSERT, UPDATE, DELETE, TRIGGER ON accounts_schema.accounts TO robot;
 GRANT SELECT, INSERT, UPDATE, DELETE, TRIGGER ON accounts_schema.accounts_features TO robot;
-
--- TODO create trigger when new account is created history table should be generated
--- TODO account enabled reason
--- TODO password reset email
--- TODO email chang email with password confirmation
--- TODO no admin users!!!! that is not a feature
--- TODO tokens with settable rights as many as they want
--- TODO the root user password comes from the config !!!!
 

@@ -67,7 +67,7 @@ public class LoginServiceImpl implements LoginService {
     }
 
     public void loadKey(final ConfigurationProvider configurationProvider){
-        final String base64key = (String) configurationProvider.getProperties().get("api_hmac_key");
+        final String base64key = (String) configurationProvider.getRaw_properties().get("api_hmac_key");
         if ( null !=  base64key ) {
             this.key = Keys.hmacShaKeyFor(Base64.getDecoder().decode(base64key));
         } else {
