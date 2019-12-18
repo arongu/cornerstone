@@ -15,12 +15,14 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.Instant;
 import java.util.Base64;
+import java.util.Date;
 import java.util.Objects;
 
 public class LoginServiceImpl implements LoginService {
     private static final Logger logger = LoggerFactory.getLogger(LoginServiceImpl.class);
-    private static final String SQL_GET_ACCOUNT_ENABLED_AND_PASSWORD = "SELECT account_enabled, password_hash FROM accounts WHERE email_address=(?)";
+    private static final String SQL_GET_ACCOUNT_ENABLED_AND_PASSWORD = "SELECT account_enabled, password_hash FROM accounts_schema.accounts WHERE email_address=(?)";
 
     private BasicDataSource dataSource;
     private Key key;
@@ -32,39 +34,43 @@ public class LoginServiceImpl implements LoginService {
     }
 
     @Override
-    public boolean authenticate(final String email, final String password) {
+    public boolean authenticate(final String emailAddress, final String password) {
         try (final Connection conn = dataSource.getConnection()) {
             try (final PreparedStatement ps = conn.prepareStatement(SQL_GET_ACCOUNT_ENABLED_AND_PASSWORD)) {
-                ps.setString(1, email.toLowerCase());
+                ps.setString(1, emailAddress.toLowerCase());
 
                 final ResultSet rs = ps.executeQuery();
                 if (rs.next()) {
                     if ( Objects.equals(rs.getString("account_enabled"), "t")) {
                         final String storedPasswordHash = rs.getString("password_hash");
-                        return Objects.equals(
-                                storedPasswordHash,
-                                Crypt.crypt(password, storedPasswordHash)
-                        );
+                        return Objects.equals(storedPasswordHash, Crypt.crypt(password, storedPasswordHash));
                     }
                 }
             }
         } catch (final SQLException e) {
-            logger.error("Failed to query password for account: '{}' due to the following error: '{}'", email, e.getMessage());
+            logger.error("Failed to query password for account: '{}' due to the following error: '{}'", emailAddress, e.getMessage());
         }
 
         return false;
     }
 
     @Override
-    public String issueJWT(final String email) {
-        return Jwts.builder().setSubject(email).signWith(key).compact();
+    public String issueJWT(final String emailAddress) {
+        return Jwts.builder()
+                .setIssuer(this.getClass().getName())
+                .setSubject(emailAddress)
+                .claim("scope", "user")
+                .setIssuedAt(Date.from(Instant.ofEpochSecond(Instant.now().getEpochSecond())))
+                .setExpiration(Date.from(Instant.ofEpochSecond(Instant.now().getEpochSecond() + 86400L)))
+                .signWith(key)
+                .compact();
     }
 
     public void loadKey(final ConfigurationProvider configurationProvider){
         final String base64key = (String) configurationProvider.getProperties().get("api_hmac_key");
-        if ( null !=  base64key){
+        if ( null !=  base64key ) {
             this.key = Keys.hmacShaKeyFor(Base64.getDecoder().decode(base64key));
-        }else {
+        } else {
             logger.error("HMAC key for JWT token generation is set to null, the app will not work correctly!");
         }
     }

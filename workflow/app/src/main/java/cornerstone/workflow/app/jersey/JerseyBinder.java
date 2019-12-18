@@ -18,6 +18,7 @@ public class JerseyBinder extends AbstractBinder {
         try {
             // Bootstrapping binder, config provider
             final ConfigurationProvider configurationProvider = new ConfigurationProvider();
+            configurationProvider.loadConfig();
             bind(configurationProvider).to(ConfigurationProvider.class).in(Singleton.class);
 
             // DB Pool bindings

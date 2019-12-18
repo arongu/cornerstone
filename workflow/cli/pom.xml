@@ -9,7 +9,7 @@
         <version>1.0</version>
     </parent>
 
-    <artifactId>cliconfig</artifactId>
+    <artifactId>cli</artifactId>
     <name>cli (Workflow)</name>
     <description>Tool to create encrypted configuration for the API</description>
     <packaging>jar</packaging>

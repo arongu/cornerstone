@@ -1,4 +1,4 @@
-package cornerstone.workflow.app.rest.endpoints.account;
+package cornerstone.workflow.app.rest.account;
 
 public class AccountDTO {
     private String email, password;

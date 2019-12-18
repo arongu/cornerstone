@@ -9,7 +9,7 @@
         <version>1.0</version>
     </parent>
 
-    <artifactId>dbmigrator</artifactId>
+    <artifactId>db_migration</artifactId>
     <groupId>cornerstone.db</groupId>
     <name>db_migration</name>
     <description>The parent project of all db migrators. To run sql scripts with maven, to easily update database structure changes.</description>

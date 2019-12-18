@@ -97,6 +97,11 @@
                     <url>${tomcat.manager.url}</url>
                     <server>${tomcat.server.id}</server>
                     <path>${tomcat.path}</path>
+                    <!-- configuration files for config loader, only works with mvn tomcat7:run -->
+                    <systemProperties>
+                        <keyFile>${app.conf.key}</keyFile>
+                        <confFile>${app.conf.main}</confFile>
+                    </systemProperties>
                 </configuration>
             </plugin>
         </plugins>
