@@ -18,7 +18,7 @@ public class ConfigurationParser {
 
     private void addWithLog(final Properties properties, final String key, final String value, final String messagePrefix) {
         properties.setProperty(key, value);
-        if ( ! key.contains("password")) {
+        if ( ! (key.contains("password") || key.contains("key"))) {
             logger.info("[ {} ] <-- '{}' = '{}'", messagePrefix, key, value);
         } else {
             logger.info("[ {} ] <-- '{}' = *****", messagePrefix, key);
@@ -44,7 +44,7 @@ public class ConfigurationParser {
                         addWithLog(this.db_account_properties, key, value, ConfigurationField.userPrefix);
                     }
                     else if ( key.startsWith(ConfigurationField.appPrefix)) {
-                        addWithLog(this.app_properties, key, value, ConfigurationField.appPrefix);
+                        addWithLog(this.app_properties, key, value, "app");
                     }
                 }
                 else {
