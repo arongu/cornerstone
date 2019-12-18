@@ -37,14 +37,14 @@ public class AccountServiceImplTest {
         final AccountDB accountDB = new AccountDB(configurationProvider);
         final AccountService accountService = new AccountServiceImpl(accountDB);
 
-        accountService.deleteAccount("asd");
-        accountService.createAccount("asd", "sad");
-        accountService.setAccountPassword("asd", "xxx");
+//        accountService.deleteAccount("asd");
+        //accountService.createAccount("asd", "sad");
+        accountService.setAccountPassword("asd", "almafa");
     }
 
-    @Test
-    public void testa(){
-
-    }
+//    @Test
+//    public void testa(){
+//
+//    }
 
 }
