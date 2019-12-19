@@ -102,12 +102,20 @@ CREATE TABLE IF NOT EXISTS accounts_schema.accounts_features(
 ----------------------------------------------------------------------------
 -- POST CONFIG : grant access to 'robot' after the database structure created
 ----------------------------------------------------------------------------
+
+-- ACCOUNTS_SCHEMA -----------------------------------------------------------------------------
 GRANT USAGE ON SCHEMA accounts_schema TO robot;
--- sequences, function grants
--- usage is required to call nextval function
-GRANT USAGE, SELECT ON SEQUENCE accounts_account_id_seq TO robot;
+-- sequences, function grants (usage is required to call nextval function)
+GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA accounts_schema TO robot;
 GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA accounts_schema TO robot;
--- tables
-GRANT SELECT, INSERT, UPDATE, DELETE, TRIGGER ON accounts_schema.accounts TO robot;
-GRANT SELECT, INSERT, UPDATE, DELETE, TRIGGER ON accounts_schema.accounts_features TO robot;
+-- Grant SELECT, INSERT, UPDATE, DELETE, TRIGGER on all tables in accounts_schema
+GRANT SELECT, INSERT, UPDATE, DELETE, TRIGGER ON ALL TABLES IN SCHEMA accounts_schema TO robot;
+-- END OF ACCOUNTS_SCHEMA ----------------------------------------------------------------------
+
+-- ACCOUNTS_HISTORY_SCHEMA ---------------------------------------------------------------------
+GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA accounts_history_schema TO robot;
+GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA accounts_history_schema TO robot;
+GRANT SELECT, INSERT, UPDATE, DELETE, TRUNCATE, REFERENCES, TRIGGER ON ALL TABLES IN SCHEMA accounts_history_schema TO robot;
+GRANT CREATE ON SCHEMA accounts_schema_history TO robot;
+
 
