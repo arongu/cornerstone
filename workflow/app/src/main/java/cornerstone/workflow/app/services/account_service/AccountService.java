@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface AccountService {
     // Create account
-    void createAccount(final String emailAddress, final String password) throws AccountServiceException;
+    void createAccount(final String emailAddress, final String password, final boolean available) throws AccountServiceException;
     void createAccounts(final List<AccountDTO> accountDTOS) throws AccountServiceBulkException;
 
     // Delete account

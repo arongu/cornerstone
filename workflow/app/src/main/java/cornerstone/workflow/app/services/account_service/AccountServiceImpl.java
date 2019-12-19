@@ -23,12 +23,12 @@ public class AccountServiceImpl implements AccountService {
     private static final String EMAIL_ADDRESS_CHANGE_ERROR_MESSAGE = "Failed to change email address of account: '%s' to '%s', message: '%s', SQL state: '%s'";
     private static final String ACCOUNT_ENABLED_UPDATE_ERROR_MESSAGE = "Failed to change enabled of account: '%s to '%s'', message: '%s', SQL state: '%s'";
 
-    private static final String SQL_CREATE_ACCOUNT = "INSERT INTO accounts_schema.accounts (password_hash, email_address, account_enabled, email_address_verified) VALUES(?,?,?,?)";
-    private static final String SQL_DELETE_ACCOUNT = "DELETE FROM accounts_schema.accounts WHERE email_address=(?)";
-    private static final String SQL_UPDATE_ACCOUNT_PASSWORD = "UPDATE accounts_schema.accounts SET password_hash=(?) WHERE email_address=(?)";
-    private static final String SQL_UPDATE_ACCOUNT_EMAIL_ADDRESS  = "UPDATE accounts_schema.accounts SET email_address=(?) WHERE email_address=(?)";
-    private static final String SQL_UPDATE_ACCOUNT_ENABLE = "UPDATE accounts_schema.accounts SET accounts_enabled=true, account_disable_reason=null WHERE email_address=(?)";
-    private static final String SQL_UPDATE_ACCOUNT_DISABLE = "UPDATE accounts_schema.accounts SET accounts_enabled=false, account_disable_reason=(?) WHERE email_address=(?)";
+    private static final String SQL_CREATE_ACCOUNT                = "INSERT INTO info.accounts (password_hash, email_address, account_available, email_address_verified) VALUES(?,?,?,?)";
+    private static final String SQL_DELETE_ACCOUNT                = "DELETE FROM info.accounts WHERE email_address=(?)";
+    private static final String SQL_UPDATE_ACCOUNT_PASSWORD       = "UPDATE info.accounts SET password_hash=(?) WHERE email_address=(?)";
+    private static final String SQL_UPDATE_ACCOUNT_EMAIL_ADDRESS  = "UPDATE info.accounts SET email_address=(?) WHERE email_address=(?)";
+    private static final String SQL_UPDATE_ACCOUNT_ENABLE         = "UPDATE info.accounts SET account_available=true, account_disable_reason=null WHERE email_address=(?)";
+    private static final String SQL_UPDATE_ACCOUNT_DISABLE        = "UPDATE info.accounts SET account_available=false, account_disable_reason=(?) WHERE email_address=(?)";
 
     @Inject
     public AccountServiceImpl(final AccountDB AccountDB) {
@@ -36,12 +36,12 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public void createAccount(final String emailAddress, final String password) throws AccountServiceException {
+    public void createAccount(final String emailAddress, final String password, final boolean available) throws AccountServiceException {
         try (final Connection conn = dataSource.getConnection()) {
             try (final PreparedStatement ps = conn.prepareStatement(SQL_CREATE_ACCOUNT)) {
                 ps.setString(1, Crypt.crypt(password));
                 ps.setString(2, emailAddress.toLowerCase());
-                ps.setBoolean(3, true);
+                ps.setBoolean(3, available);
                 ps.setBoolean(4, false);
                 ps.executeUpdate();
             }

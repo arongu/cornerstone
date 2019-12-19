@@ -23,7 +23,7 @@ import java.util.Objects;
 
 public class LoginServiceImpl implements LoginService {
     private static final Logger logger = LoggerFactory.getLogger(LoginServiceImpl.class);
-    private static final String SQL_GET_ACCOUNT_ENABLED_AND_PASSWORD = "SELECT account_enabled, password_hash FROM accounts_schema.accounts WHERE email_address=(?)";
+    private static final String SQL_GET_ACCOUNT_ENABLED_AND_PASSWORD = "SELECT account_available, password_hash FROM info.accounts WHERE email_address=(?)";
 
     private BasicDataSource dataSource;
     private Key key;
@@ -51,7 +51,7 @@ public class LoginServiceImpl implements LoginService {
 
                 final ResultSet rs = ps.executeQuery();
                 if (rs.next()) {
-                    if ( Objects.equals(rs.getString("account_enabled"), "t")) {
+                    if ( Objects.equals(rs.getBoolean("account_available"), true)) {
                         final String storedPasswordHash = rs.getString("password_hash");
                         return Objects.equals(storedPasswordHash, Crypt.crypt(password, storedPasswordHash));
                     }
