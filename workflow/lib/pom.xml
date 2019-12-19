@@ -12,7 +12,7 @@
 
     <artifactId>lib</artifactId>
     <version>1.0</version>
-    <name>lib (Workflow)</name>
+    <name>lib (workflow)</name>
     <packaging>jar</packaging>
     <description>Supplementary classes for the business logic, which could work independently.</description>
 

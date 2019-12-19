@@ -12,7 +12,7 @@
 
     <artifactId>app</artifactId>
     <version>1.0</version>
-    <name>app (Workflow)</name>
+    <name>app (workflow)</name>
     <packaging>war</packaging>
 
     <dependencies>
