@@ -10,62 +10,79 @@ public class ConfigurationParser {
     private static final String errorMessage = "'{}' is not set";
     private static final String ignoreMessage = "'{}' is ignored";
 
-    private Properties db_main_properties, db_account_properties, app_properties;
+    private Properties db_account_properties;
+    private Properties db_data_properties;
+    private Properties app_properties;
 
     public ConfigurationParser(final Properties properties) {
        processProperties(properties);
     }
 
     private void addWithLog(final Properties properties, final String key, final String value, final String messagePrefix) {
-        properties.setProperty(key, value);
-        if ( ! (key.contains("password") || key.contains("key"))) {
-            logger.info("[ {} ] <-- '{}' = '{}'", messagePrefix, key, value);
+        if ( null != value && ! value.isEmpty() ) {
+            properties.setProperty(key, value);
+
+            if ( ! (key.contains("password") || key.contains("key"))) {
+                logger.info("[ {} ] <-- '{}' = '{}'", messagePrefix, key, value);
+            } else {
+                logger.info("[ {} ] <-- '{}' = *****", messagePrefix, key);
+            }
+
         } else {
-            logger.info("[ {} ] <-- '{}' = *****", messagePrefix, key);
+            logger.error(errorMessage, key);
         }
     }
 
     public void processProperties(final Properties properties) {
-        this.app_properties = new Properties();
-        this.db_main_properties = new Properties();
-        this.db_account_properties = new Properties();
+        app_properties = new Properties();
+        db_account_properties = new Properties();
+        db_data_properties = new Properties();
 
-        for ( ConfigurationField field : ConfigurationField.values()) {
+        for (ConfigurationField field : ConfigurationField.values()) {
             final String key = field.getKey();
 
-            if ( key.startsWith(ConfigurationField.mainPrefix) || key.startsWith(ConfigurationField.userPrefix) || key.startsWith(ConfigurationField.appPrefix)) {
-                final String value = properties.getProperty(key);
+            if ( ConfigurationField.DB_ACCOUNT_DRIVER == field ||
+                    ConfigurationField.DB_ACCOUNT_URL == field ||
+                    ConfigurationField.DB_ACCOUNT_USER == field ||
+                    ConfigurationField.DB_ACCOUNT_PASSWORD == field ||
+                    ConfigurationField.DB_ACCOUNT_MIN_IDLE == field ||
+                    ConfigurationField.DB_ACCOUNT_MAX_IDLE == field ||
+                    ConfigurationField.DB_ACCOUNT_MAX_OPEN == field) {
 
-                if ( null != value && ! value.isEmpty()) {
-                    if ( key.startsWith(ConfigurationField.mainPrefix)) {
-                        addWithLog(this.db_main_properties, key, value, ConfigurationField.mainPrefix);
-                    }
-                    else if ( key.startsWith(ConfigurationField.userPrefix)) {
-                        addWithLog(this.db_account_properties, key, value, ConfigurationField.userPrefix);
-                    }
-                    else if ( key.startsWith(ConfigurationField.appPrefix)) {
-                        addWithLog(this.app_properties, key, value, "app");
-                    }
-                }
-                else {
-                    logger.error(errorMessage, key);
-                }
-            }
-            else {
+                final String value = properties.getProperty(key);
+                addWithLog(db_account_properties, key, value, ConfigurationField.account_db_prefix);
+
+            } else if (ConfigurationField.DB_DATA_DRIVER == field ||
+                    ConfigurationField.DB_DATA_URL == field ||
+                    ConfigurationField.DB_DATA_USER == field ||
+                    ConfigurationField.DB_DATA_PASSWORD == field ||
+                    ConfigurationField.DB_DATA_MIN_IDLE == field ||
+                    ConfigurationField.DB_DATA_MAX_IDLE == field ||
+                    ConfigurationField.DB_DATA_MAX_OPEN == field){
+
+                final String value = properties.getProperty(key);
+                addWithLog(db_data_properties, key, value, ConfigurationField.db_main_prefix);
+
+            } else if (ConfigurationField.APP_ADMIN_USER == field || ConfigurationField.APP_HMAC_KEY == field) {
+
+                final String value = properties.getProperty(key);
+                addWithLog(app_properties, key, value, "app");
+
+            } else {
                 logger.info(ignoreMessage, key);
             }
         }
     }
 
     public Properties get_app_properties() {
-        return new Properties(app_properties);
+        return app_properties;
     }
 
-    public Properties get_db_main_properties() {
-        return new Properties(db_main_properties);
+    public Properties get_db_data_properties() {
+        return db_data_properties;
     }
 
     public Properties get_db_account_properties() {
-        return new Properties(db_account_properties);
+        return db_account_properties;
     }
 }

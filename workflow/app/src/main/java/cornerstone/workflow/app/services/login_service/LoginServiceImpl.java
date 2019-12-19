@@ -20,7 +20,6 @@ import java.time.Instant;
 import java.util.Base64;
 import java.util.Date;
 import java.util.Objects;
-import java.util.Properties;
 
 public class LoginServiceImpl implements LoginService {
     private static final Logger logger = LoggerFactory.getLogger(LoginServiceImpl.class);
@@ -29,12 +28,10 @@ public class LoginServiceImpl implements LoginService {
     private BasicDataSource dataSource;
     private Key key;
 
-    public void loadKey(final ConfigurationProvider cp){
-        final Properties props = cp.get_app_properties();
-        final String base64key = (String) props.get(ConfigurationField.APP_HMAC_KEY);
-
+    public void loadKey(final ConfigurationProvider configurationProvider){
+        final String base64key = (String) configurationProvider.get_app_properties().get(ConfigurationField.APP_HMAC_KEY.getKey());
         if ( null != base64key ) {
-            this.key = Keys.hmacShaKeyFor(Base64.getDecoder().decode(base64key));
+            key = Keys.hmacShaKeyFor(Base64.getDecoder().decode(base64key));
         } else {
             logger.error("HMAC key for JWT token generation is set to null, the app will not work correctly!");
         }

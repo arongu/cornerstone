@@ -56,7 +56,7 @@ public class ConfigurationProvider {
         final ConfigurationParser cp = new ConfigurationParser(raw_properties);
         app_properties = cp.get_app_properties();
         db_account_properties = cp.get_db_account_properties();
-        db_main_properties = cp.get_db_main_properties();
+        db_main_properties = cp.get_db_data_properties();
     }
 
     public String getKeyFile() {

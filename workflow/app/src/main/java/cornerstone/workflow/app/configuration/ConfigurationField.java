@@ -30,7 +30,7 @@ public enum ConfigurationField {
         return key;
     }
 
-    public static final String mainPrefix = "db_data";
-    public static final String userPrefix = "db_account";
+    public static final String db_main_prefix = "db_data";
+    public static final String account_db_prefix = "db_account";
     public static final String appPrefix = "app_";
 }

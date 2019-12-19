@@ -133,7 +133,7 @@ public class AccountServiceImpl implements AccountService {
         } catch (final SQLException e) {
             logger.error(e.getMessage());
 
-            if ( null == accountServiceBulkException ){
+            if ( null == accountServiceBulkException ) {
                 accountServiceBulkException = new AccountServiceBulkException();
             }
             accountServiceBulkException.addException(new AccountServiceException(e.getMessage()));
