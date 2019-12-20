@@ -15,7 +15,8 @@ readonly prod_db_name='accounts'
 readonly prod_db_user='robot'
 # test settings ------------------------------------------------------------------------
 readonly test_db_name='test_accounts'
-readonly test_db_user='tester'
+readonly test_db_user='test'
+readonly test_db_password='test'
 # ------------------------------------------------------------------------------------------
 
 function setup_prod() {
@@ -23,7 +24,7 @@ function setup_prod() {
   shift
 
   if [ -z "${password}" ]; then
-      echo "Argument 2 must be set! It will be used as ${db_accounts_user}'s password!"
+      echo "Argument 2 must be set! It will be used as '${prod_db_user}'s password!"
       exit 2
   else
     db_password="${password}"
@@ -31,11 +32,12 @@ function setup_prod() {
 
   db_name="${prod_db_name}"
   db_user="${prod_db_user}"
+  db_password="${test_db_password}"
 }
 
 function setup_test() {
   db_name="${test_db_name}"
-  db_password="tester"
+  db_password="test"
   db_user="${test_db_user}"
 }
 
@@ -58,9 +60,29 @@ esac
 
 # Generate sql
 cat <<EOT> "${db_name}.sql"
+-- STEP 1 :: terminate all connection to TEST DATABASE !!!
+SELECT pg_terminate_backend(pg_stat_activity.pid)
+FROM pg_stat_activity
+WHERE datname='${test_db_name}';
+--
+-- STEP 2 :: drop TEST DATABASE if exists !!!
+DROP DATABASE IF EXISTS ${test_db_name};
+--
+--
+-- STEP 3 :: create database and its schemas
 CREATE DATABASE ${db_name};
 \connect ${db_name};
 CREATE SCHEMA "${schema_info}";
 CREATE SCHEMA "${schema_history}";
-CREATE USER ${db_user} WITH ENCRYPTED PASSWORD '${db_password}';
+--
+--
+-- STEP 4 :: drop schema public
+DROP SCHEMA public;
+--
+--
+-- STEP 5 :: drop and create db_user
+DROP ROLE ${db_user};
+CREATE ROLE ${db_user} WITH ENCRYPTED PASSWORD '${db_password}';
+--
+--
 EOT
