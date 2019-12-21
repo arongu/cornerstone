@@ -11,7 +11,7 @@
     </parent>
 
     <artifactId>data</artifactId>
-    <name>data (Database Migration)</name>
+    <name>data (db_migration)</name>
     <packaging>pom</packaging>
 
 </project>

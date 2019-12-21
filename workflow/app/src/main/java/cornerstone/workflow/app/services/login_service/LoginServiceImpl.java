@@ -1,5 +1,6 @@
 package cornerstone.workflow.app.services.login_service;
 
+import cornerstone.workflow.app.configuration.ConfigurationField;
 import cornerstone.workflow.app.configuration.ConfigurationProvider;
 import cornerstone.workflow.app.datasource.AccountDB;
 import io.jsonwebtoken.Jwts;
@@ -22,10 +23,19 @@ import java.util.Objects;
 
 public class LoginServiceImpl implements LoginService {
     private static final Logger logger = LoggerFactory.getLogger(LoginServiceImpl.class);
-    private static final String SQL_GET_ACCOUNT_ENABLED_AND_PASSWORD = "SELECT account_enabled, password_hash FROM accounts_schema.accounts WHERE email_address=(?)";
+    private static final String SQL_GET_ACCOUNT_ENABLED_AND_PASSWORD = "SELECT account_available, password_hash FROM info.accounts WHERE email_address=(?)";
 
     private BasicDataSource dataSource;
     private Key key;
+
+    public void loadKey(final ConfigurationProvider configurationProvider){
+        final String base64key = (String) configurationProvider.get_app_properties().get(ConfigurationField.APP_HMAC_KEY.getKey());
+        if ( null != base64key ) {
+            key = Keys.hmacShaKeyFor(Base64.getDecoder().decode(base64key));
+        } else {
+            logger.error("HMAC key for JWT token generation is set to null, the app will not work correctly!");
+        }
+    }
 
     @Inject
     public LoginServiceImpl(final AccountDB accountDB, final ConfigurationProvider configurationProvider) {
@@ -41,7 +51,7 @@ public class LoginServiceImpl implements LoginService {
 
                 final ResultSet rs = ps.executeQuery();
                 if (rs.next()) {
-                    if ( Objects.equals(rs.getString("account_enabled"), "t")) {
+                    if ( Objects.equals(rs.getBoolean("account_available"), true)) {
                         final String storedPasswordHash = rs.getString("password_hash");
                         return Objects.equals(storedPasswordHash, Crypt.crypt(password, storedPasswordHash));
                     }
@@ -65,14 +75,4 @@ public class LoginServiceImpl implements LoginService {
                 .signWith(key)
                 .compact();
     }
-
-    public void loadKey(final ConfigurationProvider configurationProvider){
-        final String base64key = (String) configurationProvider.getProperties().get("api_hmac_key");
-        if ( null !=  base64key ) {
-            this.key = Keys.hmacShaKeyFor(Base64.getDecoder().decode(base64key));
-        } else {
-            logger.error("HMAC key for JWT token generation is set to null, the app will not work correctly!");
-        }
-    }
 }
-

@@ -11,6 +11,7 @@ import java.io.IOException;
 public class AccountServiceImplTest {
     private static final String confPath = "/home/aron/.corner/app.conf";
     private static final String keyPath = "/home/aron/.corner/key.conf";
+
     private static ConfigurationProvider configurationProvider;
 
     @BeforeAll

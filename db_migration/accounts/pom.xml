@@ -5,13 +5,13 @@
 
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <artifactId>dbmigrator</artifactId>
+        <artifactId>db_migration</artifactId>
         <groupId>cornerstone.db</groupId>
         <version>1.0</version>
     </parent>
 
     <artifactId>account</artifactId>
-    <name>account (Database Migration)</name>
+    <name>account (db_migration)</name>
     <packaging>pom</packaging>
     <version>1.0</version>
 
@@ -25,7 +25,7 @@
                     <locations>filesystem:db/migration</locations>
                     <url>${db.account.url}</url>
                     <schemas>
-                        <schema>accounts_schema</schema>
+                        <schema>info</schema>
                     </schemas>
                     <serverId>${postgres.server.id}</serverId>
                     <baselineOnMigrate>true</baselineOnMigrate>

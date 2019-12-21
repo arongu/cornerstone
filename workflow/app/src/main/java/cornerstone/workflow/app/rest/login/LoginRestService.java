@@ -35,21 +35,25 @@ public class LoginRestService {
     // TODO token message
     @POST
     public Response authenticateUser(final AccountDTO accountDTO) throws BadRequestException {
-        if ( null != accountDTO && null != accountDTO.getEmail() && null != accountDTO.getPassword()) {
-            if ( loginService.authenticate(accountDTO.getEmail(), accountDTO.getPassword()) ) {
-                logger.info("[ NEW ACCESS TOKEN ][ GRANTED ] -- '{}'", accountDTO.getEmail());
 
-                return Response.status(Response.Status.ACCEPTED)
+        if ( null != accountDTO && null != accountDTO.getEmail() && null != accountDTO.getPassword()) {
+            final Response response;
+            if ( loginService.authenticate(accountDTO.getEmail(), accountDTO.getPassword()) ) {
+                response = Response.status(Response.Status.ACCEPTED)
                         .entity(loginService.issueJWT(accountDTO.getEmail()))
                         .build();
 
-            } else {
-                logger.info("[ NEW ACCESS TOKEN ][ DENIED ] -- '{}'", accountDTO.getEmail());
+                logger.info("[ NEW ACCESS TOKEN ][ GRANTED ] -- '{}'", accountDTO.getEmail());
 
-                return Response.status(Response.Status.FORBIDDEN)
+            } else {
+                response = Response.status(Response.Status.FORBIDDEN)
                         .entity(new HttpMessage(Response.Status.FORBIDDEN.toString(), Response.Status.FORBIDDEN.getStatusCode()))
                         .build();
+
+                logger.info("[ NEW ACCESS TOKEN ][ DENIED ] -- '{}'", accountDTO.getEmail());
             }
+
+            return response;
         } else {
             throw new BadRequestException();
         }

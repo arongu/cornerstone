@@ -23,6 +23,6 @@ public class Info {
 
     @GET
     public Properties getProperties() {
-        return configurationProvider.getProperties();
+        return configurationProvider.getRaw_properties();
     }
 }

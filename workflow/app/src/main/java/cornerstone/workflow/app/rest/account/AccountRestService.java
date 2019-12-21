@@ -29,7 +29,7 @@ public class AccountRestService {
     @POST
     public Response createAccount(final AccountDTO account) throws AccountServiceException, BadRequestException {
         if ( null != account ) {
-            accountService.createAccount(account.getEmail(), account.getPassword());
+            accountService.createAccount(account.getEmail(), account.getPassword(), true);
             return Response.status(Response.Status.CREATED)
                     .entity(account.getEmail())
                     .build();

@@ -20,7 +20,11 @@ public class ConfigurationProvider {
     private static final String LOG_MESSAGE_PROPERTY_SET = "[ System.getProperty ][ '{}' ] = '{}'";
     private static final String LOG_MESSAGE_PROPERTY_NOT_SET = "[ System.getProperty ][ '{}' ] is not set, using default value : '{}'";
 
-    private Properties properties, main_db_properties, account_db_properties;
+    private Properties raw_properties;
+    private Properties app_properties;
+    private Properties db_account_properties;
+    private Properties db_main_properties;
+
     private String keyFile, confFile;
 
     public ConfigurationProvider() {
@@ -47,11 +51,12 @@ public class ConfigurationProvider {
     public void loadConfig() throws IOException {
         getSystemProperties();
         final SecretKey key = ConfigEncryptDecrypt.loadAESKeyFromFile(keyFile);
-        this.properties = ConfigEncryptDecrypt.decryptConfig(key, confFile);
+        raw_properties = ConfigEncryptDecrypt.decryptConfig(key, confFile);
 
-        final DBConfigurationParser dbConfigurationParser = new DBConfigurationParser(properties);
-        this.main_db_properties = dbConfigurationParser.getMainDB();
-        this.account_db_properties = dbConfigurationParser.getAccountDB();
+        final ConfigurationParser cp = new ConfigurationParser(raw_properties);
+        app_properties = cp.get_app_properties();
+        db_account_properties = cp.get_db_account_properties();
+        db_main_properties = cp.get_db_data_properties();
     }
 
     public String getKeyFile() {
@@ -62,15 +67,19 @@ public class ConfigurationProvider {
         return confFile;
     }
 
-    public Properties getProperties() {
-        return properties;
+    public Properties getRaw_properties() {
+        return raw_properties;
     }
 
     public Properties get_data_db_properties() {
-        return main_db_properties;
+        return db_main_properties;
     }
 
     public Properties get_account_db_properties() {
-        return account_db_properties;
+        return db_account_properties;
+    }
+
+    public Properties get_app_properties() {
+        return app_properties;
     }
 }

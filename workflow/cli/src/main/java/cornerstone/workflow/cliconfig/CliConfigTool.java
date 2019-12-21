@@ -1,13 +1,16 @@
 package cornerstone.workflow.cliconfig;
 
 import cornerstone.workflow.lib.config.ConfigEncryptDecrypt;
+import cornerstone.workflow.lib.crypto.AESEncryptDecrypt;
+import cornerstone.workflow.lib.crypto.AESEncryptDecrypt.AESToolException;
 
 import javax.crypto.SecretKey;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.security.Key;
+import java.util.Base64;
 import java.util.List;
-import java.util.Properties;
 
 /**
  * Tool to easily encrypt and decrypt key value pairs in configuration files.
@@ -16,12 +19,17 @@ public class CliConfigTool {
     private static final String helpMessage =
             "This tool encrypts 'ENC_' prefixed and decrypts 'AES_' prefixed key, value pairs in a config file with the given AES key." +
                     "\nThe first line of the key file should store the AES key as a base64 string." +
+                    "\n\nTo generate a CBC-AES-256 HMAC key run:" +
+                    "\n  java -jar cli.jar g|gen --password <password> --salt <salt> --save|-s <SAVE_TO>" +
+                    "\n  java -jar cli.jar   gen --password 'password' --salt 'abcdef0123456790' --save key.conf" +
                     "\n\nUsage:" +
                     "\n  java -jar cli.jar enc|e|dec|d --config-file|-c <CONFIG_FILE> --key-file|-k <KEY_FILE> --save|-s <SAVE_TO>" +
                     "\n  java -jar cli.jar enc -c rawconfig.conf -k key.txt -s encrypted.conf" +
                     "\n  java -jar cli.jar   d -c encrypted.conf -k key.txt -s decrypted.txt";
 
-    private String command, keyFile, configFile, saveTo;
+
+    private String keyFile, configFile, saveTo;
+    private String command, password, salt;
 
     // Reads arguments passed from the command line.
     public void readArguments(final String[] args) {
@@ -33,8 +41,11 @@ public class CliConfigTool {
 
         // The first argument should be the command i.e.: enc/e, dec/d
         command = args[0];
-        if ( ! (command.equals("enc") || command.equals("e") || command.equals("dec") || command.equals("d"))) {
-            System.err.println("First argument most be <enc|e|dec|d> !");
+        if (! (command.equals("enc") || command.equals("e")  ||
+               command.equals("dec") || command.equals("d")  ||
+               command.equals("gen") || command.equals("g"))) {
+
+            System.err.println("First argument must be <enc|e|dec|d> !");
             System.exit(2);
         }
 
@@ -51,18 +62,28 @@ public class CliConfigTool {
 
             } else if (expectingValue){
                 switch (commandLineSwitch){
-                    case "--config-file": case "-c": {
+                    case "--config-file" : case "-c" : {
                         this.configFile = arg;
                         break;
                     }
 
-                    case "--key-file" : case "-k": {
+                    case "--key-file" : case "-k" : {
                         this.keyFile = arg;
                         break;
                     }
 
-                    case "--save": case "-s": {
+                    case "--save" : case "-s" : {
                         this.saveTo = arg;
+                        break;
+                    }
+
+                    case "--password" : case "-p" : {
+                        this.password = arg;
+                        break;
+                    }
+
+                    case "--salt" : case "-sa" : {
+                        this.salt = arg;
                         break;
                     }
 
@@ -78,41 +99,55 @@ public class CliConfigTool {
     }
 
     public static void main(String[] args) {
-        final CliConfigTool cliConfigTool = new CliConfigTool();
-        cliConfigTool.readArguments(args);
+        final CliConfigTool cli = new CliConfigTool();
+        cli.readArguments(args);
 
         try {
-            final SecretKey key = ConfigEncryptDecrypt.loadAESKeyFromFile(cliConfigTool.keyFile);
-
-            switch (cliConfigTool.command){
-                case "enc": case "e": {
-                    try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(cliConfigTool.saveTo))) {
-                        final List<String> lines = ConfigEncryptDecrypt.encryptConfig(key, cliConfigTool.configFile);
-                        for (String line : lines) {
-                            bufferedWriter.write(line + "\n");
+            switch (cli.command){
+                case "enc" : case "e" : {
+                    final SecretKey key = ConfigEncryptDecrypt.loadAESKeyFromFile(cli.keyFile);
+                    try (final BufferedWriter bw = new BufferedWriter(new FileWriter(cli.saveTo))) {
+                        final List<String> lines = ConfigEncryptDecrypt.encryptConfig(key, cli.configFile);
+                        for (final String line : lines) {
+                            bw.write(line + "\n");
                         }
                     }
                     break;
                 }
 
-                case "dec": case "d": {
-                    try (BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(cliConfigTool.saveTo))) {
-                        final Properties properties = ConfigEncryptDecrypt.decryptConfig(key, cliConfigTool.configFile);
-                        properties.store(bufferedWriter, null);
+                case "dec" : case "d" : {
+                    final SecretKey key = ConfigEncryptDecrypt.loadAESKeyFromFile(cli.keyFile);
+                    try (final BufferedWriter bw = new BufferedWriter(new FileWriter(cli.saveTo))) {
+                        ConfigEncryptDecrypt.decryptConfig(key, cli.configFile).store(bw, null);
+                    }
+                    break;
+                }
+
+                case "gen" : case "g" : {
+                    try (final BufferedWriter bw = new BufferedWriter(new FileWriter(cli.saveTo))) {
+                        try {
+                            final Key keySpec = AESEncryptDecrypt.derive256BitKey(cli.password, cli.salt);
+                            final String base64key = Base64.getEncoder().encodeToString(keySpec.getEncoded());
+                            bw.write(base64key);
+
+                        } catch (final AESToolException e) {
+                            System.err.println(e.getMessage());
+                            System.exit(4);
+                        }
                     }
                     break;
                 }
 
                 default: {
-                    System.err.println("Unrecognized command '" + cliConfigTool.command + "'");
-                    System.exit(4);
+                    System.err.println("Unrecognized command '" + cli.command + "'");
+                    System.exit(5);
                 }
             }
 
-        } catch (IOException e) {
+        } catch (final IOException e) {
             e.printStackTrace();
             System.err.println(e.getMessage());
-            System.exit(5);
+            System.exit(6);
         }
     }
 }
