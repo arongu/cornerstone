@@ -1,0 +1,79 @@
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0
+                      https://maven.apache.org/xsd/settings-1.0.0.xsd">
+  <!-- localRepository>${user.home}/.m2/repository</localRepository-->
+  <localRepository>/storage/.m2/repository</localRepository>
+  <interactiveMode>true</interactiveMode>
+  <usePluginRegistry>false</usePluginRegistry>
+  <offline>false</offline>
+
+  <profiles>
+    <!-- dev profile -->
+    <profile>
+      <id>dev</id>
+      <activation>
+        <activeByDefault>false</activeByDefault>
+      </activation>
+      <properties>
+        <!-- tomcat -->
+        <tomcat.server.id>local.tomcat</tomcat.server.id>
+        <tomcat.manager.url>http://localhost:8080/manager/text</tomcat.manager.url>
+        <tomcat.path>/app</tomcat.path>
+        <!-- flyway account db, postgres-->
+        <postgres.server.id>local.postgres</postgres.server.id>
+        <db.account.url>jdbc:postgresql://127.0.0.1:5432/accounts</db.account.url>
+
+        <!-- configuration files for config loader, only works with mvn tomcat7:run -->
+        <app.conf.key>/var/opt/cornerstone/key.conf</app.conf.key>
+        <app.conf.main>/var/opt/cornerstone/app.conf</app.conf.main>
+      </properties>
+    </profile>
+
+    <!-- test profile -->
+    <profile>
+      <id>test</id>
+      <activation>
+        <activeByDefault>false</activeByDefault>
+      </activation>
+      <properties>
+        <!-- tomcat -->
+        <tomcat.server.id>local.tomcat</tomcat.server.id>
+        <tomcat.manager.url>http://localhost:8080/manager/text</tomcat.manager.url>
+        <tomcat.path>/app</tomcat.path>
+        <!-- flyway account db, postgres-->
+        <postgres.server.id>local.postgres.test</postgres.server.id>
+        <db.account.url>jdbc:postgresql://127.0.0.1:5432/test_accounts</db.account.url>
+
+        <!-- configuration files for config loader, only works with mvn tomcat7:run -->
+        <app.conf.key>/home/aron/.corner/key.conf</app.conf.key>
+        <app.conf.main>/home/aron/.corner/app.conf</app.conf.main>
+      </properties>
+    </profile>
+  </profiles>
+
+  <servers>
+    <!-- local tomcat -->
+    <server>
+      <id>local.tomcat</id>
+      <username>aron</username>
+      <password>aron</password>
+    </server>
+
+    <!-- local PostgreSQL, user postgres used to create tables -->
+    <server>
+      <id>local.postgres</id>
+      <username>postgres</username>
+      <password>db</password>
+    </server>
+
+    <!-- local test PostgreSQL, user postgres used to create tables -->
+    <server>
+      <id>local.postgres.test</id>
+      <username>postgres</username>
+      <password>db</password>
+    </server>
+
+  </servers>
+</settings>
+
