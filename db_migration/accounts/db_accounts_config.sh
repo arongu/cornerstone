@@ -72,16 +72,15 @@ CREATE SCHEMA ${schema_history};
 -- STEP 2 :: drop schema public
 DROP SCHEMA public;
 --
---
+EOT
+
+# This can be only executed after ${db_name}_preconfig.sql and the db layout deployment
+# by running 'mvn flyway:migrate -P<test/dev>'
+cat <<EOF> "02_postconfig_${db_name}.sql"
 -- STEP 3 :: drop and create db_user
 DROP ROLE ${db_user};
 CREATE USER ${db_user} WITH ENCRYPTED PASSWORD '${db_password}';
 --
---
-EOT
-
-# This can be only executed after ${db_name}_preconfig.sql
-cat <<EOF> "02_postconfig_${db_name}.sql"
 -- connect to db
 --
 \connect ${db_name}
