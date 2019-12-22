@@ -21,11 +21,19 @@
                 <groupId>org.flywaydb</groupId>
                 <artifactId>flyway-maven-plugin</artifactId>
                 <configuration>
-                    <!-- cornerstone/dbmigrators/userdb/db/migration, this is where the sql files are located-->
+                    <!--
+                        cornerstone/dbmigrators/userdb/db/migration
+                        this is where the sql files are located
+
+                        Use the right profile by running:
+                        mvn flyway:migrate -Ptest   // for running test cases
+                        mvn flyway:migrate -Pdev    // for development/prod
+                    -->
                     <locations>filesystem:db/migration</locations>
                     <url>${db.account.url}</url>
                     <schemas>
                         <schema>info</schema>
+                        <schema>history</schema>
                     </schemas>
                     <serverId>${postgres.server.id}</serverId>
                     <baselineOnMigrate>true</baselineOnMigrate>
