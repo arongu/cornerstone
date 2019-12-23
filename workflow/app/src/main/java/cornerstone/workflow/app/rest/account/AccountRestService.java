@@ -1,9 +1,9 @@
 package cornerstone.workflow.app.rest.account;
 
 import cornerstone.workflow.app.rest.rest_exceptions.BadRequestException;
-import cornerstone.workflow.app.services.account_service.AccountService;
-import cornerstone.workflow.app.services.account_service.AccountServiceBulkException;
-import cornerstone.workflow.app.services.account_service.AccountServiceException;
+import cornerstone.workflow.app.services.account_service.AccountCrudService;
+import cornerstone.workflow.app.services.account_service.AccountCrudServiceBulkException;
+import cornerstone.workflow.app.services.account_service.AccountCrudServiceException;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -19,17 +19,17 @@ import java.util.List;
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 public class AccountRestService {
-    private AccountService accountService;
+    private AccountCrudService accountCrudService;
 
     @Inject
-    public AccountRestService(final AccountService accountService) {
-        this.accountService = accountService;
+    public AccountRestService(final AccountCrudService accountCrudService) {
+        this.accountCrudService = accountCrudService;
     }
 
     @POST
-    public Response createAccount(final AccountDTO account) throws AccountServiceException, BadRequestException {
+    public Response createAccount(final AccountLoginJsonDto account) throws AccountCrudServiceException, BadRequestException {
         if ( null != account ) {
-            accountService.createAccount(account.getEmail(), account.getPassword(), true);
+            accountCrudService.createAccount(account.getEmail(), account.getPassword(), true);
             return Response.status(Response.Status.CREATED)
                     .entity(account.getEmail())
                     .build();
@@ -39,9 +39,9 @@ public class AccountRestService {
     }
 
     @DELETE
-    public Response deleteAccount(final String emailAddress) throws AccountServiceException, BadRequestException {
+    public Response deleteAccount(final String emailAddress) throws AccountCrudServiceException, BadRequestException {
         if ( null != emailAddress ) {
-            accountService.deleteAccount(emailAddress);
+            accountCrudService.deleteAccount(emailAddress);
             return Response.status(Response.Status.OK)
                     .entity(emailAddress)
                     .build();
@@ -53,9 +53,9 @@ public class AccountRestService {
     // /mass
     @POST
     @Path("/mass")
-    public Response createAccounts(final List<AccountDTO> accounts) throws AccountServiceBulkException, BadRequestException {
+    public Response createAccounts(final List<AccountLoginJsonDto> accounts) throws AccountCrudServiceBulkException, BadRequestException {
         if ( null != accounts && ! accounts.isEmpty()) {
-            accountService.createAccounts(accounts);
+            accountCrudService.createAccounts(accounts);
             return Response.status(Response.Status.OK)
                     .entity(accounts)
                     .build();
@@ -66,9 +66,9 @@ public class AccountRestService {
 
     @DELETE
     @Path("/mass")
-    public Response deleteAccounts(final List<String> emailAddresses) throws AccountServiceBulkException, BadRequestException {
+    public Response deleteAccounts(final List<String> emailAddresses) throws AccountCrudServiceBulkException, BadRequestException {
         if ( null != emailAddresses ) {
-            accountService.deleteAccounts(emailAddresses);
+            accountCrudService.deleteAccounts(emailAddresses);
             return Response.status(Response.Status.OK)
                     .entity(emailAddresses)
                     .build();

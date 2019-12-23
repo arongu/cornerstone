@@ -1,7 +1,7 @@
 package cornerstone.workflow.app.rest.account;
 
-import cornerstone.workflow.app.services.account_service.AccountServiceBulkException;
-import cornerstone.workflow.app.services.account_service.AccountServiceException;
+import cornerstone.workflow.app.services.account_service.AccountCrudServiceBulkException;
+import cornerstone.workflow.app.services.account_service.AccountCrudServiceException;
 
 import javax.inject.Singleton;
 import javax.ws.rs.core.MediaType;
@@ -13,12 +13,12 @@ import java.util.List;
 
 @Singleton
 @Provider
-public class AccountServiceBulkExceptionMapper implements ExceptionMapper<AccountServiceBulkException> {
+public class AccountCrudServiceBulkExceptionJsonMapper implements ExceptionMapper<AccountCrudServiceBulkException> {
     @Override
-    public Response toResponse(final AccountServiceBulkException accountServiceBulkException) {
+    public Response toResponse(final AccountCrudServiceBulkException accountCrudServiceBulkException) {
         final List<String> exceptionMessages = new LinkedList<>();
 
-        for (AccountServiceException e : accountServiceBulkException.getExceptions()){
+        for (AccountCrudServiceException e : accountCrudServiceBulkException.getExceptions()){
             exceptionMessages.add(e.getMessage());
         }
 

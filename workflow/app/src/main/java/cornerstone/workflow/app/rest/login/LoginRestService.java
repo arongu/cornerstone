@@ -1,6 +1,6 @@
 package cornerstone.workflow.app.rest.login;
 
-import cornerstone.workflow.app.rest.account.AccountDTO;
+import cornerstone.workflow.app.rest.account.AccountLoginJsonDto;
 import cornerstone.workflow.app.rest.rest_exceptions.BadRequestException;
 import cornerstone.workflow.app.rest.rest_messages.HttpMessage;
 import cornerstone.workflow.app.services.login_service.LoginService;
@@ -34,23 +34,23 @@ public class LoginRestService {
 
     // TODO token message
     @POST
-    public Response authenticateUser(final AccountDTO accountDTO) throws BadRequestException {
+    public Response authenticateUser(final AccountLoginJsonDto AccountLoginJsonDTO) throws BadRequestException {
 
-        if ( null != accountDTO && null != accountDTO.getEmail() && null != accountDTO.getPassword()) {
+        if ( null != AccountLoginJsonDTO && null != AccountLoginJsonDTO.getEmail() && null != AccountLoginJsonDTO.getPassword()) {
             final Response response;
-            if ( loginService.authenticate(accountDTO.getEmail(), accountDTO.getPassword()) ) {
+            if ( loginService.authenticate(AccountLoginJsonDTO.getEmail(), AccountLoginJsonDTO.getPassword()) ) {
                 response = Response.status(Response.Status.ACCEPTED)
-                        .entity(loginService.issueJWT(accountDTO.getEmail()))
+                        .entity(loginService.issueJWT(AccountLoginJsonDTO.getEmail()))
                         .build();
 
-                logger.info("[ NEW ACCESS TOKEN ][ GRANTED ] -- '{}'", accountDTO.getEmail());
+                logger.info("[ NEW ACCESS TOKEN ][ GRANTED ] -- '{}'", AccountLoginJsonDTO.getEmail());
 
             } else {
                 response = Response.status(Response.Status.FORBIDDEN)
                         .entity(new HttpMessage(Response.Status.FORBIDDEN.toString(), Response.Status.FORBIDDEN.getStatusCode()))
                         .build();
 
-                logger.info("[ NEW ACCESS TOKEN ][ DENIED ] -- '{}'", accountDTO.getEmail());
+                logger.info("[ NEW ACCESS TOKEN ][ DENIED ] -- '{}'", AccountLoginJsonDTO.getEmail());
             }
 
             return response;

@@ -1,9 +1,9 @@
 package cornerstone.workflow.app.rest.account;
 
-public class AccountDTO {
+public class AccountLoginJsonDto {
     private String email, password;
 
-    public AccountDTO() {
+    public AccountLoginJsonDto() {
     }
 
     public void setEmail(String email) {
