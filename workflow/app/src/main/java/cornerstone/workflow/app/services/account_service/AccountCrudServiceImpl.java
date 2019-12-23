@@ -44,9 +44,9 @@ public class AccountCrudServiceImpl implements AccountCrudService {
             try (final PreparedStatement ps = conn.prepareStatement(SQL_GET_ACCOUNT)) {
                 ps.setString(1, emailAddress.toLowerCase());
                 final ResultSet rs = ps.executeQuery();
-                final AccountResultSetDto dto = new AccountResultSetDto();
 
                 if (rs.next()) {
+                    final AccountResultSetDto dto = new AccountResultSetDto();
                     dto.set_account_id(rs.getInt("account_id"));
                     dto.set_account_registration_ts(rs.getTimestamp("account_registration_ts"));
                     dto.set_account_available(rs.getBoolean("account_available"));
@@ -58,9 +58,12 @@ public class AccountCrudServiceImpl implements AccountCrudService {
                     dto.set_email_address_verified_ts(rs.getTimestamp("email_address_verified_ts"));
                     dto.set_password_hash(rs.getString("password_hash"));
                     dto.set_password_hash_ts(rs.getTimestamp("password_hash_ts"));
-                }
 
-                return dto;
+                    return dto;
+
+                } else  {
+                    return null;
+                }
             }
         } catch (final SQLException e) {
             final String msg = String.format(GET_ACCOUNT_ERROR_MESSAGE, emailAddress, e.getMessage(), e.getSQLState());

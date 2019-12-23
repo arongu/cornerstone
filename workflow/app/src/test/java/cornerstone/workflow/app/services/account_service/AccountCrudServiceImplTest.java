@@ -9,6 +9,8 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.nio.file.Paths;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 public class AccountCrudServiceImplTest {
     private static final String dev_files_dir = "../../_dev_files/test_config/";
     private static final String confPath  = Paths.get(dev_files_dir + "app.conf").toAbsolutePath().normalize().toString();
@@ -35,16 +37,31 @@ public class AccountCrudServiceImplTest {
         System.clearProperty(ConfigurationProvider.SYSTEM_PROPERTY_KEY_FILE);
     }
 
-    // TODO create proper test cases
     @Test
-    public void test() throws AccountCrudServiceException {
+    public void getAccount_shouldReturnNull_whenEmailDoesNotExist() throws AccountCrudServiceException {
         final AccountDB accountDB = new AccountDB(configurationProvider);
         final AccountCrudService accountCrudService = new AccountCrudServiceImpl(accountDB);
 
-        accountCrudService.deleteAccount("test@mail.com");
-        accountCrudService.createAccount("test@mail.com", "password", true);
-        accountCrudService.setAccountPassword("test@mail.com", "new_password");
-        AccountResultSetDto d = accountCrudService.getAccount("test@mail.com");
-        System.out.println(d);
+        assertNull(accountCrudService.getAccount("nosuch@mail.com"));
+    }
+
+    @Test
+    public void getAccount_shouldReturnAccountDto_whenEmailExists() throws AccountCrudServiceException {
+        final String EMAIL = "test@mail.com";
+        final String PASSWORD = "password";
+        final boolean AVAILABLE =  true;
+
+        final AccountDB accountDB = new AccountDB(configurationProvider);
+        final AccountCrudService accountCrudService = new AccountCrudServiceImpl(accountDB);
+        accountCrudService.deleteAccount(EMAIL);
+        accountCrudService.createAccount(EMAIL, PASSWORD, AVAILABLE);
+
+
+        final AccountResultSetDto result = accountCrudService.getAccount(EMAIL);
+
+
+        assertEquals(AVAILABLE, result.get_account_available());
+        assertEquals(EMAIL, result.get_email_address());
+        assertFalse(result.get_password_hash().contains(PASSWORD));
     }
 }
