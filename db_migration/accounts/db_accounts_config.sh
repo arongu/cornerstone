@@ -1,5 +1,14 @@
 #!/bin/bash
-# Script to generate the "accounts" database.
+# Script to generate the basis of "accounts" database.
+# It creates two sql files.
+# 01 run preconfig SQL with psql -f as postgres user e.g.: psql -f preconfig.sql
+# 02 execute database migration task in accounts: maven flywy:migrate -P<profile> (test/prod)
+# 03 run postconfig SQL with psql -f as postgres user e.g.: psql -f postconfig.sql
+#
+# preconfig.sql     - creates prequisites (account db, schemas)
+# maven flyway      - deploys the actual datapas structure
+# postconfig.sql    - sets the right permissions on the database for the appserver's db user
+
 declare db_name=
 declare db_user=
 declare db_password=

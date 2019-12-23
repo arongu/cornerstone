@@ -1,5 +1,5 @@
 ----------------------------------------------------------------------------
--- Table for accounts
+-- Table: info.accounts
 ----------------------------------------------------------------------------
 CREATE SEQUENCE IF NOT EXISTS info.account_id_seq;
 CREATE TABLE IF NOT EXISTS info.accounts(
@@ -84,6 +84,10 @@ CREATE TRIGGER trigger_email_address_verified
     EXECUTE PROCEDURE info.update_email_address_verified_ts();
 -- end of email_address_verified
 ----------------------------------------------------------------------------
+-- End of Table: info.accounts
+----------------------------------------------------------------------------
+
+
 
 ----------------------------------------------------------------------------
 -- Table for account features
