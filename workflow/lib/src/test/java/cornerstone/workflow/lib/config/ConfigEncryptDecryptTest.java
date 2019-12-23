@@ -10,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ConfigEncryptDecryptTest {
     @Test
-    void loadAESKeyFromFile_shouldReadFirstLineFromFileAndReturnItAsBytes_whenExecuted() throws IOException {
+    public void loadAESKeyFromFile_shouldReadFirstLineFromFileAndReturnItAsBytes_whenExecuted() throws IOException {
         final String originalKeyAsHex = "a3224844f478d92cf2c81cf262fddfa379c74fff91a17651df24c601cab6be4b";
         final URL keyFileUrl = getClass().getClassLoader().getResource("key.txt");
 
