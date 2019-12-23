@@ -18,12 +18,12 @@ public class AccountCrudServiceImpl implements AccountCrudService {
     private static final Logger logger = LoggerFactory.getLogger(AccountCrudServiceImpl.class);
     private final BasicDataSource dataSource;
 
-    private static final String GET_ACCOUNT_ERROR_MESSAGE            = "Failed to get account: '%s', message: '%s', SQL state '%s'";
-    private static final String CREATE_ACCOUNT_ERROR_MESSAGE         = "Failed to create account: '%s', message: '%s', SQL state: '%s'";
-    private static final String DELETE_ACCOUNT_ERROR_MESSAGE         = "Failed to delete account: '%s', message: '%s', SQL state: '%s'";
-    private static final String PASSWORD_UPDATE_ERROR_MESSAGE        = "Failed to update password for account: '%s', message: '%s', SQL state: '%s'";
-    private static final String EMAIL_ADDRESS_CHANGE_ERROR_MESSAGE   = "Failed to change email address of account: '%s' to '%s', message: '%s', SQL state: '%s'";
-    private static final String ACCOUNT_ENABLED_UPDATE_ERROR_MESSAGE = "Failed to change enabled of account: '%s to '%s'', message: '%s', SQL state: '%s'";
+    private static final String GET_ACCOUNT_ERROR_MESSAGE              = "Failed to get account: '%s', message: '%s', SQL state '%s'";
+    private static final String CREATE_ACCOUNT_ERROR_MESSAGE           = "Failed to create account: '%s', message: '%s', SQL state: '%s'";
+    private static final String DELETE_ACCOUNT_ERROR_MESSAGE           = "Failed to delete account: '%s', message: '%s', SQL state: '%s'";
+    private static final String PASSWORD_CHANGE_ERROR_MESSAGE          = "Failed to change password for account: '%s', message: '%s', SQL state: '%s'";
+    private static final String EMAIL_ADDRESS_CHANGE_ERROR_MESSAGE     = "Failed to change email address of account: '%s' to '%s', message: '%s', SQL state: '%s'";
+    private static final String ACCOUNT_AVAILABLE_CHANGE_ERROR_MESSAGE = "Failed to change availability of account: '%s to '%s'', message: '%s', SQL state: '%s'";
 
     private static final String SQL_GET_ACCOUNT                   = "SELECT * FROM info.accounts WHERE email_address=(?)";
     private static final String SQL_CREATE_ACCOUNT                = "INSERT INTO info.accounts (password_hash, email_address, account_available, email_address_verified) VALUES(?,?,?,?)";
@@ -188,7 +188,7 @@ public class AccountCrudServiceImpl implements AccountCrudService {
                 ps.execute();
             }
         } catch (final SQLException e){
-            final String msg = String.format(PASSWORD_UPDATE_ERROR_MESSAGE, emailAddress, e.getMessage(), e.getSQLState());
+            final String msg = String.format(PASSWORD_CHANGE_ERROR_MESSAGE, emailAddress, e.getMessage(), e.getSQLState());
             logger.error(msg);
 
             throw new AccountCrudServiceException(msg);
@@ -219,7 +219,7 @@ public class AccountCrudServiceImpl implements AccountCrudService {
                 ps.executeUpdate();
             }
         } catch (final SQLException e) {
-            final String msg = String.format(ACCOUNT_ENABLED_UPDATE_ERROR_MESSAGE, emailAddress, true, e.getMessage(), e.getSQLState());
+            final String msg = String.format(ACCOUNT_AVAILABLE_CHANGE_ERROR_MESSAGE, emailAddress, true, e.getMessage(), e.getSQLState());
             logger.error(msg);
 
             throw new AccountCrudServiceException(e.getMessage());
@@ -235,7 +235,7 @@ public class AccountCrudServiceImpl implements AccountCrudService {
                 ps.executeUpdate();
             }
         } catch (final SQLException e) {
-            final String msg = String.format(ACCOUNT_ENABLED_UPDATE_ERROR_MESSAGE, emailAddress, false, e.getMessage(), e.getSQLState());
+            final String msg = String.format(ACCOUNT_AVAILABLE_CHANGE_ERROR_MESSAGE, emailAddress, false, e.getMessage(), e.getSQLState());
             logger.error(msg);
 
             throw new AccountCrudServiceException(e.getMessage());
