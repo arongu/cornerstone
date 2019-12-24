@@ -49,19 +49,25 @@ public class AccountCrudServiceImplTest {
     public void getAccount_shouldReturnAccountDto_whenEmailExists() throws AccountCrudServiceException {
         final String EMAIL = "test@mail.com";
         final String PASSWORD = "password";
-        final boolean AVAILABLE =  true;
+        final boolean AVAILABLE = true;
 
+        // Phase #1
         final AccountDB accountDB = new AccountDB(configurationProvider);
         final AccountCrudService accountCrudService = new AccountCrudServiceImpl(accountDB);
         accountCrudService.deleteAccount(EMAIL);
         accountCrudService.createAccount(EMAIL, PASSWORD, AVAILABLE);
 
 
-        final AccountResultSetDto result = accountCrudService.getAccount(EMAIL);
+        AccountResultSetDto result = accountCrudService.getAccount(EMAIL);
 
 
         assertEquals(AVAILABLE, result.get_account_available());
         assertEquals(EMAIL, result.get_email_address());
         assertFalse(result.get_password_hash().contains(PASSWORD));
+
+
+        // Phase #2
+        accountCrudService.deleteAccount(EMAIL);
+        assertNull(accountCrudService.getAccount(EMAIL));
     }
 }
