@@ -9,18 +9,18 @@ public interface AccountCrudService {
     AccountResultSetDto getAccount(final String emailAddress) throws AccountCrudServiceException;
 
     // Create account
-    void createAccount(final String emailAddress, final String password, final boolean available) throws AccountCrudServiceException;
-    void createAccounts(final List<AccountLoginJsonDto> accountLoginJsonDtos) throws AccountCrudServiceBulkException;
+    int createAccount(final String emailAddress, final String password, final boolean available) throws AccountCrudServiceException;
+    int createAccounts(final List<AccountLoginJsonDto> accountLoginJsonDtos) throws AccountCrudServiceBulkException;
 
     // Delete account
-    void deleteAccount(final String emailAddress) throws AccountCrudServiceException;
-    void deleteAccounts(final List<String> emailAddresses) throws AccountCrudServiceBulkException;
+    int deleteAccount(final String emailAddress) throws AccountCrudServiceException;
+    int deleteAccounts(final List<String> emailAddresses) throws AccountCrudServiceBulkException;
 
     // Change password, email
-    void setAccountPassword(final String emailAddress, final String password) throws AccountCrudServiceException;
-    void setAccountEmailAddress(final String emailAddress, final String newEmailAddress) throws AccountCrudServiceException;
+    int setAccountPassword(final String emailAddress, final String password) throws AccountCrudServiceException;
+    int setAccountEmailAddress(final String emailAddress, final String newEmailAddress) throws AccountCrudServiceException;
 
     // Enable/disable account
-    void enableAccount(final String emailAddress) throws AccountCrudServiceException;
-    void disableAccount(final String emailAddress, final String reason) throws AccountCrudServiceException;
+    int enableAccount(final String emailAddress) throws AccountCrudServiceException;
+    int disableAccount(final String emailAddress, final String reason) throws AccountCrudServiceException;
 }

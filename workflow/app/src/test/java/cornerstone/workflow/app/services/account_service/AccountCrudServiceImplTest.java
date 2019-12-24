@@ -46,28 +46,56 @@ public class AccountCrudServiceImplTest {
     }
 
     @Test
-    public void getAccount_shouldReturnAccountDto_whenEmailExists() throws AccountCrudServiceException {
-        final String EMAIL = "test@mail.com";
-        final String PASSWORD = "password";
-        final boolean AVAILABLE = true;
+    public void crud_tests() throws AccountCrudServiceException {
+        final String email_address = "crud_tests@x-mail.com";
+        final String email_address_changed = "my_new_crud_tests_mail@yahoo.com";
+        final String password = "password";
+        final String reason = "disable reason";
 
-        // Phase #1
+
         final AccountDB accountDB = new AccountDB(configurationProvider);
         final AccountCrudService accountCrudService = new AccountCrudServiceImpl(accountDB);
-        accountCrudService.deleteAccount(EMAIL);
-        accountCrudService.createAccount(EMAIL, PASSWORD, AVAILABLE);
+
+        // Phase #1 create, delete
+        accountCrudService.deleteAccount(email_address);
+        accountCrudService.createAccount(email_address, password, true);
+
+        AccountResultSetDto dto = accountCrudService.getAccount(email_address);
+
+        assertTrue(dto.get_account_available());
+        assertEquals(email_address, dto.get_email_address());
+        assertFalse(dto.get_password_hash().contains(password));
 
 
-        AccountResultSetDto result = accountCrudService.getAccount(EMAIL);
+        // Phase #2 change email address
+        int id = dto.get_account_id();
+        accountCrudService.setAccountEmailAddress(email_address, email_address_changed);
+        dto = accountCrudService.getAccount(email_address_changed);
+
+        // Should return null, since email address changed !
+        assertNull(accountCrudService.getAccount(email_address));
+
+        // Id should be the same, since the account id is unchanged, only the address
+        assertEquals(id, dto.get_account_id());
 
 
-        assertEquals(AVAILABLE, result.get_account_available());
-        assertEquals(EMAIL, result.get_email_address());
-        assertFalse(result.get_password_hash().contains(PASSWORD));
+        // Phase #3 disable account
+        accountCrudService.disableAccount(email_address_changed, reason);
+        dto = accountCrudService.getAccount(email_address_changed);
+
+        assertFalse(dto.get_account_available());
+        assertEquals(reason, dto.get_account_disable_reason());
 
 
-        // Phase #2
-        accountCrudService.deleteAccount(EMAIL);
-        assertNull(accountCrudService.getAccount(EMAIL));
+        // Phase #4 re-enable account
+        accountCrudService.enableAccount(email_address_changed);
+        dto = accountCrudService.getAccount(email_address_changed);
+
+        assertTrue(dto.get_account_available());
+
+
+        // Phase #5 cleanup
+        accountCrudService.deleteAccount(email_address_changed);
+        assertNull(accountCrudService.getAccount(email_address_changed));
     }
 }

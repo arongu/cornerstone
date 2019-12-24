@@ -61,7 +61,7 @@ public class AccountCrudServiceImpl implements AccountCrudService {
 
                     return dto;
 
-                } else  {
+                } else {
                     return null;
                 }
             }
@@ -74,14 +74,15 @@ public class AccountCrudServiceImpl implements AccountCrudService {
     }
 
     @Override
-    public void createAccount(final String emailAddress, final String password, final boolean available) throws AccountCrudServiceException {
+    public int createAccount(final String emailAddress, final String password, final boolean available) throws AccountCrudServiceException {
         try (final Connection conn = dataSource.getConnection()) {
             try (final PreparedStatement ps = conn.prepareStatement(SQL_CREATE_ACCOUNT)) {
                 ps.setString(1, Crypt.crypt(password));
                 ps.setString(2, emailAddress.toLowerCase());
                 ps.setBoolean(3, available);
                 ps.setBoolean(4, false);
-                ps.executeUpdate();
+
+                return ps.executeUpdate();
             }
         } catch (final SQLException e) {
             final String msg = String.format(CREATE_ACCOUNT_ERROR_MESSAGE, emailAddress, e.getMessage(), e.getSQLState());
@@ -92,19 +93,22 @@ public class AccountCrudServiceImpl implements AccountCrudService {
     }
 
     @Override
-    public void createAccounts(final List<AccountLoginJsonDto> accounts) throws AccountCrudServiceBulkException {
+    public int createAccounts(final List<AccountLoginJsonDto> accounts) throws AccountCrudServiceBulkException {
         AccountCrudServiceBulkException accountCrudServiceBulkException = null;
+        int updates = 0;
 
         try (final Connection conn = dataSource.getConnection()) {
             try (final PreparedStatement ps = conn.prepareStatement(SQL_CREATE_ACCOUNT)) {
-                for (AccountLoginJsonDto account : accounts) {
+                for (final AccountLoginJsonDto account : accounts) {
                     if ( null != account ) {
                         try {
                             ps.setString(1, Crypt.crypt(account.getPassword()));
                             ps.setString(2, account.getEmail().toLowerCase());
                             ps.setBoolean(3, true);
                             ps.setBoolean(4, false);
-                            ps.executeUpdate();
+
+                            updates += ps.executeUpdate();
+
                         } catch (final SQLException e) {
                             final String msg = String.format(CREATE_ACCOUNT_ERROR_MESSAGE, account.getEmail(), e.getMessage(), e.getSQLState());
                             logger.error(msg);
@@ -124,20 +128,24 @@ public class AccountCrudServiceImpl implements AccountCrudService {
             if ( null == accountCrudServiceBulkException) {
                 accountCrudServiceBulkException = new AccountCrudServiceBulkException();
             }
+
             accountCrudServiceBulkException.addException(new AccountCrudServiceException(e.getMessage()));
         }
 
         if ( null != accountCrudServiceBulkException) {
             throw accountCrudServiceBulkException;
+        } else {
+            return updates;
         }
     }
 
     @Override
-    public void deleteAccount(final String emailAddress) throws AccountCrudServiceException {
+    public int deleteAccount(final String emailAddress) throws AccountCrudServiceException {
         try (final Connection conn = dataSource.getConnection()) {
             try (final PreparedStatement ps = conn.prepareStatement(SQL_DELETE_ACCOUNT)) {
                 ps.setString(1, emailAddress);
-                ps.executeUpdate();
+
+                return ps.executeUpdate();
             }
         } catch (final SQLException e) {
             final String msg = String.format(DELETE_ACCOUNT_ERROR_MESSAGE, emailAddress, e.getMessage(), e.getSQLState());
@@ -148,15 +156,18 @@ public class AccountCrudServiceImpl implements AccountCrudService {
     }
 
     @Override
-    public void deleteAccounts(final List<String> emailAddresses) throws AccountCrudServiceBulkException {
+    public int deleteAccounts(final List<String> emailAddresses) throws AccountCrudServiceBulkException {
         AccountCrudServiceBulkException accountCrudServiceBulkException = null;
+        int updates = 0;
 
         try (final Connection conn = dataSource.getConnection()) {
             try (final PreparedStatement ps = conn.prepareStatement(SQL_DELETE_ACCOUNT)) {
-                for (String email : emailAddresses) {
+                for (final String email : emailAddresses) {
                     try {
                         ps.setString(1, email);
-                        ps.executeUpdate();
+
+                        updates += ps.executeUpdate();
+
                     } catch (final SQLException e) {
                         final String msg = String.format(DELETE_ACCOUNT_ERROR_MESSAGE, email, e.getMessage(), e.getSQLState());
                         logger.error(msg);
@@ -164,6 +175,7 @@ public class AccountCrudServiceImpl implements AccountCrudService {
                         if ( null == accountCrudServiceBulkException) {
                             accountCrudServiceBulkException = new AccountCrudServiceBulkException();
                         }
+
                         accountCrudServiceBulkException.addException(new AccountCrudServiceException(e.getMessage()));
                     }
                 }
@@ -174,21 +186,25 @@ public class AccountCrudServiceImpl implements AccountCrudService {
             if ( null == accountCrudServiceBulkException) {
                 accountCrudServiceBulkException = new AccountCrudServiceBulkException();
             }
+
             accountCrudServiceBulkException.addException(new AccountCrudServiceException(e.getMessage()));
         }
 
-        if (accountCrudServiceBulkException != null) {
+        if ( null != accountCrudServiceBulkException) {
             throw accountCrudServiceBulkException;
+        } else {
+            return updates;
         }
     }
 
     @Override
-    public void setAccountPassword(final String emailAddress, final String password) throws AccountCrudServiceException {
+    public int setAccountPassword(final String emailAddress, final String password) throws AccountCrudServiceException {
         try (final Connection conn = dataSource.getConnection()) {
             try (final PreparedStatement ps = conn.prepareStatement(SQL_UPDATE_ACCOUNT_PASSWORD)){
                 ps.setString(1, Crypt.crypt(password));
                 ps.setString(2, emailAddress);
-                ps.execute();
+
+                return ps.executeUpdate();
             }
         } catch (final SQLException e){
             final String msg = String.format(PASSWORD_CHANGE_ERROR_MESSAGE, emailAddress, e.getMessage(), e.getSQLState());
@@ -199,12 +215,13 @@ public class AccountCrudServiceImpl implements AccountCrudService {
     }
 
     @Override
-    public void setAccountEmailAddress(final String emailAddress, final String newEmailAddress) throws AccountCrudServiceException {
+    public int setAccountEmailAddress(final String emailAddress, final String newEmailAddress) throws AccountCrudServiceException {
         try (final Connection conn = dataSource.getConnection()) {
             try (final PreparedStatement ps = conn.prepareStatement(SQL_UPDATE_ACCOUNT_EMAIL_ADDRESS)) {
-                ps.setString(1, emailAddress);
-                ps.setString(2, newEmailAddress);
-                ps.executeUpdate();
+                ps.setString(1, newEmailAddress);
+                ps.setString(2, emailAddress);
+
+                return ps.executeUpdate();
             }
         } catch (final SQLException e) {
             final String msg = String.format(EMAIL_ADDRESS_CHANGE_ERROR_MESSAGE, emailAddress, newEmailAddress, e.getMessage(), e.getSQLState());
@@ -215,11 +232,12 @@ public class AccountCrudServiceImpl implements AccountCrudService {
     }
 
     @Override
-    public void enableAccount(final String emailAddress) throws AccountCrudServiceException {
+    public int enableAccount(final String emailAddress) throws AccountCrudServiceException {
         try (final Connection conn = dataSource.getConnection()) {
             try (final PreparedStatement ps = conn.prepareStatement(SQL_ACCOUNT_ENABLE)) {
                 ps.setString(1, emailAddress);
-                ps.executeUpdate();
+
+                return ps.executeUpdate();
             }
         } catch (final SQLException e) {
             final String msg = String.format(ACCOUNT_AVAILABLE_CHANGE_ERROR_MESSAGE, emailAddress, true, e.getMessage(), e.getSQLState());
@@ -230,12 +248,13 @@ public class AccountCrudServiceImpl implements AccountCrudService {
     }
 
     @Override
-    public void disableAccount(final String emailAddress, final String reason) throws AccountCrudServiceException {
+    public int disableAccount(final String emailAddress, final String reason) throws AccountCrudServiceException {
         try (final Connection conn = dataSource.getConnection()) {
             try (final PreparedStatement ps = conn.prepareStatement(SQL_ACCOUNT_DISABLE)) {
                 ps.setString(1, reason);
                 ps.setString(2, emailAddress);
-                ps.executeUpdate();
+
+                return ps.executeUpdate();
             }
         } catch (final SQLException e) {
             final String msg = String.format(ACCOUNT_AVAILABLE_CHANGE_ERROR_MESSAGE, emailAddress, false, e.getMessage(), e.getSQLState());
