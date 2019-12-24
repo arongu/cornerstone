@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 public class AESEncryptDecrypt_derive256BitKeyTests {
     @Test
     @DisplayName("derive256bitKey - password and salt is null test")
-    public void derive256bitKey_whenPasswordAndSaltIsNull_thenShouldThrowException() {
+    public void derive256bitKey_shouldThrowException_whenPasswordAndSaltIsNull_then() {
         assertThrows(AESEncryptDecrypt.AESToolException.class, () -> {
             AESEncryptDecrypt.derive256BitKey(null, null);
         });
@@ -21,7 +21,7 @@ public class AESEncryptDecrypt_derive256BitKeyTests {
 
     @Test
     @DisplayName("derive256bitKey - salt is null test")
-    public void derive256bitKey_whenSaltIsNull_thenShouldThrowException() {
+    public void derive256bitKey_shouldThrowException_whenSaltIsNull() {
         assertThrows(AESEncryptDecrypt.AESToolException.class, () -> {
             AESEncryptDecrypt.derive256BitKey("password", null);
         });
@@ -29,7 +29,7 @@ public class AESEncryptDecrypt_derive256BitKeyTests {
 
     @Test
     @DisplayName("derive256bitKey - password is null, salt is too short test")
-    public void derive256bitKey_whenPasswordIsNullSaltIsShort_thenShouldThrowException() {
+    public void derive256bitKey_shouldThrowException_whenPasswordIsNullSaltIsShort() {
         assertThrows(AESEncryptDecrypt.AESToolException.class, () -> {
             AESEncryptDecrypt.derive256BitKey(null, "short");
         });
@@ -37,7 +37,7 @@ public class AESEncryptDecrypt_derive256BitKeyTests {
 
     @Test
     @DisplayName("derive256bitKey - password, salt is too long")
-    public void derive256bitKey_whenSaltIsTooLong_thenShouldThrowException() {
+    public void derive256bitKey_shouldThrowException_whenSaltIsTooLong() {
         assertThrows(AESEncryptDecrypt.AESToolException.class, () -> {
             AESEncryptDecrypt.derive256BitKey("password", "abcdef0123456789-");
         });
@@ -45,7 +45,7 @@ public class AESEncryptDecrypt_derive256BitKeyTests {
 
     @Test
     @DisplayName("derive256bitKey - password is empty string")
-    public void derive256bitKey_whenPasswordIsEmptyString_thenShouldThrowException() {
+    public void derive256bitKey_shouldThrowException_whenPasswordIsEmptyString() {
         assertThrows(AESEncryptDecrypt.AESToolException.class, () -> {
             AESEncryptDecrypt.derive256BitKey("", "abcdef0123456789");
         });

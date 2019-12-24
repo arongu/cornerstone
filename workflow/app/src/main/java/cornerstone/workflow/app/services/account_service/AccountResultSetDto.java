@@ -42,7 +42,7 @@ public class AccountResultSetDto {
         this.account_available = account_available;
     }
 
-    public Timestamp getAccount_available_ts() {
+    public Timestamp get_account_available_ts() {
         return account_available_ts;
     }
 
