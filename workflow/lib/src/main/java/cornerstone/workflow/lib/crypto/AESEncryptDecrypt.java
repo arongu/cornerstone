@@ -26,7 +26,7 @@ public final class AESEncryptDecrypt {
         }
     }
 
-    public static SecretKeySpec derive256BitKey(final String password, final String salt) throws AESToolException {
+    public static SecretKeySpec derive256BitAESKeyWithHmacSHA256(final String password, final String salt) throws AESToolException {
 
         if ( password == null || salt == null || password.getBytes().length == 0 || salt.getBytes().length != 16) {
             throw new AESToolException("Password and salt cannot be null or empty, salt must be 16 bytes long!");

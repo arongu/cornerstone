@@ -16,6 +16,7 @@ public interface AccountCrudService {
     int deleteAccount(final String emailAddress) throws AccountCrudServiceException;
     int deleteAccounts(final List<String> emailAddresses) throws AccountCrudServiceBulkException;
 
+    //    TODO
     // Change password, email
     int setAccountPassword(final String emailAddress, final String password) throws AccountCrudServiceException;
     int setAccountEmailAddress(final String emailAddress, final String newEmailAddress) throws AccountCrudServiceException;

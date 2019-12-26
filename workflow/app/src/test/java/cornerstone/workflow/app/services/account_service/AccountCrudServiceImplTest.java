@@ -93,7 +93,16 @@ public class AccountCrudServiceImplTest {
         assertTrue(dto.get_account_available());                                            // should be true
 
 
-        // Phase #5 cleanup
+        // Phase #5 password change
+        String originalPassword = dto.get_password_hash();                                  // store original password hash
+        accountCrudService.setAccountPassword(email_address_changed, "newpassword");
+        dto = accountCrudService.getAccount(email_address_changed);
+
+
+        assertNotEquals(originalPassword, dto.get_password_hash());
+
+
+        // Phase #6 cleanup
         accountCrudService.deleteAccount(email_address_changed);                            // delete account
         assertNull(accountCrudService.getAccount(email_address_changed));                   // cleanup and delete test
     }

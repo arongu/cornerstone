@@ -14,7 +14,7 @@ public class AESEncryptDecrypt_encryptDecryptBase64Tests {
     @Test
     @DisplayName("encryptStringsWithBase64KeyToBase64CipherTexts() -> decryptBase64CipherTextsWithBase64KeyToStrings()")
     public void testIVChange() throws AESEncryptDecrypt.AESToolException {
-        final SecretKeySpec key = AESEncryptDecrypt.derive256BitKey("password", "abcdef0123456789");
+        final SecretKeySpec key = AESEncryptDecrypt.derive256BitAESKeyWithHmacSHA256("password", "abcdef0123456789");
         final byte[] ba = key.getEncoded();
         final String base64key = Base64.getEncoder().encodeToString(ba);
 

@@ -126,7 +126,7 @@ public class CliConfigTool {
                 case "gen" : case "g" : {
                     try (final BufferedWriter bw = new BufferedWriter(new FileWriter(cli.saveTo))) {
                         try {
-                            final Key keySpec = AESEncryptDecrypt.derive256BitKey(cli.password, cli.salt);
+                            final Key keySpec = AESEncryptDecrypt.derive256BitAESKeyWithHmacSHA256(cli.password, cli.salt);
                             final String base64key = Base64.getEncoder().encodeToString(keySpec.getEncoded());
                             bw.write(base64key);
 

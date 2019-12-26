@@ -21,7 +21,7 @@ public class AESEncryptDecrypt_encryptDecryptByteArrayTests {
     @Test
     @DisplayName("encryptByteArrayWithKey() -> decryptCipherArrayWithKe() - byte[] encryption/decryption test")
     public void encryptByteArrayWithKeyTest() throws AESEncryptDecrypt.AESToolException {
-        final SecretKeySpec key = AESEncryptDecrypt.derive256BitKey("password", "abcdef0123456789");
+        final SecretKeySpec key = AESEncryptDecrypt.derive256BitAESKeyWithHmacSHA256("password", "abcdef0123456789");
         final String text = "this is my super-secret text with ~!@#$%^&*()_+ all sort of characters";
 
         byte[] data = text.getBytes(StandardCharsets.UTF_8);
@@ -42,7 +42,7 @@ public class AESEncryptDecrypt_encryptDecryptByteArrayTests {
     @Test
     @DisplayName("encryptByteArraysWithKey() -> decryptCipherArraysWithKey() - List<[]byte> encryption/decryption test")
     public void encryptByteArraysWithKeyTest() throws AESEncryptDecrypt.AESToolException {
-        final SecretKey key = AESEncryptDecrypt.derive256BitKey("mypassword", "abcdef0123456789");
+        final SecretKey key = AESEncryptDecrypt.derive256BitAESKeyWithHmacSHA256("mypassword", "abcdef0123456789");
 
         final List<byte[]> originalList = Arrays.asList( "alma".getBytes(), "repa".getBytes(), "kontos".getBytes(), "12".getBytes());
         final List<byte[]> encryptedList = AESEncryptDecrypt.encryptByteArraysWithKey(key, originalList);

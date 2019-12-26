@@ -13,7 +13,7 @@ public class AESGenerateKeyTest {
         final String password = "password";
         final String salt = "0123456789abcdef";
 
-        final Key key = AESEncryptDecrypt.derive256BitKey(password, salt);
+        final Key key = AESEncryptDecrypt.derive256BitAESKeyWithHmacSHA256(password, salt);
         final String stringKey = Base64.getEncoder().encodeToString(key.getEncoded());
         System.out.println(stringKey);
     }
