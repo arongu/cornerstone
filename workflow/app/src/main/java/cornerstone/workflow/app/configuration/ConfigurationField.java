@@ -18,7 +18,7 @@ public enum ConfigurationField {
     DB_ACCOUNT_MAX_OPEN("db_account_max_open"),
 
     APP_ADMIN_USER("app_admin_user"),
-    APP_HMAC_KEY("app_hmac_key");
+    APP_HMAC_KEY("app_jws_key");
 
     private String key;
 
@@ -32,5 +32,4 @@ public enum ConfigurationField {
 
     public static final String db_main_prefix = "db_data";
     public static final String account_db_prefix = "db_account";
-    public static final String appPrefix = "app_";
 }
