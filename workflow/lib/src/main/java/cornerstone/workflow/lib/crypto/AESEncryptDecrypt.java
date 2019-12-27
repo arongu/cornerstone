@@ -33,9 +33,9 @@ public final class AESEncryptDecrypt {
         }
 
         try {
-            final SecretKeyFactory keyFactory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
+            final SecretKeyFactory secretKeyFactory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
             final KeySpec keySpec = new PBEKeySpec(password.toCharArray(), salt.getBytes(), 250000, 256);
-            SecretKey key = keyFactory.generateSecret(keySpec);
+            SecretKey key = secretKeyFactory.generateSecret(keySpec);
             return new SecretKeySpec(key.getEncoded(), "AES");
 
         } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
