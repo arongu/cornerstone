@@ -18,7 +18,7 @@ public enum ConfigurationField {
     DB_ACCOUNT_MAX_OPEN("db_account_max_open"),
 
     APP_ADMIN_USER("app_admin_user"),
-    APP_HMAC_KEY("app_jws_key");
+    APP_JWS_KEY("app_jws_key");
 
     private String key;
 

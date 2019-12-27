@@ -1,9 +1,8 @@
-package cornerstone.workflow.app.services.login_service;
+package cornerstone.workflow.app.services.authentication_service;
 
 import cornerstone.workflow.app.configuration.ConfigurationField;
 import cornerstone.workflow.app.configuration.ConfigurationProvider;
 import cornerstone.workflow.app.datasource.AccountDB;
-import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.apache.commons.codec.digest.Crypt;
 import org.apache.commons.dbcp2.BasicDataSource;
@@ -16,20 +15,18 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.Instant;
 import java.util.Base64;
-import java.util.Date;
 import java.util.Objects;
 
-public class LoginServiceImpl implements LoginService {
-    private static final Logger logger = LoggerFactory.getLogger(LoginServiceImpl.class);
+public class AuthenticationServiceImpl implements AuthenticationService {
+    private static final Logger logger = LoggerFactory.getLogger(AuthenticationServiceImpl.class);
     private static final String SQL_GET_ACCOUNT_ENABLED_AND_PASSWORD = "SELECT account_available, password_hash FROM info.accounts WHERE email_address=(?)";
 
     private BasicDataSource dataSource;
     private Key key;
 
-    public void loadKey(final ConfigurationProvider configurationProvider){
-        final String base64key = (String) configurationProvider.get_app_properties().get(ConfigurationField.APP_HMAC_KEY.getKey());
+    public void loadKey(final ConfigurationProvider configurationProvider) {
+        final String base64key = (String) configurationProvider.get_app_properties().get(ConfigurationField.APP_JWS_KEY.getKey());
         if ( null != base64key ) {
             key = Keys.hmacShaKeyFor(Base64.getDecoder().decode(base64key));
         } else {
@@ -38,7 +35,7 @@ public class LoginServiceImpl implements LoginService {
     }
 
     @Inject
-    public LoginServiceImpl(final AccountDB accountDB, final ConfigurationProvider configurationProvider) {
+    public AuthenticationServiceImpl(final AccountDB accountDB, final ConfigurationProvider configurationProvider) {
         this.dataSource = accountDB;
         loadKey(configurationProvider);
     }
@@ -62,17 +59,5 @@ public class LoginServiceImpl implements LoginService {
         }
 
         return false;
-    }
-
-    @Override
-    public String issueJWT(final String emailAddress) {
-        return Jwts.builder()
-                .setIssuer(this.getClass().getName())
-                .setSubject(emailAddress)
-                .claim("scope", "user")
-                .setIssuedAt(Date.from(Instant.ofEpochSecond(Instant.now().getEpochSecond())))
-                .setExpiration(Date.from(Instant.ofEpochSecond(Instant.now().getEpochSecond() + 86400L)))
-                .signWith(key)
-                .compact();
     }
 }

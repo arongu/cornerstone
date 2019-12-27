@@ -3,7 +3,9 @@ package cornerstone.workflow.app.rest.login;
 import cornerstone.workflow.app.rest.account.AccountLoginJsonDto;
 import cornerstone.workflow.app.rest.rest_exceptions.BadRequestException;
 import cornerstone.workflow.app.rest.rest_messages.HttpMessage;
-import cornerstone.workflow.app.services.login_service.LoginService;
+import cornerstone.workflow.app.services.authentication_service.AuthenticationService;
+import cornerstone.workflow.app.services.authorization_service.AuthorizationService;
+import cornerstone.workflow.app.services.authorization_service.AuthorizationServiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,35 +27,55 @@ import javax.ws.rs.ext.Provider;
 public class LoginRestService {
     private static final Logger logger = LoggerFactory.getLogger(LoginRestService.class);
 
-    private final LoginService loginService;
+    private final AuthenticationService authenticationService;
+    private final AuthorizationService authorizationService;
 
     @Inject
-    public LoginRestService(final LoginService loginService) {
-        this.loginService = loginService;
+    public LoginRestService(final AuthenticationService authenticationService,
+                            final AuthorizationService authorizationService) {
+
+        this.authenticationService = authenticationService;
+        this.authorizationService = authorizationService;
     }
 
     // TODO token message
     @POST
-    public Response authenticateUser(final AccountLoginJsonDto AccountLoginJsonDTO) throws BadRequestException {
+    public Response authenticateUser(final AccountLoginJsonDto accountLoginJsonDTO)
+            throws BadRequestException, AuthorizationServiceException {
 
-        if ( null != AccountLoginJsonDTO && null != AccountLoginJsonDTO.getEmail() && null != AccountLoginJsonDTO.getPassword()) {
+        if ( null != accountLoginJsonDTO &&
+             null != accountLoginJsonDTO.getEmail() &&
+             null != accountLoginJsonDTO.getPassword()) {
+
             final Response response;
-            if ( loginService.authenticate(AccountLoginJsonDTO.getEmail(), AccountLoginJsonDTO.getPassword()) ) {
+            final boolean authenticated;
+
+            authenticated = authenticationService.authenticate(
+                    accountLoginJsonDTO.getEmail(),
+                    accountLoginJsonDTO.getPassword()
+            );
+
+            if ( authenticated ) {
                 response = Response.status(Response.Status.ACCEPTED)
-                        .entity(loginService.issueJWT(AccountLoginJsonDTO.getEmail()))
+                        .entity(authorizationService.issueJWT(accountLoginJsonDTO.getEmail()))
                         .build();
 
-                logger.info("[ NEW ACCESS TOKEN ][ GRANTED ] -- '{}'", AccountLoginJsonDTO.getEmail());
+                logger.info("[ NEW ACCESS TOKEN ][ GRANTED ] -- '{}'", accountLoginJsonDTO.getEmail());
 
             } else {
                 response = Response.status(Response.Status.FORBIDDEN)
-                        .entity(new HttpMessage(Response.Status.FORBIDDEN.toString(), Response.Status.FORBIDDEN.getStatusCode()))
-                        .build();
+                        .entity(
+                                new HttpMessage(
+                                        Response.Status.FORBIDDEN.toString(),
+                                        Response.Status.FORBIDDEN.getStatusCode()
+                                )
+                        ).build();
 
-                logger.info("[ NEW ACCESS TOKEN ][ DENIED ] -- '{}'", AccountLoginJsonDTO.getEmail());
+                logger.info("[ NEW ACCESS TOKEN ][ DENIED ] -- '{}'", accountLoginJsonDTO.getEmail());
             }
 
             return response;
+
         } else {
             throw new BadRequestException();
         }

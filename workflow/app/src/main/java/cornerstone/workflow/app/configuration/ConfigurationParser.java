@@ -63,7 +63,7 @@ public class ConfigurationParser {
                 final String value = properties.getProperty(key);
                 addWithLog(db_data_properties, key, value, ConfigurationField.db_main_prefix);
 
-            } else if (ConfigurationField.APP_ADMIN_USER == field || ConfigurationField.APP_HMAC_KEY == field) {
+            } else if (ConfigurationField.APP_ADMIN_USER == field || ConfigurationField.APP_JWS_KEY == field) {
 
                 final String value = properties.getProperty(key);
                 addWithLog(app_properties, key, value, "app");
