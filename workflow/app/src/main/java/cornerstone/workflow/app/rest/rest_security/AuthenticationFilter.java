@@ -1,5 +1,8 @@
 package cornerstone.workflow.app.rest.rest_security;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.annotation.Priority;
 import javax.ws.rs.Priorities;
 import javax.ws.rs.container.ContainerRequestContext;
@@ -11,8 +14,10 @@ import java.io.IOException;
 @Provider
 @Priority(Priorities.AUTHENTICATION)
 public class AuthenticationFilter implements ContainerRequestFilter {
-    @Override
-    public void filter(ContainerRequestContext containerRequestContext) throws IOException {
+    private static final Logger logger = LoggerFactory.getLogger(AuthenticationFilter.class);
 
+    @Override
+    public void filter(final ContainerRequestContext containerRequestContext) throws IOException {
+        logger.info("--------------------------------------------------------------------------------------------- CALLED");
     }
 }

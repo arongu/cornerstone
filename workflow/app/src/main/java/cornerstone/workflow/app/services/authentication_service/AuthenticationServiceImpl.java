@@ -1,21 +1,16 @@
 package cornerstone.workflow.app.services.authentication_service;
 
-import cornerstone.workflow.app.configuration.ConfigurationField;
-import cornerstone.workflow.app.configuration.ConfigurationProvider;
 import cornerstone.workflow.app.datasource.AccountDB;
-import io.jsonwebtoken.security.Keys;
 import org.apache.commons.codec.digest.Crypt;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
-import java.security.Key;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Base64;
 import java.util.Objects;
 
 public class AuthenticationServiceImpl implements AuthenticationService {
@@ -23,21 +18,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private static final String SQL_GET_ACCOUNT_ENABLED_AND_PASSWORD = "SELECT account_available, password_hash FROM info.accounts WHERE email_address=(?)";
 
     private BasicDataSource dataSource;
-    private Key key;
-
-    public void loadKey(final ConfigurationProvider configurationProvider) {
-        final String base64key = (String) configurationProvider.get_app_properties().get(ConfigurationField.APP_JWS_KEY.getKey());
-        if ( null != base64key ) {
-            key = Keys.hmacShaKeyFor(Base64.getDecoder().decode(base64key));
-        } else {
-            logger.error("HMAC key for JWT token generation is set to null, the app will not work correctly!");
-        }
-    }
 
     @Inject
-    public AuthenticationServiceImpl(final AccountDB accountDB, final ConfigurationProvider configurationProvider) {
+    public AuthenticationServiceImpl(final AccountDB accountDB) {
         this.dataSource = accountDB;
-        loadKey(configurationProvider);
     }
 
     @Override
