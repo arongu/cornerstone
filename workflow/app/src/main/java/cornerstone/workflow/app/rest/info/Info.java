@@ -22,6 +22,7 @@ public class Info {
         this.configurationProvider = configurationProvider;
     }
 
+    // TODO
     @Secured
     @GET
     public Properties getProperties() {

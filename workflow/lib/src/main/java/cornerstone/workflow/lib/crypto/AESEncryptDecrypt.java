@@ -18,7 +18,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 public final class AESEncryptDecrypt {
-    private static final Logger log = LoggerFactory.getLogger(AESEncryptDecrypt.class);
+    private static final Logger logger = LoggerFactory.getLogger(AESEncryptDecrypt.class);
 
     public static class AESToolException extends Exception {
         AESToolException(final String message) {
@@ -28,19 +28,25 @@ public final class AESEncryptDecrypt {
 
     public static SecretKeySpec derive256BitAESKeyWithHmacSHA256(final String password, final String salt) throws AESToolException {
 
-        if ( password == null || salt == null || password.getBytes().length == 0 || salt.getBytes().length != 16) {
+        if ( null == password ||
+             null == salt ||
+             0 == password.getBytes().length ||
+             16 != salt.getBytes().length) {
+
             throw new AESToolException("Password and salt cannot be null or empty, salt must be 16 bytes long!");
-        }
 
-        try {
-            final SecretKeyFactory secretKeyFactory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
-            final KeySpec keySpec = new PBEKeySpec(password.toCharArray(), salt.getBytes(), 250000, 256);
-            SecretKey key = secretKeyFactory.generateSecret(keySpec);
-            return new SecretKeySpec(key.getEncoded(), "AES");
+        } else {
+            try {
+                final SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
+                final KeySpec spec = new PBEKeySpec(password.toCharArray(), salt.getBytes(), 250000, 256);
+                final SecretKey key = factory.generateSecret(spec);
 
-        } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
-            log.error(e.getMessage());
-            throw new AESToolException(e.getMessage());
+                return new SecretKeySpec(key.getEncoded(), "AES");
+
+            } catch (final NoSuchAlgorithmException | InvalidKeySpecException e) {
+                logger.error(e.getMessage());
+                throw new AESToolException(e.getMessage());
+            }
         }
     }
 
@@ -54,33 +60,33 @@ public final class AESEncryptDecrypt {
             final byte[] enc = cipher.doFinal(ba);
 
             // Add iv, encrypt and store data
-            byte[] cipherBytes = new byte[iv.length + enc.length];
-            System.arraycopy(iv, 0, cipherBytes, 0, iv.length);
-            System.arraycopy(enc, 0, cipherBytes, iv.length, enc.length);
+            byte[] cipherArray = new byte[iv.length + enc.length];
+            System.arraycopy(iv, 0, cipherArray, 0, iv.length);
+            System.arraycopy(enc, 0, cipherArray, iv.length, enc.length);
 
-            return cipherBytes;
+            return cipherArray;
 
-        } catch (InvalidKeyException | NoSuchPaddingException | NoSuchAlgorithmException | InvalidParameterSpecException | BadPaddingException | IllegalBlockSizeException e){
-            log.error(e.getMessage());
+        } catch (final InvalidKeyException | NoSuchPaddingException | NoSuchAlgorithmException | InvalidParameterSpecException | BadPaddingException | IllegalBlockSizeException e) {
+            logger.error(e.getMessage());
             throw new AESToolException(e.getMessage());
         }
     }
 
-    public static byte[] decryptCipherArrayWithKey(final SecretKey key, final byte[] ba) throws AESToolException {
+    public static byte[] decryptCipherArrayWithKey(final SecretKey key, final byte[] cipherArray) throws AESToolException {
         try {
             final byte[] iv = new byte[16];
-            System.arraycopy(ba, 0, iv, 0,16);
+            final byte[] encrypted = new byte[cipherArray.length - 16];
 
-            final byte[] encrypted = new byte[ba.length - 16];
-            System.arraycopy(ba, 16, encrypted,0, encrypted.length);
+            System.arraycopy(cipherArray, 0, iv, 0,16);
+            System.arraycopy(cipherArray, 16, encrypted,0, encrypted.length);
 
             final Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING");
             cipher.init(Cipher.DECRYPT_MODE, key, new IvParameterSpec(iv));
 
             return cipher.doFinal(encrypted);
 
-        } catch (InvalidKeyException | NoSuchPaddingException | NoSuchAlgorithmException | BadPaddingException | IllegalBlockSizeException | InvalidAlgorithmParameterException e){
-            log.error(e.getMessage());
+        } catch (final InvalidKeyException | NoSuchPaddingException | NoSuchAlgorithmException | BadPaddingException | IllegalBlockSizeException | InvalidAlgorithmParameterException e) {
+            logger.error(e.getMessage());
             throw new AESToolException(e.getMessage());
         }
     }
@@ -89,63 +95,63 @@ public final class AESEncryptDecrypt {
         final Cipher cipher;
         try {
             cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING");
-        } catch (NoSuchPaddingException | NoSuchAlgorithmException e){
-            log.error(e.getMessage());
+        } catch (final NoSuchPaddingException | NoSuchAlgorithmException e){
+            logger.error(e.getMessage());
             throw new AESToolException(e.getMessage());
         }
 
-        final List<byte[]> cbList = new LinkedList<>();
+        final List<byte[]> cipherArrayList = new LinkedList<>();
         int index = 0;
-        for ( byte[] ba : byteArrays){
+        for ( final byte[] ba : byteArrays) {
             try {
                 // Get the iv from the cipher
                 cipher.init(Cipher.ENCRYPT_MODE, key);
-                byte[] iv = cipher.getParameters().getParameterSpec(IvParameterSpec.class).getIV();
-                byte[] enc = cipher.doFinal(ba);
+                final byte[] iv = cipher.getParameters().getParameterSpec(IvParameterSpec.class).getIV();
+                final byte[] enc = cipher.doFinal(ba);
 
                 // Add iv, encrypt and store data
-                byte[] cb = new byte[iv.length + enc.length];
-                System.arraycopy(iv,0, cb,0, iv.length);
-                System.arraycopy(enc,0, cb, iv.length, enc.length);
-                cbList.add(cb);
+                final byte[] cipherArray = new byte[iv.length + enc.length];
+                System.arraycopy(iv,0, cipherArray,0, iv.length);
+                System.arraycopy(enc,0, cipherArray, iv.length, enc.length);
+                cipherArrayList.add(cipherArray);
 
-            } catch (BadPaddingException | IllegalBlockSizeException | InvalidParameterSpecException | InvalidKeyException e) {
-                log.error("Failed to encrypt data at index {} - {}", index, e.getMessage());
-                cbList.add(null);
+            } catch (final BadPaddingException | IllegalBlockSizeException | InvalidParameterSpecException | InvalidKeyException e) {
+                logger.error("Failed to encrypt data at index {} - {}", index, e.getMessage());
+                cipherArrayList.add(null);
             }
 
             index++;
         }
 
-        return cbList;
+        return cipherArrayList;
     }
 
-    public static List<byte[]> decryptCipherArraysWithKey(final SecretKey key, final List<byte[]> cypherArrays) throws AESToolException {
+    public static List<byte[]> decryptCipherArraysWithKey(final SecretKey key, final List<byte[]> cipherArrays) throws AESToolException {
         final Cipher cipher;
         try {
             cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING");
-        } catch (NoSuchPaddingException | NoSuchAlgorithmException e){
-            log.error(e.getMessage());
+        } catch (final NoSuchPaddingException | NoSuchAlgorithmException e){
+            logger.error(e.getMessage());
             throw new AESToolException(e.getMessage());
         }
 
         final List<byte[]> decryptedList = new LinkedList<>();
         int index = 0;
-        for ( byte[] cypherBytes : cypherArrays) {
+        for ( final byte[] cipherArray : cipherArrays) {
             try {
-                byte[] iv = new byte[16];
-                System.arraycopy(cypherBytes,0, iv,0,16);
+                final byte[] iv = new byte[16];
+                final byte[] encryptedData = new byte[cipherArray.length - 16];
 
-                byte[] encrypted = new byte[cypherBytes.length - 16];
-                System.arraycopy(cypherBytes,16, encrypted,0, encrypted.length);
+                System.arraycopy(cipherArray,0, iv,0,16);
+                System.arraycopy(cipherArray,16, encryptedData,0, encryptedData.length);
 
                 cipher.init(Cipher.DECRYPT_MODE, key, new IvParameterSpec(iv));
-                byte[] encryptedBa = cipher.doFinal(encrypted);
+                final byte[] decryptedData = cipher.doFinal(encryptedData);
 
-                decryptedList.add(encryptedBa);
+                decryptedList.add(decryptedData);
 
-            } catch (BadPaddingException | IllegalBlockSizeException | InvalidAlgorithmParameterException | InvalidKeyException e) {
-                log.error("Failed to decrypt data at index {} - {}", index, e.getMessage());
+            } catch (final BadPaddingException | IllegalBlockSizeException | InvalidAlgorithmParameterException | InvalidKeyException e) {
+                logger.error("Failed to decrypt data at index {} - {}", index, e.getMessage());
                 decryptedList.add(null);
             }
 
@@ -156,12 +162,12 @@ public final class AESEncryptDecrypt {
     }
 
     public static List<String> encryptByteArraysWithKeyToBase64CipherTexts(final SecretKey key, final List<byte[]> byteArrays) throws AESToolException {
-        final List<byte[]> cbList = encryptByteArraysWithKey(key, byteArrays);
+        final List<byte[]> cipherArrayList = encryptByteArraysWithKey(key, byteArrays);
         final List<String> base64cipherTexts = new LinkedList<>();
 
         final Base64.Encoder base64encoder = Base64.getEncoder();
-        for ( byte[] ba : cbList) {
-            String ba64 = base64encoder.encodeToString(ba);
+        for ( final byte[] cipherArray : cipherArrayList) {
+            final String ba64 = base64encoder.encodeToString(cipherArray);
             base64cipherTexts.add(ba64);
         }
 
@@ -169,15 +175,15 @@ public final class AESEncryptDecrypt {
     }
 
     public static List<byte[]> decryptBase64CipherTextsWithKeyToByteArrays(final SecretKey key, final List<String> base64CipherTexts) throws AESToolException {
-        final List<byte[]> cbList = new LinkedList<>();
+        final List<byte[]> cipherArrayList = new LinkedList<>();
 
         final Base64.Decoder base64decoder = Base64.getDecoder();
-        for ( String ba64 : base64CipherTexts) {
-            byte[] ba = base64decoder.decode(ba64);
-            cbList.add(ba);
+        for ( final String cipherText : base64CipherTexts ) {
+            final byte[] cipherArray = base64decoder.decode(cipherText);
+            cipherArrayList.add(cipherArray);
         }
 
-        return decryptCipherArraysWithKey(key, cbList);
+        return decryptCipherArraysWithKey(key, cipherArrayList);
     }
 
     public static String encryptStringWithKeyToBase64CipherText(final SecretKey key, final String text) throws AESToolException {
@@ -186,8 +192,8 @@ public final class AESEncryptDecrypt {
     }
 
     public static String decryptBase64CipherTextWithKeyToString(final SecretKey key, final String cipherText) throws AESToolException {
-        final byte[] ba = Base64.getDecoder().decode(cipherText);
-        final byte[] decrypted = decryptCipherArrayWithKey(key, ba);
+        final byte[] cipherArray = Base64.getDecoder().decode(cipherText);
+        final byte[] decrypted = decryptCipherArrayWithKey(key, cipherArray);
 
         return new String(decrypted);
     }
@@ -211,7 +217,7 @@ public final class AESEncryptDecrypt {
         final SecretKeySpec key = new SecretKeySpec(keyBa, "AES");
 
         final List<byte[]> byteArrays = new LinkedList<>();
-        for ( String s : strings){
+        for ( final String s : strings) {
             byteArrays.add(s.getBytes());
         }
 
@@ -222,13 +228,13 @@ public final class AESEncryptDecrypt {
         final byte [] keyBa = Base64.getDecoder().decode(keyAsBase64);
         final SecretKeySpec key = new SecretKeySpec(keyBa, "AES");
 
-        final List<byte[]> decryptedBas = decryptBase64CipherTextsWithKeyToByteArrays(key, base64CipherTexts);
-        final List<String> decrypted = new LinkedList<>();
+        final List<byte[]> decryptedByteArrays = decryptBase64CipherTextsWithKeyToByteArrays(key, base64CipherTexts);
+        final List<String> decryptedStrings = new LinkedList<>();
 
-        for ( byte[] ba : decryptedBas) {
-            decrypted.add(new String(ba));
+        for ( final byte[] ba : decryptedByteArrays) {
+            decryptedStrings.add(new String(ba));
         }
 
-        return decrypted;
+        return decryptedStrings;
     }
 }
