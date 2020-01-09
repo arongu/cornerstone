@@ -1,6 +1,6 @@
 package cornerstone.workflow.app.rest.login;
 
-import cornerstone.workflow.app.rest.account.AccountLoginJsonDto;
+import cornerstone.workflow.app.rest.account.EmailPasswordPair;
 import cornerstone.workflow.app.rest.rest_exceptions.BadRequestException;
 import cornerstone.workflow.app.rest.rest_messages.HttpMessage;
 import cornerstone.workflow.app.services.authentication_service.AuthenticationService;
@@ -40,27 +40,29 @@ public class LoginRestService {
 
     // TODO token message
     @POST
-    public Response authenticateUser(final AccountLoginJsonDto accountLoginJsonDTO)
+    public Response authenticateUser(final EmailPasswordPair JSONemailPassword)
             throws BadRequestException, AuthorizationServiceException {
 
-        if ( null != accountLoginJsonDTO &&
-             null != accountLoginJsonDTO.getEmail() &&
-             null != accountLoginJsonDTO.getPassword()) {
+        if ( null != JSONemailPassword &&
+             null != JSONemailPassword.getEmail() &&
+             null != JSONemailPassword.getPassword()) {
 
             final Response response;
             final boolean authenticated;
 
             authenticated = authenticationService.authenticate(
-                    accountLoginJsonDTO.getEmail(),
-                    accountLoginJsonDTO.getPassword()
+                    JSONemailPassword.getEmail(),
+                    JSONemailPassword.getPassword()
             );
 
             if ( authenticated ) {
+//                TODO fix this mess message is not in JSON format
+                final String jwt = authorizationService.issueJWT(JSONemailPassword.getEmail());
                 response = Response.status(Response.Status.ACCEPTED)
-                        .entity(authorizationService.issueJWT(accountLoginJsonDTO.getEmail()))
+                        .entity(jwt)
                         .build();
 
-                logger.info("[ NEW ACCESS TOKEN ][ GRANTED ] -- '{}'", accountLoginJsonDTO.getEmail());
+                logger.info("[ NEW ACCESS TOKEN ][ GRANTED ] -- '{}'", JSONemailPassword.getEmail());
 
             } else {
                 response = Response.status(Response.Status.FORBIDDEN)
@@ -71,7 +73,7 @@ public class LoginRestService {
                                 )
                         ).build();
 
-                logger.info("[ NEW ACCESS TOKEN ][ DENIED ] -- '{}'", accountLoginJsonDTO.getEmail());
+                logger.info("[ NEW ACCESS TOKEN ][ DENIED ] -- '{}'", JSONemailPassword.getEmail());
             }
 
             return response;

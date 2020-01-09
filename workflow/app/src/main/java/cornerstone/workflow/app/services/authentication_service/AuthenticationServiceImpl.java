@@ -14,8 +14,9 @@ import java.sql.SQLException;
 import java.util.Objects;
 
 public class AuthenticationServiceImpl implements AuthenticationService {
+    private static final int maxLoginAttempts = 90;
     private static final Logger logger = LoggerFactory.getLogger(AuthenticationServiceImpl.class);
-    private static final String SQL_GET_ACCOUNT_ENABLED_AND_PASSWORD = "SELECT account_available, password_hash FROM info.accounts WHERE email_address=(?)";
+    private static final String SQL_AUTH_QUERY = "SELECT account_locked, account_verified, account_login_attemtps, password_hash FROM info.accounts WHERE email_address=(?)";
 
     private BasicDataSource dataSource;
 
@@ -27,14 +28,23 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Override
     public boolean authenticate(final String emailAddress, final String password) {
         try (final Connection conn = dataSource.getConnection()) {
-            try (final PreparedStatement ps = conn.prepareStatement(SQL_GET_ACCOUNT_ENABLED_AND_PASSWORD)) {
+            try (final PreparedStatement ps = conn.prepareStatement(SQL_AUTH_QUERY)) {
                 ps.setString(1, emailAddress.toLowerCase());
-
                 final ResultSet rs = ps.executeQuery();
+
                 if (rs.next()) {
-                    if ( Objects.equals(rs.getBoolean("account_available"), true)) {
+                    final boolean accountLocked = rs.getBoolean("account_locked");
+                    final boolean accountVerified = rs.getBoolean("account_verified");
+                    final int loginAttempts = rs.getInt("account_login_attempts");
+                    final String passwordHash = rs.getString("password_hash");
+
+                    if ( !accountLocked && accountVerified) {
                         final String storedPasswordHash = rs.getString("password_hash");
-                        return Objects.equals(storedPasswordHash, Crypt.crypt(password, storedPasswordHash));
+                        final boolean authenticated = Objects.equals(storedPasswordHash, Crypt.crypt(password, storedPasswordHash));
+
+                        if ( !authenticated) {
+
+                        }
                     }
                 }
             }
@@ -45,3 +55,5 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         return false;
     }
 }
+
+

@@ -6,9 +6,10 @@ CREATE TABLE IF NOT EXISTS info.accounts(
     account_id integer NOT NULL DEFAULT nextval('account_id_seq'::regclass),
     account_registration_ts timestamptz NOT NULL DEFAULT NOW(),
     -- account enable / disable
-    account_available boolean NOT NULL,
-    account_available_ts timestamptz NOT NULL DEFAULT NOW(),
-    account_disable_reason character varying(128),
+    account_locked boolean NOT NULL,
+    account_locked_ts timestamptz NOT NULL DEFAULT NOW(),
+    account_lock_reason character varying(128),
+    account_login_attempts integer NOT NULL DEFAULT 0,
     -- email address
     email_address character varying(250) COLLATE pg_catalog."default" NOT NULL,
     email_address_ts timestamptz NOT NULL DEFAULT NOW(),
@@ -30,14 +31,14 @@ CREATE INDEX IF NOT EXISTS index_account_id ON info.accounts(account_id);
 -- function  && trigger for account_enabled update
 CREATE OR REPLACE FUNCTION info.update_account_enabled_ts() RETURNS TRIGGER AS $$
     BEGIN
-        NEW.account_available_ts = NOW();
+        NEW.account_locked_ts = NOW();
         RETURN NEW;
     END
 $$ LANGUAGE plpgsql;
 
 DROP TRIGGER IF EXISTS trigger_account_enabled ON info.accounts;
 CREATE TRIGGER trigger_account_enabled
-    BEFORE UPDATE OF account_available ON info.accounts
+    BEFORE UPDATE OF account_locked ON info.accounts
     FOR EACH ROW
     EXECUTE PROCEDURE info.update_account_enabled_ts();
 -- end of account_enabled

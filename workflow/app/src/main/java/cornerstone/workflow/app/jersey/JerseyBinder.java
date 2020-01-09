@@ -3,8 +3,8 @@ package cornerstone.workflow.app.jersey;
 import cornerstone.workflow.app.configuration.ConfigurationProvider;
 import cornerstone.workflow.app.datasource.AccountDB;
 import cornerstone.workflow.app.datasource.DataDB;
-import cornerstone.workflow.app.services.account_service.AccountCrudService;
-import cornerstone.workflow.app.services.account_service.AccountCrudServiceImpl;
+import cornerstone.workflow.app.services.account_service.AccountService;
+import cornerstone.workflow.app.services.account_service.AccountServiceImpl;
 import cornerstone.workflow.app.services.authentication_service.AuthenticationService;
 import cornerstone.workflow.app.services.authentication_service.AuthenticationServiceImpl;
 import cornerstone.workflow.app.services.authorization_service.AuthorizationService;
@@ -28,7 +28,7 @@ public class JerseyBinder extends AbstractBinder {
             bind(new DataDB(configurationProvider)).to(DataDB.class).in(Singleton.class);
 
             // AccountCrudService, Authentication, Authorization services
-            bind(AccountCrudServiceImpl.class).to(AccountCrudService.class).in(Singleton.class);
+            bind(AccountServiceImpl.class).to(AccountService.class).in(Singleton.class);
             bind(AuthenticationServiceImpl.class).to(AuthenticationService.class).in(Singleton.class);
             bind(AuthorizationServiceImpl.class).to(AuthorizationService.class).in(Singleton.class);
 
