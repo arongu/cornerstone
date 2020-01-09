@@ -2,14 +2,12 @@ package cornerstone.workflow.app.services.authorization_service;
 
 import cornerstone.workflow.app.configuration.ConfigurationField;
 import cornerstone.workflow.app.configuration.ConfigurationProvider;
-import cornerstone.workflow.app.datasource.AccountDB;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
-import javax.sql.DataSource;
 import java.security.Key;
 import java.time.Instant;
 import java.util.Base64;
@@ -17,9 +15,6 @@ import java.util.Date;
 
 public class AuthorizationServiceImpl implements AuthorizationService {
     private static final Logger logger = LoggerFactory.getLogger(AuthorizationServiceImpl.class);
-
-    // TODO ? roles and such should come from the db??
-    private DataSource dataSource;
     private Key key;
 
     public void loadKey(final ConfigurationProvider configurationProvider) {
@@ -32,8 +27,7 @@ public class AuthorizationServiceImpl implements AuthorizationService {
     }
 
     @Inject
-    public AuthorizationServiceImpl(final AccountDB accountDB, final ConfigurationProvider configurationProvider) {
-        this.dataSource = accountDB;
+    public AuthorizationServiceImpl(final ConfigurationProvider configurationProvider) {
         loadKey(configurationProvider);
     }
 

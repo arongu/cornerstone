@@ -3,7 +3,8 @@ package cornerstone.workflow.app.rest.login;
 import cornerstone.workflow.app.rest.account.EmailPasswordPair;
 import cornerstone.workflow.app.rest.rest_exceptions.BadRequestException;
 import cornerstone.workflow.app.rest.rest_messages.HttpMessage;
-import cornerstone.workflow.app.services.authentication_service.AuthenticationService;
+import cornerstone.workflow.app.services.account_service.AccountService;
+import cornerstone.workflow.app.services.account_service.AccountServiceException;
 import cornerstone.workflow.app.services.authorization_service.AuthorizationService;
 import cornerstone.workflow.app.services.authorization_service.AuthorizationServiceException;
 import org.slf4j.Logger;
@@ -27,53 +28,40 @@ import javax.ws.rs.ext.Provider;
 public class LoginRestService {
     private static final Logger logger = LoggerFactory.getLogger(LoginRestService.class);
 
-    private final AuthenticationService authenticationService;
-    private final AuthorizationService authorizationService;
+    private AccountService accountService;
+    private AuthorizationService authorizationService;
 
     @Inject
-    public LoginRestService(final AuthenticationService authenticationService,
-                            final AuthorizationService authorizationService) {
-
-        this.authenticationService = authenticationService;
+    public LoginRestService(final AccountService accountService, final AuthorizationService authorizationService) {
+        this.accountService = accountService;
         this.authorizationService = authorizationService;
     }
 
-    // TODO token message
+    // TODO JSON rename, exceptions
     @POST
-    public Response authenticateUser(final EmailPasswordPair JSONemailPassword)
-            throws BadRequestException, AuthorizationServiceException {
-
-        if ( null != JSONemailPassword &&
-             null != JSONemailPassword.getEmail() &&
-             null != JSONemailPassword.getPassword()) {
+    public Response authenticateUser(final EmailPasswordPair emailPasswordPair) throws BadRequestException, AccountServiceException, AuthorizationServiceException {
+        if ( null != emailPasswordPair &&
+             null != emailPasswordPair.getEmail() &&
+             null != emailPasswordPair.getPassword()) {
 
             final Response response;
             final boolean authenticated;
 
-            authenticated = authenticationService.authenticate(
-                    JSONemailPassword.getEmail(),
-                    JSONemailPassword.getPassword()
-            );
+            authenticated = accountService.login(emailPasswordPair.getEmail(), emailPasswordPair.getPassword());
 
             if ( authenticated ) {
-//                TODO fix this mess message is not in JSON format
-                final String jwt = authorizationService.issueJWT(JSONemailPassword.getEmail());
-                response = Response.status(Response.Status.ACCEPTED)
-                        .entity(jwt)
-                        .build();
+                final String jwt = authorizationService.issueJWT(emailPasswordPair.getEmail());
 
-                logger.info("[ NEW ACCESS TOKEN ][ GRANTED ] -- '{}'", JSONemailPassword.getEmail());
+                response = Response.status(Response.Status.ACCEPTED).entity(jwt).build();
+                logger.info("[ NEW ACCESS TOKEN ][ GRANTED ] -- '{}'", emailPasswordPair.getEmail());
 
             } else {
-                response = Response.status(Response.Status.FORBIDDEN)
-                        .entity(
-                                new HttpMessage(
-                                        Response.Status.FORBIDDEN.toString(),
-                                        Response.Status.FORBIDDEN.getStatusCode()
-                                )
-                        ).build();
+                final HttpMessage httpMessage = new HttpMessage(
+                        Response.Status.FORBIDDEN.toString(), Response.Status.FORBIDDEN.getStatusCode()
+                );
 
-                logger.info("[ NEW ACCESS TOKEN ][ DENIED ] -- '{}'", JSONemailPassword.getEmail());
+                response = Response.status(Response.Status.FORBIDDEN).entity(httpMessage).build();
+                logger.info("[ NEW ACCESS TOKEN ][ DENIED ] -- '{}'", emailPasswordPair.getEmail());
             }
 
             return response;
