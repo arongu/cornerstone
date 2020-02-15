@@ -1,7 +1,7 @@
-package cornerstone.workflow.app.rest.info;
+package cornerstone.workflow.app.rest.endpoint.info;
 
 import cornerstone.workflow.app.configuration.ConfigurationProvider;
-import cornerstone.workflow.app.rest.rest_security.Secured;
+import cornerstone.workflow.app.rest.security.Secured;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;

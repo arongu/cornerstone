@@ -1,4 +1,4 @@
-package cornerstone.workflow.app.rest.rest_security;
+package cornerstone.workflow.app.rest.security;
 
 import javax.ws.rs.NameBinding;
 import java.lang.annotation.Retention;

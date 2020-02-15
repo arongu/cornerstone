@@ -1,7 +1,7 @@
 package cornerstone.workflow.app.services.account_service;
 
 import cornerstone.workflow.app.datasource.AccountDB;
-import cornerstone.workflow.app.rest.account.EmailPasswordPair;
+import cornerstone.workflow.app.rest.endpoint.account.EmailAndPassword;
 import org.apache.commons.codec.digest.Crypt;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.slf4j.Logger;
@@ -83,12 +83,12 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public int createAccount(final String emailAddress, final String password, final boolean available) throws AccountServiceException {
+    public int createAccount(final String emailAddress, final String password, final boolean accountLocked) throws AccountServiceException {
         try (final Connection conn = dataSource.getConnection()) {
             try (final PreparedStatement ps = conn.prepareStatement(SQL_CREATE_ACCOUNT)) {
                 ps.setString(1, Crypt.crypt(password));
                 ps.setString(2, emailAddress.toLowerCase());
-                ps.setBoolean(3, available);
+                ps.setBoolean(3, accountLocked);
                 ps.setBoolean(4, false);
 
                 return ps.executeUpdate();
@@ -102,13 +102,13 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public int createAccounts(final List<EmailPasswordPair> list) throws AccountServiceBulkException {
+    public int createAccounts(final List<EmailAndPassword> list) throws AccountServiceBulkException {
         AccountServiceBulkException accountServiceBulkException = null;
         int updates = 0;
 
         try (final Connection conn = dataSource.getConnection()) {
             try (final PreparedStatement ps = conn.prepareStatement(SQL_CREATE_ACCOUNT)) {
-                for (final EmailPasswordPair account : list) {
+                for (final EmailAndPassword account : list) {
                     if ( null != account ) {
                         try {
                             ps.setString(1, Crypt.crypt(account.getPassword()));

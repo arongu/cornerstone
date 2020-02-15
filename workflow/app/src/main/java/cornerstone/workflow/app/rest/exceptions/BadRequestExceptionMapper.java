@@ -1,6 +1,6 @@
-package cornerstone.workflow.app.rest.rest_exceptions;
+package cornerstone.workflow.app.rest.exceptions;
 
-import cornerstone.workflow.app.rest.rest_messages.HttpMessage;
+import cornerstone.workflow.app.rest.util.HttpMessage;
 
 import javax.inject.Singleton;
 import javax.ws.rs.core.MediaType;

@@ -1,6 +1,6 @@
 package cornerstone.workflow.app.services.account_service;
 
-import cornerstone.workflow.app.rest.account.EmailPasswordPair;
+import cornerstone.workflow.app.rest.endpoint.account.EmailAndPassword;
 
 import java.util.List;
 
@@ -9,8 +9,8 @@ public interface AccountService {
     AccountResultSetDto getAccount(final String emailAddress) throws AccountServiceException;
 
     // CRUD
-    int createAccount(final String emailAddress, final String password, final boolean available) throws AccountServiceException;
-    int createAccounts(final List<EmailPasswordPair> list) throws AccountServiceBulkException;
+    int createAccount(final String emailAddress, final String password, final boolean accountLocked) throws AccountServiceException;
+    int createAccounts(final List<EmailAndPassword> list) throws AccountServiceBulkException;
 
     int deleteAccount(final String emailAddress) throws AccountServiceException;
     int deleteAccounts(final List<String> emailAddresses) throws AccountServiceBulkException;

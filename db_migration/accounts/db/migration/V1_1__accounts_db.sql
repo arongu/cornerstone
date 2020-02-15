@@ -94,7 +94,7 @@ CREATE TRIGGER trigger_email_address_verified
 -- Table for account features
 ----------------------------------------------------------------------------
 -- table accounts_features
-CREATE TABLE IF NOT EXISTS info.accounts_features(
+CREATE TABLE IF NOT EXISTS info.account_login(
     account_id integer NOT NULL,
     -- constraints
     CONSTRAINT fk_account_id FOREIGN KEY (account_id)

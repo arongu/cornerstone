@@ -1,4 +1,4 @@
-package cornerstone.workflow.app.rest.rest_security;
+package cornerstone.workflow.app.rest.security;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -1,4 +1,4 @@
-package cornerstone.workflow.app.rest.account;
+package cornerstone.workflow.app.rest.endpoint.account;
 
 import cornerstone.workflow.app.services.account_service.AccountServiceException;
 
@@ -10,7 +10,7 @@ import javax.ws.rs.ext.Provider;
 
 @Singleton
 @Provider
-public class AccountCrudServiceExceptionJsonMapper implements ExceptionMapper<AccountServiceException> {
+public class AccountServiceExceptionJsonMapper implements ExceptionMapper<AccountServiceException> {
     @Override
     public Response toResponse(final AccountServiceException e) {
         return Response.status(Response.Status.INTERNAL_SERVER_ERROR)

@@ -1,11 +1,15 @@
 package cornerstone.workflow.app.configuration;
 
+import cornerstone.workflow.app.configuration.enums.ConfigFieldsApp;
+import cornerstone.workflow.app.configuration.enums.ConfigFieldsDbAccount;
+import cornerstone.workflow.app.configuration.enums.ConfigFieldsDbData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Properties;
 
 public class ConfigurationParser {
+
     private static final Logger logger = LoggerFactory.getLogger(ConfigurationParser.class);
     private static final String errorMessage = "'{}' is not set";
     private static final String ignoreMessage = "'{}' is ignored";
@@ -18,14 +22,26 @@ public class ConfigurationParser {
        processProperties(properties);
     }
 
-    private void addWithLog(final Properties properties, final String key, final String value, final String messagePrefix) {
-        if ( null != value && ! value.isEmpty() ) {
+    /**
+     * Adds key value to Properties object, with logging.
+     */
+    private void addAndLog(final Properties properties,
+                           final String key,
+                           final String value,
+                           final String logPrefix) {
+
+        if ( key != null && !key.isEmpty() &&
+             value != null && !value.isEmpty() ) {
+
             properties.setProperty(key, value);
 
-            if ( ! (key.contains("password") || key.contains("key"))) {
-                logger.info("[ {} ] <-- '{}' = '{}'", messagePrefix, key, value);
+            if ( key.contains("password") ||
+                 key.contains("key") ) {
+
+                logger.info("[ {} ] <-- '{}' = *****", logPrefix, key);
+
             } else {
-                logger.info("[ {} ] <-- '{}' = *****", messagePrefix, key);
+                logger.info("[ {} ] <-- '{}' = '{}'", logPrefix, key, value);
             }
 
         } else {
@@ -34,42 +50,61 @@ public class ConfigurationParser {
     }
 
     public void processProperties(final Properties properties) {
-        app_properties = new Properties();
-        db_account_properties = new Properties();
-        db_data_properties = new Properties();
 
-        for (ConfigurationField field : ConfigurationField.values()) {
-            final String key = field.getKey();
+        // get db_data_fields
+        {
+            db_data_properties = new Properties();
 
-            if ( ConfigurationField.DB_ACCOUNT_DRIVER == field ||
-                    ConfigurationField.DB_ACCOUNT_URL == field ||
-                    ConfigurationField.DB_ACCOUNT_USER == field ||
-                    ConfigurationField.DB_ACCOUNT_PASSWORD == field ||
-                    ConfigurationField.DB_ACCOUNT_MIN_IDLE == field ||
-                    ConfigurationField.DB_ACCOUNT_MAX_IDLE == field ||
-                    ConfigurationField.DB_ACCOUNT_MAX_OPEN == field) {
+            for ( final ConfigFieldsDbData field : ConfigFieldsDbData.values() ) {
+                if ( null != properties.get(field.key) ) {
+                    addAndLog(
+                            db_data_properties,
+                            field.key,
+                            properties.getProperty(field.key),
+                            ConfigFieldsDbData.prefix_db_main
+                    );
 
-                final String value = properties.getProperty(key);
-                addWithLog(db_account_properties, key, value, ConfigurationField.account_db_prefix);
+                } else {
+                    logger.info(ignoreMessage, field.key);
+                }
+            }
+        }
 
-            } else if (ConfigurationField.DB_DATA_DRIVER == field ||
-                    ConfigurationField.DB_DATA_URL == field ||
-                    ConfigurationField.DB_DATA_USER == field ||
-                    ConfigurationField.DB_DATA_PASSWORD == field ||
-                    ConfigurationField.DB_DATA_MIN_IDLE == field ||
-                    ConfigurationField.DB_DATA_MAX_IDLE == field ||
-                    ConfigurationField.DB_DATA_MAX_OPEN == field){
+        // get db_account_fields
+        {
+            db_account_properties = new Properties();
 
-                final String value = properties.getProperty(key);
-                addWithLog(db_data_properties, key, value, ConfigurationField.db_main_prefix);
+            for ( final ConfigFieldsDbAccount field : ConfigFieldsDbAccount.values() ) {
+                if ( null != properties.get(field.key) ) {
+                    addAndLog(
+                            db_account_properties,
+                            field.key,
+                            properties.getProperty(field.key),
+                            ConfigFieldsDbAccount.prefix_db_account
+                    );
 
-            } else if (ConfigurationField.APP_ADMIN_USER == field || ConfigurationField.APP_JWS_KEY == field) {
+                } else {
+                    logger.info(ignoreMessage, field.key);
+                }
+            }
+        }
 
-                final String value = properties.getProperty(key);
-                addWithLog(app_properties, key, value, "app");
+        // get app_account_fields
+        {
+            app_properties = new Properties();
 
-            } else {
-                logger.info(ignoreMessage, key);
+            for ( final ConfigFieldsApp field : ConfigFieldsApp.values() ) {
+                if ( null != properties.get(field.key) ) {
+                    addAndLog(
+                            app_properties,
+                            field.key,
+                            properties.getProperty(field.key),
+                            ConfigFieldsApp.prefix_app
+                    );
+
+                } else {
+                    logger.info(ignoreMessage, field.key);
+                }
             }
         }
     }

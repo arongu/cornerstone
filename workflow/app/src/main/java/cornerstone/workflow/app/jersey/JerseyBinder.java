@@ -5,8 +5,6 @@ import cornerstone.workflow.app.datasource.AccountDB;
 import cornerstone.workflow.app.datasource.DataDB;
 import cornerstone.workflow.app.services.account_service.AccountService;
 import cornerstone.workflow.app.services.account_service.AccountServiceImpl;
-import cornerstone.workflow.app.services.authentication_service.AuthenticationService;
-import cornerstone.workflow.app.services.authentication_service.AuthenticationServiceImpl;
 import cornerstone.workflow.app.services.authorization_service.AuthorizationService;
 import cornerstone.workflow.app.services.authorization_service.AuthorizationServiceImpl;
 import org.glassfish.jersey.internal.inject.AbstractBinder;
@@ -29,7 +27,6 @@ public class JerseyBinder extends AbstractBinder {
 
             // AccountCrudService, Authentication, Authorization services
             bind(AccountServiceImpl.class).to(AccountService.class).in(Singleton.class);
-            bind(AuthenticationServiceImpl.class).to(AuthenticationService.class).in(Singleton.class);
             bind(AuthorizationServiceImpl.class).to(AuthorizationService.class).in(Singleton.class);
 
         } catch (final IOException e) {

@@ -1,4 +1,4 @@
-package cornerstone.workflow.app.rest.account;
+package cornerstone.workflow.app.rest.endpoint.account;
 
 import cornerstone.workflow.app.services.account_service.AccountServiceBulkException;
 import cornerstone.workflow.app.services.account_service.AccountServiceException;
@@ -13,7 +13,7 @@ import java.util.List;
 
 @Singleton
 @Provider
-public class AccountCrudServiceBulkExceptionJsonMapper implements ExceptionMapper<AccountServiceBulkException> {
+public class AccountServiceBulkExceptionJsonMapper implements ExceptionMapper<AccountServiceBulkException> {
     @Override
     public Response toResponse(final AccountServiceBulkException accountServiceBulkException) {
         final List<String> exceptionMessages = new LinkedList<>();

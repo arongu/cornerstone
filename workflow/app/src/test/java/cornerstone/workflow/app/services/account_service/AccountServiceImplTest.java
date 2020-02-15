@@ -11,7 +11,10 @@ import java.nio.file.Paths;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+// TODO fix tc
+
 public class AccountServiceImplTest {
+
     private static final String dev_files_dir = "../../_dev_files/test_config/";
     private static final String confPath  = Paths.get(dev_files_dir + "app.conf").toAbsolutePath().normalize().toString();
     private static final String keyPath = Paths.get(dev_files_dir + "key.conf").toAbsolutePath().normalize().toString();
@@ -26,6 +29,7 @@ public class AccountServiceImplTest {
         try {
             configurationProvider = new ConfigurationProvider();
             configurationProvider.loadConfig();
+
         } catch (final IOException e) {
             e.printStackTrace();
         }
@@ -38,11 +42,36 @@ public class AccountServiceImplTest {
     }
 
     @Test
-    public void getAccount_shouldReturnNull_whenEmailDoesNotExist() throws AccountServiceException {
+    public void getAccount_shouldReturnNull_whenAccountDoesNotExist() throws AccountServiceException {
         final AccountDB accountDB = new AccountDB(configurationProvider);
         final AccountService accountService = new AccountServiceImpl(accountDB);
 
         assertNull(accountService.getAccount("nosuch@mail.com"));
+    }
+
+
+    @Test
+    public void createAccount_shouldCreateOneAccount_whenAccountDoesNotExist() throws AccountServiceException {
+
+        final String EMAIL_ADDRESS = "almafa@gmail.com";
+        final String PASSWORD = "password";
+        final boolean LOCKED = false;
+
+        final AccountDB accountDB = new AccountDB(configurationProvider);
+        final AccountService accountService = new AccountServiceImpl(accountDB);
+
+
+        final int n = accountService.createAccount(EMAIL_ADDRESS, PASSWORD, LOCKED);
+
+
+        final AccountResultSetDto accountResultSetDto = accountService.getAccount(EMAIL_ADDRESS);
+        assertEquals(1, n);
+        assertEquals(EMAIL_ADDRESS, accountResultSetDto.get_email_address());
+        assertEquals(LOCKED, accountResultSetDto.get_account_locked());
+
+        // Cleanup
+        accountService.deleteAccount(EMAIL_ADDRESS);
+        assertNull(accountService.getAccount(EMAIL_ADDRESS));
     }
 
     @Test
@@ -55,16 +84,7 @@ public class AccountServiceImplTest {
 
         final AccountDB accountDB = new AccountDB(configurationProvider);
         final AccountService accountService = new AccountServiceImpl(accountDB);
-
-        // Phase #1 create, delete
-        accountService.createAccount(email_address, password, true);    // create account
-
-        AccountResultSetDto dto = accountService.getAccount(email_address);
-
-        assertTrue(dto.get_account_locked());                    // should return true
-        assertEquals(email_address, dto.get_email_address());       // should match with the specified email
-        assertFalse(dto.get_password_hash().contains(password));    // should not contain password string
-
+        
 
         // Phase #2 change email address
         int id = dto.get_account_id();
@@ -79,22 +99,22 @@ public class AccountServiceImplTest {
 
 
         // Phase #3 disable account
-        accountService.unlockAccount(email_address_changed, reason);                   // disable account
+        accountService.unlockAccount(email_address_changed);                            // disable account
         dto = accountService.getAccount(email_address_changed);                         // get account
 
-        assertFalse(dto.get_account_locked());                                           // should return false
-        assertEquals(reason, dto.get_account_disable_reason());                             // should match with reason
+        assertFalse(dto.get_account_locked());                                          // should return false
+        assertEquals(reason, dto.get_account_lock_reason());                            // should match with reason
 
 
         // Phase #4 re-enable account
-        accountService.lockAccount(email_address_changed);                            // enable account
+        accountService.lockAccount(email_address_changed, "lock reason");       // enable account
         dto = accountService.getAccount(email_address_changed);                         // get account
 
-        assertTrue(dto.get_account_locked());                                            // should be true
+        assertTrue(dto.get_account_locked());                                           // should be true
 
 
         // Phase #5 password change
-        String originalPassword = dto.get_password_hash();                                  // store original password hash
+        String originalPassword = dto.get_password_hash();                              // store original password hash
         accountService.setAccountPassword(email_address_changed, "newpassword");
         dto = accountService.getAccount(email_address_changed);
 
