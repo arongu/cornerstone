@@ -7,9 +7,8 @@ import org.junit.jupiter.api.*;
 import java.io.IOException;
 import java.nio.file.Paths;
 
-import static org.junit.jupiter.api.Assertions.*;
-
-// TODO fix tc
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class AccountServiceImplTest {
@@ -83,6 +82,7 @@ public class AccountServiceImplTest {
     }
 
 
+    // TODO create more TCs
     /*@Test
     public void crud_tests() throws AccountServiceException {
         final String email_address = "crud_tests@x-mail.com";
