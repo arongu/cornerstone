@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.nio.file.Paths;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class ConfigurationProviderTest {
 
@@ -15,23 +15,32 @@ public class ConfigurationProviderTest {
     private static final String keyPath = Paths.get(dev_files_dir + "key.conf").toAbsolutePath().normalize().toString();
 
     @AfterAll
-    public static void unset() {
+    public static void unsetProperties() {
         System.clearProperty(ConfigurationProvider.SYSTEM_PROPERTY_KEY_FILE);
         System.clearProperty(ConfigurationProvider.SYSTEM_PROPERTY_CONF_FILE);
     }
 
 
     @Test
-    public void getSystemProperties_shouldFallBackToDefault_whenNotSet() throws IOException {
+    public void getSystemProperties_shouldFallBackToDefaultAndThrowIOException_whenNotSetAndDoesNotHavePermissionToOpenIt() {
         final ConfigurationProvider cp = new ConfigurationProvider();
-        unset();
+        unsetProperties();
 
-        cp.loadConfig();
+        final IOException e = assertThrows(IOException.class, cp::loadConfig);
 
-        assertEquals(ConfigurationProvider.PATH_DEFAULT_KEY_FILE, cp.getKeyFile());
-        assertEquals(ConfigurationProvider.PATH_DEFAULT_CONF_FILE, cp.getConfFile());
+        assertTrue(e.getMessage().contains("/var/opt/cornerstone/key.conf (Permission denied)"));
     }
 
+//    @Test
+//    public void getSystemProperties_shouldFallBackToDefault_whenNotSetAndHasTheRightPermissions() throws IOException {
+//        final ConfigurationProvider cp = new ConfigurationProvider();
+//        unset();
+//
+//        cp.loadConfig();
+//
+//        assertEquals(ConfigurationProvider.PATH_DEFAULT_KEY_FILE, cp.getKeyFile());
+//        assertEquals(ConfigurationProvider.PATH_DEFAULT_CONF_FILE, cp.getConfFile());
+//    }
 
     @Test
     public void getSystemProperties_shouldUseSystemProperties_whenSet() throws IOException {

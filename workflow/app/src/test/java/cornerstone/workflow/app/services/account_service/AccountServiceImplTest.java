@@ -21,7 +21,7 @@ public class AccountServiceImplTest {
     private static ConfigurationProvider configurationProvider;
 
     @BeforeAll
-    public static void init() {
+    public static void setSystemProperties() {
         System.setProperty(ConfigurationProvider.SYSTEM_PROPERTY_CONF_FILE, confPath);
         System.setProperty(ConfigurationProvider.SYSTEM_PROPERTY_KEY_FILE, keyPath);
 
@@ -35,10 +35,11 @@ public class AccountServiceImplTest {
     }
 
     @AfterAll
-    public static void cleanUp() {
+    public static void removeSystemProperties() {
         System.clearProperty(ConfigurationProvider.SYSTEM_PROPERTY_CONF_FILE);
         System.clearProperty(ConfigurationProvider.SYSTEM_PROPERTY_KEY_FILE);
     }
+
 
     @Test
     @Order(1)
@@ -48,8 +49,6 @@ public class AccountServiceImplTest {
 
         assertNull(accountService.getAccount("nosuch@mail.com"));
     }
-
-
 
     @Test
     @Order(2)
