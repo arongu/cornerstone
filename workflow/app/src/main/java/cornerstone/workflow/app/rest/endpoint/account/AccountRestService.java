@@ -32,14 +32,14 @@ public class AccountRestService {
                                                                          BadRequestException {
         if ( null != account ) {
             accountService.createAccount(
-                    account.getEmail(),
-                    account.getPassword(),
+                    account.email,
+                    account.password,
                     true
             );
 
             return Response
                     .status(Response.Status.CREATED)
-                    .entity(account.getEmail())
+                    .entity(account.email)
                     .build();
 
         } else {

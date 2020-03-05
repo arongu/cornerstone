@@ -1,6 +1,6 @@
 package cornerstone.workflow.app.services.account_service;
 
-import cornerstone.workflow.app.datasource.AccountDB;
+import cornerstone.workflow.app.datasource.DataSourceAccountDB;
 import cornerstone.workflow.app.rest.endpoint.account.EmailAndPassword;
 import org.apache.commons.codec.digest.Crypt;
 import org.apache.commons.dbcp2.BasicDataSource;
@@ -39,8 +39,8 @@ public class AccountServiceImpl implements AccountService {
     private static final String SQL_AUTH_QUERY                    = "SELECT account_locked, account_verified, account_login_attempts, password_hash FROM info.accounts WHERE email_address=(?)";
 
     @Inject
-    public AccountServiceImpl(final AccountDB AccountDB) {
-        this.dataSource = AccountDB;
+    public AccountServiceImpl(final DataSourceAccountDB DataSourceAccountDB) {
+        this.dataSource = DataSourceAccountDB;
     }
 
     @Override
@@ -111,15 +111,15 @@ public class AccountServiceImpl implements AccountService {
                 for (final EmailAndPassword account : list) {
                     if ( null != account ) {
                         try {
-                            ps.setString(1, Crypt.crypt(account.getPassword()));
-                            ps.setString(2, account.getEmail().toLowerCase());
+                            ps.setString(1, Crypt.crypt(account.password));
+                            ps.setString(2, account.email.toLowerCase());
                             ps.setBoolean(3, true);
                             ps.setBoolean(4, false);
 
                             updates += ps.executeUpdate();
 
                         } catch (final SQLException e) {
-                            final String msg = String.format(ERROR_MESSAGE_CREATE_ACCOUNT, account.getEmail(), e.getMessage(), e.getSQLState());
+                            final String msg = String.format(ERROR_MESSAGE_CREATE_ACCOUNT, account.email, e.getMessage(), e.getSQLState());
                             logger.error(msg);
 
                             if ( null == accountServiceBulkException) {

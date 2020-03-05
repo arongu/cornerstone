@@ -1,8 +1,8 @@
 package cornerstone.workflow.app.jersey;
 
 import cornerstone.workflow.app.configuration.ConfigurationProvider;
-import cornerstone.workflow.app.datasource.AccountDB;
-import cornerstone.workflow.app.datasource.DataDB;
+import cornerstone.workflow.app.datasource.DataSourceAccountDB;
+import cornerstone.workflow.app.datasource.DataSourceDataDB;
 import cornerstone.workflow.app.services.account_service.AccountService;
 import cornerstone.workflow.app.services.account_service.AccountServiceImpl;
 import cornerstone.workflow.app.services.authorization_service.AuthorizationService;
@@ -22,8 +22,8 @@ public class JerseyBinder extends AbstractBinder {
             bind(configurationProvider).to(ConfigurationProvider.class).in(Singleton.class);
 
             // DB Pool bindings
-            bind(new AccountDB(configurationProvider)).to(AccountDB.class).in(Singleton.class);
-            bind(new DataDB(configurationProvider)).to(DataDB.class).in(Singleton.class);
+            bind(new DataSourceAccountDB(configurationProvider)).to(DataSourceAccountDB.class).in(Singleton.class);
+            bind(new DataSourceDataDB(configurationProvider)).to(DataSourceDataDB.class).in(Singleton.class);
 
             // AccountCrudService, Authentication, Authorization services
             bind(AccountServiceImpl.class).to(AccountService.class).in(Singleton.class);

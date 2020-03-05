@@ -3,6 +3,7 @@ package cornerstone.workflow.app.configuration;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
 import java.nio.file.Paths;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -21,11 +22,11 @@ public class ConfigurationProviderTest {
 
 
     @Test
-    public void getSystemProperties_shouldFallBackToDefault_whenNotSet() {
+    public void getSystemProperties_shouldFallBackToDefault_whenNotSet() throws IOException {
         final ConfigurationProvider cp = new ConfigurationProvider();
         unset();
 
-        cp.getSystemProperties();
+        cp.loadConfig();
 
         assertEquals(ConfigurationProvider.PATH_DEFAULT_KEY_FILE, cp.getKeyFile());
         assertEquals(ConfigurationProvider.PATH_DEFAULT_CONF_FILE, cp.getConfFile());
@@ -33,12 +34,12 @@ public class ConfigurationProviderTest {
 
 
     @Test
-    public void getSystemProperties_shouldUseSystemProperties_whenSet() {
+    public void getSystemProperties_shouldUseSystemProperties_whenSet() throws IOException {
         final ConfigurationProvider cp = new ConfigurationProvider();
         System.setProperty(ConfigurationProvider.SYSTEM_PROPERTY_KEY_FILE, keyPath);
         System.setProperty(ConfigurationProvider.SYSTEM_PROPERTY_CONF_FILE, confPath);
 
-        cp.getSystemProperties();
+        cp.loadConfig();
 
         assertEquals(keyPath, cp.getKeyFile());
         assertEquals(confPath, cp.getConfFile());
