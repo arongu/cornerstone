@@ -76,24 +76,20 @@ public class AccountServiceImpl implements AccountService {
 
             final ResultSet rs = ps.executeQuery();
             if ( rs.next() ) {
-                final AccountResultSetDto dto = new AccountResultSetDto();
-                dto.set_account_id(rs.getInt("account_id"));
-                dto.set_account_registration_ts(rs.getTimestamp("account_registration_ts"));
-
-                dto.set_account_locked(rs.getBoolean("account_locked"));
-                dto.set_account_locked_ts(rs.getTimestamp("account_locked_ts"));
-                dto.set_account_lock_reason(rs.getString("account_lock_reason"));
-                dto.set_account_login_attempts(rs.getInt("account_login_attempts"));
-
-                dto.set_email_address(rs.getString("email_address"));
-                dto.set_email_address_ts(rs.getTimestamp("email_address_ts"));
-                dto.set_email_address_verified(rs.getBoolean("email_address_verified"));
-                dto.set_email_address_verified_ts(rs.getTimestamp("email_address_verified_ts"));
-
-                dto.set_password_hash(rs.getString("password_hash"));
-                dto.set_password_hash_ts(rs.getTimestamp("password_hash_ts"));
-
-                return dto;
+                return new AccountResultSetDto(
+                        rs.getInt("account_id"),
+                        rs.getTimestamp("account_registration_ts"),
+                        rs.getBoolean("account_locked"),
+                        rs.getTimestamp("account_locked_ts"),
+                        rs.getString("account_lock_reason"),
+                        rs.getInt("account_login_attempts"),
+                        rs.getString("email_address"),
+                        rs.getTimestamp("email_address_ts"),
+                        rs.getBoolean("email_address_verified"),
+                        rs.getTimestamp("email_address_verified_ts"),
+                        rs.getString("password_hash"),
+                        rs.getTimestamp("password_hash_ts")
+                );
 
             } else {
                 return null;

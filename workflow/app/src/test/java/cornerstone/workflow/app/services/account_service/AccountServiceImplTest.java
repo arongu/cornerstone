@@ -2,137 +2,192 @@ package cornerstone.workflow.app.services.account_service;
 
 import cornerstone.workflow.app.configuration.ConfigurationProvider;
 import cornerstone.workflow.app.datasource.DataSourceAccountDB;
+import org.apache.commons.codec.digest.Crypt;
 import org.junit.jupiter.api.*;
 
 import java.io.IOException;
 import java.nio.file.Paths;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class AccountServiceImplTest {
-
-    private static final String dev_files_dir = "../../_dev_files/test_config/";
-    private static final String confPath  = Paths.get(dev_files_dir + "app.conf").toAbsolutePath().normalize().toString();
-    private static final String keyPath = Paths.get(dev_files_dir + "key.conf").toAbsolutePath().normalize().toString();
-
-    private static ConfigurationProvider configurationProvider;
+    private static AccountService service;
 
     @BeforeAll
     public static void setSystemProperties() {
-        System.setProperty(ConfigurationProvider.SYSTEM_PROPERTY_CONF_FILE, confPath);
-        System.setProperty(ConfigurationProvider.SYSTEM_PROPERTY_KEY_FILE, keyPath);
+        final String dev_files_dir = "../../_dev_files/test_config/";
+        final String confPath = Paths.get(dev_files_dir + "app.conf").toAbsolutePath().normalize().toString();
+        final String keyPath = Paths.get(dev_files_dir + "key.conf").toAbsolutePath().normalize().toString();
+
+        System.setProperty(ConfigurationProvider.SYSTEM_PROPERTY_KEY__CONF_FILE, confPath);
+        System.setProperty(ConfigurationProvider.SYSTEM_PROPERTY_KEY__KEY_FILE, keyPath);
 
         try {
-            configurationProvider = new ConfigurationProvider();
-            configurationProvider.loadConfig();
+            final ConfigurationProvider cfp = new ConfigurationProvider();
+            cfp.loadConfig();
 
-        } catch (final IOException e) {
+            final DataSourceAccountDB ds = new DataSourceAccountDB(cfp);
+            service = new AccountServiceImpl(ds);
+
+        } catch ( final IOException e ) {
             e.printStackTrace();
         }
     }
 
     @AfterAll
     public static void removeSystemProperties() {
-        System.clearProperty(ConfigurationProvider.SYSTEM_PROPERTY_CONF_FILE);
-        System.clearProperty(ConfigurationProvider.SYSTEM_PROPERTY_KEY_FILE);
+        System.clearProperty(ConfigurationProvider.SYSTEM_PROPERTY_KEY__CONF_FILE);
+        System.clearProperty(ConfigurationProvider.SYSTEM_PROPERTY_KEY__KEY_FILE);
     }
 
 
     @Test
-    @Order(1)
-    public void getAccount_shouldReturnNull_whenAccountDoesNotExist() throws AccountServiceException {
-        final DataSourceAccountDB ds_account_db = new DataSourceAccountDB(configurationProvider);
-        final AccountService accountService = new AccountServiceImpl(ds_account_db);
-
-        assertNull(accountService.getAccount("nosuch@mail.com"));
+    @Order(0)
+    public void t00_getAccount_shouldReturnNull_whenAccountDoesNotExist() throws AccountServiceException {
+        assertNull(service.getAccount("nosuch@mail.com"));
     }
 
     @Test
-    @Order(2)
-    public void createAccount_shouldCreateOneAccount_whenAccountDoesNotExist() throws AccountServiceException {
-        final String EMAIL_ADDRESS = "almafa@gmail.com";
-        final String PASSWORD = "password";
-        final boolean LOCKED = false;
-
-        final DataSourceAccountDB ds = new DataSourceAccountDB(configurationProvider);
-        final AccountService srv = new AccountServiceImpl(ds);
-
-
-        final int n = srv.createAccount(EMAIL_ADDRESS, PASSWORD, LOCKED);
-
-
-        final AccountResultSetDto accountResultSetDto = srv.getAccount(EMAIL_ADDRESS);
-        assertEquals(1, n);
-        assertEquals(EMAIL_ADDRESS, accountResultSetDto.get_email_address());
-        assertEquals(LOCKED, accountResultSetDto.get_account_locked());
-    }
-
-    @Test
-    @Order(3)
-    public void deleteAccount_shouldDeleteAccount_whenCalled() throws AccountServiceException {
-        final DataSourceAccountDB ds = new DataSourceAccountDB(configurationProvider);
-        final AccountService srv = new AccountServiceImpl(ds);
-
-        final int n = srv.deleteAccount("almafa@gmail.com");
-
-        assertNull(srv.getAccount("almafa@gmail.com"));
-        assertEquals(1, n);
-    }
-
-
-    // TODO create more TCs
-    /*@Test
-    public void crud_tests() throws AccountServiceException {
-        final String email_address = "crud_tests@x-mail.com";
-        final String email_address_changed = "my_new_crud_tests_mail@yahoo.com";
+    @Order(10)
+    public void t01_createAccount_shouldCreateOneAccount_whenAccountDoesNotExist() throws AccountServiceException {
+        final String email = "almafa@gmail.com";
         final String password = "password";
-        final String reason = "disable reason";
+        final boolean locked = false;
+
+        final int n = service.createAccount(email, password, locked);
+        final AccountResultSetDto dto = service.getAccount(email);
+
+        assertEquals(1, n);
+        assertEquals(email, dto.email_address);
+        assertEquals(locked, dto.account_locked);
+    }
+
+    @Test
+    @Order(11)
+    public void t01b_createAccount_shouldThrowAccountServiceException_whenAccountAlreadyExists() {
+        assertThrows(AccountServiceException.class, () -> {
+            final String email = "almafa@gmail.com";
+            final String password = "password";
+            final boolean locked = false;
+
+            service.createAccount(email, password, locked);
+        });
+    }
+
+    @Test
+    @Order(20)
+    public void t02_deletePreviousAccount_shouldDeleteAccount() throws AccountServiceException {
+        final String email = "almafa@gmail.com";
+        final int n = service.deleteAccount("almafa@gmail.com");
+
+        assertNull(service.getAccount(email));
+        assertEquals(1, n);
+    }
+
+    @Test
+    @Order(30)
+    public void t03_createAnotherAccount_shouldCreateAnotherAccount() throws AccountServiceException {
+        final String email = "crud_tests@x-mail.com";
+        final boolean locked = false;
+        final String password = "password";
+
+        final int n = service.createAccount(email, password, locked);
+        final AccountResultSetDto dto = service.getAccount(email);
 
 
-        final AccountDB accountDB = new AccountDB(configurationProvider);
-        final AccountService accountService = new AccountServiceImpl(accountDB);
-        
+        assertEquals(1, n);
+        assertEquals(dto.email_address, email);
+        assertEquals(dto.account_locked, locked);
+        assertEquals(dto.password_hash, Crypt.crypt(password, dto.password_hash));
+    }
 
-        // Phase #2 change email address
-        int id = dto.get_account_id();
-        accountService.setAccountEmailAddress(email_address, email_address_changed);    // change email address
-        dto = accountService.getAccount(email_address_changed);                         // get account
+    @Test
+    @Order(40)
+    public void t04_setNewEmailAddressForPreviouslyCreatedAccount() throws AccountServiceException {
+        final String email = "crud_tests@x-mail.com";
+        final String newEmail = "my_new_crud_tests_mail@yahoo.com";
+        final AccountResultSetDto beforeEmailChange;
+        final AccountResultSetDto afterEmailChange;
 
-        // Should return null, since email address changed !
-        assertNull(accountService.getAccount(email_address));                           // should return null
+        beforeEmailChange = service.getAccount(email);
+        service.setAccountEmailAddress(email, newEmail);
+        afterEmailChange = service.getAccount(newEmail);
 
-        // Id should be the same, since the account id is unchanged, only the address
-        assertEquals(id, dto.get_account_id());
+        assertNull(service.getAccount(email));                              // old email should return null
+        assertEquals(newEmail, afterEmailChange.email_address);            // get new email account should return account
+        assertEquals(beforeEmailChange.account_id, afterEmailChange.account_id);    // account id should be same for the new email
+    }
 
+    @Test
+    @Order(50)
+    public void t05_lockAccount_shouldLockAccount() throws AccountServiceException {
+        final String email_address = "my_new_crud_tests_mail@yahoo.com";
+        final String reason = "naughty";
 
-        // Phase #3 disable account
-        accountService.unlockAccount(email_address_changed);                            // disable account
-        dto = accountService.getAccount(email_address_changed);                         // get account
-
-        assertFalse(dto.get_account_locked());                                          // should return false
-        assertEquals(reason, dto.get_account_lock_reason());                            // should match with reason
-
-
-        // Phase #4 re-enable account
-        accountService.lockAccount(email_address_changed, "lock reason");       // enable account
-        dto = accountService.getAccount(email_address_changed);                         // get account
-
-        assertTrue(dto.get_account_locked());                                           // should be true
-
-
-        // Phase #5 password change
-        String originalPassword = dto.get_password_hash();                              // store original password hash
-        accountService.setAccountPassword(email_address_changed, "newpassword");
-        dto = accountService.getAccount(email_address_changed);
+        final AccountResultSetDto beforeLock = service.getAccount(email_address);
+        final int n = service.lockAccount(email_address, reason);
+        final AccountResultSetDto afterLock = service.getAccount(email_address);
 
 
-        assertNotEquals(originalPassword, dto.get_password_hash());
+        assertEquals(1, n); // only one account should be locked
+
+        assertEquals(email_address, beforeLock.email_address);
+        assertFalse(beforeLock.account_locked);
+        assertNull(beforeLock.account_lock_reason);
+
+        assertEquals(email_address, afterLock.email_address);
+        assertEquals(reason, afterLock.account_lock_reason);
+        assertTrue(afterLock.account_locked);
+    }
+
+    @Test
+    @Order(60)
+    public void t06_unlockPreviouslyLockedAccount() throws AccountServiceException {
+        final String email_address = "my_new_crud_tests_mail@yahoo.com";
+        final String reason = "naughty";
 
 
-        // Phase #6 cleanup
-        accountService.deleteAccount(email_address_changed);                            // delete account
-        assertNull(accountService.getAccount(email_address_changed));                   // cleanup and delete test
-    }**/
+        final AccountResultSetDto beforeUnlock = service.getAccount(email_address);
+        final int n = service.unlockAccount(email_address);
+        final AccountResultSetDto afterUnlock = service.getAccount(email_address);
+
+
+        assertEquals(1, n);
+
+        assertEquals(email_address, beforeUnlock.email_address);
+        assertTrue(beforeUnlock.account_locked);
+        assertEquals(reason, beforeUnlock.account_lock_reason);
+
+        assertFalse(afterUnlock.account_locked);
+        assertEquals("", afterUnlock.account_lock_reason);
+    }
+
+    @Test
+    @Order(70)
+    public void t07_changePassword() throws AccountServiceException {
+        final String email = "my_new_crud_tests_mail@yahoo.com";
+        final String password = "password";
+        final String newPassword = "almafa1234#";
+
+        final AccountResultSetDto beforePasswordChange = service.getAccount(email);
+        final int n = service.setAccountPassword(email, newPassword);
+        final AccountResultSetDto afterPasswordChange = service.getAccount(email);
+
+
+        assertEquals(1, n);
+        assertEquals(beforePasswordChange.password_hash, Crypt.crypt(password, beforePasswordChange.password_hash));
+        assertEquals(afterPasswordChange.password_hash, Crypt.crypt(newPassword, afterPasswordChange.password_hash));
+    }
+
+    @Test
+    @Order(80)
+    public void t08_deleteAccount_shouldDeleteAccountWithNewEmail() throws AccountServiceException {
+        final String email = "my_new_crud_tests_mail@yahoo.com";
+        final int n = service.deleteAccount(email);
+        final AccountResultSetDto afterDelete = service.getAccount(email);
+
+        assertEquals(1, n);
+        assertNull(afterDelete);
+    }
 }

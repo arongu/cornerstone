@@ -16,8 +16,8 @@ public class ConfigurationProviderTest {
 
     @AfterAll
     public static void unsetProperties() {
-        System.clearProperty(ConfigurationProvider.SYSTEM_PROPERTY_KEY_FILE);
-        System.clearProperty(ConfigurationProvider.SYSTEM_PROPERTY_CONF_FILE);
+        System.clearProperty(ConfigurationProvider.SYSTEM_PROPERTY_KEY__KEY_FILE);
+        System.clearProperty(ConfigurationProvider.SYSTEM_PROPERTY_KEY__CONF_FILE);
     }
 
 
@@ -45,8 +45,8 @@ public class ConfigurationProviderTest {
     @Test
     public void getSystemProperties_shouldUseSystemProperties_whenSet() throws IOException {
         final ConfigurationProvider cp = new ConfigurationProvider();
-        System.setProperty(ConfigurationProvider.SYSTEM_PROPERTY_KEY_FILE, keyPath);
-        System.setProperty(ConfigurationProvider.SYSTEM_PROPERTY_CONF_FILE, confPath);
+        System.setProperty(ConfigurationProvider.SYSTEM_PROPERTY_KEY__KEY_FILE, keyPath);
+        System.setProperty(ConfigurationProvider.SYSTEM_PROPERTY_KEY__CONF_FILE, confPath);
 
         cp.loadConfig();
 

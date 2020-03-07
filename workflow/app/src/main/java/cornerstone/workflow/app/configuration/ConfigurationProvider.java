@@ -12,8 +12,8 @@ public class ConfigurationProvider {
 
     private static final Logger logger = LoggerFactory.getLogger(ConfigurationProvider.class);
     // Properties to look for
-    public static final String SYSTEM_PROPERTY_KEY_FILE = "keyFile";
-    public static final String SYSTEM_PROPERTY_CONF_FILE = "confFile";
+    public static final String SYSTEM_PROPERTY_KEY__KEY_FILE = "keyFile";
+    public static final String SYSTEM_PROPERTY_KEY__CONF_FILE = "confFile";
     // Default paths
     public static final String PATH_DEFAULT_KEY_FILE = "/var/opt/cornerstone/key.conf";
     public static final String PATH_DEFAULT_CONF_FILE = "/var/opt/cornerstone/app.conf";
@@ -36,12 +36,12 @@ public class ConfigurationProvider {
 
     private void setupKeyFile() {
 
-        if ( null != System.getProperty(SYSTEM_PROPERTY_KEY_FILE) ) {
-            keyFile = System.getProperty(SYSTEM_PROPERTY_KEY_FILE);
+        if ( null != System.getProperty(SYSTEM_PROPERTY_KEY__KEY_FILE) ) {
+            keyFile = System.getProperty(SYSTEM_PROPERTY_KEY__KEY_FILE);
 
             logger.info(
                     LOG_MESSAGE_PROPERTY_SET,
-                    SYSTEM_PROPERTY_KEY_FILE,
+                    SYSTEM_PROPERTY_KEY__KEY_FILE,
                     keyFile
             );
 
@@ -50,7 +50,7 @@ public class ConfigurationProvider {
 
             logger.info(
                     LOG_MESSAGE_PROPERTY_NOT_SET,
-                    SYSTEM_PROPERTY_KEY_FILE,
+                    SYSTEM_PROPERTY_KEY__KEY_FILE,
                     keyFile
             );
         }
@@ -58,12 +58,12 @@ public class ConfigurationProvider {
 
     private void setupConfFile() {
 
-        if ( null != System.getProperty(SYSTEM_PROPERTY_CONF_FILE) ) {
-            confFile = System.getProperty(SYSTEM_PROPERTY_CONF_FILE);
+        if ( null != System.getProperty(SYSTEM_PROPERTY_KEY__CONF_FILE) ) {
+            confFile = System.getProperty(SYSTEM_PROPERTY_KEY__CONF_FILE);
 
             logger.info(
                     LOG_MESSAGE_PROPERTY_SET,
-                    SYSTEM_PROPERTY_CONF_FILE,
+                    SYSTEM_PROPERTY_KEY__CONF_FILE,
                     confFile
             );
 
@@ -72,7 +72,7 @@ public class ConfigurationProvider {
 
             logger.info(
                     LOG_MESSAGE_PROPERTY_NOT_SET,
-                    SYSTEM_PROPERTY_CONF_FILE,
+                    SYSTEM_PROPERTY_KEY__CONF_FILE,
                     confFile
             );
         }
