@@ -3,10 +3,10 @@ package cornerstone.workflow.app.services.account_service;
 import java.util.LinkedList;
 import java.util.List;
 
-public class AccountServiceBulkException extends Exception {
+public class AccountServiceMultipleException extends Exception {
     private final List<AccountServiceException> exceptions;
 
-    public AccountServiceBulkException() {
+    public AccountServiceMultipleException() {
         super();
         exceptions = new LinkedList<>();
     }

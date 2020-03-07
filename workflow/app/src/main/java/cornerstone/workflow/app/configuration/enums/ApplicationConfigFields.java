@@ -1,6 +1,6 @@
 package cornerstone.workflow.app.configuration.enums;
 
-public enum ConfigFieldsApp {
+public enum ApplicationConfigFields {
 
     APP_ADMIN_USER("app_admin_user"),
     APP_JWS_KEY("app_jws_key");
@@ -9,7 +9,7 @@ public enum ConfigFieldsApp {
 
     public final String key;
 
-    ConfigFieldsApp(final String key){
+    ApplicationConfigFields(final String key){
         this.key = key;
     }
 }

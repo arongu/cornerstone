@@ -1,16 +1,16 @@
 package cornerstone.workflow.app.configuration;
 
-import cornerstone.workflow.app.configuration.enums.ConfigFieldsApp;
-import cornerstone.workflow.app.configuration.enums.ConfigFieldsDbAccount;
-import cornerstone.workflow.app.configuration.enums.ConfigFieldsDbData;
+import cornerstone.workflow.app.configuration.enums.AccountDbConnectionFields;
+import cornerstone.workflow.app.configuration.enums.ApplicationConfigFields;
+import cornerstone.workflow.app.configuration.enums.DataDbConnectionFields;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Properties;
 
-public class ConfigurationParser {
+public class ConfigSorter {
 
-    private static final Logger logger = LoggerFactory.getLogger(ConfigurationParser.class);
+    private static final Logger logger = LoggerFactory.getLogger(ConfigSorter.class);
     private static final String errorMessage = "'{}' is not set";
     private static final String ignoreMessage = "'{}' is ignored";
 
@@ -18,7 +18,7 @@ public class ConfigurationParser {
     private Properties db_data_properties;
     private Properties app_properties;
 
-    public ConfigurationParser(final Properties properties) {
+    public ConfigSorter(final Properties properties) {
        processProperties(properties);
     }
 
@@ -30,8 +30,8 @@ public class ConfigurationParser {
                            final String value,
                            final String logPrefix) {
 
-        if ( key != null && !key.isEmpty() &&
-             value != null && !value.isEmpty() ) {
+        if ( key   != null && ! key.isEmpty() &&
+             value != null && ! value.isEmpty() ) {
 
             properties.setProperty(key, value);
 
@@ -55,13 +55,13 @@ public class ConfigurationParser {
         {
             db_data_properties = new Properties();
 
-            for ( final ConfigFieldsDbData field : ConfigFieldsDbData.values() ) {
+            for ( final DataDbConnectionFields field : DataDbConnectionFields.values() ) {
                 if ( null != properties.get(field.key) ) {
                     addAndLog(
                             db_data_properties,
                             field.key,
                             properties.getProperty(field.key),
-                            ConfigFieldsDbData.prefix_db_main
+                            DataDbConnectionFields.prefix_db_main
                     );
 
                 } else {
@@ -74,13 +74,13 @@ public class ConfigurationParser {
         {
             db_account_properties = new Properties();
 
-            for ( final ConfigFieldsDbAccount field : ConfigFieldsDbAccount.values() ) {
+            for ( final AccountDbConnectionFields field : AccountDbConnectionFields.values() ) {
                 if ( null != properties.get(field.key) ) {
                     addAndLog(
                             db_account_properties,
                             field.key,
                             properties.getProperty(field.key),
-                            ConfigFieldsDbAccount.prefix_db_account
+                            AccountDbConnectionFields.prefix_db_account
                     );
 
                 } else {
@@ -93,13 +93,13 @@ public class ConfigurationParser {
         {
             app_properties = new Properties();
 
-            for ( final ConfigFieldsApp field : ConfigFieldsApp.values() ) {
+            for ( final ApplicationConfigFields field : ApplicationConfigFields.values() ) {
                 if ( null != properties.get(field.key) ) {
                     addAndLog(
                             app_properties,
                             field.key,
                             properties.getProperty(field.key),
-                            ConfigFieldsApp.prefix_app
+                            ApplicationConfigFields.prefix_app
                     );
 
                 } else {

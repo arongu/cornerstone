@@ -1,7 +1,7 @@
 package cornerstone.workflow.app.datasource;
 
-import cornerstone.workflow.app.configuration.ConfigurationProvider;
-import cornerstone.workflow.app.configuration.enums.ConfigFieldsDbAccount;
+import cornerstone.workflow.app.configuration.ConfigReader;
+import cornerstone.workflow.app.configuration.enums.AccountDbConnectionFields;
 import org.apache.commons.dbcp2.BasicDataSource;
 
 import javax.inject.Inject;
@@ -11,38 +11,38 @@ import java.util.Properties;
 public class DataSourceAccountDB extends BasicDataSource {
 
     @Inject
-    public DataSourceAccountDB(final ConfigurationProvider configurationProvider){
+    public DataSourceAccountDB(final ConfigReader configReader){
         super();
-        final Properties props = configurationProvider.get_account_db_properties();
+        final Properties props = configReader.getAccountDbProperties();
 
         setDriverClassName(
                 props.getProperty(
-                        ConfigFieldsDbAccount.DB_ACCOUNT_DRIVER.key
+                        AccountDbConnectionFields.DB_ACCOUNT_DRIVER.key
                 )
         );
 
         setUrl(
                 props.getProperty(
-                        ConfigFieldsDbAccount.DB_ACCOUNT_URL.key
+                        AccountDbConnectionFields.DB_ACCOUNT_URL.key
                 )
         );
 
         setUsername(
                 props.getProperty(
-                        ConfigFieldsDbAccount.DB_ACCOUNT_USER.key
+                        AccountDbConnectionFields.DB_ACCOUNT_USER.key
                 )
         );
 
         setPassword(
                 props.getProperty(
-                        ConfigFieldsDbAccount.DB_ACCOUNT_PASSWORD.key
+                        AccountDbConnectionFields.DB_ACCOUNT_PASSWORD.key
                 )
         );
 
         setMinIdle(
                 Integer.parseInt(
                         props.getProperty(
-                                ConfigFieldsDbAccount.DB_ACCOUNT_MIN_IDLE.key
+                                AccountDbConnectionFields.DB_ACCOUNT_MIN_IDLE.key
                         )
                 )
         );
@@ -50,7 +50,7 @@ public class DataSourceAccountDB extends BasicDataSource {
         setMaxIdle(
                 Integer.parseInt(
                         props.getProperty(
-                                ConfigFieldsDbAccount.DB_ACCOUNT_MAX_IDLE.key
+                                AccountDbConnectionFields.DB_ACCOUNT_MAX_IDLE.key
                         )
                 )
         );
@@ -58,7 +58,7 @@ public class DataSourceAccountDB extends BasicDataSource {
         setMaxOpenPreparedStatements(
                 Integer.parseInt(
                         props.getProperty(
-                                ConfigFieldsDbAccount.DB_ACCOUNT_MAX_OPEN.key
+                                AccountDbConnectionFields.DB_ACCOUNT_MAX_OPEN.key
                         )
                 )
         );

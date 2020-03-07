@@ -8,7 +8,7 @@ import java.nio.file.Paths;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class ConfigurationProviderTest {
+public class ConfigReaderTest {
 
     private static final String dev_files_dir = "../../_dev_files/test_config/";
     private static final String confPath  = Paths.get(dev_files_dir + "app.conf").toAbsolutePath().normalize().toString();
@@ -16,14 +16,14 @@ public class ConfigurationProviderTest {
 
     @AfterAll
     public static void unsetProperties() {
-        System.clearProperty(ConfigurationProvider.SYSTEM_PROPERTY_KEY__KEY_FILE);
-        System.clearProperty(ConfigurationProvider.SYSTEM_PROPERTY_KEY__CONF_FILE);
+        System.clearProperty(ConfigReader.SYSTEM_PROPERTY_KEY__KEY_FILE);
+        System.clearProperty(ConfigReader.SYSTEM_PROPERTY_KEY__CONF_FILE);
     }
 
 
     @Test
     public void getSystemProperties_shouldFallBackToDefaultAndThrowIOException_whenNotSetAndDoesNotHavePermissionToOpenIt() {
-        final ConfigurationProvider cp = new ConfigurationProvider();
+        final ConfigReader cp = new ConfigReader();
         unsetProperties();
 
         final IOException e = assertThrows(IOException.class, cp::loadConfig);
@@ -44,9 +44,9 @@ public class ConfigurationProviderTest {
 
     @Test
     public void getSystemProperties_shouldUseSystemProperties_whenSet() throws IOException {
-        final ConfigurationProvider cp = new ConfigurationProvider();
-        System.setProperty(ConfigurationProvider.SYSTEM_PROPERTY_KEY__KEY_FILE, keyPath);
-        System.setProperty(ConfigurationProvider.SYSTEM_PROPERTY_KEY__CONF_FILE, confPath);
+        final ConfigReader cp = new ConfigReader();
+        System.setProperty(ConfigReader.SYSTEM_PROPERTY_KEY__KEY_FILE, keyPath);
+        System.setProperty(ConfigReader.SYSTEM_PROPERTY_KEY__CONF_FILE, confPath);
 
         cp.loadConfig();
 

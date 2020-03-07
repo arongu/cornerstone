@@ -1,8 +1,8 @@
 package cornerstone.workflow.app.rest.endpoint.account;
 
 import cornerstone.workflow.app.rest.exceptions.BadRequestException;
-import cornerstone.workflow.app.services.account_service.AccountService;
-import cornerstone.workflow.app.services.account_service.AccountServiceBulkException;
+import cornerstone.workflow.app.services.account_service.AccountServiceInterface;
+import cornerstone.workflow.app.services.account_service.AccountServiceMultipleException;
 import cornerstone.workflow.app.services.account_service.AccountServiceException;
 
 import javax.inject.Inject;
@@ -20,18 +20,18 @@ import java.util.List;
 @Produces(MediaType.APPLICATION_JSON)
 public class AccountRestService {
 
-    private AccountService accountService;
+    private AccountServiceInterface accountServiceInterface;
 
     @Inject
-    public AccountRestService(final AccountService accountService) {
-        this.accountService = accountService;
+    public AccountRestService(final AccountServiceInterface accountServiceInterface) {
+        this.accountServiceInterface = accountServiceInterface;
     }
 
     @POST
     public Response createAccount(final EmailAndPassword account) throws AccountServiceException,
                                                                          BadRequestException {
         if ( null != account ) {
-            accountService.createAccount(
+            accountServiceInterface.create(
                     account.email,
                     account.password,
                     true
@@ -51,7 +51,7 @@ public class AccountRestService {
     public Response deleteAccount(final String emailAddress) throws AccountServiceException,
                                                                     BadRequestException {
         if ( null != emailAddress ) {
-            accountService.deleteAccount(emailAddress);
+            accountServiceInterface.delete(emailAddress);
 
             return Response.
                     status(Response.Status.OK)
@@ -66,11 +66,11 @@ public class AccountRestService {
     // /mass
     @POST
     @Path("/mass")
-    public Response createAccounts(final List<EmailAndPassword> accounts) throws AccountServiceBulkException,
+    public Response createAccounts(final List<EmailAndPassword> accounts) throws AccountServiceMultipleException,
                                                                                  BadRequestException {
         if ( accounts != null &&
              !accounts.isEmpty() ) {
-            accountService.createAccounts(accounts);
+            accountServiceInterface.create(accounts);
 
             return Response
                     .status(Response.Status.CREATED)
@@ -83,10 +83,10 @@ public class AccountRestService {
 
     @DELETE
     @Path("/mass")
-    public Response deleteAccounts(final List<String> emailAddresses) throws AccountServiceBulkException,
+    public Response deleteAccounts(final List<String> emailAddresses) throws AccountServiceMultipleException,
                                                                              BadRequestException {
         if ( null != emailAddresses ) {
-            accountService.deleteAccounts(emailAddresses);
+            accountServiceInterface.delete(emailAddresses);
 
             return Response
                     .status(Response.Status.OK)

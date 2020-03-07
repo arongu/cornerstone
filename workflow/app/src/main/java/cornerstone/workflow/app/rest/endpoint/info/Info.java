@@ -1,6 +1,6 @@
 package cornerstone.workflow.app.rest.endpoint.info;
 
-import cornerstone.workflow.app.configuration.ConfigurationProvider;
+import cornerstone.workflow.app.configuration.ConfigReader;
 import cornerstone.workflow.app.rest.security.Secured;
 
 import javax.inject.Inject;
@@ -15,17 +15,17 @@ import java.util.Properties;
 @Singleton
 @Produces(MediaType.APPLICATION_JSON)
 public class Info {
-    private ConfigurationProvider configurationProvider;
+    private ConfigReader configReader;
 
     @Inject
-    public Info(ConfigurationProvider configurationProvider) {
-        this.configurationProvider = configurationProvider;
+    public Info(ConfigReader configReader) {
+        this.configReader = configReader;
     }
 
     // TODO
     @Secured
     @GET
     public Properties getProperties() {
-        return configurationProvider.getRaw_properties();
+        return configReader.getAllProperties();
     }
 }

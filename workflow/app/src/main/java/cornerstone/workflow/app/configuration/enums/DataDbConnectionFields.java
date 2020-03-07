@@ -1,6 +1,6 @@
 package cornerstone.workflow.app.configuration.enums;
 
-public enum ConfigFieldsDbData {
+public enum DataDbConnectionFields {
 
     DB_DATA_DRIVER("db_data_driver"),
     DB_DATA_URL("db_data_url"),
@@ -13,7 +13,7 @@ public enum ConfigFieldsDbData {
     public static final String prefix_db_main = "db_data";
     public final String key;
 
-    ConfigFieldsDbData(final String key) {
+    DataDbConnectionFields(final String key) {
         this.key = key;
     }
 }

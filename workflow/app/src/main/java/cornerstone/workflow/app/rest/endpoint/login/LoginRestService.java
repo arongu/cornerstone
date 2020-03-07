@@ -3,9 +3,9 @@ package cornerstone.workflow.app.rest.endpoint.login;
 import cornerstone.workflow.app.rest.endpoint.account.EmailAndPassword;
 import cornerstone.workflow.app.rest.exceptions.BadRequestException;
 import cornerstone.workflow.app.rest.util.HttpMessage;
-import cornerstone.workflow.app.services.account_service.AccountService;
+import cornerstone.workflow.app.services.account_service.AccountServiceInterface;
 import cornerstone.workflow.app.services.account_service.AccountServiceException;
-import cornerstone.workflow.app.services.authorization_service.AuthorizationService;
+import cornerstone.workflow.app.services.authorization_service.AuthorizationServiceInterface;
 import cornerstone.workflow.app.services.authorization_service.AuthorizationServiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,15 +29,15 @@ public class LoginRestService {
 
     private static final Logger logger = LoggerFactory.getLogger(LoginRestService.class);
 
-    private AccountService accountService;
-    private AuthorizationService authorizationService;
+    private AccountServiceInterface accountServiceInterface;
+    private AuthorizationServiceInterface authorizationServiceInterface;
 
     @Inject
-    public LoginRestService(final AccountService accountService,
-                            final AuthorizationService authorizationService) {
+    public LoginRestService(final AccountServiceInterface accountServiceInterface,
+                            final AuthorizationServiceInterface authorizationServiceInterface) {
 
-        this.accountService = accountService;
-        this.authorizationService = authorizationService;
+        this.accountServiceInterface = accountServiceInterface;
+        this.authorizationServiceInterface = authorizationServiceInterface;
     }
 
     @POST
@@ -52,13 +52,13 @@ public class LoginRestService {
             final Response response;
             final boolean authenticated;
 
-            authenticated = accountService.login(
+            authenticated = accountServiceInterface.login(
                     emailAndPassword.email,
                     emailAndPassword.password
             );
 
             if ( authenticated ) {
-                final String jwt = authorizationService.issueJWT(emailAndPassword.email);
+                final String jwt = authorizationServiceInterface.issueJWT(emailAndPassword.email);
 
                 response = Response
                         .status(Response.Status.ACCEPTED)
