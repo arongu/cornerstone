@@ -1,9 +1,9 @@
 package cornerstone.workflow.app.rest.endpoint.account;
 
 import cornerstone.workflow.app.rest.exceptions.BadRequestException;
+import cornerstone.workflow.app.services.account_service.AccountServiceException;
 import cornerstone.workflow.app.services.account_service.AccountServiceInterface;
 import cornerstone.workflow.app.services.account_service.AccountServiceMultipleException;
-import cornerstone.workflow.app.services.account_service.AccountServiceException;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -20,21 +20,22 @@ import java.util.List;
 @Produces(MediaType.APPLICATION_JSON)
 public class AccountRestService {
 
-    private AccountServiceInterface accountServiceInterface;
+    private AccountServiceInterface accountService;
 
     @Inject
-    public AccountRestService(final AccountServiceInterface accountServiceInterface) {
-        this.accountServiceInterface = accountServiceInterface;
+    public AccountRestService(final AccountServiceInterface accountService) {
+        this.accountService = accountService;
     }
 
     @POST
     public Response createAccount(final EmailAndPassword account) throws AccountServiceException,
                                                                          BadRequestException {
         if ( null != account ) {
-            accountServiceInterface.create(
+            accountService.create(
                     account.email,
                     account.password,
-                    true
+                    false,
+                    false
             );
 
             return Response
@@ -51,7 +52,7 @@ public class AccountRestService {
     public Response deleteAccount(final String emailAddress) throws AccountServiceException,
                                                                     BadRequestException {
         if ( null != emailAddress ) {
-            accountServiceInterface.delete(emailAddress);
+            accountService.delete(emailAddress);
 
             return Response.
                     status(Response.Status.OK)
@@ -70,7 +71,7 @@ public class AccountRestService {
                                                                                  BadRequestException {
         if ( accounts != null &&
              !accounts.isEmpty() ) {
-            accountServiceInterface.create(accounts);
+            accountService.create(accounts);
 
             return Response
                     .status(Response.Status.CREATED)
@@ -86,7 +87,7 @@ public class AccountRestService {
     public Response deleteAccounts(final List<String> emailAddresses) throws AccountServiceMultipleException,
                                                                              BadRequestException {
         if ( null != emailAddresses ) {
-            accountServiceInterface.delete(emailAddresses);
+            accountService.delete(emailAddresses);
 
             return Response
                     .status(Response.Status.OK)

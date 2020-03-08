@@ -54,8 +54,9 @@ public class AccountServiceCRUDTest {
         final String email = "almafa@gmail.com";
         final String password = "password";
         final boolean locked = false;
+        final boolean verified = true;
 
-        final int n = accountService.create(email, password, locked);
+        final int n = accountService.create(email, password, locked, verified);
         final AccountResultSet dto = accountService.get(email);
 
         assertEquals(1, n);
@@ -70,8 +71,9 @@ public class AccountServiceCRUDTest {
             final String email = "almafa@gmail.com";
             final String password = "password";
             final boolean locked = false;
+            final boolean verified = true;
 
-            accountService.create(email, password, locked);
+            accountService.create(email, password, locked, verified);
         });
     }
 
@@ -89,10 +91,11 @@ public class AccountServiceCRUDTest {
     @Order(30)
     public void t03_createAnotherAccount_shouldCreateAnotherAccount() throws AccountServiceException {
         final String email = "crud_tests@x-mail.com";
-        final boolean locked = false;
         final String password = "password";
+        final boolean locked = false;
+        final boolean verified = true;
 
-        final int n = accountService.create(email, password, locked);
+        final int n = accountService.create(email, password, locked, verified);
         final AccountResultSet dto = accountService.get(email);
 
 

@@ -30,7 +30,7 @@ public class AccountService implements AccountServiceInterface {
     private static final String ERROR_MSG_FAILED_TO_CLEAR_LOGIN_ATTEMPTS     = "Failed to clear login attempts of account: '%s', message: '%s', SQL state: '%s'";
 
     private static final String SQL_GET_ACCOUNT                   = "SELECT * FROM info.accounts WHERE email_address=(?)";
-    private static final String SQL_GET_ACCOUNT_FOR_LOGIN         = "SELECT account_locked, account_verified, account_login_attempts, password_hash FROM info.accounts WHERE email_address=(?)";
+    private static final String SQL_GET_ACCOUNT_FOR_LOGIN         = "SELECT account_locked, email_address_verified, account_login_attempts, password_hash FROM info.accounts WHERE email_address=(?)";
     private static final String SQL_CREATE_ACCOUNT                = "INSERT INTO info.accounts (password_hash, email_address, account_locked, email_address_verified) VALUES(?,?,?,?)";
     private static final String SQL_DELETE_ACCOUNT                = "DELETE FROM info.accounts WHERE email_address=(?)";
     private static final String SQL_UPDATE_ACCOUNT_PASSWORD       = "UPDATE info.accounts SET password_hash=(?) WHERE email_address=(?)";
@@ -106,14 +106,18 @@ public class AccountService implements AccountServiceInterface {
     }
 
     @Override
-    public int create(final String emailAddress, final String password, final boolean accountLocked) throws AccountServiceException {
+    public int create(final String emailAddress,
+                      final String password,
+                      final boolean accountLocked,
+                      final boolean verified) throws AccountServiceException {
+
         try ( final Connection c = dataSource.getConnection();
               final PreparedStatement ps = c.prepareStatement(SQL_CREATE_ACCOUNT) ) {
 
             ps.setString(1, Crypt.crypt(password));
             ps.setString(2, emailAddress.toLowerCase());
             ps.setBoolean(3, accountLocked);
-            ps.setBoolean(4, false);
+            ps.setBoolean(4, verified);
 
             return ps.executeUpdate();
 
@@ -127,9 +131,10 @@ public class AccountService implements AccountServiceInterface {
         }
     }
 
+    // mostly used for testing
     @Override
     public int create(final List<EmailAndPassword> emailsAndPasswords) throws AccountServiceMultipleException {
-        AccountServiceMultipleException bulkException = null;
+        AccountServiceMultipleException multipleException = null;
         int updatedRows = 0;
 
         try ( final Connection c = dataSource.getConnection();
@@ -141,7 +146,7 @@ public class AccountService implements AccountServiceInterface {
                         ps.setString(1, Crypt.crypt(emailAndPassword.password));
                         ps.setString(2, emailAndPassword.email.toLowerCase());
                         ps.setBoolean(3, true);
-                        ps.setBoolean(4, false);
+                        ps.setBoolean(4, false); // false by default
 
                         updatedRows += ps.executeUpdate();
 
@@ -150,11 +155,11 @@ public class AccountService implements AccountServiceInterface {
                                 ERROR_MSG_FAILED_TO_CREATE_ACCOUNT, emailAndPassword.email, e.getMessage(), e.getSQLState()
                         );
 
-                        if ( null == bulkException) {
-                            bulkException = new AccountServiceMultipleException();
+                        if ( null == multipleException) {
+                            multipleException = new AccountServiceMultipleException();
 
                         } else {
-                            bulkException.addException(new AccountServiceException(e.getMessage()));    
+                            multipleException.addException(new AccountServiceException(e.getMessage()));
                         }
 
                         logger.error(msg);
@@ -165,18 +170,18 @@ public class AccountService implements AccountServiceInterface {
         } catch ( final SQLException e ) {
             logger.error(e.getMessage());
 
-            if ( null == bulkException ) {
-                bulkException = new AccountServiceMultipleException();
+            if ( null == multipleException ) {
+                multipleException = new AccountServiceMultipleException();
             }
 
-            bulkException.addException(
+            multipleException.addException(
                     new AccountServiceException(e.getMessage())
             );
         }
 
 
-        if ( null != bulkException ) {
-            throw bulkException;
+        if ( null != multipleException ) {
+            throw multipleException;
         } else {
             return updatedRows;
         }
@@ -190,7 +195,7 @@ public class AccountService implements AccountServiceInterface {
 
     @Override
     public int delete(final List<String> emailAddresses) throws AccountServiceMultipleException {
-        AccountServiceMultipleException bulkException = null;
+        AccountServiceMultipleException multipleException = null;
         int updatedRows = 0;
 
         try ( final Connection c = dataSource.getConnection();
@@ -206,11 +211,11 @@ public class AccountService implements AccountServiceInterface {
                             ERROR_MSG_FAILED_TO_DELETE_ACCOUNT, email, e.getMessage(), e.getSQLState()
                     );
 
-                    if ( null == bulkException ) {
-                        bulkException = new AccountServiceMultipleException();
+                    if ( null == multipleException ) {
+                        multipleException = new AccountServiceMultipleException();
                     }
 
-                    bulkException.addException(
+                    multipleException.addException(
                             new AccountServiceException(e.getMessage())
                     );
 
@@ -219,19 +224,19 @@ public class AccountService implements AccountServiceInterface {
             }
 
         } catch ( final SQLException e ) {
-            if ( null == bulkException ) {
-                bulkException = new AccountServiceMultipleException();
+            if ( null == multipleException ) {
+                multipleException = new AccountServiceMultipleException();
             }
 
-            bulkException.addException(
+            multipleException.addException(
                     new AccountServiceException(e.getMessage())
             );
 
             logger.error(e.getMessage());
         }
 
-        if ( null != bulkException ) {
-            throw bulkException;
+        if ( null != multipleException ) {
+            throw multipleException;
         } else {
             return updatedRows;
         }
@@ -339,7 +344,7 @@ public class AccountService implements AccountServiceInterface {
 
             if ( rs.next() ) {
                 final boolean locked = rs.getBoolean("account_locked");
-                final boolean verified = rs.getBoolean("account_verified");
+                final boolean verified = rs.getBoolean("email_address_verified");
                 final int loginAttempts = rs.getInt("account_login_attempts");
                 final String passwordHash = rs.getString("password_hash");
 
@@ -348,14 +353,16 @@ public class AccountService implements AccountServiceInterface {
                             passwordHash, Crypt.crypt(password, passwordHash)
                     );
 
-                    if ( ! passwordMatches ) {
+                    if ( passwordMatches ) {
+                        return true;
+
+                    } else {
                         if ( loginAttempts < 180 ) {
                             incrementLoginAttempts(emailAddress);
+
                         } else {
                             lock(emailAddress, "Maximum login attempts reached.");
                         }
-                    } else {
-                        return true;
                     }
                 }
             }

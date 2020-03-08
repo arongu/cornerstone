@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface AccountServiceInterface {
     // Create
-    int create(final String emailAddress, final String password, final boolean accountLocked) throws AccountServiceException;
+    int create(final String emailAddress, final String password, final boolean accountLocked, final boolean verified) throws AccountServiceException;
     int create(final List<EmailAndPassword> list) throws AccountServiceMultipleException;
 
     // Read
