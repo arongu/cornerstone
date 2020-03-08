@@ -28,7 +28,7 @@ public class AccountRestService {
     }
 
     @POST
-    public Response createAccount(final EmailAndPassword account) throws AccountServiceException,
+    public Response create(final EmailAndPassword account) throws AccountServiceException,
                                                                          BadRequestException {
         if ( null != account ) {
             accountService.create(
@@ -49,7 +49,7 @@ public class AccountRestService {
     }
 
     @DELETE
-    public Response deleteAccount(final String emailAddress) throws AccountServiceException,
+    public Response delete(final String emailAddress) throws AccountServiceException,
                                                                     BadRequestException {
         if ( null != emailAddress ) {
             accountService.delete(emailAddress);
@@ -67,7 +67,7 @@ public class AccountRestService {
     // /mass
     @POST
     @Path("/mass")
-    public Response createAccounts(final List<EmailAndPassword> accounts) throws AccountServiceMultipleException,
+    public Response massCreate(final List<EmailAndPassword> accounts) throws AccountServiceMultipleException,
                                                                                  BadRequestException {
         if ( accounts != null &&
              !accounts.isEmpty() ) {
@@ -84,7 +84,7 @@ public class AccountRestService {
 
     @DELETE
     @Path("/mass")
-    public Response deleteAccounts(final List<String> emailAddresses) throws AccountServiceMultipleException,
+    public Response massDelete(final List<String> emailAddresses) throws AccountServiceMultipleException,
                                                                              BadRequestException {
         if ( null != emailAddresses ) {
             accountService.delete(emailAddresses);

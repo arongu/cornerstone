@@ -155,7 +155,7 @@ public class AccountService implements AccountServiceInterface {
                                 ERROR_MSG_FAILED_TO_CREATE_ACCOUNT, emailAndPassword.email, e.getMessage(), e.getSQLState()
                         );
 
-                        if ( null == multipleException) {
+                        if ( null == multipleException ) {
                             multipleException = new AccountServiceMultipleException();
 
                         } else {
