@@ -56,12 +56,17 @@ public class AccountServiceCRUDTest {
         final boolean locked = false;
         final boolean verified = true;
 
-        final int n = accountService.create(email, password, locked, verified);
-        final AccountResultSet dto = accountService.get(email);
+        int n;
+        final AccountResultSet account;
+
+
+        n = accountService.create(email, password, locked, verified);
+        account = accountService.get(email);
+
 
         assertEquals(1, n);
-        assertEquals(email, dto.email_address);
-        assertEquals(locked, dto.account_locked);
+        assertEquals(email, account.email_address);
+        assertEquals(locked, account.account_locked);
     }
 
     @Test
@@ -81,9 +86,16 @@ public class AccountServiceCRUDTest {
     @Order(20)
     public void t02_deletePreviousAccount_shouldDeleteAccount() throws AccountServiceException {
         final String email = "almafa@gmail.com";
-        final int n = accountService.delete("almafa@gmail.com");
 
-        assertNull(accountService.get(email));
+        final int n;
+        final AccountResultSet account;
+
+
+        n = accountService.delete("almafa@gmail.com");
+        account = accountService.get(email);
+
+
+        assertNull(account);
         assertEquals(1, n);
     }
 
@@ -95,14 +107,18 @@ public class AccountServiceCRUDTest {
         final boolean locked = false;
         final boolean verified = true;
 
-        final int n = accountService.create(email, password, locked, verified);
-        final AccountResultSet dto = accountService.get(email);
+        final int n;
+        final AccountResultSet account;
+
+
+        n = accountService.create(email, password, locked, verified);
+        account = accountService.get(email);
 
 
         assertEquals(1, n);
-        assertEquals(dto.email_address, email);
-        assertEquals(dto.account_locked, locked);
-        assertEquals(dto.password_hash, Crypt.crypt(password, dto.password_hash));
+        assertEquals(account.email_address, email);
+        assertEquals(account.account_locked, locked);
+        assertEquals(account.password_hash, Crypt.crypt(password, account.password_hash));
     }
 
     @Test
@@ -110,12 +126,15 @@ public class AccountServiceCRUDTest {
     public void t04_setNewEmailAddressForPreviouslyCreatedAccount() throws AccountServiceException {
         final String email = "crud_tests@x-mail.com";
         final String newEmail = "my_new_crud_tests_mail@yahoo.com";
+
         final AccountResultSet beforeEmailChange;
         final AccountResultSet afterEmailChange;
+
 
         beforeEmailChange = accountService.get(email);
         accountService.setEmailAddress(email, newEmail);
         afterEmailChange = accountService.get(newEmail);
+
 
         assertNull(accountService.get(email));                                      // old email should return null
         assertEquals(newEmail, afterEmailChange.email_address);                     // get new email account should return account
@@ -128,17 +147,23 @@ public class AccountServiceCRUDTest {
         final String email_address = "my_new_crud_tests_mail@yahoo.com";
         final String reason = "naughty";
 
-        final AccountResultSet beforeLock = accountService.get(email_address);
-        final int n = accountService.lock(email_address, reason);
-        final AccountResultSet afterLock = accountService.get(email_address);
+        final int n;
+        final AccountResultSet beforeLock;
+        final AccountResultSet afterLock;
 
 
-        assertEquals(1, n); // only one account should be locked
+        beforeLock = accountService.get(email_address);
+        n = accountService.lock(email_address, reason);
+        afterLock = accountService.get(email_address);
+
+
 
         assertEquals(email_address, beforeLock.email_address);
         assertFalse(beforeLock.account_locked);
         assertNull(beforeLock.account_lock_reason);
-
+        // only one account should be locked
+        assertEquals(1, n);
+        // after lock
         assertEquals(email_address, afterLock.email_address);
         assertEquals(reason, afterLock.account_lock_reason);
         assertTrue(afterLock.account_locked);
@@ -150,18 +175,20 @@ public class AccountServiceCRUDTest {
         final String email_address = "my_new_crud_tests_mail@yahoo.com";
         final String reason = "naughty";
 
+        final AccountResultSet beforeUnlock;
+        final AccountResultSet afterUnlock;
+        final int n;
 
-        final AccountResultSet beforeUnlock = accountService.get(email_address);
-        final int n = accountService.unlock(email_address);
-        final AccountResultSet afterUnlock = accountService.get(email_address);
 
+        beforeUnlock = accountService.get(email_address);
+        n = accountService.unlock(email_address);
+        afterUnlock = accountService.get(email_address);
 
-        assertEquals(1, n);
 
         assertEquals(email_address, beforeUnlock.email_address);
         assertTrue(beforeUnlock.account_locked);
         assertEquals(reason, beforeUnlock.account_lock_reason);
-
+        assertEquals(1, n);
         assertFalse(afterUnlock.account_locked);
         assertNull(afterUnlock.account_lock_reason);
     }
@@ -173,9 +200,14 @@ public class AccountServiceCRUDTest {
         final String password = "password";
         final String newPassword = "almafa1234#";
 
-        final AccountResultSet beforePasswordChange = accountService.get(email);
-        final int n = accountService.setPassword(email, newPassword);
-        final AccountResultSet afterPasswordChange = accountService.get(email);
+        final int n;
+        final AccountResultSet beforePasswordChange;
+        final AccountResultSet afterPasswordChange;
+
+
+        beforePasswordChange = accountService.get(email);
+        n = accountService.setPassword(email, newPassword);
+        afterPasswordChange = accountService.get(email);
 
 
         assertEquals(1, n);
@@ -188,7 +220,12 @@ public class AccountServiceCRUDTest {
     public void t08_deleteAccount_shouldDeleteAccountWithNewEmail() throws AccountServiceException {
         final String email = "my_new_crud_tests_mail@yahoo.com";
         final int n = accountService.delete(email);
-        final AccountResultSet afterDelete = accountService.get(email);
+
+        final AccountResultSet afterDelete;
+
+
+        afterDelete = accountService.get(email);
+
 
         assertEquals(1, n);
         assertNull(afterDelete);

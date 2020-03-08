@@ -354,6 +354,11 @@ public class AccountService implements AccountServiceInterface {
                     );
 
                     if ( passwordMatches ) {
+
+                        if ( loginAttempts > 0 ) {
+                            clearLoginAttempts(emailAddress);
+                        }
+
                         return true;
 
                     } else {

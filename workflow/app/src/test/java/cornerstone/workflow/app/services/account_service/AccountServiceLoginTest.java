@@ -48,9 +48,13 @@ public class AccountServiceLoginTest {
         final boolean locked = false;
         final boolean verified = true;
 
+        final boolean loggedIn;
+
+
         accountService.create(email, password, locked, verified);
-        final boolean loggedIn = accountService.login(email, password);
+        loggedIn = accountService.login(email, password);
         accountService.delete(email);
+
 
         assertTrue(loggedIn);
         assertNull(accountService.get(email));
@@ -61,10 +65,16 @@ public class AccountServiceLoginTest {
         final String email = "xxxxx@doesnotexist.xu";
         final String password = "wow";
 
-        final boolean loggedIn = accountService.login(email, password);
+        final boolean loggedIn;
+        final AccountResultSet account;
+
+
+        loggedIn = accountService.login(email, password);
+        account = accountService.get(email);
+
 
         assertFalse(loggedIn);
-        assertNull(accountService.get(email));
+        assertNull(account);
     }
 
     @Test
@@ -74,12 +84,18 @@ public class AccountServiceLoginTest {
         final boolean locked = false;
         final boolean verified = false;
 
+        final boolean loggedIn;
+        final AccountResultSet account;
+
+
         accountService.create(email, password, locked, verified);
-        final boolean loggedIn = accountService.login(email, password);
+        loggedIn = accountService.login(email, password);
         accountService.delete(email);
+        account = accountService.get(email);
+
 
         assertFalse(loggedIn);
-        assertNull(accountService.get(email));
+        assertNull(account);
     }
 
     @Test
@@ -89,12 +105,18 @@ public class AccountServiceLoginTest {
         final boolean locked = true;
         final boolean verified = true;
 
+        final boolean loggedIn;
+        final AccountResultSet account;
+
+
         accountService.create(email, password, locked, verified);
-        final boolean loggedIn = accountService.login(email, password);
+        loggedIn = accountService.login(email, password);
         accountService.delete(email);
+        account = accountService.get(email);
+
 
         assertFalse(loggedIn);
-        assertNull(accountService.get(email));
+        assertNull(account);
     }
 
     @Test
@@ -105,14 +127,21 @@ public class AccountServiceLoginTest {
         final boolean locked = false;
         final boolean verified = true;
 
+        final boolean loggedIn;
+        final AccountResultSet account;
+        final AccountResultSet afterDelete;
+
+
         accountService.create(email, password, locked, verified);
-        final boolean loggedIn = accountService.login(email, badPassword);
-        final AccountResultSet account = accountService.get(email);
+        loggedIn = accountService.login(email, badPassword);
+        account = accountService.get(email);
         accountService.delete(email);
+        afterDelete = accountService.get(email);
+
 
         assertEquals(1, account.account_login_attempts);
         assertFalse(loggedIn);
-        assertNull(accountService.get(email));
+        assertNull(afterDelete);
     }
 
     @Test
@@ -187,6 +216,7 @@ public class AccountServiceLoginTest {
         AccountResultSet start;
         AccountResultSet end;
 
+
         accountService.create(email, password, locked, verified);
         firstLogin = accountService.login(email, password);
         start = accountService.get(email);
@@ -200,6 +230,7 @@ public class AccountServiceLoginTest {
 
         accountService.delete(email);
 
+
         assertTrue(firstLogin);
         assertFalse(start.account_locked);
         assertEquals(0, start.account_login_attempts);
@@ -211,7 +242,44 @@ public class AccountServiceLoginTest {
         assertNull(accountService.get(email));
     }
 
-    // TODO after successful login, login attempts should go away !!!!
-    //  + needs feature dev
-    // refactor, make it nice, cleanup vars
+    @Test
+    public void login_afterSuccessfulLoginLoginAttemptsShouldResetToZero() throws AccountServiceException {
+        final String email = "lastnite@aaa.me";
+        final String password = "woho#";
+        final String badPassword = "bbbbb";
+        final boolean locked = false;
+        final boolean verified = true;
+
+        final boolean firstBadLogin;
+        final boolean secondBadLogin;
+        final boolean thirdBadLogin;
+        final boolean fourthGoodLogin;
+
+
+        final AccountResultSet accountAfterThreeBadLogin;
+        final AccountResultSet accountAfterGoodLoginShouldBeReset;
+        final AccountResultSet accountAfterDelete;
+
+
+        accountService.create(email, password, locked, verified);
+        firstBadLogin = accountService.login(email, badPassword);
+        secondBadLogin = accountService.login(email, badPassword);
+        thirdBadLogin = accountService.login(email, badPassword);
+        accountAfterThreeBadLogin = accountService.get(email);
+
+        fourthGoodLogin = accountService.login(email, password);
+        accountAfterGoodLoginShouldBeReset = accountService.get(email);
+
+        accountService.delete(email);
+        accountAfterDelete = accountService.get(email);
+
+
+        assertFalse(firstBadLogin);
+        assertFalse(secondBadLogin);
+        assertFalse(thirdBadLogin);
+        assertEquals(3, accountAfterThreeBadLogin.account_login_attempts);
+        assertTrue(fourthGoodLogin);
+        assertEquals(0, accountAfterGoodLoginShouldBeReset.account_login_attempts);
+        assertNull(accountAfterDelete);
+    }
 }
