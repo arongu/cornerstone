@@ -366,6 +366,8 @@ public class AccountService implements AccountServiceInterface {
                             incrementLoginAttempts(emailAddress);
 
                         } else {
+                            /* TODO create an exception for this, to able to PASS IP address of the origin
+                                 so the caller method can handle this */
                             lock(emailAddress, "Maximum login attempts reached.");
                         }
                     }
