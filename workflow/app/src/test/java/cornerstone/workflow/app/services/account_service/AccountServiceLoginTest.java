@@ -215,7 +215,7 @@ public class AccountServiceLoginTest {
         assertNull(accountShouldBeDeleted);
     }
 
-    // TODO cleanup the rest of the TCs ... with
+
     @Test
     public void login_shouldIncrementLoginAttemptsBy179TimesAccountShouldNotBeLocked_whenLoginFails179Times() throws AccountServiceException {
         final String email = "badtyper180@login.me";
@@ -224,21 +224,30 @@ public class AccountServiceLoginTest {
         final boolean locked = false;
         final boolean verified = true;
 
-        accountService.create(email, password, locked, verified);
-        boolean loggedIn = false;
-        for ( int i = 0; i < 179 && !loggedIn; i++ ) {
-            loggedIn = accountService.login(email, badPassword);
+        final int creates;
+        final int deletes;
+        final boolean logins[] = new boolean[179];
+        final AccountResultSet account;
+        final AccountResultSet accountShouldBeDeleted;
+
+
+        creates = accountService.create(email, password, locked, verified);
+        for ( int i = 0; i < 179; i++ ) {
+            logins[i] = accountService.login(email, badPassword);
         }
+        account = accountService.get(email);
+        deletes = accountService.delete(email);
+        accountShouldBeDeleted = accountService.get(email);
 
 
-        final AccountResultSet account = accountService.get(email);
-        accountService.delete(email);
-
-
+        assertEquals(1, creates);
+        for (boolean login : logins) {
+            assertFalse(login);
+        }
         assertEquals(179, account.account_login_attempts);
         assertFalse(account.account_locked);
-        assertFalse(loggedIn);
-        assertNull(accountService.get(email));
+        assertEquals(1, deletes);
+        assertNull(accountShouldBeDeleted);
     }
 
     @Test
@@ -249,36 +258,35 @@ public class AccountServiceLoginTest {
         final boolean locked = false;
         final boolean verified = true;
 
-        final boolean firstLogin;
-        final boolean after180Login;
+        final int creates;
+        final int deletes;
+        final boolean testLogin;
+        final boolean testLogin201;
+        final AccountResultSet accountNoBadLogins;
+        final AccountResultSet accountShouldBeLocked;
+        final AccountResultSet accountShouldBeDeleted;
 
-        AccountResultSet start;
-        AccountResultSet end;
-
-
-        accountService.create(email, password, locked, verified);
-        firstLogin = accountService.login(email, password);
-        start = accountService.get(email);
-
+        creates = accountService.create(email, password, locked, verified);
+        testLogin = accountService.login(email, password);
+        accountNoBadLogins = accountService.get(email);
         for ( int i = 0; i < 200; i++ ) {
             accountService.login(email, badPassword);
         }
+        testLogin201 = accountService.login(email, password);
+        accountShouldBeLocked = accountService.get(email);
+        deletes = accountService.delete(email);
+        accountShouldBeDeleted = accountService.get(email);
 
-        after180Login = accountService.login(email, password);
-        end = accountService.get(email);
 
-        accountService.delete(email);
-
-
-        assertTrue(firstLogin);
-        assertFalse(start.account_locked);
-        assertEquals(0, start.account_login_attempts);
-        // after 180 bad attempts
-        assertFalse(after180Login);
-        assertTrue(end.account_locked);
-        assertEquals(180, end.account_login_attempts);
-        // cleanup
-        assertNull(accountService.get(email));
+        assertEquals(1, creates);
+        assertTrue(testLogin);
+        assertFalse(accountNoBadLogins.account_locked);
+        assertEquals(0, accountNoBadLogins.account_login_attempts);
+        assertFalse(testLogin201);
+        assertTrue(accountShouldBeLocked.account_locked);
+        assertEquals(180, accountShouldBeLocked.account_login_attempts);
+        assertEquals(1, deletes);
+        assertNull(accountShouldBeDeleted);
     }
 
     @Test
@@ -289,18 +297,18 @@ public class AccountServiceLoginTest {
         final boolean locked = false;
         final boolean verified = true;
 
+        final int creates;
+        final int deletes;
         final boolean firstBadLogin;
         final boolean secondBadLogin;
         final boolean thirdBadLogin;
         final boolean fourthGoodLogin;
-
-
         final AccountResultSet accountAfterThreeBadLogin;
         final AccountResultSet accountAfterGoodLoginShouldBeReset;
-        final AccountResultSet accountAfterDelete;
+        final AccountResultSet accountShouldBeDeleted;
 
 
-        accountService.create(email, password, locked, verified);
+        creates = accountService.create(email, password, locked, verified);
         firstBadLogin = accountService.login(email, badPassword);
         secondBadLogin = accountService.login(email, badPassword);
         thirdBadLogin = accountService.login(email, badPassword);
@@ -309,16 +317,18 @@ public class AccountServiceLoginTest {
         fourthGoodLogin = accountService.login(email, password);
         accountAfterGoodLoginShouldBeReset = accountService.get(email);
 
-        accountService.delete(email);
-        accountAfterDelete = accountService.get(email);
+        deletes = accountService.delete(email);
+        accountShouldBeDeleted = accountService.get(email);
 
 
+        assertEquals(1, creates);
         assertFalse(firstBadLogin);
         assertFalse(secondBadLogin);
         assertFalse(thirdBadLogin);
         assertEquals(3, accountAfterThreeBadLogin.account_login_attempts);
         assertTrue(fourthGoodLogin);
         assertEquals(0, accountAfterGoodLoginShouldBeReset.account_login_attempts);
-        assertNull(accountAfterDelete);
+        assertEquals(1, deletes);
+        assertNull(accountShouldBeDeleted);
     }
 }
