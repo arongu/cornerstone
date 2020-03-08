@@ -28,8 +28,10 @@ public class AccountRestService {
     }
 
     @POST
-    public Response create(final EmailAndPassword account) throws AccountServiceException,
-                                                                         BadRequestException {
+    public Response create(final EmailAndPassword account) throws
+            AccountServiceException,
+            BadRequestException {
+
         if ( null != account ) {
             accountService.create(
                     account.email,
@@ -49,8 +51,10 @@ public class AccountRestService {
     }
 
     @DELETE
-    public Response delete(final String emailAddress) throws AccountServiceException,
-                                                                    BadRequestException {
+    public Response delete(final String emailAddress) throws
+            AccountServiceException,
+            BadRequestException {
+
         if ( null != emailAddress ) {
             accountService.delete(emailAddress);
 
@@ -67,8 +71,10 @@ public class AccountRestService {
     // /mass
     @POST
     @Path("/mass")
-    public Response massCreate(final List<EmailAndPassword> accounts) throws AccountServiceMultipleException,
-                                                                                 BadRequestException {
+    public Response massCreate(final List<EmailAndPassword> accounts) throws
+            AccountServiceMultipleException,
+            BadRequestException {
+
         if ( accounts != null &&
              !accounts.isEmpty() ) {
             accountService.create(accounts);
@@ -84,8 +90,10 @@ public class AccountRestService {
 
     @DELETE
     @Path("/mass")
-    public Response massDelete(final List<String> emailAddresses) throws AccountServiceMultipleException,
-                                                                             BadRequestException {
+    public Response massDelete(final List<String> emailAddresses) throws
+            AccountServiceMultipleException,
+            BadRequestException {
+
         if ( null != emailAddresses ) {
             accountService.delete(emailAddresses);
 

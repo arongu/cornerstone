@@ -226,7 +226,7 @@ public class AccountServiceLoginTest {
 
         final int creates;
         final int deletes;
-        final boolean logins[] = new boolean[179];
+        final boolean[] logins = new boolean[179];
         final AccountResultSet account;
         final AccountResultSet accountShouldBeDeleted;
 
@@ -260,29 +260,29 @@ public class AccountServiceLoginTest {
 
         final int creates;
         final int deletes;
-        final boolean testLogin;
-        final boolean testLogin201;
+        final boolean firstLogin;
+        final boolean lockedLoginWithGoodPassword;
         final AccountResultSet accountNoBadLogins;
         final AccountResultSet accountShouldBeLocked;
         final AccountResultSet accountShouldBeDeleted;
 
         creates = accountService.create(email, password, locked, verified);
-        testLogin = accountService.login(email, password);
+        firstLogin = accountService.login(email, password);
         accountNoBadLogins = accountService.get(email);
         for ( int i = 0; i < 200; i++ ) {
             accountService.login(email, badPassword);
         }
-        testLogin201 = accountService.login(email, password);
+        lockedLoginWithGoodPassword = accountService.login(email, password);
         accountShouldBeLocked = accountService.get(email);
         deletes = accountService.delete(email);
         accountShouldBeDeleted = accountService.get(email);
 
 
         assertEquals(1, creates);
-        assertTrue(testLogin);
+        assertTrue(firstLogin);
         assertFalse(accountNoBadLogins.account_locked);
         assertEquals(0, accountNoBadLogins.account_login_attempts);
-        assertFalse(testLogin201);
+        assertFalse(lockedLoginWithGoodPassword);
         assertTrue(accountShouldBeLocked.account_locked);
         assertEquals(180, accountShouldBeLocked.account_login_attempts);
         assertEquals(1, deletes);
