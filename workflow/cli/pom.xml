@@ -15,10 +15,13 @@
     <packaging>jar</packaging>
 
     <dependencies>
+        <!-- Local dependency -->
         <dependency>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-compiler-plugin</artifactId>
+            <groupId>cornerstone.workflow</groupId>
+            <artifactId>lib</artifactId>
+            <version>1.0</version>
         </dependency>
+        <!-- Testing -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
@@ -29,20 +32,18 @@
             <artifactId>junit-jupiter-params</artifactId>
             <scope>test</scope>
         </dependency>
-
-        <!-- Local dependency -->
-        <dependency>
-            <groupId>cornerstone.workflow</groupId>
-            <artifactId>lib</artifactId>
-            <version>1.0</version>
-        </dependency>
     </dependencies>
 
     <build>
         <plugins>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
-                <version>3.2.0</version>
                 <configuration>
                     <archive>
                         <manifest>

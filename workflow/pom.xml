@@ -17,7 +17,7 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>app</module>
+        <module>webapp</module>
         <module>cli</module>
         <module>lib</module>
     </modules>
