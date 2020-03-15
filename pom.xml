@@ -20,7 +20,9 @@
 
     <modules>
         <module>workflow</module>
-        <module>db_migration</module>
+        <module>db</module>
+        <module>base</module>
+        <module>migration</module>
     </modules>
 
     <dependencyManagement>

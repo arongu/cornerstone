@@ -18,6 +18,7 @@
     <modules>
         <module>accounts</module>
         <module>data</module>
+        <module>base</module>
     </modules>
 
     <!-- dependency for Flyway -->
