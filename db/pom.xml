@@ -16,9 +16,8 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>accounts</module>
-        <module>data</module>
         <module>base</module>
+        <module>migration</module>
     </modules>
 
     <!-- dependency for Flyway -->
