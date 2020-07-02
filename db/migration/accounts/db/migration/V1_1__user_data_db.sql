@@ -1,8 +1,8 @@
 ----------------------------------------------------------------------------
--- Table: info.accounts
+-- Table: user_data.accounts
 ----------------------------------------------------------------------------
-CREATE SEQUENCE IF NOT EXISTS info.account_id_seq;
-CREATE TABLE IF NOT EXISTS info.accounts(
+CREATE SEQUENCE IF NOT EXISTS user_data.account_id_seq;
+CREATE TABLE IF NOT EXISTS user_data.accounts(
     account_id integer NOT NULL DEFAULT nextval('account_id_seq'::regclass),
     account_registration_ts timestamptz NOT NULL DEFAULT NOW(),
     -- account enable / disable
@@ -25,78 +25,67 @@ CREATE TABLE IF NOT EXISTS info.accounts(
 );
 
 -- indices
-CREATE INDEX IF NOT EXISTS index_email_address ON info.accounts(email_address);
-CREATE INDEX IF NOT EXISTS index_account_id ON info.accounts(account_id);
+CREATE INDEX IF NOT EXISTS index_email_address ON user_data.accounts(email_address);
+CREATE INDEX IF NOT EXISTS index_account_id ON user_data.accounts(account_id);
 
 -- function  && trigger for account_enabled update
-CREATE OR REPLACE FUNCTION info.update_account_enabled_ts() RETURNS TRIGGER AS $$
+CREATE OR REPLACE FUNCTION user_data.update_account_enabled_ts() RETURNS TRIGGER AS $$
     BEGIN
         NEW.account_locked_ts = NOW();
         RETURN NEW;
     END
 $$ LANGUAGE plpgsql;
 
-DROP TRIGGER IF EXISTS trigger_account_enabled ON info.accounts;
+DROP TRIGGER IF EXISTS trigger_account_enabled ON user_data.accounts;
 CREATE TRIGGER trigger_account_enabled
-    BEFORE UPDATE OF account_locked ON info.accounts
+    BEFORE UPDATE OF account_locked ON user_data.accounts
     FOR EACH ROW
-    EXECUTE PROCEDURE info.update_account_enabled_ts();
+    EXECUTE PROCEDURE user_data.update_account_enabled_ts();
 -- end of account_enabled
 
 -- function && trigger for email_address update
-CREATE OR REPLACE FUNCTION info.update_email_address_ts() RETURNS TRIGGER AS $$
+CREATE OR REPLACE FUNCTION user_data.update_email_address_ts() RETURNS TRIGGER AS $$
     BEGIN
         NEW.email_address_ts = NOW();
         RETURN NEW;
     END
 $$ LANGUAGE plpgsql;
 
-DROP TRIGGER IF EXISTS trigger_email_address ON info.accounts;
+DROP TRIGGER IF EXISTS trigger_email_address ON user_data.accounts;
 CREATE TRIGGER trigger_email_address
-    BEFORE UPDATE OF email_address ON info.accounts
-    FOR EACH ROW EXECUTE PROCEDURE info.update_email_address_ts();
+    BEFORE UPDATE OF email_address ON user_data.accounts
+    FOR EACH ROW EXECUTE PROCEDURE user_data.update_email_address_ts();
 -- end of email_address
 
 -- function && trigger for password_hash update
-CREATE OR REPLACE FUNCTION info.update_password_hash_ts() RETURNS TRIGGER AS $$
+CREATE OR REPLACE FUNCTION user_data.update_password_hash_ts() RETURNS TRIGGER AS $$
     BEGIN
         NEW.password_hash_ts = NOW();
         RETURN NEW;
     END
 $$ LANGUAGE plpgsql;
 
-DROP TRIGGER IF EXISTS trigger_password_hash ON info.accounts;
-CREATE TRIGGER trigger_password_hash BEFORE UPDATE OF password_hash ON info.accounts
-FOR EACH ROW EXECUTE PROCEDURE info.update_password_hash_ts();
+DROP TRIGGER IF EXISTS trigger_password_hash ON user_data.accounts;
+CREATE TRIGGER trigger_password_hash BEFORE UPDATE OF password_hash ON user_data.accounts
+FOR EACH ROW EXECUTE PROCEDURE user_data.update_password_hash_ts();
 -- end of password_hash_last
 
 -- function && trigger for email_address_verified update
-CREATE OR REPLACE FUNCTION info.update_email_address_verified_ts() RETURNS TRIGGER AS $$
+CREATE OR REPLACE FUNCTION user_data.update_email_address_verified_ts() RETURNS TRIGGER AS $$
     BEGIN
         NEW.email_address_verified_ts = NOW();
         RETURN NEW;
     END
 $$ LANGUAGE plpgsql;
 
-DROP TRIGGER IF EXISTS trigger_email_address_verified ON info.accounts;
+DROP TRIGGER IF EXISTS trigger_email_address_verified ON user_data.accounts;
 CREATE TRIGGER trigger_email_address_verified
-    BEFORE UPDATE OF email_address_verified ON info.accounts
+    BEFORE UPDATE OF email_address_verified ON user_data.accounts
     FOR EACH ROW
-    EXECUTE PROCEDURE info.update_email_address_verified_ts();
+    EXECUTE PROCEDURE user_data.update_email_address_verified_ts();
 -- end of email_address_verified
 ----------------------------------------------------------------------------
--- End of Table: info.accounts
+-- End of Table: user_data.accounts
 ----------------------------------------------------------------------------
 
 
-
-----------------------------------------------------------------------------
--- Table for account features
-----------------------------------------------------------------------------
--- table accounts_features
-CREATE TABLE IF NOT EXISTS info.account_login(
-    account_id integer NOT NULL,
-    -- constraints
-    CONSTRAINT fk_account_id FOREIGN KEY (account_id)
-        REFERENCES info.accounts (account_id)
-);

@@ -32,8 +32,8 @@
                     <locations>filesystem:db/migration</locations>
                     <url>${db.account.url}</url>
                     <schemas>
-                        <schema>info</schema>
-                        <schema>history</schema>
+                        <schema>user_data</schema>
+                        <schema>user_history</schema>
                     </schemas>
                     <serverId>${postgres.server.id}</serverId>
                     <baselineOnMigrate>true</baselineOnMigrate>
