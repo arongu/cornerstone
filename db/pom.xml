@@ -15,8 +15,8 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>creation</module>
         <module>migration</module>
+        <module>creation</module>
     </modules>
 
     <!-- dependency for Flyway -->
