@@ -3,6 +3,7 @@
 ----------------------------------------------------------------------------
 -- Table: user_data.accounts
 ----------------------------------------------------------------------------
+
 CREATE SEQUENCE IF NOT EXISTS user_data.account_id_seq;
 CREATE TABLE IF NOT EXISTS user_data.accounts(
     account_id integer NOT NULL DEFAULT nextval('account_id_seq'::regclass),
@@ -86,59 +87,31 @@ CREATE TRIGGER trigger_email_address_verified
     FOR EACH ROW
     EXECUTE PROCEDURE user_data.update_email_address_verified_ts();
 -- end of email_address_verified
-----------------------------------------------------------------------------
--- End of Table: user_data.accounts
-----------------------------------------------------------------------------
-
 
 ----------------------------------------------------------------------------
+-- End of table user_data.accounts
 ----------------------------------------------------------------------------
-----------------------------------------------------------------------------
-----------------------------------------------------------------------------
-
-
-----------------------------------------------------------------------------
-----------------------------------------------------------------------------
-----------------------------------------------------------------------------
-----------------------------------------------------------------------------
-
-
-
-----------------------------------------------------------------------------
--- Permissions of user_data
+-- Permissions of schema user_data
 ----------------------------------------------------------------------------
 
 -- create roles/users
 DROP ROLE IF EXISTS ${db.user};
---CREATE USER ${db.user} WITH ENCRYPTED PASSWORD 'alma';
---
--- connect to db
--- \connect ${db_name}
---
--- -- STEP 4 :: schema ${schema_user_data} GRANTS for ${db_user}
--- GRANT USAGE ON SCHEMA ${schema_user_data} TO ${db_user};
--- --
--- --
--- -- STEP 5 :: schema ${schema_user_data} sequences, functions (usage is required to call nextval function) GRANTS for ${db_user}
--- GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA ${schema_user_data} TO ${db_user};
--- GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA ${schema_user_data} TO ${db_user};
--- --
--- --
--- -- STEP 6 :: schema ${schema_user_data} GRANTS for ${db_user}
--- GRANT SELECT, INSERT, UPDATE, DELETE, TRIGGER ON ALL TABLES IN SCHEMA ${schema_user_data} TO ${db_user};
--- --
--- --
--- -- STEP 7 :: schema ${schema_user_data} GRANTS for ${db_user}
--- GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA ${schema_user_data} TO ${db_user};
--- GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA ${schema_user_data} TO ${db_user};
--- GRANT SELECT, INSERT, UPDATE, DELETE, TRUNCATE, REFERENCES, TRIGGER ON ALL TABLES IN SCHEMA ${schema_user_data} TO ${db_user};
--- GRANT CREATE ON SCHEMA ${schema_user_data} TO ${db_user};
+CREATE USER ${db.user} WITH ENCRYPTED PASSWORD '${db_password}';
 
+GRANT USAGE ON SCHEMA ${schema_user_data} TO ${db.user};
+-- sequences, functions (usage is required to call nextval function)
+GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA ${schema_user_data} TO ${db.user};
+GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA ${schema_user_data} TO ${db.user};
+GRANT SELECT, INSERT, UPDATE, DELETE, TRIGGER ON ALL TABLES IN SCHEMA ${schema_user_data} TO ${db.user};
+--
+GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA ${schema_user_data} TO ${db.user};
+GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA ${schema_user_data} TO ${db.user};
+GRANT SELECT, INSERT, UPDATE, DELETE, TRUNCATE, REFERENCES, TRIGGER ON ALL TABLES IN SCHEMA ${schema_user_data} TO ${db.user};
+GRANT CREATE ON SCHEMA ${schema_user_data} TO ${db.user};
 
 ----------------------------------------------------------------------------
--- End of Schema: user_data
+-- End of permissions schema user_data
 ----------------------------------------------------------------------------
+-- End of schema user_data
 ----------------------------------------------------------------------------
-----------------------------------------------------------------------------
-----------------------------------------------------------------------------
-----------------------------------------------------------------------------
+
