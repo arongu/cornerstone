@@ -1,0 +1,25 @@
+- maven users db deloy:
+    [ DONE ] dev
+    [ DONE ] live
+    
+    
+- maven work db deloy:
+    [ ] get rid off db_data_config.sh script
+    
+    [ ] dev
+         [] m2 settings
+         [] pom file
+    [ ] live
+         [] m2 settings
+         [] pom file
+
+
+- java change property names in conf
+    [] account and whatever
+
+    [] create config files for app and sync them with db deployment
+        sync user/passwords with your local m2        
+        - live
+            [] sync with your m2 settings
+        - dev
+        

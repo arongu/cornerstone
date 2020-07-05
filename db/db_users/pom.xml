@@ -29,7 +29,7 @@
                     <url>${m2.db.users.db_url}</url>
 
                     <schemas>
-                        <schema>${m2.db.users.db_schemas.user_data.name}</schema>
+                        <schema>${m2.db.users.db_schemas.user_data.schema_name}</schema>
                     </schemas>
 
                     <locations>
@@ -39,7 +39,7 @@
                     <placeholderReplacement>true</placeholderReplacement>
 
                     <placeholders>
-                        <schema_user_data>${m2.db.users.db_schemas.user_data.name}</schema_user_data>
+                        <schema_user_data>${m2.db.users.db_schemas.user_data.schema_name}</schema_user_data>
                         <db_name>${m2.db.users.db_name}</db_name>
                         <db_password>${m2.db.users.db_password}</db_password>
                         <!-- flyway db.user var -->
