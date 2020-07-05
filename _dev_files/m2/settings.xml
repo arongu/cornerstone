@@ -73,9 +73,10 @@
         <m2.tomcat.path>/app</m2.tomcat.path>
 
         <!-- USERS DB CONFIG -->
+        <!-- DO NOT SUBSTITUTE WITH $, ONLY ID -->
         <m2.db.users.server_id>local.postgres.dev</m2.db.users.server_id>
-        <m2.db.users.db_name>dev_users</m2.db.users.db_name>
         <m2.db.users.db_url>jdbc:postgresql://127.0.0.1:5432/dev_users</m2.db.users.db_url>
+        <m2.db.users.db_name>dev_users</m2.db.users.db_name>
         <m2.db.users.db_schemas.user_data.name>user_data</m2.db.users.db_schemas.user_data.name>
         <!-- user for the application -->
         <m2.db.users.db_user>dev</m2.db.users.db_user>

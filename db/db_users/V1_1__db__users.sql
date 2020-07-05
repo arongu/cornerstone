@@ -109,6 +109,10 @@ GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA ${schema_user_data} TO ${db.user};
 GRANT SELECT, INSERT, UPDATE, DELETE, TRUNCATE, REFERENCES, TRIGGER ON ALL TABLES IN SCHEMA ${schema_user_data} TO ${db.user};
 GRANT CREATE ON SCHEMA ${schema_user_data} TO ${db.user};
 
+-- CLI TEST
+-- CMD: psql --host=localhost --dbname=dev_users --username=dev
+-- SET search_path TO user_data;
+-- SELECT * FROM accounts;
 ----------------------------------------------------------------------------
 -- End of permissions schema user_data
 ----------------------------------------------------------------------------
