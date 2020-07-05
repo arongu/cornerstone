@@ -5,13 +5,13 @@
 
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <artifactId>db_migration</artifactId>
+        <artifactId>db</artifactId>
         <groupId>cornerstone.db</groupId>
         <version>1.0</version>
     </parent>
 
-    <artifactId>data</artifactId>
-    <name>data (db_migration)</name>
+    <artifactId>work</artifactId>
+    <name>work (flyway)</name>
     <packaging>pom</packaging>
     <version>1.0</version>
 
@@ -29,11 +29,10 @@
                         mvn flyway:migrate -Ptest   // for running test cases
                         mvn flyway:migrate -Pdev    // for development/prod
                     -->
-                    <locations>filesystem:db/migration</locations>
-                    <url>${db.data.url}</url>
+                    <locations>filesystem:db/sql</locations>
+                    <url>${db.work.url}</url>
                     <schemas>
                         <schema>secure</schema>
-<!--                        <schema>data</schema>-->
                     </schemas>
                     <serverId>${postgres.server.id}</serverId>
                     <baselineOnMigrate>true</baselineOnMigrate>

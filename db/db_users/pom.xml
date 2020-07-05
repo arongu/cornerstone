@@ -5,13 +5,13 @@
 
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <artifactId>db_migration</artifactId>
+        <artifactId>db</artifactId>
         <groupId>cornerstone.db</groupId>
         <version>1.0</version>
     </parent>
 
-    <artifactId>account</artifactId>
-    <name>account (db_migration)</name>
+    <artifactId>db_users</artifactId>
+    <name>users (flyway)</name>
     <packaging>pom</packaging>
     <version>1.0</version>
 
@@ -26,14 +26,15 @@
                         this is where the sql files are located
 
                         Use the right profile by running:
-                        mvn flyway:migrate -Ptest   // for running test cases
-                        mvn flyway:migrate -Pdev    // for development/prod
+                        mvn flyway:migrate -Pdev   // for running test cases
+                        mvn flyway:migrate -Plive    // for development/prod
                     -->
-                    <locations>filesystem:db/migration</locations>
-                    <url>${db.account.url}</url>
+                    <locations>
+                        <location>filesystem:sql</location>
+                    </locations>
+                    <url>${db.users.url}</url>
                     <schemas>
                         <schema>user_data</schema>
-                        <schema>user_history</schema>
                     </schemas>
                     <serverId>${postgres.server.id}</serverId>
                     <baselineOnMigrate>true</baselineOnMigrate>

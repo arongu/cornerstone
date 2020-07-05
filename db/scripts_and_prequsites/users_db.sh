@@ -10,13 +10,13 @@ readonly schema_user_data='user_data'
 # ----------------------------------------
 # Prod
 # ----------------------------------------
-readonly db_prod_name='users'
-readonly db_prod_user='robot'
+readonly db_live_name='users'
+readonly db_live_user='robot'
 # ----------------------------------------
 # Test
 # ----------------------------------------
-readonly db_test_name='test_users'
-readonly db_test_user='test_robot'
+readonly db_dev_name='dev_users'
+readonly db_dev_user='dev_robot'
 # ----------------------------------------
 # Running variable to be used
 # ----------------------------------------
@@ -55,8 +55,8 @@ function setup_variables() {
     exit 3
   fi
 
-  SQL_FILE_NAME="create_${db_name}.sql"
-  SQL_SETUP_FILE_NAME="setup_${db_name}.sql"
+  SQL_FILE_NAME="create_db__${db_name}.sql"
+  SQL_SETUP_FILE_NAME="setup_db__${db_name}.sql"
 }
 
 function generate_create_sql_file() {
@@ -66,11 +66,10 @@ SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity WHERE da
 DROP DATABASE IF EXISTS ${db_name};
 --
 --
--- STEP 1 :: create database ${db_name} and its schemas: ${schema_user_data}, ${schema_user_history}
+-- STEP 1 :: create database ${db_name} and its schemas: ${schema_user_data}
 CREATE DATABASE ${db_name};
 \connect ${db_name};
 CREATE SCHEMA ${schema_user_data};
-CREATE SCHEMA ${schema_user_history};
 --
 --
 -- STEP 2 :: drop schema public
@@ -110,16 +109,16 @@ EOF
 }
 
 case "${1}" in
-  test)
-    setup_variables "${db_test_name}" "${db_test_user}" "${2}"
+  dev)
+    setup_variables "${db_dev_name}" "${db_dev_user}" "${2}"
     generate_create_sql_file
     generate_setup_sql_file
     echo "psql -f ${SQL_FILE_NAME} (as postgres user)"
     echo "psql -f ${SQL_SETUP_FILE_NAME} (as postgres user)"
   ;;
 
-  prod)
-    setup_variables "${db_prod_name}" "${db_prod_user}" "${2}"
+  live)
+    setup_variables "${db_live_name}" "${db_live_user}" "${2}"
     generate_create_sql_file
     generate_setup_sql_file
     echo "psql -f ${SQL_FILE_NAME} (as postgres user)"
@@ -127,7 +126,7 @@ case "${1}" in
   ;;
 
   *)
-    echo -e "Usage:\n${0} test|prod <db_password>"
+    echo -e "Usage:\n${0} dev|live <db_password>"
     exit 10
   ;;
 esac
