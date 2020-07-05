@@ -9,6 +9,7 @@ CREATE TABLE IF NOT EXISTS secure.pubkeys(
     CONSTRAINT pkey_uuid PRIMARY KEY (uuid),
     CONSTRAINT uniq_key_string UNIQUE (key_string)
 );
+
 -- indices
 CREATE INDEX IF NOT EXISTS index_uuid ON secure.pubkeys(uuid);
 

@@ -1,7 +1,7 @@
 ----------------------------------------------------------------------------
--- Schema: user_data
+-- Schema user_data
 ----------------------------------------------------------------------------
--- Table: user_data.accounts
+-- Table user_data.accounts
 ----------------------------------------------------------------------------
 
 CREATE SEQUENCE IF NOT EXISTS user_data.account_id_seq;

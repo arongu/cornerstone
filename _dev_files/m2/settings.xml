@@ -39,24 +39,28 @@
         <activeByDefault>false</activeByDefault>
       </activation>
 
-
       <properties>
         <!-- tomcat -->
         <tomcat.server.id>local.tomcat</tomcat.server.id>
         <tomcat.manager.url>http://localhost:8080/manager/text</tomcat.manager.url>
-        <tomcat.path>/app</tomcat.path>
+        <tomcat.path>/live</tomcat.path>
 
-        <!-- flyway users db, postgres -->
-        <postgres.server.id>local.postgres.live</postgres.server.id>
-        <db.users.url>jdbc:postgresql://127.0.0.1:5432/users</db.users.url>
+        <!-- USERS DB CONFIG -->
+        <m2.db.users.server_id>local.postgres.live</m2.db.users.server_id>
+        <m2.db.users.db_url>jdbc:postgresql://127.0.0.1:5432/users</m2.db.users.db_url>
+        <m2.db.users.db_name>users</m2.db.users.db_name>
+        <m2.db.users.db_schemas.user_data.name>user_data</m2.db.users.db_schemas.user_data.name>
+        <m2.db.users.db_user>robot</m2.db.users.db_user>
+        <m2.db.users.db_password>xxxx</m2.db.users.db_password>
 
-        <!-- flyway work db, postgres -->
-        <postgres.server.id>local.postgres.live</postgres.server.id>
-        <db.work.url>jdbc:postgresql://127.0.0.1:5432/work</db.work.url>
+        <!-- WORK DB CONFIG -->
+        <m2.db.work.server.id>local.postgres.live</m2.db.work.server.id>
+        <m2.db.work.url>jdbc:postgresql://127.0.0.1:5432/work</m2.db.work.url>
+        <m2.db.work.db_name>work</m2.db.work.db_name>
+        <m2.db.work.db_schemas.secure.name>secure</m2.db.work.db_schemas.secure.name>
+        <m2.db.users.db_user>robot</m2.db.users.db_user>
+        <m2.db.users.db_password>xxxxxxx</m2.db.users.db_password>
 
-        <!-- configuration files for config loader, only works with mvn tomcat7:run -->
-        <app.conf.key>/var/opt/cornerstone/key.conf</app.conf.key>
-        <app.conf.main>/var/opt/cornerstone/app.conf</app.conf.main>
       </properties>
     </profile>
 
@@ -66,29 +70,29 @@
       <activation>
         <activeByDefault>false</activeByDefault>
       </activation>
+
       <properties>
         <!-- tomcat -->
         <m2.tomcat.server.id>local.tomcat</m2.tomcat.server.id>
         <m2.tomcat.manager.url>http://localhost:8080/manager/text</m2.tomcat.manager.url>
-        <m2.tomcat.path>/app</m2.tomcat.path>
+        <m2.tomcat.path>/dev</m2.tomcat.path>
 
         <!-- USERS DB CONFIG -->
-        <!-- DO NOT SUBSTITUTE WITH $, ONLY ID -->
         <m2.db.users.server_id>local.postgres.dev</m2.db.users.server_id>
         <m2.db.users.db_url>jdbc:postgresql://127.0.0.1:5432/dev_users</m2.db.users.db_url>
         <m2.db.users.db_name>dev_users</m2.db.users.db_name>
         <m2.db.users.db_schemas.user_data.name>user_data</m2.db.users.db_schemas.user_data.name>
-        <!-- user for the application -->
         <m2.db.users.db_user>dev</m2.db.users.db_user>
         <m2.db.users.db_password>dev123</m2.db.users.db_password>
 
         <!-- WORK DB CONFIG -->
-        <m2.postgres.server.id>local.postgres.dev</m2.postgres.server.id>
+        <m2.db.work.server.id>local.postgres.dev</m2.db.work.server.id>
         <m2.db.work.url>jdbc:postgresql://127.0.0.1:5432/dev_work</m2.db.work.url>
+        <m2.db.work.db_name>dev_work</m2.db.work.db_name>
+        <m2.db.work.db_schemas.secure.name>secure</m2.db.work.db_schemas.secure.name>
+        <m2.db.users.db_user>dev</m2.db.users.db_user>
+        <m2.db.users.db_password>dev123</m2.db.users.db_password>
 
-        <!-- configuration files for config loader, only works with mvn tomcat7:run -->
-        <m2.app.conf.key>/home/aron/.corner/key.conf</m2.app.conf.key>
-        <m2.app.conf.main>/home/aron/.corner/app.conf</m2.app.conf.main>
       </properties>
     </profile>
   </profiles>

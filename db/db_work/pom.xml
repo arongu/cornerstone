@@ -10,32 +10,42 @@
         <version>1.0</version>
     </parent>
 
-    <artifactId>work</artifactId>
-    <name>work (flyway)</name>
+    <artifactId>db_work</artifactId>
+    <name>work(flyway)</name>
     <packaging>pom</packaging>
     <version>1.0</version>
 
+    <!-- Use the right profile by running:
+        mvn flyway:migrate -Pdev
+        mvn flyway:migrate -Plive
+    -->
     <build>
         <plugins>
             <plugin>
                 <groupId>org.flywaydb</groupId>
                 <artifactId>flyway-maven-plugin</artifactId>
                 <configuration>
-                    <!--
-                        cornerstone/dbmigrators/userdb/db/migration
-                        this is where the sql files are located
+                    <serverId>${m2.db.work.server_id}</serverId>
+                    <url>${m2.db.work.db_url}</url>
 
-                        Use the right profile by running:
-                        mvn flyway:migrate -Ptest   // for running test cases
-                        mvn flyway:migrate -Pdev    // for development/prod
-                    -->
-                    <locations>filesystem:db/sql</locations>
-                    <url>${db.work.url}</url>
                     <schemas>
-                        <schema>secure</schema>
+                        <schema>${m2.db.work.db_schemas.secure.name}</schema>
                     </schemas>
-                    <serverId>${postgres.server.id}</serverId>
+
+                    <locations>
+                        <location>filesystem:</location>
+                    </locations>
                     <baselineOnMigrate>true</baselineOnMigrate>
+                    <placeholderReplacement>true</placeholderReplacement>
+
+                    <placeholders>
+                        <schema_secure>${m2.db.work.db_schemas.secure.name}</schema_secure>
+                        <db_name>${m2.db.work.db_name}</db_name>
+                        <db_password>${m2.db.work.db_password}</db_password>
+                        <!-- flyway db.work var -->
+                        <db_user>${m2.db.work.db_user}</db_user>
+                        <db.user>${m2.db.work.db_user}</db.user>
+                    </placeholders>
                 </configuration>
             </plugin>
         </plugins>
