@@ -38,6 +38,8 @@
       <activation>
         <activeByDefault>false</activeByDefault>
       </activation>
+
+
       <properties>
         <!-- tomcat -->
         <tomcat.server.id>local.tomcat</tomcat.server.id>
@@ -66,21 +68,25 @@
       </activation>
       <properties>
         <!-- tomcat -->
-        <tomcat.server.id>local.tomcat</tomcat.server.id>
-        <tomcat.manager.url>http://localhost:8080/manager/text</tomcat.manager.url>
-        <tomcat.path>/app</tomcat.path>
+        <m2.tomcat.server.id>local.tomcat</m2.tomcat.server.id>
+        <m2.tomcat.manager.url>http://localhost:8080/manager/text</m2.tomcat.manager.url>
+        <m2.tomcat.path>/app</m2.tomcat.path>
 
-        <!-- flyway users db, postgres -->
-        <postgres.server.id>local.postgres.dev</postgres.server.id>
-        <db.users.url>jdbc:postgresql://127.0.0.1:5432/dev_users</db.users.url>
+        <!-- USERS DB CONFIG -->
+        <m2.db.users.server_id>local.postgres.dev</m2.db.users.server_id>
+        <m2.db.users.db_name>dev_users</m2.db.users.db_name>
+        <m2.db.users.db_url>jdbc:postgresql://127.0.0.1:5432/dev_users</m2.db.users.db_url>
+        <m2.db.users.db_schemas.user_data.name>user_data</m2.db.users.db_schemas.user_data.name>
+        <m2.db.users.db_user>dev</m2.db.users.db_user>
+        <m2.db.users.db_password>dev123</m2.db.users.db_password>
 
-        <!-- flyway work db, postgres -->
-        <postgres.server.id>local.postgres.dev</postgres.server.id>
-        <db.work.url>jdbc:postgresql://127.0.0.1:5432/dev_work</db.work.url>
+        <!-- WORK DB CONFIG -->
+        <m2.postgres.server.id>local.postgres.dev</m2.postgres.server.id>
+        <m2.db.work.url>jdbc:postgresql://127.0.0.1:5432/dev_work</m2.db.work.url>
 
         <!-- configuration files for config loader, only works with mvn tomcat7:run -->
-        <app.conf.key>/home/aron/.corner/key.conf</app.conf.key>
-        <app.conf.main>/home/aron/.corner/app.conf</app.conf.main>
+        <m2.app.conf.key>/home/aron/.corner/key.conf</m2.app.conf.key>
+        <m2.app.conf.main>/home/aron/.corner/app.conf</m2.app.conf.main>
       </properties>
     </profile>
   </profiles>

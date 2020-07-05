@@ -15,29 +15,36 @@
     <packaging>pom</packaging>
     <version>1.0</version>
 
+    <!-- Use the right profile by running:
+        mvn flyway:migrate -Pdev
+        mvn flyway:migrate -Plive
+    -->
     <build>
         <plugins>
             <plugin>
                 <groupId>org.flywaydb</groupId>
                 <artifactId>flyway-maven-plugin</artifactId>
                 <configuration>
-                    <!--
-                        cornerstone/dbmigrators/userdb/db/migration
-                        this is where the sql files are located
+                    <serverId>${m2.db.users.server_id}</serverId>
+                    <url>${m2.db.users.db_url}</url>
 
-                        Use the right profile by running:
-                        mvn flyway:migrate -Pdev   // for running test cases
-                        mvn flyway:migrate -Plive    // for development/prod
-                    -->
-                    <locations>
-                        <location>filesystem:sql</location>
-                    </locations>
-                    <url>${db.users.url}</url>
                     <schemas>
-                        <schema>user_data</schema>
+                        <schema>${m2.db.users.db_schemas.user_data.name}</schema>
                     </schemas>
-                    <serverId>${postgres.server.id}</serverId>
+
+                    <locations>
+                        <location>filesystem:</location>
+                    </locations>
                     <baselineOnMigrate>true</baselineOnMigrate>
+                    <placeholderReplacement>true</placeholderReplacement>
+
+                    <placeholders>
+                        <schema_user_data>${m2.db.users.db_schemas.user_data.name}</schema_user_data>
+                        <!-- flyway db.name var -->
+                        <db_name>${m2.db.users.db_name}</db_name>
+                        <!-- flyway db.user var -->
+                        <db.user>${m2.db.users.db_user}</db.user>
+                    </placeholders>
                 </configuration>
             </plugin>
         </plugins>

@@ -55,8 +55,8 @@ function setup_variables() {
     exit 3
   fi
 
-  SQL_FILE_NAME="create_db__${db_name}.sql"
-  SQL_SETUP_FILE_NAME="setup_db__${db_name}.sql"
+  SQL_FILE_NAME="sql/create_db__${db_name}.sql"
+  SQL_SETUP_FILE_NAME="sql/setup_db__${db_name}.sql"
 }
 
 function generate_create_sql_file() {
