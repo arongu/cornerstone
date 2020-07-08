@@ -34,18 +34,10 @@ EXECUTE PROCEDURE secure.update_ts();
 ----------------------------------------------------------------------------
 DROP ROLE IF EXISTS ${db.user};
 CREATE USER ${db.user} WITH ENCRYPTED PASSWORD '${db_password}';
---
--- connect to db
---
+
 \connect ${db_name}
---
--- STEP 4 :: info secure
 GRANT USAGE ON SCHEMA ${schema_secure} TO ${db_user};
---
---
--- STEP 5 :: grants onf secure schema functions
 GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA ${schema_secure} TO ${db_user};
---
---
--- STEP 6 :: secure schema all tables
 GRANT SELECT, INSERT, UPDATE, DELETE, TRIGGER ON secure.pubkyes TO ${db_user};
+
+
