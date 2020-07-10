@@ -9,75 +9,47 @@ import java.io.IOException;
 import java.util.Properties;
 
 public class ConfigReader {
-
     private static final Logger logger = LoggerFactory.getLogger(ConfigReader.class);
-    // Properties to look for
-    public static final String SYSTEM_PROPERTY_KEY__KEY_FILE = "keyFile";
-    public static final String SYSTEM_PROPERTY_KEY__CONF_FILE = "confFile";
-    // Default paths
-    public static final String PATH_DEFAULT_KEY_FILE = "/var/opt/cornerstone/key.conf";
-    public static final String PATH_DEFAULT_CONF_FILE = "/var/opt/cornerstone/app.conf";
+    // Environment variables
+    public static final String SYSTEM_PROPERTY_CONF_FILE = "CONF_FILE";
+    public static final String SYSTEM_PROPERTY_KEY_FILE = "KEY_FILE";
     // Logging
-    private static final String LOG_MESSAGE_PROPERTY_SET = "[ System.getProperty ][ '{}' ] = '{}'";
-    private static final String LOG_MESSAGE_PROPERTY_NOT_SET = "[ System.getProperty ][ '{}' ] is not set, using default value : '{}'";
-
+    private static final String LOG_MESSAGE_PROPERTY_SET     = "[ System.getProperty ][ '{}' ] = '{}'";
+    private static final String LOG_MESSAGE_PROPERTY_NOT_SET = "[ System.getProperty ][ '{}' ] is not set!";
 
     private Properties properties;
-    private Properties db_account_properties;
-    private Properties db_data_properties;
-    private Properties app_properties;
+    private Properties db_users_properties;
+    private Properties db_work_properties;
 
     private String keyFile;
     private String confFile;
 
     public ConfigReader() {
-
     }
 
     private void setupKeyFile() {
-
-        if ( null != System.getProperty(SYSTEM_PROPERTY_KEY__KEY_FILE) ) {
-            keyFile = System.getProperty(SYSTEM_PROPERTY_KEY__KEY_FILE);
-
-            logger.info(
-                    LOG_MESSAGE_PROPERTY_SET,
-                    SYSTEM_PROPERTY_KEY__KEY_FILE,
-                    keyFile
-            );
+        keyFile = System.getProperty(SYSTEM_PROPERTY_KEY_FILE);
+        if ( null != keyFile) {
+            logger.info(LOG_MESSAGE_PROPERTY_SET, SYSTEM_PROPERTY_KEY_FILE, keyFile);
 
         } else {
-            keyFile = PATH_DEFAULT_KEY_FILE;
-
-            logger.info(
-                    LOG_MESSAGE_PROPERTY_NOT_SET,
-                    SYSTEM_PROPERTY_KEY__KEY_FILE,
-                    keyFile
-            );
+            logger.error(LOG_MESSAGE_PROPERTY_NOT_SET, SYSTEM_PROPERTY_KEY_FILE);
+            throw new RuntimeException("Encryption key file is not set!");
         }
     }
 
     private void setupConfFile() {
-
-        confFile = System.getProperty(SYSTEM_PROPERTY_KEY__CONF_FILE);
-        if ( null != confFile  ) {
-            logger.info(
-                    LOG_MESSAGE_PROPERTY_SET,
-                    SYSTEM_PROPERTY_KEY__CONF_FILE,
-                    confFile
-            );
+        confFile = System.getProperty(SYSTEM_PROPERTY_CONF_FILE);
+        if ( null != confFile) {
+            logger.info(LOG_MESSAGE_PROPERTY_SET, SYSTEM_PROPERTY_CONF_FILE, confFile);
 
         } else {
-            confFile = PATH_DEFAULT_CONF_FILE;
-            logger.info(
-                    LOG_MESSAGE_PROPERTY_NOT_SET,
-                    SYSTEM_PROPERTY_KEY__CONF_FILE,
-                    confFile
-            );
+            logger.error(LOG_MESSAGE_PROPERTY_NOT_SET, SYSTEM_PROPERTY_CONF_FILE);
+            throw new RuntimeException("Conf file is not set!");
         }
     }
 
     public void loadConfig() throws IOException {
-
         setupKeyFile();
         setupConfFile();
 
@@ -85,9 +57,8 @@ public class ConfigReader {
         properties = ConfigEncryptDecrypt.decryptConfig(key, confFile);
 
         final ConfigSorter cs = new ConfigSorter(properties);
-        app_properties = cs.get_app_properties();
-        db_account_properties = cs.get_db_account_properties();
-        db_data_properties = cs.get_db_data_properties();
+        db_users_properties = cs.getDbUsersProperties();
+        db_work_properties = cs.getDbWorkProperties();
     }
 
     public String getKeyFile() {
@@ -102,15 +73,11 @@ public class ConfigReader {
         return properties;
     }
 
-    public Properties getDataDbProperties() {
-        return db_data_properties;
+    public Properties getWorkDbProperties() {
+        return db_work_properties;
     }
 
-    public Properties getAccountDbProperties() {
-        return db_account_properties;
-    }
-
-    public Properties getAppProperties() {
-        return app_properties;
+    public Properties getUsersDbProperties() {
+        return db_users_properties;
     }
 }

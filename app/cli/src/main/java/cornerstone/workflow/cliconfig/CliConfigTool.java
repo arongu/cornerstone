@@ -106,7 +106,7 @@ public class CliConfigTool {
             switch (cli.command){
                 case "enc" : case "e" : {
                     final SecretKey key = ConfigEncryptDecrypt.loadAESKeyFromFile(cli.keyFile);
-                    try (final BufferedWriter bw = new BufferedWriter(new FileWriter(cli.saveTo))) {
+                    try ( final BufferedWriter bw = new BufferedWriter(new FileWriter(cli.saveTo))) {
                         final List<String> lines = ConfigEncryptDecrypt.encryptConfig(key, cli.configFile);
                         for (final String line : lines) {
                             bw.write(line + "\n");
@@ -117,14 +117,14 @@ public class CliConfigTool {
 
                 case "dec" : case "d" : {
                     final SecretKey key = ConfigEncryptDecrypt.loadAESKeyFromFile(cli.keyFile);
-                    try (final BufferedWriter bw = new BufferedWriter(new FileWriter(cli.saveTo))) {
+                    try ( final BufferedWriter bw = new BufferedWriter(new FileWriter(cli.saveTo))) {
                         ConfigEncryptDecrypt.decryptConfig(key, cli.configFile).store(bw, null);
                     }
                     break;
                 }
 
                 case "gen" : case "g" : {
-                    try (final BufferedWriter bw = new BufferedWriter(new FileWriter(cli.saveTo))) {
+                    try ( final BufferedWriter bw = new BufferedWriter(new FileWriter(cli.saveTo))) {
                         try {
                             final Key keySpec = AESEncryptDecrypt.derive256BitAESKeyWithHmacSHA256(cli.password, cli.salt);
                             final String base64key = Base64.getEncoder().encodeToString(keySpec.getEncoded());

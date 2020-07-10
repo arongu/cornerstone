@@ -1,8 +1,4 @@
 - java change property names in conf
-    []
-    [] account, main db
-    [] disable default paths
-
-    [] create config files for app and sync them with db deployment
-    [] write documentation
-        
+    [ OK ] sync profiles and test config
+    [ ?? ] disable default paths
+    [ wip ] write documentation

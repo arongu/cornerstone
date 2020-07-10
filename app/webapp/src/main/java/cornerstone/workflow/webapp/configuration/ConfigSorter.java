@@ -1,45 +1,34 @@
 package cornerstone.workflow.webapp.configuration;
 
-import cornerstone.workflow.webapp.configuration.enums.AccountDbConnectionFields;
-import cornerstone.workflow.webapp.configuration.enums.ApplicationConfigFields;
-import cornerstone.workflow.webapp.configuration.enums.DataDbConnectionFields;
+import cornerstone.workflow.webapp.configuration.enums.DB_USERS_ENUM;
+import cornerstone.workflow.webapp.configuration.enums.DB_WORK_ENUM;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Properties;
 
 public class ConfigSorter {
-
     private static final Logger logger = LoggerFactory.getLogger(ConfigSorter.class);
-    private static final String errorMessage = "'{}' is not set";
+    private static final String errorMessage  = "'{}' is not set";
     private static final String ignoreMessage = "'{}' is ignored";
 
-    private Properties db_account_properties;
-    private Properties db_data_properties;
-    private Properties app_properties;
+    private Properties properties_db_users;
+    private Properties properties_db_work;
 
     public ConfigSorter(final Properties properties) {
-       processProperties(properties);
+       collectDatabaseProperties(properties);
     }
 
     /**
-     * Adds key value to Properties object, with logging.
+     * Logs and sets key-value pairs on a properties object.
      */
-    private void addAndLog(final Properties properties,
-                           final String key,
-                           final String value,
-                           final String logPrefix) {
+    private void setAndLog(final Properties props, final String key, final String value, final String logPrefix) {
+        if ( key != null && ! key.isEmpty() && value != null && ! value.isEmpty()) {
+            props.setProperty(key, value);
 
-        if ( key   != null && ! key.isEmpty() &&
-             value != null && ! value.isEmpty() ) {
-
-            properties.setProperty(key, value);
-
-            if ( key.contains("password") ||
-                 key.contains("key") ) {
-
+            if ( key.contains("password") || key.contains("key")) {
                 logger.info("[ {} ] <-- '{}' = *****", logPrefix, key);
-
             } else {
                 logger.info("[ {} ] <-- '{}' = '{}'", logPrefix, key, value);
             }
@@ -49,75 +38,49 @@ public class ConfigSorter {
         }
     }
 
-    public void processProperties(final Properties properties) {
-
-        // get db_data_fields
+    public void collectDatabaseProperties(final Properties properties) {
+        // WORK DB
         {
-            db_data_properties = new Properties();
-
-            for ( final DataDbConnectionFields field : DataDbConnectionFields.values() ) {
-                if ( null != properties.get(field.key) ) {
-                    addAndLog(
-                            db_data_properties,
-                            field.key,
-                            properties.getProperty(field.key),
-                            DataDbConnectionFields.prefix_db_main
+            properties_db_work = new Properties();
+            for ( final DB_WORK_ENUM work_enum : DB_WORK_ENUM.values()) {
+                if ( null != properties.get(work_enum.key)) {
+                    setAndLog(
+                            properties_db_work,
+                            work_enum.key,
+                            properties.getProperty(work_enum.key),
+                            DB_WORK_ENUM.PREFIX_DB_WORK
                     );
 
                 } else {
-                    logger.info(ignoreMessage, field.key);
+                    logger.info(ignoreMessage, work_enum.key);
                 }
             }
         }
 
-        // get db_account_fields
+        // USERS DB
         {
-            db_account_properties = new Properties();
-
-            for ( final AccountDbConnectionFields field : AccountDbConnectionFields.values() ) {
-                if ( null != properties.get(field.key) ) {
-                    addAndLog(
-                            db_account_properties,
-                            field.key,
-                            properties.getProperty(field.key),
-                            AccountDbConnectionFields.prefix_db_account
+            properties_db_users = new Properties();
+            for ( final DB_USERS_ENUM users_enum : DB_USERS_ENUM.values()) {
+                if ( null != properties.get(users_enum.key)) {
+                    setAndLog(
+                            properties_db_users,
+                            users_enum.key,
+                            properties.getProperty(users_enum.key),
+                            DB_USERS_ENUM.PREFIX_DB_USERS
                     );
 
                 } else {
-                    logger.info(ignoreMessage, field.key);
-                }
-            }
-        }
-
-        // get app_account_fields
-        {
-            app_properties = new Properties();
-
-            for ( final ApplicationConfigFields field : ApplicationConfigFields.values() ) {
-                if ( null != properties.get(field.key) ) {
-                    addAndLog(
-                            app_properties,
-                            field.key,
-                            properties.getProperty(field.key),
-                            ApplicationConfigFields.prefix_app
-                    );
-
-                } else {
-                    logger.info(ignoreMessage, field.key);
+                    logger.info(ignoreMessage, users_enum.key);
                 }
             }
         }
     }
 
-    public Properties get_app_properties() {
-        return app_properties;
+    public Properties getDbWorkProperties() {
+        return properties_db_work;
     }
 
-    public Properties get_db_data_properties() {
-        return db_data_properties;
-    }
-
-    public Properties get_db_account_properties() {
-        return db_account_properties;
+    public Properties getDbUsersProperties() {
+        return properties_db_users;
     }
 }

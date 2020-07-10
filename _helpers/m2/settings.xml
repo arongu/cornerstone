@@ -62,7 +62,6 @@
         <!-- USERNAME & PASSWORD -->
         <m2.db.work.db_user>USER HERE</m2.db.work.db_user>
         <m2.db.work.db_password>PASSWORD HERE</m2.db.work.db_password>
-
       </properties>
     </profile>
 
@@ -85,8 +84,8 @@
         <m2.db.users.db_name>dev_users</m2.db.users.db_name>
         <m2.db.users.db_schemas.user_data.schema_name>user_data</m2.db.users.db_schemas.user_data.schema_name>
         <!-- USERNAME & PASSWORD -->
-        <m2.db.users.db_user>dev</m2.db.users.db_user>
-        <m2.db.users.db_password>dev123</m2.db.users.db_password>
+        <m2.db.users.db_user>usr</m2.db.users.db_user>
+        <m2.db.users.db_password>usr123#</m2.db.users.db_password>
 
         <!-- WORK DB CONFIG -->
         <m2.db.work.server.id>local.postgres.dev</m2.db.work.server.id>
@@ -94,10 +93,10 @@
         <m2.db.work.db_name>dev_work</m2.db.work.db_name>
         <m2.db.work.db_schemas.secure.schema_name>secure</m2.db.work.db_schemas.secure.schema_name>
         <!-- USERNAME & PASSWORD -->
-        <m2.db.users.db_user>dev</m2.db.users.db_user>
-        <m2.db.users.db_password>dev123</m2.db.users.db_password>
-
+        <m2.db.users.db_user>wrk</m2.db.users.db_user>
+        <m2.db.users.db_password>wrk123#</m2.db.users.db_password>
       </properties>
     </profile>
+
   </profiles>
 </settings>

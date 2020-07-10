@@ -66,4 +66,23 @@ live:
 ===================================================================================
 # Encrypted configuration file creation for cornerstone!
 ===================================================================================
+    Install the cli tool under the .m2/repository in the two modules
+        cornerstone/app/lib mvn install
+        cornerstone/app/cli mvn install
+
+    [INFO] --- maven-install-plugin:2.4:install (default-install) @ cli ---
+    [INFO] Installing /home/aron/projects/java/cornerstone/app/cli/target/cli-1.0.jar to /storage/.m2/repository/cornerstone/workflow/cli/1.0/cli-1.0.jar
+    [INFO] Installing /home/aron/projects/java/cornerstone/app/cli/pom.xml to /storage/.m2/repository/cornerstone/workflow/cli/1.0/cli-1.0.pom
+    [INFO] Installing /home/aron/projects/java/cornerstone/app/cli/target/cli-1.0-jar-with-dependencies.jar to /storage/.m2/repository/cornerstone/workflow/cli/1.0/cli-1.0-jar-with-dependencies.jar
+
+    For ease of use copy the jar file next where you store you app configuration:
+        e.g.: cp -v /storage/.m2/repository/cornerstone/workflow/cli/1.0/cli-1.0-jar-with-dependencies.jar  ~/.m2/cli.jar
+
+
+    To generate CBC-AES-256 HMAC key:
+        java -jar cli.jar gen --password <password> --salt <salt> -s key.conf
+
+    Encrypt with the key, and save it to app.conf:
+        java -jar cli.jar enc -c app_unencrypted.conf -k key.conf -s app.conf
+
 

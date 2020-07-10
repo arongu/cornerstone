@@ -1,7 +1,6 @@
 package cornerstone.workflow.webapp.services.authorization_service;
 
 import cornerstone.workflow.webapp.configuration.ConfigReader;
-import cornerstone.workflow.webapp.configuration.enums.ApplicationConfigFields;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.slf4j.Logger;
@@ -20,9 +19,8 @@ public class AuthorizationService implements AuthorizationServiceInterface {
 
     public void loadKey(final ConfigReader configReader) {
 
-        final String base64key = (String) configReader
-                .getAppProperties()
-                .get(ApplicationConfigFields.APP_JWS_KEY.key);
+        final String base64key = "alma";
+                //(String) configReader.getAppProperties().get(ApplicationConfigFields.APP_JWS_KEY.key);
 
         if ( base64key != null &&
            ! base64key.isEmpty() ) {
