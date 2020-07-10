@@ -39,13 +39,14 @@ def generate_bootstrap_file(db_name, schemas):
     gen = SQLScriptGenerator(db_name, schemas)
     f_db = open('bootstrap' + '__' + db_name + '.sql', 'w')
     f_db.write(gen.gen_sql_script())
+    f_db.close()
 
 
 if __name__ == '__main__':
-    tip = 'Example:\n ' + sys.argv[0] + ' dev|live'
+    example = 'Example:\n ' + sys.argv[0] + ' dev|live'
 
     if len(sys.argv) != 2:
-        print(tip)
+        print(example)
         exit(1)
     else:
         if sys.argv[1] == 'dev':
@@ -59,5 +60,5 @@ if __name__ == '__main__':
             exit(0)
 
         else:
-            print(tip)
+            print(example)
             exit(2)
