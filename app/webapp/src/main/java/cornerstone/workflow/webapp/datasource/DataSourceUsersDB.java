@@ -7,9 +7,8 @@ import org.apache.commons.dbcp2.BasicDataSource;
 import javax.inject.Inject;
 import java.util.Properties;
 
-// account database connection provider (singleton -- consult with JerseyBinder.class)
+// users database connection provider (singleton -- consult with JerseyBinder.class)
 public class DataSourceUsersDB extends BasicDataSource {
-
     @Inject
     public DataSourceUsersDB(final ConfigurationLoader configurationLoader){
         super();
@@ -24,7 +23,7 @@ public class DataSourceUsersDB extends BasicDataSource {
         );
 
         setUsername(
-                props.getProperty(DB_USERS_ENUM.DB_USER.key)
+                props.getProperty(DB_USERS_ENUM.DB_USERNAME.key)
         );
 
         setPassword(

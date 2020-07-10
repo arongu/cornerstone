@@ -18,9 +18,9 @@ public class AccountServiceCRUDTest {
 
     @BeforeAll
     public static void setSystemProperties() {
-        final String dev_files_dir = "../../_dev_files/test_config/";
-        final String confPath = Paths.get(dev_files_dir + "app.conf").toAbsolutePath().normalize().toString();
-        final String keyPath = Paths.get(dev_files_dir + "key.conf").toAbsolutePath().normalize().toString();
+        final String test_files_dir = "../../_test_config/";
+        final String confPath = Paths.get(test_files_dir + "app.conf").toAbsolutePath().normalize().toString();
+        final String keyPath  = Paths.get(test_files_dir + "key.conf").toAbsolutePath().normalize().toString();
 
         System.setProperty(ConfigurationLoader.SYSTEM_PROPERTY_CONF_FILE, confPath);
         System.setProperty(ConfigurationLoader.SYSTEM_PROPERTY_KEY_FILE, keyPath);

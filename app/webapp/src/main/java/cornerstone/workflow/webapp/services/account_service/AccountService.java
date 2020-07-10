@@ -29,15 +29,15 @@ public class AccountService implements AccountServiceInterface {
     private static final String ERROR_MSG_FAILED_TO_INCREMENT_LOGIN_ATTEMPTS = "Failed to increment login attempts of account: '%s', message: '%s', SQL state: '%s'";
     private static final String ERROR_MSG_FAILED_TO_CLEAR_LOGIN_ATTEMPTS     = "Failed to clear login attempts of account: '%s', message: '%s', SQL state: '%s'";
 
-    private static final String SQL_GET_ACCOUNT                   = "SELECT * FROM info.accounts WHERE email_address=(?)";
-    private static final String SQL_GET_ACCOUNT_FOR_LOGIN         = "SELECT account_locked, email_address_verified, account_login_attempts, password_hash FROM info.accounts WHERE email_address=(?)";
-    private static final String SQL_CREATE_ACCOUNT                = "INSERT INTO info.accounts (password_hash, email_address, account_locked, email_address_verified) VALUES(?,?,?,?)";
-    private static final String SQL_DELETE_ACCOUNT                = "DELETE FROM info.accounts WHERE email_address=(?)";
-    private static final String SQL_UPDATE_ACCOUNT_PASSWORD       = "UPDATE info.accounts SET password_hash=(?) WHERE email_address=(?)";
-    private static final String SQL_UPDATE_ACCOUNT_EMAIL_ADDRESS  = "UPDATE info.accounts SET email_address=(?) WHERE email_address=(?)";
-    private static final String SQL_UPDATE_ACCOUNT_LOCKED         = "UPDATE info.accounts SET account_locked=(?), account_lock_reason=(?) WHERE email_address=(?)";
-    private static final String SQL_INCREMENT_LOGIN_ATTEMPTS      = "UPDATE info.accounts SET account_login_attempts=account_login_attempts+1 WHERE email_address=(?)";
-    private static final String SQL_CLEAR_LOGIN_ATTEMPTS          = "UPDATE info.accounts SET account_login_attempts=0 WHERE email_address=(?)";
+    private static final String SQL_GET_ACCOUNT                   = "SELECT * FROM user_data.accounts WHERE email_address=(?)";
+    private static final String SQL_GET_ACCOUNT_FOR_LOGIN         = "SELECT account_locked, email_address_verified, account_login_attempts, password_hash FROM user_data.accounts WHERE email_address=(?)";
+    private static final String SQL_CREATE_ACCOUNT                = "INSERT INTO user_data.accounts (password_hash, email_address, account_locked, email_address_verified) VALUES(?,?,?,?)";
+    private static final String SQL_DELETE_ACCOUNT                = "DELETE FROM user_data.accounts WHERE email_address=(?)";
+    private static final String SQL_UPDATE_ACCOUNT_PASSWORD       = "UPDATE user_data.accounts SET password_hash=(?) WHERE email_address=(?)";
+    private static final String SQL_UPDATE_ACCOUNT_EMAIL_ADDRESS  = "UPDATE user_data.accounts SET email_address=(?) WHERE email_address=(?)";
+    private static final String SQL_UPDATE_ACCOUNT_LOCKED         = "UPDATE user_data.accounts SET account_locked=(?), account_lock_reason=(?) WHERE email_address=(?)";
+    private static final String SQL_INCREMENT_LOGIN_ATTEMPTS      = "UPDATE user_data.accounts SET account_login_attempts=account_login_attempts+1 WHERE email_address=(?)";
+    private static final String SQL_CLEAR_LOGIN_ATTEMPTS          = "UPDATE user_data.accounts SET account_login_attempts=0 WHERE email_address=(?)";
 
 
     // Utility function, to avoid code duplication

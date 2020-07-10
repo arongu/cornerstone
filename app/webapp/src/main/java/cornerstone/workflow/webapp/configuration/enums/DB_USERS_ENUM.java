@@ -4,7 +4,7 @@ public enum DB_USERS_ENUM {
 
     DB_DRIVER("db_users_driver"),
     DB_URL("db_users_url"),
-    DB_USER("db_users_username"),
+    DB_USERNAME("db_users_username"),
     DB_PASSWORD("db_users_password"),
     DB_MIN_IDLE("db_users_min_idle"),
     DB_MAX_IDLE("db_users_max_idle"),

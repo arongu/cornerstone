@@ -24,7 +24,7 @@ public class DataSourceWorkDB extends BasicDataSource {
         );
 
         setUsername(
-                workDbProps.getProperty(DB_WORK_ENUM.DB_USER.key)
+                workDbProps.getProperty(DB_WORK_ENUM.DB_USERNAME.key)
         );
 
         setPassword(
