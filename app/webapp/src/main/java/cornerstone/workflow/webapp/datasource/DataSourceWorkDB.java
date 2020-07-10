@@ -1,6 +1,6 @@
 package cornerstone.workflow.webapp.datasource;
 
-import cornerstone.workflow.webapp.configuration.ConfigReader;
+import cornerstone.workflow.webapp.configuration.ConfigurationLoader;
 import cornerstone.workflow.webapp.configuration.enums.DB_WORK_ENUM;
 import org.apache.commons.dbcp2.BasicDataSource;
 
@@ -11,9 +11,9 @@ import java.util.Properties;
 public class DataSourceWorkDB extends BasicDataSource {
     
     @Inject
-    public DataSourceWorkDB(final ConfigReader configReader) {
+    public DataSourceWorkDB(final ConfigurationLoader configurationLoader) {
         super();
-        final Properties workDbProps = configReader.getWorkDbProperties();
+        final Properties workDbProps = configurationLoader.getWorkDbProperties();
         
         setDriverClassName(
                 workDbProps.getProperty(DB_WORK_ENUM.DB_DRIVER.key)

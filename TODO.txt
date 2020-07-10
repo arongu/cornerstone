@@ -1,4 +1,2 @@
-- java change property names in conf
-    [ OK ] sync profiles and test config
-    [ ?? ] disable default paths
-    [ wip ] write documentation
+change account_service to something else?
+

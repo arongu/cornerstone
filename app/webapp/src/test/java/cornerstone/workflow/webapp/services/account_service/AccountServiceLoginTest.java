@@ -1,6 +1,7 @@
 package cornerstone.workflow.webapp.services.account_service;
 
-import cornerstone.workflow.webapp.configuration.ConfigReader;
+import cornerstone.workflow.webapp.configuration.ConfigurationLoader;
+import cornerstone.workflow.webapp.configuration.ConfigurationLoaderException;
 import cornerstone.workflow.webapp.datasource.DataSourceUsersDB;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -20,25 +21,25 @@ public class AccountServiceLoginTest {
         final String confPath = Paths.get(dev_files_dir + "app.conf").toAbsolutePath().normalize().toString();
         final String keyPath = Paths.get(dev_files_dir + "key.conf").toAbsolutePath().normalize().toString();
 
-        System.setProperty(ConfigReader.SYSTEM_PROPERTY_CONF_FILE, confPath);
-        System.setProperty(ConfigReader.SYSTEM_PROPERTY_KEY_FILE, keyPath);
+        System.setProperty(ConfigurationLoader.SYSTEM_PROPERTY_CONF_FILE, confPath);
+        System.setProperty(ConfigurationLoader.SYSTEM_PROPERTY_KEY_FILE, keyPath);
 
         try {
-            final ConfigReader cr = new ConfigReader();
-            cr.loadConfig();
+            final ConfigurationLoader cr = new ConfigurationLoader();
+            cr.loadAndDecryptConfig();
 
             final DataSourceUsersDB ds = new DataSourceUsersDB(cr);
             accountService = new AccountService(ds);
 
-        } catch ( final IOException e ) {
+        } catch ( final IOException | ConfigurationLoaderException e) {
             e.printStackTrace();
         }
     }
 
     @AfterAll
     public static void removeSystemProperties() {
-        System.clearProperty(ConfigReader.SYSTEM_PROPERTY_CONF_FILE);
-        System.clearProperty(ConfigReader.SYSTEM_PROPERTY_KEY_FILE);
+        System.clearProperty(ConfigurationLoader.SYSTEM_PROPERTY_CONF_FILE);
+        System.clearProperty(ConfigurationLoader.SYSTEM_PROPERTY_KEY_FILE);
     }
 
     @Test

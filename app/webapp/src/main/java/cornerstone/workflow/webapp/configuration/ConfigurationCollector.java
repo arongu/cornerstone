@@ -8,15 +8,15 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Properties;
 
-public class ConfigSorter {
-    private static final Logger logger = LoggerFactory.getLogger(ConfigSorter.class);
+public class ConfigurationCollector {
+    private static final Logger logger = LoggerFactory.getLogger(ConfigurationCollector.class);
     private static final String errorMessage  = "'{}' is not set";
     private static final String ignoreMessage = "'{}' is ignored";
 
     private Properties properties_db_users;
     private Properties properties_db_work;
 
-    public ConfigSorter(final Properties properties) {
+    public ConfigurationCollector(final Properties properties) {
        collectDatabaseProperties(properties);
     }
 
@@ -76,11 +76,11 @@ public class ConfigSorter {
         }
     }
 
-    public Properties getDbWorkProperties() {
+    public Properties getPropertiesForWorkDB() {
         return properties_db_work;
     }
 
-    public Properties getDbUsersProperties() {
+    public Properties getPropertiesForUsersDB() {
         return properties_db_users;
     }
 }

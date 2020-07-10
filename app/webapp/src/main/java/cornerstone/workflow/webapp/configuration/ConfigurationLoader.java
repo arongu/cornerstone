@@ -8,8 +8,8 @@ import javax.crypto.SecretKey;
 import java.io.IOException;
 import java.util.Properties;
 
-public class ConfigReader {
-    private static final Logger logger = LoggerFactory.getLogger(ConfigReader.class);
+public class ConfigurationLoader {
+    private static final Logger logger = LoggerFactory.getLogger(ConfigurationLoader.class);
     // Environment variables
     public static final String SYSTEM_PROPERTY_CONF_FILE = "CONF_FILE";
     public static final String SYSTEM_PROPERTY_KEY_FILE = "KEY_FILE";
@@ -24,41 +24,41 @@ public class ConfigReader {
     private String keyFile;
     private String confFile;
 
-    public ConfigReader() {
+    public ConfigurationLoader() {
     }
 
-    private void setupKeyFile() {
+    private void setKeyFileFromEnv() throws ConfigurationLoaderException {
         keyFile = System.getProperty(SYSTEM_PROPERTY_KEY_FILE);
         if ( null != keyFile) {
             logger.info(LOG_MESSAGE_PROPERTY_SET, SYSTEM_PROPERTY_KEY_FILE, keyFile);
 
         } else {
             logger.error(LOG_MESSAGE_PROPERTY_NOT_SET, SYSTEM_PROPERTY_KEY_FILE);
-            throw new RuntimeException("Encryption key file is not set!");
+            throw new ConfigurationLoaderException(SYSTEM_PROPERTY_KEY_FILE + " is not set! (environment variable)");
         }
     }
 
-    private void setupConfFile() {
+    private void setConfFileFromEnv() throws ConfigurationLoaderException {
         confFile = System.getProperty(SYSTEM_PROPERTY_CONF_FILE);
         if ( null != confFile) {
             logger.info(LOG_MESSAGE_PROPERTY_SET, SYSTEM_PROPERTY_CONF_FILE, confFile);
 
         } else {
             logger.error(LOG_MESSAGE_PROPERTY_NOT_SET, SYSTEM_PROPERTY_CONF_FILE);
-            throw new RuntimeException("Conf file is not set!");
+            throw new ConfigurationLoaderException(SYSTEM_PROPERTY_CONF_FILE + " is not set! (environment variable)");
         }
     }
 
-    public void loadConfig() throws IOException {
-        setupKeyFile();
-        setupConfFile();
+    public void loadAndDecryptConfig() throws ConfigurationLoaderException, IOException {
+        setKeyFileFromEnv();
+        setConfFileFromEnv();
 
         final SecretKey key = ConfigEncryptDecrypt.loadAESKeyFromFile(keyFile);
         properties = ConfigEncryptDecrypt.decryptConfig(key, confFile);
 
-        final ConfigSorter cs = new ConfigSorter(properties);
-        db_users_properties = cs.getDbUsersProperties();
-        db_work_properties = cs.getDbWorkProperties();
+        final ConfigurationCollector cs = new ConfigurationCollector(properties);
+        db_users_properties = cs.getPropertiesForUsersDB();
+        db_work_properties = cs.getPropertiesForWorkDB();
     }
 
     public String getKeyFile() {

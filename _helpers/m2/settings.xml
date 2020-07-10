@@ -41,8 +41,8 @@
 
       <properties>
         <!-- tomcat -->
-        <tomcat.server.id>local.tomcat</tomcat.server.id>
-        <tomcat.manager.url>http://localhost:8080/manager/text</tomcat.manager.url>
+        <tomcat.server_id>local.tomcat</tomcat.server_id>
+        <tomcat.manager_url>http://localhost:8080/manager/text</tomcat.manager_url>
         <tomcat.path>/live</tomcat.path>
 
         <!-- USERS DB CONFIG -->
@@ -50,16 +50,16 @@
         <m2.db.users.db_url>jdbc:postgresql://127.0.0.1:5432/users</m2.db.users.db_url>
         <m2.db.users.db_name>users</m2.db.users.db_name>
         <m2.db.users.db_schemas.user_data.schema_name>user_data</m2.db.users.db_schemas.user_data.schema_name>
-        <!-- USERNAME & PASSWORD -->
+        <!-- USERNAME & PASSWORD for CORNERSTONE -->
         <m2.db.users.db_user>USER HERE</m2.db.users.db_user>
         <m2.db.users.db_password>PASSWORD HERE</m2.db.users.db_password>
 
         <!-- WORK DB CONFIG -->
-        <m2.db.work.server.id>local.postgres.live</m2.db.work.server.id>
-        <m2.db.work.url>jdbc:postgresql://127.0.0.1:5432/work</m2.db.work.url>
+        <m2.db.work.server_id>local.postgres.live</m2.db.work.server_id>
+        <m2.db.work.db_url>jdbc:postgresql://127.0.0.1:5432/work</m2.db.work.db_url>
         <m2.db.work.db_name>work</m2.db.work.db_name>
         <m2.db.work.db_schemas.secure.schema_name>secure</m2.db.work.db_schemas.secure.schema_name>
-        <!-- USERNAME & PASSWORD -->
+        <!-- USERNAME & PASSWORD for CORNERSTONE -->
         <m2.db.work.db_user>USER HERE</m2.db.work.db_user>
         <m2.db.work.db_password>PASSWORD HERE</m2.db.work.db_password>
       </properties>
@@ -74,8 +74,8 @@
 
       <properties>
         <!-- tomcat -->
-        <m2.tomcat.server.id>local.tomcat</m2.tomcat.server.id>
-        <m2.tomcat.manager.url>http://localhost:8080/manager/text</m2.tomcat.manager.url>
+        <m2.tomcat.server_id>local.tomcat</m2.tomcat.server_id>
+        <m2.tomcat.manager_url>http://localhost:8080/manager/text</m2.tomcat.manager_url>
         <m2.tomcat.path>/dev</m2.tomcat.path>
 
         <!-- USERS DB CONFIG -->
@@ -83,18 +83,18 @@
         <m2.db.users.db_url>jdbc:postgresql://127.0.0.1:5432/dev_users</m2.db.users.db_url>
         <m2.db.users.db_name>dev_users</m2.db.users.db_name>
         <m2.db.users.db_schemas.user_data.schema_name>user_data</m2.db.users.db_schemas.user_data.schema_name>
-        <!-- USERNAME & PASSWORD -->
+        <!-- USERNAME & PASSWORD for CORNERSTONE -->
         <m2.db.users.db_user>usr</m2.db.users.db_user>
         <m2.db.users.db_password>usr123#</m2.db.users.db_password>
 
         <!-- WORK DB CONFIG -->
-        <m2.db.work.server.id>local.postgres.dev</m2.db.work.server.id>
-        <m2.db.work.url>jdbc:postgresql://127.0.0.1:5432/dev_work</m2.db.work.url>
+        <m2.db.work.server_id>local.postgres.dev</m2.db.work.server_id>
+        <m2.db.work.db_url>jdbc:postgresql://127.0.0.1:5432/dev_work</m2.db.work.db_url>
         <m2.db.work.db_name>dev_work</m2.db.work.db_name>
         <m2.db.work.db_schemas.secure.schema_name>secure</m2.db.work.db_schemas.secure.schema_name>
-        <!-- USERNAME & PASSWORD -->
-        <m2.db.users.db_user>wrk</m2.db.users.db_user>
-        <m2.db.users.db_password>wrk123#</m2.db.users.db_password>
+        <!-- USERNAME & PASSWORD for CORNERSTONE -->
+        <m2.db.work.db_user>wrk</m2.db.work.db_user>
+        <m2.db.work.db_password>wrk123#</m2.db.work.db_password>
       </properties>
     </profile>
 
