@@ -50,16 +50,18 @@
         <m2.db.users.db_url>jdbc:postgresql://127.0.0.1:5432/users</m2.db.users.db_url>
         <m2.db.users.db_name>users</m2.db.users.db_name>
         <m2.db.users.db_schemas.user_data.schema_name>user_data</m2.db.users.db_schemas.user_data.schema_name>
-        <m2.db.users.db_user>robot</m2.db.users.db_user>
-        <m2.db.users.db_password>xxxx</m2.db.users.db_password>
+        <!-- USERNAME & PASSWORD -->
+        <m2.db.users.db_user>USER HERE</m2.db.users.db_user>
+        <m2.db.users.db_password>PASSWORD HERE</m2.db.users.db_password>
 
         <!-- WORK DB CONFIG -->
         <m2.db.work.server.id>local.postgres.live</m2.db.work.server.id>
         <m2.db.work.url>jdbc:postgresql://127.0.0.1:5432/work</m2.db.work.url>
         <m2.db.work.db_name>work</m2.db.work.db_name>
         <m2.db.work.db_schemas.secure.schema_name>secure</m2.db.work.db_schemas.secure.schema_name>
-        <m2.db.users.db_user>robot</m2.db.users.db_user>
-        <m2.db.users.db_password>xxxxxxx</m2.db.users.db_password>
+        <!-- USERNAME & PASSWORD -->
+        <m2.db.work.db_user>USER HERE</m2.db.work.db_user>
+        <m2.db.work.db_password>PASSWORD HERE</m2.db.work.db_password>
 
       </properties>
     </profile>
@@ -82,6 +84,7 @@
         <m2.db.users.db_url>jdbc:postgresql://127.0.0.1:5432/dev_users</m2.db.users.db_url>
         <m2.db.users.db_name>dev_users</m2.db.users.db_name>
         <m2.db.users.db_schemas.user_data.schema_name>user_data</m2.db.users.db_schemas.user_data.schema_name>
+        <!-- USERNAME & PASSWORD -->
         <m2.db.users.db_user>dev</m2.db.users.db_user>
         <m2.db.users.db_password>dev123</m2.db.users.db_password>
 
@@ -90,6 +93,7 @@
         <m2.db.work.url>jdbc:postgresql://127.0.0.1:5432/dev_work</m2.db.work.url>
         <m2.db.work.db_name>dev_work</m2.db.work.db_name>
         <m2.db.work.db_schemas.secure.schema_name>secure</m2.db.work.db_schemas.secure.schema_name>
+        <!-- USERNAME & PASSWORD -->
         <m2.db.users.db_user>dev</m2.db.users.db_user>
         <m2.db.users.db_password>dev123</m2.db.users.db_password>
 

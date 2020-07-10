@@ -1,4 +1,5 @@
 target
 .idea
 *.iml
-db_migration/**/*.sql
+db_/**/*.sql
+

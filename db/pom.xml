@@ -15,8 +15,8 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>db_users</module>
-        <module>db_work</module>
+        <module>users</module>
+        <module>work</module>
     </modules>
 
     <!-- dependency for Flyway -->

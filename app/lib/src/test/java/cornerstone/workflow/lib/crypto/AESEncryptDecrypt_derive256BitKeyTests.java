@@ -58,13 +58,13 @@ public class AESEncryptDecrypt_derive256BitKeyTests {
         SecretKeySpec key = AESEncryptDecrypt.derive256BitAESKeyWithHmacSHA256("password", "abcdef0123456789");
 
         byte[] ba = key.getEncoded();
-        for (int i = 0; i < ba.length; i++) {
-            System.out.printf("%02X ", ba[i]);
+        for (byte b : ba) {
+            System.out.printf("%02X ", b);
         }
         System.out.println();
 
-        for (int i = 0; i < expected.length; i++) {
-            System.out.printf("%02X ", expected[i]);
+        for (byte b : expected) {
+            System.out.printf("%02X ", b);
         }
         System.out.println();
 

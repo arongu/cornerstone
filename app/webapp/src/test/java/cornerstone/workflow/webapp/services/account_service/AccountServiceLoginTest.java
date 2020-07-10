@@ -16,7 +16,7 @@ public class AccountServiceLoginTest {
 
     @BeforeAll
     public static void setSystemProperties() {
-        final String dev_files_dir = "../../_dev_files/test_config/";
+        final String dev_files_dir = "../../_readme/test_config/";
         final String confPath = Paths.get(dev_files_dir + "app.conf").toAbsolutePath().normalize().toString();
         final String keyPath = Paths.get(dev_files_dir + "key.conf").toAbsolutePath().normalize().toString();
 

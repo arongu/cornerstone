@@ -19,7 +19,7 @@
 
 
     <modules>
-        <module>workflow</module>
+        <module>app</module>
         <module>db</module>
     </modules>
 

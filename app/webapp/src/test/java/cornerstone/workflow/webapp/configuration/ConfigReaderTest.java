@@ -10,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class ConfigReaderTest {
 
-    private static final String dev_files_dir = "../../_dev_files/test_config/";
+    private static final String dev_files_dir = "../../_test_config/";
     private static final String confPath  = Paths.get(dev_files_dir + "app.conf").toAbsolutePath().normalize().toString();
     private static final String keyPath = Paths.get(dev_files_dir + "key.conf").toAbsolutePath().normalize().toString();
 
@@ -23,10 +23,10 @@ public class ConfigReaderTest {
 
     @Test
     public void getSystemProperties_shouldFallBackToDefaultAndThrowIOException_whenNotSetAndDoesNotHavePermissionToOpenIt() {
-        final ConfigReader cp = new ConfigReader();
+        final ConfigReader cr = new ConfigReader();
         unsetProperties();
 
-        final IOException e = assertThrows(IOException.class, cp::loadConfig);
+        final IOException e = assertThrows(IOException.class, cr::loadConfig);
 
         assertTrue(e.getMessage().contains("/var/opt/cornerstone/key.conf (Permission denied)"));
     }
@@ -44,13 +44,13 @@ public class ConfigReaderTest {
 
     @Test
     public void getSystemProperties_shouldUseSystemProperties_whenSet() throws IOException {
-        final ConfigReader cp = new ConfigReader();
+        final ConfigReader cr = new ConfigReader();
         System.setProperty(ConfigReader.SYSTEM_PROPERTY_KEY__KEY_FILE, keyPath);
         System.setProperty(ConfigReader.SYSTEM_PROPERTY_KEY__CONF_FILE, confPath);
 
-        cp.loadConfig();
+        cr.loadConfig();
 
-        assertEquals(keyPath, cp.getKeyFile());
-        assertEquals(confPath, cp.getConfFile());
+        assertEquals(keyPath, cr.getKeyFile());
+        assertEquals(confPath, cr.getConfFile());
     }
 }
