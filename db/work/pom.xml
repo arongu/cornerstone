@@ -11,7 +11,7 @@
     </parent>
 
     <artifactId>db_work</artifactId>
-    <name>work(flyway)</name>
+    <name>work (db)</name>
     <packaging>pom</packaging>
     <version>1.0</version>
 

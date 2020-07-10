@@ -1,2 +1,6 @@
-change account_service to something else?
+[ ??? ] change account_service to something else
+[  ] authorization
+[  ] initial JWT
+[  ] JWT get/set etc
+[  ] class names account service?
 

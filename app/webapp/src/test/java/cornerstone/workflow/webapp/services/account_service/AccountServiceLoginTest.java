@@ -12,6 +12,8 @@ import java.nio.file.Paths;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+// This is more just a single login test, this heavily uses CRUD methods
+// All TCs cleanup after themselves!
 public class AccountServiceLoginTest {
     private static AccountServiceInterface accountService;
 
@@ -176,7 +178,7 @@ public class AccountServiceLoginTest {
     }
 
     @Test
-    public void clearLoginAttempts_shouldClearLoginAttempts() throws AccountServiceException {
+    public void clearLoginAttempts_shouldClearLoginAttempts_whenCalled() throws AccountServiceException {
         final String email = "badtyper@login.me";
         final String password = "secretpasswordd#";
         final String badPassword = "myBadPassword#";
@@ -252,7 +254,7 @@ public class AccountServiceLoginTest {
     }
 
     @Test
-    public void login_shouldLockAccountAfter180FailedLoginAttempts() throws AccountServiceException {
+    public void login_shouldLockAccount_after180FailedLoginAttempts() throws AccountServiceException {
         final String email = "autolock180@login.me";
         final String password = "secretpasswordd#";
         final String badPassword = "alma";
@@ -291,7 +293,7 @@ public class AccountServiceLoginTest {
     }
 
     @Test
-    public void login_afterSuccessfulLoginLoginAttemptsShouldResetToZero() throws AccountServiceException {
+    public void login_LoginAttemptsShouldResetToZero_afterSuccessfulLogin() throws AccountServiceException {
         final String email = "lastnite@aaa.me";
         final String password = "woho#";
         final String badPassword = "bbbbb";
