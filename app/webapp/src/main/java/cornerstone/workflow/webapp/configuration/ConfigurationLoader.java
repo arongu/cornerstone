@@ -12,7 +12,7 @@ public class ConfigurationLoader {
     private static final Logger logger = LoggerFactory.getLogger(ConfigurationLoader.class);
     // Environment variables
     public static final String SYSTEM_PROPERTY_CONF_FILE = "CONF_FILE";
-    public static final String SYSTEM_PROPERTY_KEY_FILE = "KEY_FILE";
+    public static final String SYSTEM_PROPERTY_KEY_FILE  = "KEY_FILE";
     // Logging
     private static final String LOG_MESSAGE_PROPERTY_SET     = "[ System.getProperty ][ '{}' ] = '{}'";
     private static final String LOG_MESSAGE_PROPERTY_NOT_SET = "[ System.getProperty ][ '{}' ] is not set!";

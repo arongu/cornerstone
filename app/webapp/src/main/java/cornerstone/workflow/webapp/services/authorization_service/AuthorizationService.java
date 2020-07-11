@@ -13,7 +13,6 @@ import java.util.Base64;
 import java.util.Date;
 
 public class AuthorizationService implements AuthorizationServiceInterface {
-
     private static final Logger logger = LoggerFactory.getLogger(AuthorizationService.class);
     private Key key;
 

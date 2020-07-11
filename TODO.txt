@@ -4,3 +4,31 @@
 [  ] JWT get/set etc
 [  ] class names account service?
 
+Key service:
+    - node should be able to generate its own encryption key
+    - store it in the db
+                        - rotate it
+                            - first key
+                            - when to rotate it ?
+                            - issuer node-name ??
+
+    go to DB -> check if node has its own SSL key
+                    -> it has to have its own node id
+                        -> pubkeys (nodeId)
+                        -> date is not expired
+                        -> if it has a valid key
+                            -> get it and use it for signing JJWTs
+                        -> if it has no valid key create a new one store locally
+                            and save its public part into to the db
+
+    when a key is valid?
+        - date?
+
+
+
+  - getKey
+        - node's key
+        - key based on id
+  - deleteKey
+  - createNewKey
+  
