@@ -4,5 +4,5 @@ import java.security.KeyPair;
 import java.util.UUID;
 
 public interface SSLKeyServiceInterface {
-    int savePublicKeyToDB(final String base64pubkey, final String created_by, final UUID uuid) throws Exception;
+    int savePublicKeyToDB(final UUID uuid, final String nodeName, final String base64key, final int ttl) throws SSLKeyServiceException;
 }

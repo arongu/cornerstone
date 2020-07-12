@@ -93,13 +93,6 @@ CREATE TRIGGER trigger_email_address_verified
 ----------------------------------------------------------------------------
 -- Permissions of schema user_data
 ----------------------------------------------------------------------------
-
-
-
-
-
-
-
 -- create roles/users
 DROP ROLE IF EXISTS ${db.user};
 CREATE USER ${db.user} WITH ENCRYPTED PASSWORD '${db_password}';

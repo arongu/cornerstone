@@ -20,6 +20,7 @@ public class ConfigurationLoader {
     private Properties properties;
     private Properties db_users_properties;
     private Properties db_work_properties;
+    private Properties app_properties;
 
     private String keyFile;
     private String confFile;
@@ -56,9 +57,10 @@ public class ConfigurationLoader {
         final SecretKey key = ConfigEncryptDecrypt.loadAESKeyFromFile(keyFile);
         properties = ConfigEncryptDecrypt.decryptConfig(key, confFile);
 
-        final ConfigurationCollector cs = new ConfigurationCollector(properties);
-        db_users_properties = cs.getPropertiesForUsersDB();
-        db_work_properties = cs.getPropertiesForWorkDB();
+        final ConfigurationCollector collector = new ConfigurationCollector(properties);
+        db_users_properties = collector.getPropertiesForUsersDB();
+        db_work_properties = collector.getPropertiesForWorkDB();
+        app_properties = collector.getPropertiesForApp();
     }
 
     public String getKeyFile() {
@@ -71,6 +73,10 @@ public class ConfigurationLoader {
 
     public Properties getAllProperties() {
         return properties;
+    }
+
+    public Properties getApp_properties() {
+        return app_properties;
     }
 
     public Properties getWorkDbProperties() {

@@ -2,6 +2,7 @@ package cornerstone.workflow.webapp.services.ssl_key_service;
 
 import cornerstone.workflow.webapp.configuration.ConfigurationLoader;
 import cornerstone.workflow.webapp.configuration.ConfigurationLoaderException;
+import cornerstone.workflow.webapp.configuration.enums.APP_ENUM;
 import cornerstone.workflow.webapp.datasource.DataSourceWorkDB;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -12,6 +13,7 @@ import java.util.Base64;
 
 public class SSLKeyServiceTest {
     private static SSLKeyService sslKeyService;
+    private static ConfigurationLoader configurationLoader;
 
     @BeforeAll
     public static void setSystemProperties() {
@@ -23,10 +25,10 @@ public class SSLKeyServiceTest {
         System.setProperty(ConfigurationLoader.SYSTEM_PROPERTY_KEY_FILE, keyPath);
 
         try {
-            final ConfigurationLoader cr = new ConfigurationLoader();
-            cr.loadAndDecryptConfig();
+            configurationLoader = new ConfigurationLoader();
+            configurationLoader.loadAndDecryptConfig();
 
-            final DataSourceWorkDB ds = new DataSourceWorkDB(cr);
+            final DataSourceWorkDB ds = new DataSourceWorkDB(configurationLoader);
             sslKeyService = new SSLKeyService(ds);
 
         } catch ( final IOException | ConfigurationLoaderException e ) {
@@ -37,14 +39,20 @@ public class SSLKeyServiceTest {
     @Test
     public void test() throws SSLKeyServiceException, NoSuchMethodException {
         final Base64.Encoder encoder = Base64.getEncoder();
-        for ( int i = 0 ; i < 1000; i++) {
-            final KeyPairWithUUID kd = KeyPairWithUUIDGenerator.generateKeyPairWithUUID();
-            final String base64pubkey = encoder.encodeToString(kd.keyPair.getPublic().getEncoded());
+        final String nodeName = configurationLoader.getApp_properties().getProperty(APP_ENUM.NODE_NAME.key);
 
-            long start = System.currentTimeMillis();
-            int result = sslKeyService.savePublicKeyToDB(base64pubkey, "SSLKeyServiceTest", kd.uuid);
-            long end = System.currentTimeMillis() - start;
-            System.out.println(String.format("OK -- %s --(%d) uuid: '%s', base64pubkey: '%s'", end,result, kd.uuid.toString(), base64pubkey));
+        long start;
+        double end;
+        for ( int i = 0, max = 10; i < max; i++) {
+            start = System.currentTimeMillis();
+            final KeyPairWithUUID keyPairWithUUID = KeyPairWithUUIDGenerator.generateKeyPairWithUUID();
+            final String base64pubkey = encoder.encodeToString(keyPairWithUUID.keyPair.getPublic().getEncoded());
+            int result = sslKeyService.savePublicKeyToDB(keyPairWithUUID.uuid, nodeName, base64pubkey, 172800);
+
+            end = (double)(System.currentTimeMillis() - start) / 1000;
+            System.out.println(
+                    String.format("[ OK ] %03d/%03d -- elapsed (%.03fs) -- uuid: '%s', base64pubkey: '%s'", i+1, max, end, keyPairWithUUID.uuid.toString(), base64pubkey)
+            );
         }
     }
 }
