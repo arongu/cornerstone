@@ -33,4 +33,13 @@ Key service:
         - key based on id
   - deleteKey
   - createNewKey
-  
+
+
+  ---------
+  DB-be
+    - pubkey private key is in use
+    - experiation date - date + JWT valid time -- to be safe to delete
+    - get its own key
+    - delete keys that are no longer in use
+
+
