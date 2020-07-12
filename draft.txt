@@ -1,0 +1,55 @@
+public int create(final List<EmailAndPassword> emailsAndPasswords) throws AccountServiceMultipleException {
+        AccountServiceMultipleException multipleException = null;
+        int updatedRows = 0;
+
+        try ( final Connection c = dataSource.getConnection();
+              final PreparedStatement ps = c.prepareStatement(SQL_CREATE_ACCOUNT) ) {
+
+            for ( final EmailAndPassword emailAndPassword : emailsAndPasswords ) {
+                if ( null != emailAndPassword ) {
+                    try {
+                        ps.setString(1, Crypt.crypt(emailAndPassword.password));
+                        ps.setString(2, emailAndPassword.email.toLowerCase());
+                        ps.setBoolean(3, true);
+                        ps.setBoolean(4, false); // false by default
+
+                        updatedRows += ps.executeUpdate();
+
+                    } catch ( final SQLException e ) {
+                        final String msg = String.format(
+                                ERROR_MSG_FAILED_TO_CREATE_ACCOUNT, emailAndPassword.email, e.getMessage(), e.getSQLState()
+                        );
+
+                        if ( null == multipleException ) {
+                            multipleException = new AccountServiceMultipleException();
+
+                        } else {
+                            multipleException.addException(new AccountServiceException(e.getMessage()));
+                        }
+
+                        logger.error(msg);
+                    }
+                }
+            }
+
+        final SSLKeyServiceInterface service = new SSLKeyService(null);
+        final KeyPair keyPair = service.genRS512KeyPair();
+
+        final PrivateKey privateKey = keyPair.getPrivate();
+        final PublicKey publicKey   = keyPair.getPublic();
+
+        final String a = Base64.getEncoder().encodeToString(privateKey.getEncoded());
+        final String b = Base64.getEncoder().encodeToString(publicKey.getEncoded());
+        final String privateKeyAsBase64 = Encoders.BASE64.encode(privateKey.getEncoded());
+        final String publicKeyAsBase64 = Encoders.BASE64.encode(publicKey.getEncoded());
+
+         //Base64.getEncoder().encodeToString();
+         //Base64.getEncoder().encodeToString(publicKey.getEncoded());
+
+        System.out.println(privateKeyAsBase64);
+        System.out.println(a);
+        System.out.println(publicKeyAsBase64);
+        System.out.println(b);
+
+        for ( int i = 0; i < 20; i++ )
+            System.out.println(java.util.UUID.randomUUID());

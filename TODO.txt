@@ -4,6 +4,8 @@
 [  ] JWT get/set etc
 [  ] class names account service?
 
+[ TODO ] REVIEW SQL MESSAGES make them uniform error code, message, sql state etc...
+
 Key service:
     - node should be able to generate its own encryption key
     - store it in the db

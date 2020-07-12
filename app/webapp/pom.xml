@@ -76,6 +76,12 @@
             <scope>runtime</scope>
         </dependency>
 
+        <!-- SSL pubkey node-id generation -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+        </dependency>
+
         <!-- database -->
         <dependency>
             <groupId>org.postgresql</groupId>

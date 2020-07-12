@@ -6,20 +6,20 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.nio.file.Paths;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class ConfigurationLoaderTest {
     private static final String TEST_CONFIG_DIR = "../../_test_config/";
 
     private static final String confPath = Paths.get(TEST_CONFIG_DIR + "app.conf").toAbsolutePath().normalize().toString();
-    private static final String keyPath  = Paths.get(TEST_CONFIG_DIR + "key.conf").toAbsolutePath().normalize().toString();
+    private static final String keyPath = Paths.get(TEST_CONFIG_DIR + "key.conf").toAbsolutePath().normalize().toString();
 
     @AfterAll
     public static void unsetProperties() {
         System.clearProperty(ConfigurationLoader.SYSTEM_PROPERTY_KEY_FILE);
         System.clearProperty(ConfigurationLoader.SYSTEM_PROPERTY_CONF_FILE);
     }
-
 
     @Test
     public void loadAndDecryptConfig_shouldThrowConfigurationLoaderException_whenEnvironmentIsNotSet() throws IOException, ConfigurationLoaderException {
