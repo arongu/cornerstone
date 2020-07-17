@@ -20,22 +20,28 @@ CREATE INDEX IF NOT EXISTS index_uuid ON secure.public_keys(uuid);
 -- trigger function to re-calculate expire_ts
 CREATE OR REPLACE FUNCTION secure.calculate_expire_ts() RETURNS TRIGGER AS $$
 BEGIN
-    --NEW.expire_ts = (SELECT(NOW() + interval ttl second));
-    NEW.expire_ts = NOW();
+    NEW.expire_ts = NOW() + NEW.ttl * interval '1' second;
     RETURN NEW;
 END
 $$ LANGUAGE plpgsql;
 
--- trigger on ttl
-DROP TRIGGER IF EXISTS trigger_ttl ON secure.public_keys;
-CREATE TRIGGER trigger_ttl
+-- trigger on ttl insert
+DROP TRIGGER IF EXISTS insert_trigger_ttl ON secure.public_keys;
+CREATE TRIGGER insert_trigger_ttl
+    BEFORE INSERT ON secure.public_keys
+    FOR EACH ROW
+    EXECUTE PROCEDURE secure.calculate_expire_ts();
+
+-- trigger on ttl update
+DROP TRIGGER IF EXISTS update_trigger_ttl ON secure.public_keys;
+CREATE TRIGGER update_trigger_ttl
     BEFORE UPDATE OF ttl ON secure.public_keys
     FOR EACH ROW
-EXECUTE PROCEDURE secure.calculate_expire_ts();
+    EXECUTE PROCEDURE secure.calculate_expire_ts();
 
--- trigger on creation_ts
-DROP TRIGGER IF EXISTS trigger_creation_ts ON secure.public_keys;
-CREATE TRIGGER trigger_creation_ts
+-- trigger on creation_ts update
+DROP TRIGGER IF EXISTS update_trigger_creation_ts ON secure.public_keys;
+CREATE TRIGGER update_trigger_creation_ts
     BEFORE UPDATE OF creation_ts ON secure.public_keys
     FOR EACH ROW
     EXECUTE PROCEDURE secure.calculate_expire_ts();

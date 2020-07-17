@@ -7,6 +7,6 @@ public enum APP_ENUM {
     public final String key;
 
     APP_ENUM(final String key) {
-            this.key = key;
+        this.key = key;
     }
 }

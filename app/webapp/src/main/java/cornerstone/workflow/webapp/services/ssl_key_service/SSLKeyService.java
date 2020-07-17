@@ -12,7 +12,7 @@ import java.util.UUID;
 
 public class SSLKeyService implements SSLKeyServiceInterface {
     private static final Logger logger = LoggerFactory.getLogger(SSLKeyService.class);
-    private static final String SQL_INSERT_PUBLIC_KEY = "INSERT INTO secure.public_keys (uuid, node_name, base64_key, ttl) VALUES(?,?,?,?)";
+    private static final String SQL_INSERT_PUBLIC_KEY = "INSERT INTO secure.public_keys (uuid, node_name, ttl, base64_key) VALUES(?,?,?,?)";
     private static final String ERROR_MSG_FAILED_TO_STORE_PUBLIC_KEY = "Failed to store public key! UUID: '%s', message: '%s', SQL state: '%s', error code: '%s'";
 
     private final DataSourceWorkDB dataSource;
@@ -23,14 +23,14 @@ public class SSLKeyService implements SSLKeyServiceInterface {
     }
 
     @Override
-    public int savePublicKeyToDB(final UUID uuid, final String nodeName, final String base64key, final int ttl) throws SSLKeyServiceException {
+    public int savePublicKeyToDB(final UUID uuid, final String nodeName, final int ttl, final String base64key ) throws SSLKeyServiceException {
         try (final Connection c = dataSource.getConnection();
              final PreparedStatement ps = c.prepareStatement(SQL_INSERT_PUBLIC_KEY)) {
 
             ps.setObject(1, uuid);
             ps.setString(2, nodeName);
-            ps.setString(3, base64key);
-            ps.setInt(4, ttl);
+            ps.setInt(3, ttl);
+            ps.setString(4, base64key);
 
             return ps.executeUpdate();
 

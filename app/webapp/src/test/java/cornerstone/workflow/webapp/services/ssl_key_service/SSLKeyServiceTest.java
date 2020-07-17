@@ -37,7 +37,7 @@ public class SSLKeyServiceTest {
     }
 
     @Test
-    public void test() throws SSLKeyServiceException, NoSuchMethodException {
+    public void test() throws SSLKeyServiceException {
         final Base64.Encoder encoder = Base64.getEncoder();
         final String nodeName = configurationLoader.getApp_properties().getProperty(APP_ENUM.NODE_NAME.key);
 
@@ -47,7 +47,7 @@ public class SSLKeyServiceTest {
             start = System.currentTimeMillis();
             final KeyPairWithUUID keyPairWithUUID = KeyPairWithUUIDGenerator.generateKeyPairWithUUID();
             final String base64pubkey = encoder.encodeToString(keyPairWithUUID.keyPair.getPublic().getEncoded());
-            int result = sslKeyService.savePublicKeyToDB(keyPairWithUUID.uuid, nodeName, base64pubkey, 172800);
+            int result = sslKeyService.savePublicKeyToDB(keyPairWithUUID.uuid, nodeName, 172800, base64pubkey);
 
             end = (double)(System.currentTimeMillis() - start) / 1000;
             System.out.println(
