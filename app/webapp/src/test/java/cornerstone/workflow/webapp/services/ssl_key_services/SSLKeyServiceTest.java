@@ -1,9 +1,13 @@
-package cornerstone.workflow.webapp.services.ssl_key_service;
+package cornerstone.workflow.webapp.services.ssl_key_services;
 
 import cornerstone.workflow.webapp.configuration.ConfigurationLoader;
 import cornerstone.workflow.webapp.configuration.ConfigurationLoaderException;
 import cornerstone.workflow.webapp.configuration.enums.APP_ENUM;
 import cornerstone.workflow.webapp.datasource.DataSourceWorkDB;
+import cornerstone.workflow.webapp.services.ssl_key_services.memory.KeyPairWithUUID;
+import cornerstone.workflow.webapp.services.ssl_key_services.memory.KeyPairWithUUIDGenerator;
+import cornerstone.workflow.webapp.services.ssl_key_services.db.PublicKeyStorageServiceService;
+import cornerstone.workflow.webapp.services.ssl_key_services.db.PublicKeyStorageServiceException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -12,7 +16,7 @@ import java.nio.file.Paths;
 import java.util.Base64;
 
 public class SSLKeyServiceTest {
-    private static SSLKeyService sslKeyService;
+    private static PublicKeyStorageServiceService sslKeyService;
     private static ConfigurationLoader configurationLoader;
 
     @BeforeAll
@@ -29,7 +33,7 @@ public class SSLKeyServiceTest {
             configurationLoader.loadAndDecryptConfig();
 
             final DataSourceWorkDB ds = new DataSourceWorkDB(configurationLoader);
-            sslKeyService = new SSLKeyService(ds);
+            sslKeyService = new PublicKeyStorageServiceService(ds);
 
         } catch ( final IOException | ConfigurationLoaderException e ) {
             e.printStackTrace();
@@ -37,7 +41,7 @@ public class SSLKeyServiceTest {
     }
 
     @Test
-    public void test() throws SSLKeyServiceException {
+    public void test() throws PublicKeyStorageServiceException {
         final Base64.Encoder encoder = Base64.getEncoder();
         final String nodeName = configurationLoader.getApp_properties().getProperty(APP_ENUM.NODE_NAME.key);
 

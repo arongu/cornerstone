@@ -17,6 +17,9 @@ CREATE TABLE IF NOT EXISTS secure.public_keys(
 -- indices
 CREATE INDEX IF NOT EXISTS index_uuid ON secure.public_keys(uuid);
 
+----------------------------------------------------------------------------
+-- trigger functions
+----------------------------------------------------------------------------
 -- trigger function to re-calculate timestamps
 CREATE OR REPLACE FUNCTION secure.calculate_time_stamps() RETURNS TRIGGER AS $$
 BEGIN
@@ -34,6 +37,9 @@ BEGIN
 END
 $$ LANGUAGE plpgsql;
 
+----------------------------------------------------------------------------
+-- triggers
+----------------------------------------------------------------------------
 -- trigger insert
 DROP TRIGGER IF EXISTS trigger_insert_table_public_keys ON secure.public_keys;
 CREATE TRIGGER trigger_insert_table_public_keys
