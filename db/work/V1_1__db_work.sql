@@ -1,7 +1,7 @@
 ----------------------------------------------------------------------------
--- Schema secure
+-- schema secure
 ----------------------------------------------------------------------------
--- Table secure.pubkeys
+-- table secure.pubkeys
 ----------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS secure.public_keys(
     uuid uuid,
@@ -17,37 +17,46 @@ CREATE TABLE IF NOT EXISTS secure.public_keys(
 -- indices
 CREATE INDEX IF NOT EXISTS index_uuid ON secure.public_keys(uuid);
 
--- trigger function to re-calculate expire_ts
-CREATE OR REPLACE FUNCTION secure.calculate_expire_ts() RETURNS TRIGGER AS $$
+-- trigger function to re-calculate timestamps
+CREATE OR REPLACE FUNCTION secure.calculate_time_stamps() RETURNS TRIGGER AS $$
 BEGIN
-    NEW.expire_ts = NOW() + NEW.ttl * interval '1' second;
+    NEW.creation_ts = NOW();
+    NEW.expire_ts = NEW.creation_ts + (NEW.ttl * interval '1' second);
     RETURN NEW;
 END
 $$ LANGUAGE plpgsql;
 
--- trigger on ttl insert
-DROP TRIGGER IF EXISTS insert_trigger_ttl ON secure.public_keys;
-CREATE TRIGGER insert_trigger_ttl
+-- trigger function to re-calculate expire_ts
+CREATE OR REPLACE FUNCTION secure.recalculate_expire_ts() RETURNS TRIGGER AS $$
+BEGIN
+    NEW.expire_ts = OLD.creation_ts + (NEW.ttl * interval '1' second);
+    RETURN NEW;
+END
+$$ LANGUAGE plpgsql;
+
+-- trigger insert
+DROP TRIGGER IF EXISTS trigger_insert_table_public_keys ON secure.public_keys;
+CREATE TRIGGER trigger_insert_table_public_keys
     BEFORE INSERT ON secure.public_keys
     FOR EACH ROW
-    EXECUTE PROCEDURE secure.calculate_expire_ts();
+    EXECUTE PROCEDURE secure.calculate_time_stamps();
 
--- trigger on ttl update
-DROP TRIGGER IF EXISTS update_trigger_ttl ON secure.public_keys;
-CREATE TRIGGER update_trigger_ttl
+-- trigger update ttl
+DROP TRIGGER IF EXISTS trigger_update_ttl ON secure.public_keys;
+CREATE TRIGGER trigger_update_ttl
     BEFORE UPDATE OF ttl ON secure.public_keys
     FOR EACH ROW
-    EXECUTE PROCEDURE secure.calculate_expire_ts();
+    EXECUTE PROCEDURE secure.recalculate_expire_ts();
 
--- trigger on creation_ts update
-DROP TRIGGER IF EXISTS update_trigger_creation_ts ON secure.public_keys;
-CREATE TRIGGER update_trigger_creation_ts
-    BEFORE UPDATE OF creation_ts ON secure.public_keys
+-- trigger update base64_key
+DROP TRIGGER IF EXISTS trigger_update_base64_key ON secure.public_keys;
+CREATE TRIGGER trigger_update_base64_key
+    BEFORE UPDATE OF base64_key ON secure.public_keys
     FOR EACH ROW
-    EXECUTE PROCEDURE secure.calculate_expire_ts();
+    EXECUTE PROCEDURE secure.calculate_time_stamps();
 
 ----------------------------------------------------------------------------
--- Permissions of schema secure
+-- permissions of schema secure
 ----------------------------------------------------------------------------
 DROP ROLE IF EXISTS ${db.user};
 CREATE USER ${db.user} WITH ENCRYPTED PASSWORD '${db_password}';
