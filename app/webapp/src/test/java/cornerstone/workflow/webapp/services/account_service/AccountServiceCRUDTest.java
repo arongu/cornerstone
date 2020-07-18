@@ -2,7 +2,7 @@ package cornerstone.workflow.webapp.services.account_service;
 
 import cornerstone.workflow.webapp.configuration.ConfigurationLoader;
 import cornerstone.workflow.webapp.configuration.ConfigurationLoaderException;
-import cornerstone.workflow.webapp.datasource.DataSourceUsersDB;
+import cornerstone.workflow.webapp.datasources.UsersDB;
 import org.apache.commons.codec.digest.Crypt;
 import org.junit.jupiter.api.*;
 
@@ -29,7 +29,7 @@ public class AccountServiceCRUDTest {
             final ConfigurationLoader cr = new ConfigurationLoader();
             cr.loadAndDecryptConfig();
 
-            final DataSourceUsersDB ds = new DataSourceUsersDB(cr);
+            final UsersDB ds = new UsersDB(cr);
             accountService = new AccountService(ds);
 
         } catch ( final IOException | ConfigurationLoaderException e ) {

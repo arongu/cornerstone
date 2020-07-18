@@ -3,10 +3,10 @@ package cornerstone.workflow.webapp.services.ssl_key_services;
 import cornerstone.workflow.webapp.configuration.ConfigurationLoader;
 import cornerstone.workflow.webapp.configuration.ConfigurationLoaderException;
 import cornerstone.workflow.webapp.configuration.enums.APP_ENUM;
-import cornerstone.workflow.webapp.datasource.DataSourceWorkDB;
+import cornerstone.workflow.webapp.datasources.WorkDB;
 import cornerstone.workflow.webapp.services.ssl_key_services.memory.KeyPairWithUUID;
 import cornerstone.workflow.webapp.services.ssl_key_services.memory.KeyPairWithUUIDGenerator;
-import cornerstone.workflow.webapp.services.ssl_key_services.db.PublicKeyStorageServiceService;
+import cornerstone.workflow.webapp.services.ssl_key_services.db.PublicKeyStorageService;
 import cornerstone.workflow.webapp.services.ssl_key_services.db.PublicKeyStorageServiceException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -16,7 +16,7 @@ import java.nio.file.Paths;
 import java.util.Base64;
 
 public class SSLKeyServiceTest {
-    private static PublicKeyStorageServiceService sslKeyService;
+    private static PublicKeyStorageService sslKeyService;
     private static ConfigurationLoader configurationLoader;
 
     @BeforeAll
@@ -32,8 +32,8 @@ public class SSLKeyServiceTest {
             configurationLoader = new ConfigurationLoader();
             configurationLoader.loadAndDecryptConfig();
 
-            final DataSourceWorkDB ds = new DataSourceWorkDB(configurationLoader);
-            sslKeyService = new PublicKeyStorageServiceService(ds);
+            final WorkDB ds = new WorkDB(configurationLoader);
+            sslKeyService = new PublicKeyStorageService(ds);
 
         } catch ( final IOException | ConfigurationLoaderException e ) {
             e.printStackTrace();
@@ -43,7 +43,7 @@ public class SSLKeyServiceTest {
     @Test
     public void test() throws PublicKeyStorageServiceException {
         final Base64.Encoder encoder = Base64.getEncoder();
-        final String nodeName = configurationLoader.getApp_properties().getProperty(APP_ENUM.NODE_NAME.key);
+        final String nodeName = configurationLoader.getApp_properties().getProperty(APP_ENUM.APP_NODE_NAME.key);
 
         long start;
         double end;
@@ -51,7 +51,7 @@ public class SSLKeyServiceTest {
             start = System.currentTimeMillis();
             final KeyPairWithUUID keyPairWithUUID = KeyPairWithUUIDGenerator.generateKeyPairWithUUID();
             final String base64pubkey = encoder.encodeToString(keyPairWithUUID.keyPair.getPublic().getEncoded());
-            int result = sslKeyService.savePublicKeyToDB(keyPairWithUUID.uuid, nodeName, 172800, base64pubkey);
+            int result = sslKeyService.addPublicKey(keyPairWithUUID.uuid, nodeName, 172800, base64pubkey);
 
             end = (double)(System.currentTimeMillis() - start) / 1000;
             System.out.println(

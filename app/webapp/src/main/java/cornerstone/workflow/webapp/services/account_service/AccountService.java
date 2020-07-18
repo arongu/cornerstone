@@ -1,6 +1,6 @@
 package cornerstone.workflow.webapp.services.account_service;
 
-import cornerstone.workflow.webapp.datasource.DataSourceUsersDB;
+import cornerstone.workflow.webapp.datasources.UsersDB;
 import cornerstone.workflow.webapp.rest.endpoint.account.EmailAndPassword;
 import org.apache.commons.codec.digest.Crypt;
 import org.apache.commons.dbcp2.BasicDataSource;
@@ -63,7 +63,7 @@ public class AccountService implements AccountServiceInterface {
     }
 
     @Inject
-    public AccountService(final DataSourceUsersDB dataSource) {
+    public AccountService(final UsersDB dataSource) {
         this.dataSource = dataSource;
     }
 

@@ -1,4 +1,4 @@
-package cornerstone.workflow.webapp.datasource;
+package cornerstone.workflow.webapp.datasources;
 
 import cornerstone.workflow.webapp.configuration.ConfigurationLoader;
 import cornerstone.workflow.webapp.configuration.enums.DB_USERS_ENUM;
@@ -8,9 +8,9 @@ import javax.inject.Inject;
 import java.util.Properties;
 
 // users database connection provider (singleton -- consult with JerseyBinder.class)
-public class DataSourceUsersDB extends BasicDataSource {
+public class UsersDB extends BasicDataSource {
     @Inject
-    public DataSourceUsersDB(final ConfigurationLoader configurationLoader){
+    public UsersDB(final ConfigurationLoader configurationLoader){
         super();
         final Properties props = configurationLoader.getUsersDbProperties();
 

@@ -1,4 +1,4 @@
-package cornerstone.workflow.webapp.datasource;
+package cornerstone.workflow.webapp.datasources;
 
 import cornerstone.workflow.webapp.configuration.ConfigurationLoader;
 import cornerstone.workflow.webapp.configuration.enums.DB_WORK_ENUM;
@@ -8,10 +8,10 @@ import javax.inject.Inject;
 import java.util.Properties;
 
 // main/work database connection provider (singleton -- consult with JerseyBinder.class)
-public class DataSourceWorkDB extends BasicDataSource {
+public class WorkDB extends BasicDataSource {
     
     @Inject
-    public DataSourceWorkDB(final ConfigurationLoader configurationLoader) {
+    public WorkDB(final ConfigurationLoader configurationLoader) {
         super();
         final Properties workDbProps = configurationLoader.getWorkDbProperties();
         

@@ -3,6 +3,8 @@
 [  ] initial JWT
 [  ] JWT get/set etc
 [  ] class names account service?
+[ ] SQL log messages should have some more standardized form, make it happen
+[ TODO ] Proper TODO list
 
 [ TODO ] REVIEW SQL MESSAGES make them uniform error code, message, sql state etc...
 
