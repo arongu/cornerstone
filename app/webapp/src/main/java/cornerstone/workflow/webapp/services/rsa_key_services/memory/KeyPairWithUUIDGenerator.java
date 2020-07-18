@@ -1,4 +1,4 @@
-package cornerstone.workflow.webapp.services.ssl_key_services.memory;
+package cornerstone.workflow.webapp.services.rsa_key_services.memory;
 
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;

@@ -5,6 +5,9 @@
 [  ] class names account service?
 [ ] SQL log messages should have some more standardized form, make it happen
 [ TODO ] Proper TODO list
+todo account service there should be no nulls replace with them no such element exceptions
+
+datasources --- check
 
 [ TODO ] REVIEW SQL MESSAGES make them uniform error code, message, sql state etc...
 
@@ -43,5 +46,34 @@ Key service:
     - experiation date - date + JWT valid time -- to be safe to delete
     - get its own key
     - delete keys that are no longer in use
+
+NTP required
+======================================
+
+======================================
+node
+    -> CREATES PRIVATE KEY WITH TTL in local
+        -> PUBLISH PUBLIC KEY TO DB with TLL
+           DB sets expire TS
+
+    -> node uses key until it expires
+       - when it does
+       - it gets the list of the expired KEYS
+       - LOGS them
+       - and executes cleanup QUERY
+
+
+    -> when request arrives
+        -> CHECK if token_valid_until... > local time
+                -> GET PUBLIC KEY FROM LOCAL MEMORY STORE
+                        - IF it does not have it
+                            -> GET PUBLIC KEY BY UUID
+                            -> put it local store
+                            -> validate
+                                ....
+
+                        - IF NOT GO to database and get it
+                            - if it has it -> validate
+                            - if not fail it
 
 

@@ -1,13 +1,13 @@
-package cornerstone.workflow.webapp.services.ssl_key_services;
+package cornerstone.workflow.webapp.services.rsa_key_services;
 
 import cornerstone.workflow.webapp.configuration.ConfigurationLoader;
 import cornerstone.workflow.webapp.configuration.ConfigurationLoaderException;
 import cornerstone.workflow.webapp.configuration.enums.APP_ENUM;
 import cornerstone.workflow.webapp.datasources.WorkDB;
-import cornerstone.workflow.webapp.services.ssl_key_services.memory.KeyPairWithUUID;
-import cornerstone.workflow.webapp.services.ssl_key_services.memory.KeyPairWithUUIDGenerator;
-import cornerstone.workflow.webapp.services.ssl_key_services.db.PublicKeyStorageService;
-import cornerstone.workflow.webapp.services.ssl_key_services.db.PublicKeyStorageServiceException;
+import cornerstone.workflow.webapp.services.rsa_key_services.memory.KeyPairWithUUID;
+import cornerstone.workflow.webapp.services.rsa_key_services.memory.KeyPairWithUUIDGenerator;
+import cornerstone.workflow.webapp.services.rsa_key_services.db.PublicKeyStorageService;
+import cornerstone.workflow.webapp.services.rsa_key_services.db.PublicKeyStorageServiceException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 

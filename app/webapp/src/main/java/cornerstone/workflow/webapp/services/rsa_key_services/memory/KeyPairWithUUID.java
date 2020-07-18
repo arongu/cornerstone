@@ -1,4 +1,4 @@
-package cornerstone.workflow.webapp.services.ssl_key_services.memory;
+package cornerstone.workflow.webapp.services.rsa_key_services.memory;
 
 import java.security.KeyPair;
 import java.util.UUID;

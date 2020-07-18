@@ -1,7 +1,7 @@
-package cornerstone.workflow.webapp.services.ssl_key_services.db;
+package cornerstone.workflow.webapp.services.rsa_key_services.db;
 
 import cornerstone.workflow.webapp.datasources.WorkDB;
-import cornerstone.workflow.webapp.services.ssl_key_services.PublicKeyData;
+import cornerstone.workflow.webapp.services.rsa_key_services.PublicKeyData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

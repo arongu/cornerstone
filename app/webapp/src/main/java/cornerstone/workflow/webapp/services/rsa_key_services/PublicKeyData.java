@@ -1,4 +1,4 @@
-package cornerstone.workflow.webapp.services.ssl_key_services;
+package cornerstone.workflow.webapp.services.rsa_key_services;
 
 import java.sql.Timestamp;
 import java.util.UUID;
