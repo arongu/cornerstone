@@ -4,10 +4,9 @@ import cornerstone.workflow.webapp.configuration.ConfigurationLoader;
 import cornerstone.workflow.webapp.configuration.ConfigurationLoaderException;
 import cornerstone.workflow.webapp.configuration.enums.APP_ENUM;
 import cornerstone.workflow.webapp.datasources.WorkDB;
-import cornerstone.workflow.webapp.services.rsa_key_services.memory.KeyPairWithUUID;
-import cornerstone.workflow.webapp.services.rsa_key_services.memory.KeyPairWithUUIDGenerator;
 import cornerstone.workflow.webapp.services.rsa_key_services.db.PublicKeyStorageService;
 import cornerstone.workflow.webapp.services.rsa_key_services.db.PublicKeyStorageServiceException;
+import cornerstone.workflow.webapp.services.rsa_key_services.local.KeyPairWithUUID;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -49,7 +48,7 @@ public class SSLKeyServiceTest {
         double end;
         for ( int i = 0, max = 10; i < max; i++) {
             start = System.currentTimeMillis();
-            final KeyPairWithUUID keyPairWithUUID = KeyPairWithUUIDGenerator.generateKeyPairWithUUID();
+            final KeyPairWithUUID keyPairWithUUID = new KeyPairWithUUID();
             final String base64pubkey = encoder.encodeToString(keyPairWithUUID.keyPair.getPublic().getEncoded());
             int result = sslKeyService.addPublicKey(keyPairWithUUID.uuid, nodeName, 172800, base64pubkey);
 

@@ -1,7 +1,8 @@
 package cornerstone.workflow.webapp.services.rsa_key_services.db;
 
+import cornerstone.workflow.webapp.logmessages.ServiceLogMessages;
 import cornerstone.workflow.webapp.datasources.WorkDB;
-import cornerstone.workflow.webapp.services.rsa_key_services.PublicKeyData;
+import cornerstone.workflow.webapp.services.rsa_key_services.common.PublicKeyData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,6 +30,7 @@ public class PublicKeyStorageService implements PublicKeyStorageServiceInterface
     @Inject
     public PublicKeyStorageService(final WorkDB workDB) {
         this.workDB = workDB;
+        logger.info(ServiceLogMessages.MESSAGE_INSTANCE_CREATED);
     }
 
     @Override

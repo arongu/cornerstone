@@ -6,8 +6,12 @@ import cornerstone.workflow.webapp.datasources.UsersDB;
 import cornerstone.workflow.webapp.datasources.WorkDB;
 import cornerstone.workflow.webapp.services.account_service.AccountService;
 import cornerstone.workflow.webapp.services.account_service.AccountServiceInterface;
-import cornerstone.workflow.webapp.services.authorization_service.AuthorizationServiceInterface;
 import cornerstone.workflow.webapp.services.authorization_service.AuthorizationService;
+import cornerstone.workflow.webapp.services.authorization_service.AuthorizationServiceInterface;
+import cornerstone.workflow.webapp.services.rsa_key_services.db.PublicKeyStorageService;
+import cornerstone.workflow.webapp.services.rsa_key_services.db.PublicKeyStorageServiceInterface;
+import cornerstone.workflow.webapp.services.rsa_key_services.local.KeyService;
+import cornerstone.workflow.webapp.services.rsa_key_services.local.KeyServiceInterface;
 import org.glassfish.jersey.internal.inject.AbstractBinder;
 
 import javax.inject.Singleton;
@@ -17,20 +21,24 @@ public class JerseyBinder extends AbstractBinder {
     @Override
     protected void configure() {
         try {
-            // Bootstrapping binder, config provider
+            // configuration loader
             final ConfigurationLoader configurationLoader = new ConfigurationLoader();
             configurationLoader.loadAndDecryptConfig();
             bind(configurationLoader).to(ConfigurationLoader.class).in(Singleton.class);
 
-            // DB Pool bindings
-            bind(new UsersDB(configurationLoader)).to(UsersDB.class).in(Singleton.class);
-            bind(new WorkDB(configurationLoader)).to(WorkDB.class).in(Singleton.class);
+            // data sources
+            bind(UsersDB.class).in(Singleton.class);
+            bind(WorkDB.class).in(Singleton.class);
 
-            // AccountCrudService, Authentication, Authorization services
+            // account service, authorization service
             bind(AccountService.class).to(AccountServiceInterface.class).in(Singleton.class);
             bind(AuthorizationService.class).to(AuthorizationServiceInterface.class).in(Singleton.class);
 
-        } catch ( final IOException | ConfigurationLoaderException e ) {
+            // key services
+            bind(PublicKeyStorageService.class).to(PublicKeyStorageServiceInterface.class).in(Singleton.class);
+            bind(KeyService.class).to(KeyServiceInterface.class).in(Singleton.class);
+
+        } catch (final IOException | ConfigurationLoaderException e) {
             e.printStackTrace();
         }
     }

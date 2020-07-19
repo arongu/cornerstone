@@ -1,6 +1,6 @@
 package cornerstone.workflow.webapp.services.rsa_key_services.db;
 
-import cornerstone.workflow.webapp.services.rsa_key_services.PublicKeyData;
+import cornerstone.workflow.webapp.services.rsa_key_services.common.PublicKeyData;
 
 import java.util.NoSuchElementException;
 import java.util.UUID;

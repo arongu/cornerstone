@@ -97,18 +97,48 @@
     <build>
         <plugins>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.3</version>
+                <executions>
+                    <execution>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <tasks>
+                                <echo>-------------------------------------------------------------------------------------------------</echo>
+                                <echo>m2.tomcat.server_id                          = ${m2.tomcat.server_id}</echo>
+                                <echo>m2.tomcat.manager_url                        = ${m2.tomcat.manager_url}</echo>
+                                <echo>m2.tomcat.path                               = ${m2.tomcat.path}</echo>
+                                <echo>-------------------------------------------------------------------------------------------------</echo>
+                                <echo>m2.db.users.server_id                        = ${m2.db.users.server_id}</echo>
+                                <echo>m2.db.users.db_name                          = ${m2.db.users.db_name}</echo>
+                                <echo>m2.db.users.db_schemas.user_data.schema_name = ${m2.db.users.db_schemas.user_data.schema_name}</echo>
+                                <echo>m2.db.users.db_url                           = ${m2.db.users.db_url}</echo>
+                                <echo>m2.db.users.db_user                          = ${m2.db.users.db_user}</echo>
+                                <echo>m2.db.users.db_password                      = ${m2.db.users.db_password}</echo>
+                                <echo>-------------------------------------------------------------------------------------------------</echo>
+                                <echo>m2.db.work.server_id                        = ${m2.db.work.server_id}</echo>
+                                <echo>m2.db.work.db_name                          = ${m2.db.work.db_name}</echo>
+                                <echo>m2.db.work.db_schemas.user_data.schema_name = ${m2.db.work.db_schemas.secure.schema_name}</echo>
+                                <echo>m2.db.work.db_url                           = ${m2.db.work.db_url}</echo>
+                                <echo>m2.db.work.db_user                          = ${m2.db.work.db_user}</echo>
+                                <echo>m2.db.work.db_password                      = ${m2.db.work.db_password}</echo>
+                                <echo>-------------------------------------------------------------------------------------------------</echo>
+                            </tasks>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
                 <groupId>org.apache.tomcat.maven</groupId>
                 <artifactId>tomcat7-maven-plugin</artifactId>
-
                 <configuration>
-                    <url>${tomcat.manager.url}</url>
-                    <server>${tomcat.server.id}</server>
-                    <path>${tomcat.path}</path>
-                    <!-- configuration files for config loader, only works with mvn tomcat7:run -->
-                    <systemProperties>
-                        <keyFile>${app.conf.key}</keyFile>
-                        <confFile>${app.conf.main}</confFile>
-                    </systemProperties>
+                    <server>${m2.tomcat.server_id}</server>
+                    <url>${m2.tomcat.manager_url}</url>
+                    <path>${m2.tomcat.path}</path>
                 </configuration>
             </plugin>
         </plugins>

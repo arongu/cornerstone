@@ -1,4 +1,4 @@
-package cornerstone.workflow.webapp.services.rsa_key_services;
+package cornerstone.workflow.webapp.services.rsa_key_services.common;
 
 import java.sql.Timestamp;
 import java.util.UUID;
@@ -8,7 +8,7 @@ public class PublicKeyData {
     private String base64_key;
     private Timestamp expireDate;
 
-    public PublicKeyData(final UUID uuid,final String base64_key,final Timestamp expireDate) {
+    public PublicKeyData(final UUID uuid, final String base64_key, final Timestamp expireDate) {
         this.uuid = uuid;
         this.base64_key = base64_key;
         this.expireDate = expireDate;

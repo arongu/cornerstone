@@ -12,8 +12,8 @@
     <!-- tomcat local -->
     <server>
       <id>local.tomcat</id>
-      <username>aron</username>
-      <password>aron</password>
+      <username>deploy</username>
+      <password>deploy</password>
     </server>
 
     <!-- postgres local live -->
