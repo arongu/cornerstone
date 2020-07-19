@@ -1,8 +1,11 @@
 package cornerstone.workflow.webapp.services.account_service;
 
-import cornerstone.workflow.webapp.configuration.ConfigurationLoader;
-import cornerstone.workflow.webapp.configuration.ConfigurationLoaderException;
-import cornerstone.workflow.webapp.datasources.UsersDB;
+import cornerstone.webapp.configuration.ConfigurationLoader;
+import cornerstone.webapp.datasources.UsersDB;
+import cornerstone.webapp.services.account_service.AccountResultSet;
+import cornerstone.webapp.services.account_service.AccountService;
+import cornerstone.webapp.services.account_service.AccountServiceException;
+import cornerstone.webapp.services.account_service.AccountServiceInterface;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -34,7 +37,7 @@ public class AccountServiceLoginTest {
             final UsersDB ds = new UsersDB(cr);
             accountService = new AccountService(ds);
 
-        } catch ( final IOException | ConfigurationLoaderException e) {
+        } catch (final IOException e) {
             e.printStackTrace();
         }
     }

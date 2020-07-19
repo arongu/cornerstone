@@ -1,12 +1,11 @@
 package cornerstone.workflow.webapp.services.rsa_key_services;
 
-import cornerstone.workflow.webapp.configuration.ConfigurationLoader;
-import cornerstone.workflow.webapp.configuration.ConfigurationLoaderException;
-import cornerstone.workflow.webapp.configuration.enums.APP_ENUM;
-import cornerstone.workflow.webapp.datasources.WorkDB;
-import cornerstone.workflow.webapp.services.rsa_key_services.db.PublicKeyStorageService;
-import cornerstone.workflow.webapp.services.rsa_key_services.db.PublicKeyStorageServiceException;
-import cornerstone.workflow.webapp.services.rsa_key_services.local.KeyPairWithUUID;
+import cornerstone.webapp.configuration.ConfigurationLoader;
+import cornerstone.webapp.configuration.enums.APP_ENUM;
+import cornerstone.webapp.datasources.WorkDB;
+import cornerstone.webapp.services.rsa_key_services.db.PublicKeyStorageService;
+import cornerstone.webapp.services.rsa_key_services.db.PublicKeyStorageServiceException;
+import cornerstone.webapp.services.rsa_key_services.local.KeyPairWithUUID;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -34,7 +33,7 @@ public class SSLKeyServiceTest {
             final WorkDB ds = new WorkDB(configurationLoader);
             sslKeyService = new PublicKeyStorageService(ds);
 
-        } catch ( final IOException | ConfigurationLoaderException e ) {
+        } catch (final IOException e) {
             e.printStackTrace();
         }
     }

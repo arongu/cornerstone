@@ -1,5 +1,7 @@
 package cornerstone.workflow.webapp.configuration;
 
+import cornerstone.webapp.configuration.ConfigurationLoader;
+import cornerstone.webapp.configuration.ConfigurationLoaderException;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Test;
 

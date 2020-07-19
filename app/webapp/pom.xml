@@ -127,6 +127,9 @@
                                 <echo>m2.db.work.db_user                          = ${m2.db.work.db_user}</echo>
                                 <echo>m2.db.work.db_password                      = ${m2.db.work.db_password}</echo>
                                 <echo>-------------------------------------------------------------------------------------------------</echo>
+                                <echo>m2.cornerstone.config_dir                   = ${m2.cornerstone.config_dir}</echo>
+                                <echo>-------------------------------------------------------------------------------------------------</echo>
+
                             </tasks>
                         </configuration>
                     </execution>
