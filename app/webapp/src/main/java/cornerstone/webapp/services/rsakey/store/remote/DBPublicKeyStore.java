@@ -1,4 +1,4 @@
-package cornerstone.webapp.services.rsakey.storage.db;
+package cornerstone.webapp.services.rsakey.store.remote;
 
 import cornerstone.webapp.services.rsakey.common.PublicKeyData;
 import cornerstone.webapp.logmessages.ServiceLogMessages;
@@ -11,8 +11,8 @@ import java.sql.*;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
-public class DatabasePublicKeyStore implements DatabasePublicKeyStoreInterface {
-    private static final Logger logger = LoggerFactory.getLogger(DatabasePublicKeyStore.class);
+public class DBPublicKeyStore implements DBPublicKeyStoreInterface {
+    private static final Logger logger = LoggerFactory.getLogger(DBPublicKeyStore.class);
     private static final String SQL_INSERT_PUBLIC_KEY          = "INSERT INTO secure.public_keys (uuid, node_name, ttl, base64_key) VALUES(?,?,?,?)";
 
     private static final String SQL_GET_ACTIVE_PUBLIC_KEY       = "SELECT base64_key,expire_ts FROM secure.public_keys WHERE uuid=? AND expire_ts >= NOW()";
@@ -28,13 +28,13 @@ public class DatabasePublicKeyStore implements DatabasePublicKeyStoreInterface {
     private final WorkDB workDB;
 
     @Inject
-    public DatabasePublicKeyStore(final WorkDB workDB) {
+    public DBPublicKeyStore(final WorkDB workDB) {
         this.workDB = workDB;
         logger.info(ServiceLogMessages.MESSAGE_INSTANCE_CREATED);
     }
 
     @Override
-    public int addPublicKey(final UUID uuid, final String node_name, final int ttl, final String base64_key ) throws DatabasePublicKeyStoreException {
+    public int addPublicKey(final UUID uuid, final String node_name, final int ttl, final String base64_key ) throws DBPublicKeyStoreException {
         try (final Connection c = workDB.getConnection();
              final PreparedStatement ps = c.prepareStatement(SQL_INSERT_PUBLIC_KEY)) {
 
@@ -48,12 +48,12 @@ public class DatabasePublicKeyStore implements DatabasePublicKeyStoreInterface {
         } catch (final SQLException e) {
             final String msg = String.format(ERROR_MSG_FAILED_TO_STORE_PUBLIC_KEY, uuid.toString(), e.getMessage(), e.getSQLState(), e.getErrorCode());
             logger.error(msg);
-            throw new DatabasePublicKeyStoreException(msg);
+            throw new DBPublicKeyStoreException(msg);
         }
     }
 
     @Override
-    public int removePublicKey(final UUID uuid) throws DatabasePublicKeyStoreException {
+    public int removePublicKey(final UUID uuid) throws DBPublicKeyStoreException {
         try (final Connection c = workDB.getConnection();
              final PreparedStatement ps = c.prepareStatement(SQL_DELETE_PUBLIC_KEY)) {
 
@@ -63,12 +63,12 @@ public class DatabasePublicKeyStore implements DatabasePublicKeyStoreInterface {
         } catch (final SQLException e) {
             final String msg = String.format(ERROR_MSG_FAILED_TO_DELETE_PUBLIC_KEY, uuid.toString(), e.getMessage(), e.getSQLState(), e.getErrorCode());
             logger.error(msg);
-            throw new DatabasePublicKeyStoreException(msg);
+            throw new DBPublicKeyStoreException(msg);
         }
     }
 
     @Override
-    public PublicKeyData getPublicKey(final UUID uuid) throws DatabasePublicKeyStoreException {
+    public PublicKeyData getPublicKey(final UUID uuid) throws DBPublicKeyStoreException {
         try (final Connection c = workDB.getConnection();
              final PreparedStatement ps = c.prepareStatement(SQL_GET_ACTIVE_PUBLIC_KEY)) {
 
@@ -88,7 +88,7 @@ public class DatabasePublicKeyStore implements DatabasePublicKeyStoreInterface {
         } catch (final SQLException e) {
             final String msg = String.format(ERROR_MSG_FAILED_TO_DELETE_PUBLIC_KEY, uuid.toString(), e.getMessage(), e.getSQLState(), e.getErrorCode());
             logger.error(msg);
-            throw new DatabasePublicKeyStoreException(msg);
+            throw new DBPublicKeyStoreException(msg);
         }
     }
 }

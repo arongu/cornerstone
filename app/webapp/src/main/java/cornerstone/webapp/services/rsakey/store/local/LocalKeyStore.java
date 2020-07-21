@@ -1,4 +1,4 @@
-package cornerstone.webapp.services.rsakey.storage.local;
+package cornerstone.webapp.services.rsakey.store.local;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
