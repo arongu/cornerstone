@@ -1,4 +1,4 @@
-package cornerstone.webapp.services.authorization_service;
+package cornerstone.webapp.services.jwt;
 
 public class AuthorizationServiceException extends Exception {
     public AuthorizationServiceException() {

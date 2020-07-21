@@ -2,10 +2,10 @@ package cornerstone.workflow.webapp.services.account_service;
 
 import cornerstone.webapp.configuration.ConfigurationLoader;
 import cornerstone.webapp.datasources.UsersDB;
-import cornerstone.webapp.services.account_service.AccountResultSet;
-import cornerstone.webapp.services.account_service.AccountService;
-import cornerstone.webapp.services.account_service.AccountServiceException;
-import cornerstone.webapp.services.account_service.AccountServiceInterface;
+import cornerstone.webapp.services.account.administration.AccountResultSet;
+import cornerstone.webapp.services.account.administration.AccountAdministration;
+import cornerstone.webapp.services.account.administration.AccountAdministrationException;
+import cornerstone.webapp.services.account.administration.AccountAdministrationInterface;
 import org.apache.commons.codec.digest.Crypt;
 import org.junit.jupiter.api.*;
 
@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class AccountServiceCRUDTest {
-    private static AccountServiceInterface accountService;
+    private static AccountAdministrationInterface accountService;
 
     @BeforeAll
     public static void setSystemProperties() {
@@ -33,7 +33,7 @@ public class AccountServiceCRUDTest {
             cr.loadAndDecryptConfig();
 
             final UsersDB ds = new UsersDB(cr);
-            accountService = new AccountService(ds);
+            accountService = new AccountAdministration(ds);
 
         } catch (final IOException e) {
             e.printStackTrace();
@@ -50,13 +50,13 @@ public class AccountServiceCRUDTest {
     // -------------------------------------------- TCs --------------------------------------------
     @Test
     @Order(0)
-    public void t00_get_shouldReturnNull_whenAccountDoesNotExist() throws AccountServiceException {
+    public void t00_get_shouldReturnNull_whenAccountDoesNotExist() throws AccountAdministrationException {
         assertNull(accountService.get("nosuch@mail.com"));
     }
 
     @Test
     @Order(10)
-    public void t01_create_and_get_shouldCreateOneAccount_whenAccountDoesNotExist() throws AccountServiceException {
+    public void t01_create_and_get_shouldCreateOneAccount_whenAccountDoesNotExist() throws AccountAdministrationException {
         final String email = "almafa@gmail.com";
         final String password = "password";
         final boolean locked = false;
@@ -90,7 +90,7 @@ public class AccountServiceCRUDTest {
     @Test
     @Order(11)
     public void t01b_create_shouldThrowAccountServiceException_whenAccountAlreadyExists() {
-        assertThrows(AccountServiceException.class, () -> {
+        assertThrows(AccountAdministrationException.class, () -> {
             final String email = "almafa@gmail.com";
             final String password = "password";
             final boolean locked = false;
@@ -102,7 +102,7 @@ public class AccountServiceCRUDTest {
 
     @Test
     @Order(20)
-    public void t02_delete_previousAccountShouldBeDeleted() throws AccountServiceException {
+    public void t02_delete_previousAccountShouldBeDeleted() throws AccountAdministrationException {
         final String email = "almafa@gmail.com";
 
         final int deletes;
@@ -119,7 +119,7 @@ public class AccountServiceCRUDTest {
 
     @Test
     @Order(30)
-    public void t03_create_anotherAccountShouldBeCreated() throws AccountServiceException {
+    public void t03_create_anotherAccountShouldBeCreated() throws AccountAdministrationException {
         final String email = "crud_tests@x-mail.com";
         final String password = "password";
         final boolean locked = false;
@@ -141,7 +141,7 @@ public class AccountServiceCRUDTest {
 
     @Test
     @Order(40)
-    public void t04_setNewEmailAddress_shouldSetNewEmailForPreviouslyCreatedAccount() throws AccountServiceException {
+    public void t04_setNewEmailAddress_shouldSetNewEmailForPreviouslyCreatedAccount() throws AccountAdministrationException {
         final String email = "crud_tests@x-mail.com";
         final String newEmail = "my_new_crud_tests_mail@yahoo.com";
 
@@ -163,7 +163,7 @@ public class AccountServiceCRUDTest {
 
     @Test
     @Order(50)
-    public void t05_lock_shouldLockAccount() throws AccountServiceException {
+    public void t05_lock_shouldLockAccount() throws AccountAdministrationException {
         final String email_address = "my_new_crud_tests_mail@yahoo.com";
         final String reason = "naughty";
 
@@ -190,7 +190,7 @@ public class AccountServiceCRUDTest {
 
     @Test
     @Order(60)
-    public void t06_unlock_shouldUnlockPreviouslyLockedAccount() throws AccountServiceException {
+    public void t06_unlock_shouldUnlockPreviouslyLockedAccount() throws AccountAdministrationException {
         final String email_address = "my_new_crud_tests_mail@yahoo.com";
         final String reason = "naughty";
 
@@ -214,7 +214,7 @@ public class AccountServiceCRUDTest {
 
     @Test
     @Order(70)
-    public void t07_changePassword_shouldChangePasswordOfAccount() throws AccountServiceException {
+    public void t07_changePassword_shouldChangePasswordOfAccount() throws AccountAdministrationException {
         final String email = "my_new_crud_tests_mail@yahoo.com";
         final String password = "password";
         final String newPassword = "almafa1234#";
@@ -236,7 +236,7 @@ public class AccountServiceCRUDTest {
 
     @Test
     @Order(80)
-    public void t08_delete_shouldDeleteAccount() throws AccountServiceException {
+    public void t08_delete_shouldDeleteAccount() throws AccountAdministrationException {
         final String email = "my_new_crud_tests_mail@yahoo.com";
 
         final int deletes;

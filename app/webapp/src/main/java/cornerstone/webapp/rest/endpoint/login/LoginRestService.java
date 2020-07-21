@@ -1,10 +1,10 @@
 package cornerstone.webapp.rest.endpoint.login;
 
 import cornerstone.webapp.rest.exceptions.BadRequestException;
-import cornerstone.webapp.services.account_service.AccountServiceException;
-import cornerstone.webapp.services.account_service.AccountServiceInterface;
-import cornerstone.webapp.services.authorization_service.AuthorizationServiceException;
-import cornerstone.webapp.services.authorization_service.AuthorizationServiceInterface;
+import cornerstone.webapp.services.account.administration.AccountAdministrationException;
+import cornerstone.webapp.services.account.administration.AccountAdministrationInterface;
+import cornerstone.webapp.services.jwt.AuthorizationServiceException;
+import cornerstone.webapp.services.jwt.AuthorizationServiceInterface;
 import cornerstone.webapp.rest.endpoint.account.EmailAndPassword;
 import cornerstone.webapp.rest.util.HttpMessage;
 import org.slf4j.Logger;
@@ -29,19 +29,19 @@ public class LoginRestService {
 
     private static final Logger logger = LoggerFactory.getLogger(LoginRestService.class);
 
-    private AccountServiceInterface accountServiceInterface;
+    private AccountAdministrationInterface accountAdministrationInterface;
     private AuthorizationServiceInterface authorizationServiceInterface;
 
     @Inject
-    public LoginRestService(final AccountServiceInterface accountServiceInterface,
+    public LoginRestService(final AccountAdministrationInterface accountAdministrationInterface,
                             final AuthorizationServiceInterface authorizationServiceInterface) {
 
-        this.accountServiceInterface = accountServiceInterface;
+        this.accountAdministrationInterface = accountAdministrationInterface;
         this.authorizationServiceInterface = authorizationServiceInterface;
     }
 
     @POST
-    public Response authenticateUser(final EmailAndPassword emailAndPassword) throws AccountServiceException,
+    public Response authenticateUser(final EmailAndPassword emailAndPassword) throws AccountAdministrationException,
             AuthorizationServiceException,
             BadRequestException {
 
@@ -52,7 +52,7 @@ public class LoginRestService {
             final Response response;
             final boolean authenticated;
 
-            authenticated = accountServiceInterface.login(
+            authenticated = accountAdministrationInterface.login(
                     emailAndPassword.email,
                     emailAndPassword.password
             );

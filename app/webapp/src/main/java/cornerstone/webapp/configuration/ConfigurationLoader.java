@@ -19,8 +19,6 @@ public class ConfigurationLoader {
     private static final String LOG_MESSAGE_PROPERTY_FALL_BACK_TO_DEFAULT_VALUE = "Fall back to default value for [ '{}' ] = '{}'";
 
     private static final Logger logger = LoggerFactory.getLogger(ConfigurationLoader.class);
-
-    private Properties properties;
     private Properties db_users_properties;
     private Properties db_work_properties;
     private Properties app_properties;
@@ -58,12 +56,18 @@ public class ConfigurationLoader {
 
     public void loadAndDecryptConfig() throws IOException {
         final SecretKey key = ConfigEncryptDecrypt.loadAESKeyFromFile(keyFile);
-        properties = ConfigEncryptDecrypt.decryptConfig(key, confFile);
+        final Properties properties = ConfigEncryptDecrypt.decryptConfig(key, confFile);
 
-        final ConfigurationCollector collector = new ConfigurationCollector(properties);
-        db_users_properties = collector.getPropertiesForUsersDB();
-        db_work_properties = collector.getPropertiesForWorkDB();
-        app_properties = collector.getPropertiesForApp();
+        try {
+            final ConfigurationSorter collector = new ConfigurationSorter(properties);
+            db_users_properties = collector.getPropertiesForUsersDB();
+            db_work_properties = collector.getPropertiesForWorkDB();
+            app_properties = collector.getPropertiesForApp();
+
+        } catch (final ConfigurationSorterException e) {
+            logger.error(e.getMessage());
+            throw new RuntimeException(e.getMessage());
+        }
     }
 
     public String getKeyFile() {
@@ -74,11 +78,7 @@ public class ConfigurationLoader {
         return confFile;
     }
 
-    public Properties getAllProperties() {
-        return properties;
-    }
-
-    public Properties getApp_properties() {
+    public Properties getAppProperties() {
         return app_properties;
     }
 

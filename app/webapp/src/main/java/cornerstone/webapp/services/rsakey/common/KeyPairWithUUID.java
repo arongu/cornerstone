@@ -1,4 +1,4 @@
-package cornerstone.webapp.services.rsa_key_services.local;
+package cornerstone.webapp.services.rsakey.common;
 
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
@@ -11,8 +11,8 @@ public class KeyPairWithUUID {
     public final UUID uuid;
 
     public KeyPairWithUUID() {
-        this.keyPair = Keys.keyPairFor(SignatureAlgorithm.RS512);
-        this.uuid = java.util.UUID.randomUUID();
+        keyPair = Keys.keyPairFor(SignatureAlgorithm.RS512);
+        uuid = java.util.UUID.randomUUID();
     }
 
     public KeyPairWithUUID(final KeyPair keyPair, final UUID uuid) {

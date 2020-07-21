@@ -6,18 +6,19 @@ import cornerstone.webapp.configuration.enums.DB_WORK_ENUM;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.HashSet;
 import java.util.Properties;
+import java.util.Set;
 
-public class ConfigurationCollector {
-    private static final Logger logger = LoggerFactory.getLogger(ConfigurationCollector.class);
-    private static final String errorMessage  = "'{}' is not set";
-    private static final String ignoreMessage = "'{}' is ignored";
+public class ConfigurationSorter {
+    private static final Logger logger = LoggerFactory.getLogger(ConfigurationSorter.class);
+    private static final String errorMessage  = "'{}' is not set!";
 
     private Properties properties_db_users;
     private Properties properties_db_work;
     private Properties properties_app;
 
-    public ConfigurationCollector(final Properties properties) {
+    public ConfigurationSorter(final Properties properties) throws ConfigurationSorterException {
        collectProperties(properties);
     }
 
@@ -39,7 +40,8 @@ public class ConfigurationCollector {
         }
     }
 
-    public void collectProperties(final Properties properties) {
+    public void collectProperties(final Properties properties) throws ConfigurationSorterException {
+        final Set<String> missingProperties = new HashSet<>();
         // WORK DB
         properties_db_work = new Properties();
         for ( final DB_WORK_ENUM work_enum : DB_WORK_ENUM.values()) {
@@ -47,30 +49,39 @@ public class ConfigurationCollector {
                 addKeyValueAndLogIt(properties_db_work, work_enum.key, properties.getProperty(work_enum.key), DB_WORK_ENUM.PREFIX_DB_WORK);
 
             } else {
-                logger.info(ignoreMessage, work_enum.key);
+                logger.error(errorMessage, work_enum.key);
+                missingProperties.add(work_enum.key);
             }
         }
 
         // USERS DB
         properties_db_users = new Properties();
-        for ( final DB_USERS_ENUM users_enum : DB_USERS_ENUM.values()) {
-            if ( null != properties.get(users_enum.key)) {
-                addKeyValueAndLogIt(properties_db_users, users_enum.key, properties.getProperty(users_enum.key), DB_USERS_ENUM.PREFIX_DB_USERS);
+        for ( final DB_USERS_ENUM db_users_enum : DB_USERS_ENUM.values()) {
+            if ( null != properties.get(db_users_enum.key)) {
+                addKeyValueAndLogIt(properties_db_users, db_users_enum.key, properties.getProperty(db_users_enum.key), DB_USERS_ENUM.PREFIX_DB_USERS);
 
             } else {
-                logger.info(ignoreMessage, users_enum.key);
+                logger.error(errorMessage, db_users_enum.key);
+                missingProperties.add(db_users_enum.key);
             }
         }
 
         // APP
         properties_app = new Properties();
         for ( final APP_ENUM app_enum : APP_ENUM.values()) {
-            if (null != properties.get(app_enum.key)) {
+            if ( null != properties.get(app_enum.key)) {
                 addKeyValueAndLogIt(properties_app, app_enum.key, properties.getProperty(app_enum.key), APP_ENUM.PREFIX_APP);
 
             } else {
-                logger.info(ignoreMessage, app_enum.key);
+                logger.error(errorMessage, app_enum.key);
+                missingProperties.add(app_enum.key);
             }
+        }
+
+        if (missingProperties.size() != 0) {
+            final String msg = "The following configuration fields are not set: " + missingProperties.toString();
+            logger.error(msg);
+            throw new ConfigurationSorterException(msg);
         }
     }
 

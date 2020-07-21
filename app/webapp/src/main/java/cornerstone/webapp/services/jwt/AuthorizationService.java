@@ -1,4 +1,4 @@
-package cornerstone.webapp.services.authorization_service;
+package cornerstone.webapp.services.jwt;
 
 import cornerstone.webapp.configuration.ConfigurationLoader;
 import io.jsonwebtoken.Jwts;

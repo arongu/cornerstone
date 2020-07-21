@@ -1,4 +1,4 @@
-package cornerstone.webapp.services.authorization_service;
+package cornerstone.webapp.services.jwt;
 
 public interface AuthorizationServiceInterface {
     String issueJWT(final String emailAddress) throws AuthorizationServiceException;

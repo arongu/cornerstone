@@ -3,9 +3,9 @@ package cornerstone.workflow.webapp.services.rsa_key_services;
 import cornerstone.webapp.configuration.ConfigurationLoader;
 import cornerstone.webapp.configuration.enums.APP_ENUM;
 import cornerstone.webapp.datasources.WorkDB;
-import cornerstone.webapp.services.rsa_key_services.db.PublicKeyStorageService;
-import cornerstone.webapp.services.rsa_key_services.db.PublicKeyStorageServiceException;
-import cornerstone.webapp.services.rsa_key_services.local.KeyPairWithUUID;
+import cornerstone.webapp.services.rsakey.storage.db.DatabasePublicKeyStore;
+import cornerstone.webapp.services.rsakey.storage.db.DatabasePublicKeyStoreException;
+import cornerstone.webapp.services.rsakey.common.KeyPairWithUUID;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -13,8 +13,8 @@ import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.Base64;
 
-public class SSLKeyServiceTest {
-    private static PublicKeyStorageService sslKeyService;
+public class SSLLocalKeyStorageServiceTest {
+    private static DatabasePublicKeyStore sslKeyService;
     private static ConfigurationLoader configurationLoader;
 
     @BeforeAll
@@ -31,7 +31,7 @@ public class SSLKeyServiceTest {
             configurationLoader.loadAndDecryptConfig();
 
             final WorkDB ds = new WorkDB(configurationLoader);
-            sslKeyService = new PublicKeyStorageService(ds);
+            sslKeyService = new DatabasePublicKeyStore(ds);
 
         } catch (final IOException e) {
             e.printStackTrace();
@@ -39,9 +39,9 @@ public class SSLKeyServiceTest {
     }
 
     @Test
-    public void test() throws PublicKeyStorageServiceException {
+    public void test() throws DatabasePublicKeyStoreException {
         final Base64.Encoder encoder = Base64.getEncoder();
-        final String nodeName = configurationLoader.getApp_properties().getProperty(APP_ENUM.APP_NODE_NAME.key);
+        final String nodeName = configurationLoader.getAppProperties().getProperty(APP_ENUM.APP_NODE_NAME.key);
 
         long start;
         double end;

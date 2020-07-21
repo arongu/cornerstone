@@ -1,9 +1,9 @@
 package cornerstone.webapp.rest.endpoint.account;
 
 import cornerstone.webapp.rest.exceptions.BadRequestException;
-import cornerstone.webapp.services.account_service.AccountServiceException;
-import cornerstone.webapp.services.account_service.AccountServiceInterface;
-import cornerstone.webapp.services.account_service.AccountServiceMultipleException;
+import cornerstone.webapp.services.account.administration.AccountAdministrationException;
+import cornerstone.webapp.services.account.administration.AccountAdministrationInterface;
+import cornerstone.webapp.services.account.administration.AccountAdministrationMultipleException;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -20,16 +20,16 @@ import java.util.List;
 @Produces(MediaType.APPLICATION_JSON)
 public class AccountRestService {
 
-    private AccountServiceInterface accountService;
+    private AccountAdministrationInterface accountService;
 
     @Inject
-    public AccountRestService(final AccountServiceInterface accountService) {
+    public AccountRestService(final AccountAdministrationInterface accountService) {
         this.accountService = accountService;
     }
 
     @POST
     public Response create(final EmailAndPassword account) throws
-            AccountServiceException,
+            AccountAdministrationException,
             BadRequestException {
 
         if ( null != account ) {
@@ -52,7 +52,7 @@ public class AccountRestService {
 
     @DELETE
     public Response delete(final String emailAddress) throws
-            AccountServiceException,
+            AccountAdministrationException,
             BadRequestException {
 
         if ( null != emailAddress ) {
@@ -72,7 +72,7 @@ public class AccountRestService {
     @POST
     @Path("/mass")
     public Response massCreate(final List<EmailAndPassword> accounts) throws
-            AccountServiceMultipleException,
+            AccountAdministrationMultipleException,
             BadRequestException {
 
         if ( accounts != null &&
@@ -91,7 +91,7 @@ public class AccountRestService {
     @DELETE
     @Path("/mass")
     public Response massDelete(final List<String> emailAddresses) throws
-            AccountServiceMultipleException,
+            AccountAdministrationMultipleException,
             BadRequestException {
 
         if ( null != emailAddresses ) {
