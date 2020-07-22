@@ -2,7 +2,7 @@ package cornerstone.webapp.datasources;
 
 import cornerstone.webapp.configuration.ConfigurationLoader;
 import cornerstone.webapp.configuration.enums.DB_WORK_ENUM;
-import cornerstone.webapp.logmessages.ServiceLogMessages;
+import cornerstone.webapp.logmessages.DefaultLogMessages;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,6 +28,6 @@ public class WorkDB extends BasicDataSource {
         setMaxIdle                  (Integer.parseInt(p.getProperty(DB_WORK_ENUM.DB_MAX_IDLE.key)));
         setMaxOpenPreparedStatements(Integer.parseInt(p.getProperty(DB_WORK_ENUM.DB_MAX_OPEN.key)));
 
-        logger.info(String.format(ServiceLogMessages.MESSAGE_INSTANCE_CREATED, this.getClass().getName()));
+        logger.info(String.format(DefaultLogMessages.MESSAGE_INSTANCE_CREATED, this.getClass().getName()));
     }
 }

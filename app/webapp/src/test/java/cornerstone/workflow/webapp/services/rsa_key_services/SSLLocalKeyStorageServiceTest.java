@@ -3,9 +3,9 @@ package cornerstone.workflow.webapp.services.rsa_key_services;
 import cornerstone.webapp.configuration.ConfigurationLoader;
 import cornerstone.webapp.configuration.enums.APP_ENUM;
 import cornerstone.webapp.datasources.WorkDB;
+import cornerstone.webapp.services.rsakey.rotation.KeyPairWithUUID;
 import cornerstone.webapp.services.rsakey.store.remote.DBPublicKeyStore;
 import cornerstone.webapp.services.rsakey.store.remote.DBPublicKeyStoreException;
-import cornerstone.webapp.services.rsakey.rotation.KeyPairWithUUID;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -20,14 +20,11 @@ public class SSLLocalKeyStorageServiceTest {
     @BeforeAll
     public static void setSystemProperties() {
         final String test_files_dir = "../../_test_config/";
-        final String confPath = Paths.get(test_files_dir + "app.conf").toAbsolutePath().normalize().toString();
-        final String keyPath  = Paths.get(test_files_dir + "key.conf").toAbsolutePath().normalize().toString();
-
-        System.setProperty(ConfigurationLoader.SYSTEM_PROPERTY_CONF_FILE, confPath);
-        System.setProperty(ConfigurationLoader.SYSTEM_PROPERTY_KEY_FILE, keyPath);
+        final String keyFile  = Paths.get(test_files_dir + "key.conf").toAbsolutePath().normalize().toString();
+        final String confFile = Paths.get(test_files_dir + "app.conf").toAbsolutePath().normalize().toString();
 
         try {
-            configurationLoader = new ConfigurationLoader();
+            configurationLoader = new ConfigurationLoader(keyFile, confFile);
             configurationLoader.loadAndDecryptConfig();
 
             final WorkDB ds = new WorkDB(configurationLoader);

@@ -2,11 +2,10 @@ package cornerstone.workflow.webapp.services.account_service;
 
 import cornerstone.webapp.configuration.ConfigurationLoader;
 import cornerstone.webapp.datasources.UsersDB;
-import cornerstone.webapp.services.account.administration.AccountResultSet;
 import cornerstone.webapp.services.account.administration.AccountAdministration;
 import cornerstone.webapp.services.account.administration.AccountAdministrationException;
 import cornerstone.webapp.services.account.administration.AccountAdministrationInterface;
-import org.junit.jupiter.api.AfterAll;
+import cornerstone.webapp.services.account.administration.AccountResultSet;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -24,14 +23,11 @@ public class AccountServiceLoginTest {
     @BeforeAll
     public static void setSystemProperties() {
         final String test_files_dir = "../../_test_config/";
-        final String confPath = Paths.get(test_files_dir + "app.conf").toAbsolutePath().normalize().toString();
-        final String keyPath = Paths.get(test_files_dir + "key.conf").toAbsolutePath().normalize().toString();
-
-        System.setProperty(ConfigurationLoader.SYSTEM_PROPERTY_CONF_FILE, confPath);
-        System.setProperty(ConfigurationLoader.SYSTEM_PROPERTY_KEY_FILE, keyPath);
+        final String keyFile  = Paths.get(test_files_dir + "key.conf").toAbsolutePath().normalize().toString();
+        final String confFile = Paths.get(test_files_dir + "app.conf").toAbsolutePath().normalize().toString();
 
         try {
-            final ConfigurationLoader cr = new ConfigurationLoader();
+            final ConfigurationLoader cr = new ConfigurationLoader(keyFile, confFile);
             cr.loadAndDecryptConfig();
 
             final UsersDB ds = new UsersDB(cr);
@@ -40,12 +36,6 @@ public class AccountServiceLoginTest {
         } catch (final IOException e) {
             e.printStackTrace();
         }
-    }
-
-    @AfterAll
-    public static void removeSystemProperties() {
-        System.clearProperty(ConfigurationLoader.SYSTEM_PROPERTY_CONF_FILE);
-        System.clearProperty(ConfigurationLoader.SYSTEM_PROPERTY_KEY_FILE);
     }
 
     @Test

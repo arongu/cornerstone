@@ -1,7 +1,7 @@
 package cornerstone.webapp.services.rsakey.store.remote;
 
 import cornerstone.webapp.services.rsakey.common.PublicKeyData;
-import cornerstone.webapp.logmessages.ServiceLogMessages;
+import cornerstone.webapp.logmessages.DefaultLogMessages;
 import cornerstone.webapp.datasources.WorkDB;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,7 +30,7 @@ public class DBPublicKeyStore implements DBPublicKeyStoreInterface {
     @Inject
     public DBPublicKeyStore(final WorkDB workDB) {
         this.workDB = workDB;
-        logger.info(ServiceLogMessages.MESSAGE_INSTANCE_CREATED);
+        logger.info(DefaultLogMessages.MESSAGE_INSTANCE_CREATED);
     }
 
     @Override
