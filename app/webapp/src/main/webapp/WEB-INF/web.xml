@@ -11,7 +11,7 @@
         <init-param>
             <!-- This is your bootstrap class -->
             <param-name>javax.ws.rs.Application</param-name>
-            <param-value>cornerstone.webapp.jersey.JerseyApplication</param-value>
+            <param-value>cornerstone.webapp.jersey.Application</param-value>
         </init-param>
         <load-on-startup>1</load-on-startup>
     </servlet>

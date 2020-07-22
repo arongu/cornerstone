@@ -14,8 +14,8 @@ public class ConfigurationLoader {
     private Properties db_users_properties;
     private Properties db_work_properties;
     private Properties app_properties;
-    private final String keyFile;
-    private final String confFile;
+    private String keyFile;
+    private String confFile;
 
     public ConfigurationLoader(final String keyFile, final String confFile) throws IOException {
         this.keyFile = keyFile;
@@ -27,15 +27,25 @@ public class ConfigurationLoader {
         final Properties properties = ConfigEncryptDecrypt.decryptConfig(secretKey, confFile);
 
         try {
-            final ConfigurationSorter collector = new ConfigurationSorter(properties);
-            db_users_properties = collector.getPropertiesForUsersDB();
-            db_work_properties = collector.getPropertiesForWorkDB();
-            app_properties = collector.getPropertiesForApp();
+            final ConfigurationSorter sorter = new ConfigurationSorter(properties);
+            sorter.sortProperties();
+
+            db_users_properties = sorter.getPropertiesForUsersDB();
+            db_work_properties  = sorter.getPropertiesForWorkDB();
+            app_properties      = sorter.getPropertiesForApp();
 
         } catch (final ConfigurationSorterException e) {
             logger.error(e.getMessage());
             throw new RuntimeException(e.getMessage());
         }
+    }
+
+    public void setKeyFile(String keyFile) {
+        this.keyFile = keyFile;
+    }
+
+    public void setConfFile(String confFile) {
+        this.confFile = confFile;
     }
 
     public String getKeyFile() {

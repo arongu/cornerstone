@@ -13,9 +13,9 @@ import org.glassfish.jersey.server.ResourceConfig;
    https://stackoverflow.com/questions/45625925/what-exactly-is-the-resourceconfig-class-in-jersey-2
 
 */
-public class JerseyApplication extends ResourceConfig {
-    public JerseyApplication() {
-        register(new JerseyBinder());
+public class Application extends ResourceConfig {
+    public Application() {
         packages("cornerstone.webapp");
+        register(new Binder());
     }
 }

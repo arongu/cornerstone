@@ -14,18 +14,19 @@ public class ConfigurationSorter {
     private static final Logger logger = LoggerFactory.getLogger(ConfigurationSorter.class);
     private static final String errorMessage  = "'{}' is not set!";
 
+    private Properties rawProperties;
     private Properties properties_db_users;
     private Properties properties_db_work;
     private Properties properties_app;
 
-    public ConfigurationSorter(final Properties properties) throws ConfigurationSorterException {
-       collectProperties(properties);
+    public ConfigurationSorter(final Properties properties) {
+        rawProperties = properties;
     }
 
     /**
      * Logs and sets key-value pairs as a property.
      */
-    private void addKeyValueAndLogIt(final Properties props, final String key, final String value, final String logPrefix) {
+    private static void addKeyValueAndLogIt(final Properties props, final String key, final String value, final String logPrefix) {
         if ( key != null && ! key.isEmpty() && value != null && ! value.isEmpty()) {
             props.setProperty(key, value);
 
@@ -40,13 +41,13 @@ public class ConfigurationSorter {
         }
     }
 
-    public void collectProperties(final Properties properties) throws ConfigurationSorterException {
+    public void sortProperties() throws ConfigurationSorterException {
         final Set<String> missingProperties = new HashSet<>();
         // WORK DB
         properties_db_work = new Properties();
         for ( final DB_WORK_ENUM work_enum : DB_WORK_ENUM.values()) {
-            if ( null != properties.get(work_enum.key)) {
-                addKeyValueAndLogIt(properties_db_work, work_enum.key, properties.getProperty(work_enum.key), DB_WORK_ENUM.PREFIX_DB_WORK);
+            if ( null != rawProperties.get(work_enum.key)) {
+                addKeyValueAndLogIt(properties_db_work, work_enum.key, rawProperties.getProperty(work_enum.key), DB_WORK_ENUM.PREFIX_DB_WORK);
 
             } else {
                 logger.error(errorMessage, work_enum.key);
@@ -57,8 +58,8 @@ public class ConfigurationSorter {
         // USERS DB
         properties_db_users = new Properties();
         for ( final DB_USERS_ENUM db_users_enum : DB_USERS_ENUM.values()) {
-            if ( null != properties.get(db_users_enum.key)) {
-                addKeyValueAndLogIt(properties_db_users, db_users_enum.key, properties.getProperty(db_users_enum.key), DB_USERS_ENUM.PREFIX_DB_USERS);
+            if ( null != rawProperties.get(db_users_enum.key)) {
+                addKeyValueAndLogIt(properties_db_users, db_users_enum.key, rawProperties.getProperty(db_users_enum.key), DB_USERS_ENUM.PREFIX_DB_USERS);
 
             } else {
                 logger.error(errorMessage, db_users_enum.key);
@@ -69,8 +70,8 @@ public class ConfigurationSorter {
         // APP
         properties_app = new Properties();
         for ( final APP_ENUM app_enum : APP_ENUM.values()) {
-            if ( null != properties.get(app_enum.key)) {
-                addKeyValueAndLogIt(properties_app, app_enum.key, properties.getProperty(app_enum.key), APP_ENUM.PREFIX_APP);
+            if ( null != rawProperties.get(app_enum.key)) {
+                addKeyValueAndLogIt(properties_app, app_enum.key, rawProperties.getProperty(app_enum.key), APP_ENUM.PREFIX_APP);
 
             } else {
                 logger.error(errorMessage, app_enum.key);
@@ -95,5 +96,9 @@ public class ConfigurationSorter {
 
     public Properties getPropertiesForUsersDB() {
         return properties_db_users;
+    }
+
+    public void setProperties(final Properties properties) {
+        rawProperties = properties;
     }
 }
