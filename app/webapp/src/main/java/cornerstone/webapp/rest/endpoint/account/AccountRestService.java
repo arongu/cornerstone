@@ -1,9 +1,9 @@
 package cornerstone.webapp.rest.endpoint.account;
 
 import cornerstone.webapp.rest.exceptions.BadRequestException;
-import cornerstone.webapp.services.account.administration.AccountAdministrationException;
-import cornerstone.webapp.services.account.administration.AccountAdministrationInterface;
-import cornerstone.webapp.services.account.administration.AccountAdministrationMultipleException;
+import cornerstone.webapp.services.account.admin.AccountAdminException;
+import cornerstone.webapp.services.account.admin.AccountAdminInterface;
+import cornerstone.webapp.services.account.admin.AccountAdminMultipleException;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -13,37 +13,30 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.Provider;
 import java.util.List;
 
+
 @Provider
 @Singleton
 @Path("/account")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 public class AccountRestService {
-
-    private AccountAdministrationInterface accountService;
+    private final AccountAdminInterface accountAdmin;
 
     @Inject
-    public AccountRestService(final AccountAdministrationInterface accountService) {
-        this.accountService = accountService;
+    public AccountRestService(final AccountAdminInterface accountAdmin) {
+        this.accountAdmin = accountAdmin;
+    }
+
+    @GET
+    public String alma() throws AccountAdminException {
+        return "Hello Bello";
     }
 
     @POST
-    public Response create(final EmailAndPassword account) throws
-            AccountAdministrationException,
-            BadRequestException {
-
-        if ( null != account ) {
-            accountService.create(
-                    account.email,
-                    account.password,
-                    false,
-                    false
-            );
-
-            return Response
-                    .status(Response.Status.CREATED)
-                    .entity(account.email)
-                    .build();
+    public Response create(final EmailAndPassword account) throws AccountAdminException, BadRequestException {
+        if (null != account) {
+            accountAdmin.create(account.email, account.password, false, false);
+            return Response.status(Response.Status.CREATED).entity(account.email).build();
 
         } else {
             throw new BadRequestException();
@@ -52,11 +45,11 @@ public class AccountRestService {
 
     @DELETE
     public Response delete(final String emailAddress) throws
-            AccountAdministrationException,
+            AccountAdminException,
             BadRequestException {
 
         if ( null != emailAddress ) {
-            accountService.delete(emailAddress);
+            accountAdmin.delete(emailAddress);
 
             return Response.
                     status(Response.Status.OK)
@@ -72,12 +65,12 @@ public class AccountRestService {
     @POST
     @Path("/mass")
     public Response massCreate(final List<EmailAndPassword> accounts) throws
-            AccountAdministrationMultipleException,
+            AccountAdminMultipleException,
             BadRequestException {
 
         if ( accounts != null &&
              !accounts.isEmpty() ) {
-            accountService.create(accounts);
+            accountAdmin.create(accounts);
 
             return Response
                     .status(Response.Status.CREATED)
@@ -91,11 +84,11 @@ public class AccountRestService {
     @DELETE
     @Path("/mass")
     public Response massDelete(final List<String> emailAddresses) throws
-            AccountAdministrationMultipleException,
+            AccountAdminMultipleException,
             BadRequestException {
 
         if ( null != emailAddresses ) {
-            accountService.delete(emailAddresses);
+            accountAdmin.delete(emailAddresses);
 
             return Response
                     .status(Response.Status.OK)

@@ -1,6 +1,7 @@
 package cornerstone.webapp.services.jwt;
 
 import cornerstone.webapp.configuration.ConfigurationLoader;
+import cornerstone.webapp.logmessages.DefaultLogMessages;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.slf4j.Logger;
@@ -16,8 +17,8 @@ public class AuthorizationService implements AuthorizationServiceInterface {
     private static final Logger logger = LoggerFactory.getLogger(AuthorizationService.class);
     private Key key;
 
+    // TODO fix implementation , wip dozer
     public void loadKey(final ConfigurationLoader configurationLoader) {
-
         final String base64key = "alma";
                 //(String) configReader.getAppProperties().get(ApplicationConfigFields.APP_JWS_KEY.key);
 
@@ -33,8 +34,9 @@ public class AuthorizationService implements AuthorizationServiceInterface {
         }
     }
 
-    @Inject
+    //@Inject
     public AuthorizationService(final ConfigurationLoader cp) {
+        logger.info(String.format(DefaultLogMessages.MESSAGE_INSTANCE_CREATED, getClass().getName()));
         loadKey(cp);
     }
 

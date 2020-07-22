@@ -2,10 +2,10 @@ package cornerstone.workflow.webapp.services.account_service;
 
 import cornerstone.webapp.configuration.ConfigurationLoader;
 import cornerstone.webapp.datasources.UsersDB;
-import cornerstone.webapp.services.account.administration.AccountAdministration;
-import cornerstone.webapp.services.account.administration.AccountAdministrationException;
-import cornerstone.webapp.services.account.administration.AccountAdministrationInterface;
-import cornerstone.webapp.services.account.administration.AccountResultSet;
+import cornerstone.webapp.services.account.admin.AccountAdmin;
+import cornerstone.webapp.services.account.admin.AccountAdminException;
+import cornerstone.webapp.services.account.admin.AccountAdminInterface;
+import cornerstone.webapp.services.account.admin.AccountResultSet;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.*;
 // All TCs cleanup after themselves!
 // TODO TCs for app_max_login_attempts -- rework!!!
 public class AccountServiceLoginTest {
-    private static AccountAdministrationInterface accountService;
+    private static AccountAdminInterface accountService;
 
     @BeforeAll
     public static void setSystemProperties() {
@@ -31,7 +31,7 @@ public class AccountServiceLoginTest {
             cr.loadAndDecryptConfig();
 
             final UsersDB ds = new UsersDB(cr);
-            accountService = new AccountAdministration(ds);
+            accountService = new AccountAdmin(ds);
 
         } catch (final IOException e) {
             e.printStackTrace();
@@ -39,7 +39,7 @@ public class AccountServiceLoginTest {
     }
 
     @Test
-    public void login_shouldReturnTrue_whenAccountExistsNotLockedAndVerified() throws AccountAdministrationException {
+    public void login_shouldReturnTrue_whenAccountExistsNotLockedAndVerified() throws AccountAdminException {
         final String email = "melchior@login.me";
         final String password = "miciMacko#";
         final boolean locked = false;
@@ -64,7 +64,7 @@ public class AccountServiceLoginTest {
     }
 
     @Test
-    public void login_shouldReturnFalse_whenAccountDoesNotExist() throws AccountAdministrationException {
+    public void login_shouldReturnFalse_whenAccountDoesNotExist() throws AccountAdminException {
         final String email = "xxxxx@doesnotexist.xu";
         final String password = "wow";
 
@@ -81,7 +81,7 @@ public class AccountServiceLoginTest {
     }
 
     @Test
-    public void login_shouldReturnFalse_whenAccountNotVerifiedAndNotLocked() throws AccountAdministrationException {
+    public void login_shouldReturnFalse_whenAccountNotVerifiedAndNotLocked() throws AccountAdminException {
         final String email = "casper@login.me";
         final String password = "casper#";
         final boolean locked = false;
@@ -111,7 +111,7 @@ public class AccountServiceLoginTest {
     }
 
     @Test
-    public void login_shouldReturnFalse_whenAccountLocked() throws AccountAdministrationException {
+    public void login_shouldReturnFalse_whenAccountLocked() throws AccountAdminException {
         final String email = "locked@login.me";
         final String password = "locked#";
         final boolean locked = true;
@@ -139,7 +139,7 @@ public class AccountServiceLoginTest {
     }
 
     @Test
-    public void login_shouldIncrementLoginAttempts_whenLoginFails() throws AccountAdministrationException {
+    public void login_shouldIncrementLoginAttempts_whenLoginFails() throws AccountAdminException {
         final String email = "badtyper@login.me";
         final String password = "secretpasswordd#";
         final String badPassword = "myBadPassword#";
@@ -172,7 +172,7 @@ public class AccountServiceLoginTest {
     }
 
     @Test
-    public void clearLoginAttempts_shouldClearLoginAttempts_whenCalled() throws AccountAdministrationException {
+    public void clearLoginAttempts_shouldClearLoginAttempts_whenCalled() throws AccountAdminException {
         final String email = "badtyper@login.me";
         final String password = "secretpasswordd#";
         final String badPassword = "myBadPassword#";
@@ -214,7 +214,7 @@ public class AccountServiceLoginTest {
 
 
     @Test
-    public void login_shouldIncrementLoginAttemptsBy179TimesAccountShouldNotBeLocked_whenLoginFails179Times() throws AccountAdministrationException {
+    public void login_shouldIncrementLoginAttemptsBy179TimesAccountShouldNotBeLocked_whenLoginFails179Times() throws AccountAdminException {
         final String email = "badtyper180@login.me";
         final String password = "secretpasswordd#";
         final String badPassword = "alma";
@@ -248,7 +248,7 @@ public class AccountServiceLoginTest {
     }
 
     @Test
-    public void login_shouldLockAccount_after180FailedLoginAttempts() throws AccountAdministrationException {
+    public void login_shouldLockAccount_after180FailedLoginAttempts() throws AccountAdminException {
         final String email = "autolock180@login.me";
         final String password = "secretpasswordd#";
         final String badPassword = "alma";
@@ -287,7 +287,7 @@ public class AccountServiceLoginTest {
     }
 
     @Test
-    public void login_LoginAttemptsShouldResetToZero_afterSuccessfulLogin() throws AccountAdministrationException {
+    public void login_LoginAttemptsShouldResetToZero_afterSuccessfulLogin() throws AccountAdminException {
         final String email = "lastnite@aaa.me";
         final String password = "woho#";
         final String badPassword = "bbbbb";

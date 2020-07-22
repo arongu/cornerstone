@@ -1,8 +1,8 @@
 package cornerstone.webapp.rest.endpoint.login;
 
 import cornerstone.webapp.rest.exceptions.BadRequestException;
-import cornerstone.webapp.services.account.administration.AccountAdministrationException;
-import cornerstone.webapp.services.account.administration.AccountAdministrationInterface;
+import cornerstone.webapp.services.account.admin.AccountAdminException;
+import cornerstone.webapp.services.account.admin.AccountAdminInterface;
 import cornerstone.webapp.services.jwt.AuthorizationServiceException;
 import cornerstone.webapp.services.jwt.AuthorizationServiceInterface;
 import cornerstone.webapp.rest.endpoint.account.EmailAndPassword;
@@ -29,19 +29,19 @@ public class LoginRestService {
 
     private static final Logger logger = LoggerFactory.getLogger(LoginRestService.class);
 
-    private AccountAdministrationInterface accountAdministrationInterface;
-    private AuthorizationServiceInterface authorizationServiceInterface;
+    private final AccountAdminInterface accountAdmin;
+    private final AuthorizationServiceInterface authorizationService;
 
-    @Inject
-    public LoginRestService(final AccountAdministrationInterface accountAdministrationInterface,
-                            final AuthorizationServiceInterface authorizationServiceInterface) {
+    //@Inject
+    public LoginRestService(final AccountAdminInterface accountAdmin,
+                            final AuthorizationServiceInterface authorizationService) {
 
-        this.accountAdministrationInterface = accountAdministrationInterface;
-        this.authorizationServiceInterface = authorizationServiceInterface;
+        this.accountAdmin = accountAdmin;
+        this.authorizationService = authorizationService;
     }
 
     @POST
-    public Response authenticateUser(final EmailAndPassword emailAndPassword) throws AccountAdministrationException,
+    public Response authenticateUser(final EmailAndPassword emailAndPassword) throws AccountAdminException,
             AuthorizationServiceException,
             BadRequestException {
 
@@ -52,13 +52,13 @@ public class LoginRestService {
             final Response response;
             final boolean authenticated;
 
-            authenticated = accountAdministrationInterface.login(
+            authenticated = accountAdmin.login(
                     emailAndPassword.email,
                     emailAndPassword.password
             );
 
             if ( authenticated ) {
-                final String jwt = authorizationServiceInterface.issueJWT(emailAndPassword.email);
+                final String jwt = authorizationService.issueJWT(emailAndPassword.email);
 
                 response = Response
                         .status(Response.Status.ACCEPTED)

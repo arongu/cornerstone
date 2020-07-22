@@ -1,5 +1,6 @@
 package cornerstone.webapp.services.rsakey.rotation;
 
+import cornerstone.webapp.logmessages.DefaultLogMessages;
 import cornerstone.webapp.services.rsakey.store.local.LocalKeyStore;
 import cornerstone.webapp.services.rsakey.store.local.LocalKeyStoreInterface;
 import cornerstone.webapp.services.rsakey.store.remote.DBPublicKeyStore;
@@ -28,10 +29,12 @@ public class KeyRotationTask extends TimerTask {
         this.dbPublicKeyStore = dbPublicKeyStore;
         this.rsaTTL = rsaTTL;
         this.nodeName = nodeName;
+        logger.info(String.format(DefaultLogMessages.MESSAGE_INSTANCE_CREATED, getClass().getName()));
     }
 
     @Override
     public void run() {
+        logger.info("... RSA key rotation task has STARTED ...");
         final KeyPairWithUUID kpu = new KeyPairWithUUID();
         final String base64_key = Base64.getEncoder().encodeToString(kpu.keyPair.getPublic().getEncoded());
 
@@ -39,6 +42,7 @@ public class KeyRotationTask extends TimerTask {
 
         try {
             dbPublicKeyStore.addPublicKey(kpu.uuid, nodeName, rsaTTL, base64_key);
+            logger.info("... RSA key rotation task FINISHED ...");
 
         } catch (final DBPublicKeyStoreException e){
             logger.error(e.getMessage());
