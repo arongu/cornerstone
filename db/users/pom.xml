@@ -11,7 +11,7 @@
     </parent>
 
     <artifactId>db_users</artifactId>
-    <name>users (db)</name>
+    <name>(db) users</name>
     <packaging>pom</packaging>
     <version>1.0</version>
 

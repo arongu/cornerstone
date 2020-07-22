@@ -5,23 +5,25 @@
 
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <artifactId>workflow</artifactId>
-        <groupId>cornerstone.workflow</groupId>
+        <groupId>cornerstone.app</groupId>
+        <artifactId>app</artifactId>
         <version>1.0</version>
     </parent>
 
     <artifactId>webapp</artifactId>
     <version>1.0</version>
-    <name>webapp (workflow)</name>
+    <name>(app) webapp</name>
     <packaging>war</packaging>
 
     <dependencies>
-        <!-- workflow -->
         <!-- logging -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
-            <scope>runtime</scope>
         </dependency>
         <!-- test -->
         <dependency>
@@ -38,7 +40,7 @@
 
         <!-- Lib: AESTool -->
         <dependency>
-            <groupId>cornerstone.workflow</groupId>
+            <groupId>cornerstone.app</groupId>
             <artifactId>lib</artifactId>
             <version>1.0</version>
         </dependency>

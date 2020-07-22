@@ -5,14 +5,14 @@
 
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <artifactId>workflow</artifactId>
-        <groupId>cornerstone.workflow</groupId>
+        <groupId>cornerstone.app</groupId>
+        <artifactId>app</artifactId>
         <version>1.0</version>
     </parent>
 
     <artifactId>lib</artifactId>
     <version>1.0</version>
-    <name>lib (workflow)</name>
+    <name>(app) lib</name>
     <packaging>jar</packaging>
     <description>Supplementary classes for the business logic, which could work independently.</description>
 
