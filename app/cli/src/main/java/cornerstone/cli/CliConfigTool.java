@@ -1,4 +1,4 @@
-package cornerstone.cliconfig;
+package cornerstone.cli;
 
 import cornerstone.lib.config.ConfigEncryptDecrypt;
 import cornerstone.lib.crypto.AESEncryptDecrypt;

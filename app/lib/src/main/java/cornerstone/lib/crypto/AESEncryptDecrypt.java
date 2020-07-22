@@ -27,7 +27,6 @@ public final class AESEncryptDecrypt {
     }
 
     public static SecretKeySpec derive256BitAESKeyWithHmacSHA256(final String password, final String salt) throws AESToolException {
-
         if ( null == password ||
              null == salt ||
              0 == password.getBytes().length ||

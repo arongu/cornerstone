@@ -47,7 +47,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>cornerstone.cliconfig.CliConfigTool</mainClass>
+                            <mainClass>cornerstone.cli.CliConfigTool</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>

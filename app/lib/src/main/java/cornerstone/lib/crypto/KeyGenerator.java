@@ -11,9 +11,9 @@ import java.util.Base64.Encoder;
 
 public class KeyGenerator {
     public static Key generateKey(final String password,
-                           final String salt,
-                           final int iterationCount,
-                           final int keyLength) throws NoSuchAlgorithmException, InvalidKeySpecException {
+                                  final String salt,
+                                  final int iterationCount,
+                                  final int keyLength) throws NoSuchAlgorithmException, InvalidKeySpecException {
 
         final SecretKeyFactory factory  = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
         final KeySpec keySpec = new PBEKeySpec(password.toCharArray(), salt.getBytes(), iterationCount, keyLength);
@@ -22,17 +22,17 @@ public class KeyGenerator {
     }
 
     public static byte[] generateKeyAsBytes(final String password,
-                                     final String salt,
-                                     final int iterationCount,
-                                     final int keyLength) throws NoSuchAlgorithmException, InvalidKeySpecException {
+                                            final String salt,
+                                            final int iterationCount,
+                                            final int keyLength) throws NoSuchAlgorithmException, InvalidKeySpecException {
 
         return  generateKey(password, salt, iterationCount, keyLength).getEncoded();
     }
 
     public static String generateKeyAsBase64(final String password,
-                                     final String salt,
-                                     final int iterationCount,
-                                     final int keyLength) throws NoSuchAlgorithmException, InvalidKeySpecException {
+                                             final String salt,
+                                             final int iterationCount,
+                                             final int keyLength) throws NoSuchAlgorithmException, InvalidKeySpecException {
 
         final Encoder encoder = Base64.getEncoder();
         return encoder.encodeToString(generateKeyAsBytes(password, salt, iterationCount, keyLength));
