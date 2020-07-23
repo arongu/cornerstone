@@ -2,9 +2,9 @@ package cornerstone.webapp.rest.endpoint.account;
 
 import cornerstone.webapp.common.DefaultLogMessages;
 import cornerstone.webapp.rest.exceptions.BadRequestException;
-import cornerstone.webapp.services.account.admin.AccountAdminException;
-import cornerstone.webapp.services.account.admin.AccountAdminInterface;
-import cornerstone.webapp.services.account.admin.AccountAdminMultipleException;
+import cornerstone.webapp.services.account.administration.AccountAdminException;
+import cornerstone.webapp.services.account.administration.AccountAdminInterface;
+import cornerstone.webapp.services.account.administration.AccountAdminMultipleException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

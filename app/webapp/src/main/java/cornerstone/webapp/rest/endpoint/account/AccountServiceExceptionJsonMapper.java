@@ -1,6 +1,6 @@
 package cornerstone.webapp.rest.endpoint.account;
 
-import cornerstone.webapp.services.account.admin.AccountAdminException;
+import cornerstone.webapp.services.account.administration.AccountAdminException;
 
 import javax.inject.Singleton;
 import javax.ws.rs.core.MediaType;

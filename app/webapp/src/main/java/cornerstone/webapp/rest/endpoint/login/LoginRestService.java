@@ -1,8 +1,8 @@
 package cornerstone.webapp.rest.endpoint.login;
 
 import cornerstone.webapp.rest.exceptions.BadRequestException;
-import cornerstone.webapp.services.account.admin.AccountAdminException;
-import cornerstone.webapp.services.account.admin.AccountAdminInterface;
+import cornerstone.webapp.services.account.administration.AccountAdminException;
+import cornerstone.webapp.services.account.administration.AccountAdminInterface;
 import cornerstone.webapp.services.jwt.AuthorizationServiceException;
 import cornerstone.webapp.services.jwt.AuthorizationServiceInterface;
 import cornerstone.webapp.rest.endpoint.account.EmailAndPassword;

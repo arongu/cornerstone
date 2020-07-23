@@ -1,7 +1,7 @@
-package cornerstone.webapp.services.account.admin;
+package cornerstone.webapp.services.account.administration;
 
-import cornerstone.webapp.datasources.UsersDB;
 import cornerstone.webapp.common.DefaultLogMessages;
+import cornerstone.webapp.datasources.UsersDB;
 import cornerstone.webapp.rest.endpoint.account.EmailAndPassword;
 import org.apache.commons.codec.digest.Crypt;
 import org.slf4j.Logger;
@@ -16,14 +16,14 @@ import java.util.List;
 import java.util.Objects;
 
 public class AccountAdmin implements AccountAdminInterface {
-    private static final String ERROR_MSG_FAILED_TO_GET_ACCOUNT              = "Failed to get account: '%s', message: '%s', SQL state '%s'";
-    private static final String ERROR_MSG_FAILED_TO_CREATE_ACCOUNT           = "Failed to create account: '%s', message: '%s', SQL state: '%s'";
-    private static final String ERROR_MSG_FAILED_TO_DELETE_ACCOUNT           = "Failed to delete account: '%s', message: '%s', SQL state: '%s'";
-    private static final String ERROR_MSG_FAILED_TO_CHANGE_PASSWORD          = "Failed to change password for account: '%s', message: '%s', SQL state: '%s'";
-    private static final String ERROR_MSG_FAILED_TO_CHANGE_ADDRESS           = "Failed to change email address of account: '%s' to '%s', message: '%s', SQL state: '%s'";
-    private static final String ERROR_MSG_FAILED_TO_CHANGE_ACCOUNT_LOCK      = "Failed to change account_locked of account: '%s' to '%s', account_lock_reason '%s', message: '%s', SQL state: '%s'";
-    private static final String ERROR_MSG_FAILED_TO_INCREMENT_LOGIN_ATTEMPTS = "Failed to increment login attempts of account: '%s', message: '%s', SQL state: '%s'";
-    private static final String ERROR_MSG_FAILED_TO_CLEAR_LOGIN_ATTEMPTS     = "Failed to clear login attempts of account: '%s', message: '%s', SQL state: '%s'";
+    private static final String ERROR_MESSAGE_FAILED_TO_GET_ACCOUNT              = "Failed to get account: '%s', message: '%s', SQL state '%s'";
+    private static final String ERROR_MESSAGE_FAILED_TO_CREATE_ACCOUNT           = "Failed to create account: '%s', message: '%s', SQL state: '%s'";
+    private static final String ERROR_MESSAGE_FAILED_TO_DELETE_ACCOUNT           = "Failed to delete account: '%s', message: '%s', SQL state: '%s'";
+    private static final String ERROR_MESSAGE_FAILED_TO_CHANGE_PASSWORD          = "Failed to change password for account: '%s', message: '%s', SQL state: '%s'";
+    private static final String ERROR_MESSAGE_FAILED_TO_CHANGE_ADDRESS           = "Failed to change email address of account: '%s' to '%s', message: '%s', SQL state: '%s'";
+    private static final String ERROR_MESSAGE_FAILED_TO_CHANGE_ACCOUNT_LOCK      = "Failed to change account_locked of account: '%s' to '%s', account_lock_reason '%s', message: '%s', SQL state: '%s'";
+    private static final String ERROR_MESSAGE_FAILED_TO_INCREMENT_LOGIN_ATTEMPTS = "Failed to increment login attempts of account: '%s', message: '%s', SQL state: '%s'";
+    private static final String ERROR_MESSAGE_FAILED_TO_CLEAR_LOGIN_ATTEMPTS     = "Failed to clear login attempts of account: '%s', message: '%s', SQL state: '%s'";
 
     private static final String SQL_GET_ACCOUNT                   = "SELECT * FROM user_data.accounts WHERE email_address=(?)";
     private static final String SQL_GET_ACCOUNT_FOR_LOGIN         = "SELECT account_locked, email_address_verified, account_login_attempts, password_hash FROM user_data.accounts WHERE email_address=(?)";
@@ -88,11 +88,12 @@ public class AccountAdmin implements AccountAdminInterface {
 
             } else {
                 // TODO this should throw NoSuchElementException
+                // TODO add logs
                 return null;
             }
 
         } catch (final SQLException e) {
-            final String msg = String.format(ERROR_MSG_FAILED_TO_GET_ACCOUNT, emailAddress, e.getMessage(), e.getSQLState());
+            final String msg = String.format(ERROR_MESSAGE_FAILED_TO_GET_ACCOUNT, emailAddress, e.getMessage(), e.getSQLState());
             logger.error(msg);
             throw new AccountAdminException(e.getMessage());
         }
@@ -115,7 +116,7 @@ public class AccountAdmin implements AccountAdminInterface {
             return ps.executeUpdate();
 
         } catch (final SQLException e) {
-            final String msg = String.format(ERROR_MSG_FAILED_TO_CREATE_ACCOUNT, emailAddress, e.getMessage(), e.getSQLState());
+            final String msg = String.format(ERROR_MESSAGE_FAILED_TO_CREATE_ACCOUNT, emailAddress, e.getMessage(), e.getSQLState());
             logger.error(msg);
             throw new AccountAdminException(e.getMessage());
         }
@@ -141,7 +142,7 @@ public class AccountAdmin implements AccountAdminInterface {
                         updatedRows += ps.executeUpdate();
 
                     } catch (final SQLException e) {
-                        final String msg = String.format(ERROR_MSG_FAILED_TO_CREATE_ACCOUNT, emailAndPassword.email, e.getMessage(), e.getSQLState());
+                        final String msg = String.format(ERROR_MESSAGE_FAILED_TO_CREATE_ACCOUNT, emailAndPassword.email, e.getMessage(), e.getSQLState());
 
                         if (null == multipleException) {
                             multipleException = new AccountAdminMultipleException();
@@ -172,7 +173,7 @@ public class AccountAdmin implements AccountAdminInterface {
 
     @Override
     public int delete(final String emailAddress) throws AccountAdminException {
-        return executeUpdateWithEmailAddress(emailAddress, SQL_DELETE_ACCOUNT, ERROR_MSG_FAILED_TO_DELETE_ACCOUNT, usersDB);
+        return executeUpdateWithEmailAddress(emailAddress, SQL_DELETE_ACCOUNT, ERROR_MESSAGE_FAILED_TO_DELETE_ACCOUNT, usersDB);
     }
 
     @Override
@@ -189,7 +190,7 @@ public class AccountAdmin implements AccountAdminInterface {
                     updatedRows += ps.executeUpdate();
 
                 } catch (final SQLException e) {
-                    final String msg = String.format(ERROR_MSG_FAILED_TO_DELETE_ACCOUNT, email, e.getMessage(), e.getSQLState());
+                    final String msg = String.format(ERROR_MESSAGE_FAILED_TO_DELETE_ACCOUNT, email, e.getMessage(), e.getSQLState());
                     // create multiException if it does not exist
                     if (null == multipleException) {
                         multipleException = new AccountAdminMultipleException();
@@ -226,7 +227,7 @@ public class AccountAdmin implements AccountAdminInterface {
             return ps.executeUpdate();
 
         } catch (final SQLException e) {
-            final String msg = String.format(ERROR_MSG_FAILED_TO_CHANGE_PASSWORD, emailAddress, e.getMessage(), e.getSQLState());
+            final String msg = String.format(ERROR_MESSAGE_FAILED_TO_CHANGE_PASSWORD, emailAddress, e.getMessage(), e.getSQLState());
             logger.error(msg);
             throw new AccountAdminException(msg);
         }
@@ -242,7 +243,7 @@ public class AccountAdmin implements AccountAdminInterface {
             return ps.executeUpdate();
 
         } catch (final SQLException e) {
-            final String msg = String.format(ERROR_MSG_FAILED_TO_CHANGE_ADDRESS, emailAddress, newEmailAddress, e.getMessage(), e.getSQLState());
+            final String msg = String.format(ERROR_MESSAGE_FAILED_TO_CHANGE_ADDRESS, emailAddress, newEmailAddress, e.getMessage(), e.getSQLState());
             logger.error(msg);
             throw new AccountAdminException(e.getMessage());
         }
@@ -259,7 +260,7 @@ public class AccountAdmin implements AccountAdminInterface {
             return ps.executeUpdate();
 
         } catch (final SQLException e) {
-            final String msg = String.format(ERROR_MSG_FAILED_TO_CHANGE_ACCOUNT_LOCK, emailAddress, true, reason, e.getMessage(), e.getSQLState());
+            final String msg = String.format(ERROR_MESSAGE_FAILED_TO_CHANGE_ACCOUNT_LOCK, emailAddress, true, reason, e.getMessage(), e.getSQLState());
             logger.error(msg);
             throw new AccountAdminException(e.getMessage());
         }
@@ -277,7 +278,7 @@ public class AccountAdmin implements AccountAdminInterface {
             return ps.executeUpdate();
 
         } catch ( final SQLException e ) {
-            final String msg = String.format(ERROR_MSG_FAILED_TO_CHANGE_ACCOUNT_LOCK, emailAddress, false, "", e.getMessage(), e.getSQLState());
+            final String msg = String.format(ERROR_MESSAGE_FAILED_TO_CHANGE_ACCOUNT_LOCK, emailAddress, false, "", e.getMessage(), e.getSQLState());
             logger.error(msg);
             throw new AccountAdminException(e.getMessage());
         }
@@ -285,12 +286,12 @@ public class AccountAdmin implements AccountAdminInterface {
 
     @Override
     public int incrementLoginAttempts(final String emailAddress) throws AccountAdminException {
-        return executeUpdateWithEmailAddress(emailAddress, SQL_INCREMENT_LOGIN_ATTEMPTS, ERROR_MSG_FAILED_TO_INCREMENT_LOGIN_ATTEMPTS, usersDB);
+        return executeUpdateWithEmailAddress(emailAddress, SQL_INCREMENT_LOGIN_ATTEMPTS, ERROR_MESSAGE_FAILED_TO_INCREMENT_LOGIN_ATTEMPTS, usersDB);
     }
 
     @Override
     public int clearLoginAttempts(final String emailAddress) throws AccountAdminException {
-        return executeUpdateWithEmailAddress(emailAddress, SQL_CLEAR_LOGIN_ATTEMPTS, ERROR_MSG_FAILED_TO_CLEAR_LOGIN_ATTEMPTS, usersDB);
+        return executeUpdateWithEmailAddress(emailAddress, SQL_CLEAR_LOGIN_ATTEMPTS, ERROR_MESSAGE_FAILED_TO_CLEAR_LOGIN_ATTEMPTS, usersDB);
     }
 
     @Override
@@ -328,7 +329,7 @@ public class AccountAdmin implements AccountAdminInterface {
             }
 
         } catch (final SQLException e) {
-            final String msg = String.format(ERROR_MSG_FAILED_TO_GET_ACCOUNT, emailAddress, e.getMessage(), e.getSQLState());
+            final String msg = String.format(ERROR_MESSAGE_FAILED_TO_GET_ACCOUNT, emailAddress, e.getMessage(), e.getSQLState());
             logger.error(msg);
         }
 

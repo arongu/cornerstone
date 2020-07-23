@@ -1,4 +1,4 @@
-package cornerstone.webapp.services.account.admin;
+package cornerstone.webapp.services.account.administration;
 
 import java.util.LinkedList;
 import java.util.List;

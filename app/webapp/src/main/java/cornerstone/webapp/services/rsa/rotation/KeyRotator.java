@@ -35,11 +35,11 @@ public class KeyRotator implements KeyRotatorInterface {
 
     @Override
     public void rotateKeys() {
+        logger.info("... rotateKeys()");
+
         final String nodeName = configurationLoader.getAppProperties().getProperty(APP_ENUM.APP_NODE_NAME.key);
         final int rsaTTL = Integer.parseInt(configurationLoader.getAppProperties().getProperty(APP_ENUM.APP_RSA_TTL.key));
         final long period = rsaTTL * 1000;
-
-        final KeyRotationTask task = new KeyRotationTask(localKeyStore, databasePublicKeyStore, rsaTTL, nodeName);
-        timer.schedule(task, 0, period);
+        timer.schedule(new KeyRotationTask(localKeyStore, databasePublicKeyStore, rsaTTL, nodeName), 0, period);
     }
 }

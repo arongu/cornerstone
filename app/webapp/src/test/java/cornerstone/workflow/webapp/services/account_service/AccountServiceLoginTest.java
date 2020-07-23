@@ -2,10 +2,10 @@ package cornerstone.workflow.webapp.services.account_service;
 
 import cornerstone.webapp.configuration.ConfigurationLoader;
 import cornerstone.webapp.datasources.UsersDB;
-import cornerstone.webapp.services.account.admin.AccountAdmin;
-import cornerstone.webapp.services.account.admin.AccountAdminException;
-import cornerstone.webapp.services.account.admin.AccountAdminInterface;
-import cornerstone.webapp.services.account.admin.AccountResultSet;
+import cornerstone.webapp.services.account.administration.AccountAdmin;
+import cornerstone.webapp.services.account.administration.AccountAdminException;
+import cornerstone.webapp.services.account.administration.AccountAdminInterface;
+import cornerstone.webapp.services.account.administration.AccountResultSet;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
