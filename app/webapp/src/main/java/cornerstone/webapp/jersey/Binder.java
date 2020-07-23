@@ -8,12 +8,12 @@ import cornerstone.webapp.services.account.admin.AccountAdmin;
 import cornerstone.webapp.services.account.admin.AccountAdminInterface;
 import cornerstone.webapp.services.jwt.AuthorizationService;
 import cornerstone.webapp.services.jwt.AuthorizationServiceInterface;
-import cornerstone.webapp.services.rsakey.rotation.KeyRotator;
-import cornerstone.webapp.services.rsakey.rotation.KeyRotatorInterface;
-import cornerstone.webapp.services.rsakey.store.local.LocalKeyStore;
-import cornerstone.webapp.services.rsakey.store.local.LocalKeyStoreInterface;
-import cornerstone.webapp.services.rsakey.store.remote.DBPublicKeyStore;
-import cornerstone.webapp.services.rsakey.store.remote.DBPublicKeyStoreInterface;
+import cornerstone.webapp.services.rsa.rotation.KeyRotator;
+import cornerstone.webapp.services.rsa.rotation.KeyRotatorInterface;
+import cornerstone.webapp.services.rsa.store.local.LocalKeyStore;
+import cornerstone.webapp.services.rsa.store.local.LocalKeyStoreInterface;
+import cornerstone.webapp.services.rsa.store.db.DbPublicKeyStore;
+import cornerstone.webapp.services.rsa.store.db.DbPublicKeyStoreInterface;
 import org.glassfish.jersey.internal.inject.AbstractBinder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -76,7 +76,7 @@ public class Binder extends AbstractBinder {
 
             // dbPubKeyStore <- WorkDB <- configuration
             bind(LocalKeyStore.class).to(LocalKeyStoreInterface.class).in(Singleton.class);
-            bind(DBPublicKeyStore.class).to(DBPublicKeyStoreInterface.class).in(Singleton.class);
+            bind(DbPublicKeyStore.class).to(DbPublicKeyStoreInterface.class).in(Singleton.class);
 
             // rotation <- localKeyStore, dbPublicKeyStore
             bind(KeyRotator.class).to(KeyRotatorInterface.class).in(Singleton.class);

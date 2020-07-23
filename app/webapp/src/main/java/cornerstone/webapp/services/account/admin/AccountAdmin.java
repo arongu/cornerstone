@@ -1,7 +1,7 @@
 package cornerstone.webapp.services.account.admin;
 
 import cornerstone.webapp.datasources.UsersDB;
-import cornerstone.webapp.logmessages.DefaultLogMessages;
+import cornerstone.webapp.common.DefaultLogMessages;
 import cornerstone.webapp.rest.endpoint.account.EmailAndPassword;
 import org.apache.commons.codec.digest.Crypt;
 import org.slf4j.Logger;
@@ -60,7 +60,7 @@ public class AccountAdmin implements AccountAdminInterface {
     @Inject
     public AccountAdmin(final UsersDB usersDB) {
         this.usersDB = usersDB;
-        logger.info(String.format(DefaultLogMessages.MESSAGE_INSTANCE_CREATED, getClass().getName()));
+        logger.info(String.format(DefaultLogMessages.MESSAGE_CONSTRUCTOR_CALLED, getClass().getName()));
     }
 
     @Override

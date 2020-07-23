@@ -1,4 +1,4 @@
-package cornerstone.webapp.services.rsakey.store.local;
+package cornerstone.webapp.services.rsa.store.local;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,16 +11,16 @@ import java.util.NoSuchElementException;
 import java.util.UUID;
 
 public class LocalKeyStore implements LocalKeyStoreInterface {
-    private static final String MESSAGE_PUBLIC_KEY_ADDED          = "... PublicKey with UUID: '%s' ADDED ...";
-    private static final String MESSAGE_PUBLIC_KEY_REMOVED        = "... PublicKey with UUID: '%s' REMOVED ...";
-    private static final String MESSAGE_PUBLIC_KEY_RETURNED       = "... PublicKey with UUID: '%s' RETURNED ...";
-    private static final String MESSAGE_PUBLIC_KEY_DOES_NOT_EXIST = "... PublicKey with UUID: '%s' DOES NOT EXIST ...";
+    private static final String MESSAGE_PUBLIC_KEY_ADDED          = "... public key ADDED (UUID: '%s')";
+    private static final String MESSAGE_PUBLIC_KEY_DELETED        = "... public key DELETED (UUID: '%s')";
+    private static final String MESSAGE_PUBLIC_KEY_SERVED         = "... public key SERVED (UUID: '%s')";
+    private static final String MESSAGE_PUBLIC_KEY_DOES_NOT_EXIST = "... public key DOES NOT EXIST (UUID: '%s')";
 
-    private static final String MESSAGE_SIGNING_KEYS_SET          = "... Signing keys with UUID: '%s' HAVE BEEN SET ...";
-    private static final String MESSAGE_SIGNING_KEYS_REMOVED      = "... Signing keys REMOVED ...";
-    private static final String MESSAGE_SIGNING_KEYS_RETURNED     = "... Signing keys with UUID: '%s' RETURNED ...";
-    private static final String MESSAGE_SIGNING_KEYS_ARE_NOT_SET  = "... Signing keys ARE NOT SET ...";
-    private static final String MESSAGE_RESET                     = "... !!! RESET COMPLETE !!! ...";
+    private static final String MESSAGE_SIGNING_KEYS_SET          = "... signing keys SET (UUID: '%s')";
+    private static final String MESSAGE_SIGNING_KEYS_DELETED      = "... signing keys DELETED (UUID: '%s')";
+    private static final String MESSAGE_SIGNING_KEYS_SERVED       = "... signing keys SERVED (UUID: '%s')";
+    private static final String MESSAGE_SIGNING_KEYS_ARE_NOT_SET  = "... signing keys ARE NOT SET";
+    private static final String MESSAGE_RESET                     = "... RESET";
 
     private static final Logger logger = LoggerFactory.getLogger(LocalKeyStore.class);
 
@@ -36,7 +36,7 @@ public class LocalKeyStore implements LocalKeyStoreInterface {
     public PublicKey getPublicKey(final UUID uuid) throws NoSuchElementException {
         final PublicKey key = publicKeys.get(uuid);
         if (null != key){
-            logger.info(String.format(MESSAGE_PUBLIC_KEY_RETURNED, uuid.toString()));
+            logger.info(String.format(MESSAGE_PUBLIC_KEY_SERVED, uuid.toString()));
             return key;
         } else {
             logger.info(String.format(MESSAGE_PUBLIC_KEY_DOES_NOT_EXIST, uuid.toString()));
@@ -53,7 +53,7 @@ public class LocalKeyStore implements LocalKeyStoreInterface {
     @Override
     public void removePublicKey(final UUID uuid) {
         publicKeys.remove(uuid);
-        logger.info(String.format(MESSAGE_PUBLIC_KEY_REMOVED, uuid.toString()));
+        logger.info(String.format(MESSAGE_PUBLIC_KEY_DELETED, uuid.toString()));
     }
 
     @Override
@@ -67,7 +67,7 @@ public class LocalKeyStore implements LocalKeyStoreInterface {
     @Override
     public PrivateKeyWithUUID getSigningKey() throws NoSuchElementException {
         if (null != privateKey) {
-            logger.info(String.format(MESSAGE_SIGNING_KEYS_RETURNED, signingKeyUUID.toString()));
+            logger.info(String.format(MESSAGE_SIGNING_KEYS_SERVED, signingKeyUUID.toString()));
             return new PrivateKeyWithUUID(signingKeyUUID, privateKey);
         } else {
             logger.info(MESSAGE_SIGNING_KEYS_ARE_NOT_SET);
@@ -79,12 +79,11 @@ public class LocalKeyStore implements LocalKeyStoreInterface {
     public void unsetSigningKey() {
         privateKey  = null;
         signingKeyUUID = null;
-        logger.info(MESSAGE_SIGNING_KEYS_REMOVED);
+        logger.info(MESSAGE_SIGNING_KEYS_DELETED);
     }
 
     @Override
     public void resetAll() {
-        publicKeys.clear();
         publicKeys = new HashMap<>();
 
         signingKeyUUID = null;

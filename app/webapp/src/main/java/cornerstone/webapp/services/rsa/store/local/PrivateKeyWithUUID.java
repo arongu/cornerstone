@@ -1,4 +1,4 @@
-package cornerstone.webapp.services.rsakey.store.local;
+package cornerstone.webapp.services.rsa.store.local;
 
 import java.security.PrivateKey;
 import java.util.UUID;

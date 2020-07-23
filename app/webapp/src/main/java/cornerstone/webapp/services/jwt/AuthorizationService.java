@@ -1,13 +1,12 @@
 package cornerstone.webapp.services.jwt;
 
 import cornerstone.webapp.configuration.ConfigurationLoader;
-import cornerstone.webapp.logmessages.DefaultLogMessages;
+import cornerstone.webapp.common.DefaultLogMessages;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.inject.Inject;
 import java.security.Key;
 import java.time.Instant;
 import java.util.Base64;
@@ -36,7 +35,7 @@ public class AuthorizationService implements AuthorizationServiceInterface {
 
     //@Inject
     public AuthorizationService(final ConfigurationLoader cp) {
-        logger.info(String.format(DefaultLogMessages.MESSAGE_INSTANCE_CREATED, getClass().getName()));
+        logger.info(String.format(DefaultLogMessages.MESSAGE_CONSTRUCTOR_CALLED, getClass().getName()));
         loadKey(cp);
     }
 

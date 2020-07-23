@@ -1,11 +1,9 @@
-package cornerstone.webapp.services.rsakey.rotation;
+package cornerstone.webapp.services.rsa.rotation;
 
-import cornerstone.webapp.logmessages.DefaultLogMessages;
-import cornerstone.webapp.services.rsakey.store.local.LocalKeyStore;
-import cornerstone.webapp.services.rsakey.store.local.LocalKeyStoreInterface;
-import cornerstone.webapp.services.rsakey.store.remote.DBPublicKeyStore;
-import cornerstone.webapp.services.rsakey.store.remote.DBPublicKeyStoreException;
-import cornerstone.webapp.services.rsakey.store.remote.DBPublicKeyStoreInterface;
+import cornerstone.webapp.common.DefaultLogMessages;
+import cornerstone.webapp.services.rsa.store.local.LocalKeyStoreInterface;
+import cornerstone.webapp.services.rsa.store.db.DbPublicKeyStoreException;
+import cornerstone.webapp.services.rsa.store.db.DbPublicKeyStoreInterface;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,12 +14,12 @@ public class KeyRotationTask extends TimerTask {
     private static final Logger logger = LoggerFactory.getLogger(KeyRotationTask.class);
 
     private final LocalKeyStoreInterface localKeyStore;
-    private final DBPublicKeyStoreInterface dbPublicKeyStore;
+    private final DbPublicKeyStoreInterface dbPublicKeyStore;
     private final int rsaTTL;
     private final String nodeName;
 
     public KeyRotationTask(final LocalKeyStoreInterface localKeyStore,
-                           final DBPublicKeyStoreInterface dbPublicKeyStore,
+                           final DbPublicKeyStoreInterface dbPublicKeyStore,
                            final int rsaTTL,
                            final String nodeName) {
 
@@ -29,12 +27,12 @@ public class KeyRotationTask extends TimerTask {
         this.dbPublicKeyStore = dbPublicKeyStore;
         this.rsaTTL = rsaTTL;
         this.nodeName = nodeName;
-        logger.info(String.format(DefaultLogMessages.MESSAGE_INSTANCE_CREATED, getClass().getName()));
+        logger.info(String.format(DefaultLogMessages.MESSAGE_CONSTRUCTOR_CALLED, getClass().getName()));
     }
 
     @Override
     public void run() {
-        logger.info("... RSA key rotation task has STARTED ...");
+        logger.info("... key rotation task STARTED");
         final KeyPairWithUUID kpu = new KeyPairWithUUID();
         final String base64_key = Base64.getEncoder().encodeToString(kpu.keyPair.getPublic().getEncoded());
 
@@ -42,9 +40,9 @@ public class KeyRotationTask extends TimerTask {
 
         try {
             dbPublicKeyStore.addPublicKey(kpu.uuid, nodeName, rsaTTL, base64_key);
-            logger.info("... RSA key rotation task FINISHED ...");
+            logger.info("... key rotation task FINISHED");
 
-        } catch (final DBPublicKeyStoreException e){
+        } catch (final DbPublicKeyStoreException e){
             logger.error(e.getMessage());
         }
     }

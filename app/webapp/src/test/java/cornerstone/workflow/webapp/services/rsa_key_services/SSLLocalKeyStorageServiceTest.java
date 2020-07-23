@@ -3,9 +3,9 @@ package cornerstone.workflow.webapp.services.rsa_key_services;
 import cornerstone.webapp.configuration.ConfigurationLoader;
 import cornerstone.webapp.configuration.enums.APP_ENUM;
 import cornerstone.webapp.datasources.WorkDB;
-import cornerstone.webapp.services.rsakey.rotation.KeyPairWithUUID;
-import cornerstone.webapp.services.rsakey.store.remote.DBPublicKeyStore;
-import cornerstone.webapp.services.rsakey.store.remote.DBPublicKeyStoreException;
+import cornerstone.webapp.services.rsa.rotation.KeyPairWithUUID;
+import cornerstone.webapp.services.rsa.store.db.DbPublicKeyStore;
+import cornerstone.webapp.services.rsa.store.db.DbPublicKeyStoreException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -14,7 +14,7 @@ import java.nio.file.Paths;
 import java.util.Base64;
 
 public class SSLLocalKeyStorageServiceTest {
-    private static DBPublicKeyStore sslKeyService;
+    private static DbPublicKeyStore sslKeyService;
     private static ConfigurationLoader configurationLoader;
 
     @BeforeAll
@@ -28,7 +28,7 @@ public class SSLLocalKeyStorageServiceTest {
             configurationLoader.loadAndDecryptConfig();
 
             final WorkDB ds = new WorkDB(configurationLoader);
-            sslKeyService = new DBPublicKeyStore(ds);
+            sslKeyService = new DbPublicKeyStore(ds);
 
         } catch (final IOException e) {
             e.printStackTrace();
@@ -36,7 +36,7 @@ public class SSLLocalKeyStorageServiceTest {
     }
 
     @Test
-    public void test() throws DBPublicKeyStoreException {
+    public void test() throws DbPublicKeyStoreException {
         final Base64.Encoder encoder = Base64.getEncoder();
         final String nodeName = configurationLoader.getAppProperties().getProperty(APP_ENUM.APP_NODE_NAME.key);
 

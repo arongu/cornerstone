@@ -18,6 +18,6 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 
     @Override
     public void filter(final ContainerRequestContext containerRequestContext) throws IOException {
-        logger.info("--------------------------------------------------------------------------------------------- CALLED");
+        logger.info("... SECURED ...");
     }
 }

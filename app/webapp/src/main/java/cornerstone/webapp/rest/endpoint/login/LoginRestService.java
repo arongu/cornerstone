@@ -26,58 +26,35 @@ import javax.ws.rs.ext.Provider;
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 public class LoginRestService {
-
     private static final Logger logger = LoggerFactory.getLogger(LoginRestService.class);
 
     private final AccountAdminInterface accountAdmin;
     private final AuthorizationServiceInterface authorizationService;
 
-    //@Inject
-    public LoginRestService(final AccountAdminInterface accountAdmin,
-                            final AuthorizationServiceInterface authorizationService) {
-
+    @Inject
+    public LoginRestService(final AccountAdminInterface accountAdmin, final AuthorizationServiceInterface authorizationService) {
         this.accountAdmin = accountAdmin;
         this.authorizationService = authorizationService;
     }
 
     @POST
-    public Response authenticateUser(final EmailAndPassword emailAndPassword) throws AccountAdminException,
-            AuthorizationServiceException,
-            BadRequestException {
-
-        if ( null != emailAndPassword &&
-             null != emailAndPassword.email &&
-             null != emailAndPassword.password ) {
+    public Response authenticateUser(final EmailAndPassword emailAndPassword) throws AccountAdminException, AuthorizationServiceException, BadRequestException {
+        if (null != emailAndPassword &&
+            null != emailAndPassword.email &&
+            null != emailAndPassword.password ) {
 
             final Response response;
             final boolean authenticated;
 
-            authenticated = accountAdmin.login(
-                    emailAndPassword.email,
-                    emailAndPassword.password
-            );
-
+            authenticated = accountAdmin.login(emailAndPassword.email, emailAndPassword.password);
             if ( authenticated ) {
                 final String jwt = authorizationService.issueJWT(emailAndPassword.email);
-
-                response = Response
-                        .status(Response.Status.ACCEPTED)
-                        .entity(jwt)
-                        .build();
-
+                response = Response.status(Response.Status.ACCEPTED).entity(jwt).build();
                 logger.info("[ NEW ACCESS TOKEN ][ GRANTED ] -- '{}'", emailAndPassword.email);
 
             } else {
-                final HttpMessage httpMessage = new HttpMessage(
-                        Response.Status.FORBIDDEN.toString(),
-                        Response.Status.FORBIDDEN.getStatusCode()
-                );
-
-                response = Response
-                        .status(Response.Status.FORBIDDEN)
-                        .entity(httpMessage)
-                        .build();
-
+                final HttpMessage httpMessage = new HttpMessage(Response.Status.FORBIDDEN.toString(), Response.Status.FORBIDDEN.getStatusCode());
+                response = Response.status(Response.Status.FORBIDDEN).entity(httpMessage).build();
                 logger.info("[ NEW ACCESS TOKEN ][ DENIED ] -- '{}'", emailAndPassword.email);
             }
 

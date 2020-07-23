@@ -1,4 +1,4 @@
-package cornerstone.webapp.services.rsakey.rotation;
+package cornerstone.webapp.services.rsa.rotation;
 
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;

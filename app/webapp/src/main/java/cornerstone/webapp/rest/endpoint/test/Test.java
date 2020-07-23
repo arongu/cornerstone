@@ -1,7 +1,8 @@
 package cornerstone.webapp.rest.endpoint.test;
 
+import cornerstone.webapp.common.DefaultLogMessages;
 import cornerstone.webapp.rest.security.Secured;
-import cornerstone.webapp.services.rsakey.rotation.KeyRotatorInterface;
+import cornerstone.webapp.services.rsa.rotation.KeyRotatorInterface;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,25 +12,21 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import java.time.LocalDateTime;
 
 @Path("/")
 @Singleton
-//@Produces(MediaType.APPLICATION_JSON)
+@Produces(MediaType.APPLICATION_JSON)
 public class Test {
     private static final Logger logger = LoggerFactory.getLogger(Test.class);
 
     @Inject
     public Test(final KeyRotatorInterface keyRotator){
-        logger.info("aaaaaaaaaaaaaaaaaaaaaaaaaa               xxxxxxxxxxxxxxxxxxxxxxx");
+        logger.info(String.format(DefaultLogMessages.MESSAGE_CONSTRUCTOR_CALLED, getClass().getName()));
     }
 
-    // TODO
     @Secured
     @GET
-    public String getProperties() {
-        logger.info("mi vna mi<");
-        //return LocalDateTime.now();
+    public String get() {
         return "boci";
     }
 }
