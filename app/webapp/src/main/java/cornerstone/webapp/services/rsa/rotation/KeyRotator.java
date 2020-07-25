@@ -29,14 +29,12 @@ public class KeyRotator implements KeyRotatorInterface {
         this.databasePublicKeyStore = dbPublicKeyStore;
 
         timer = new Timer(getClass().getName());
-        rotateKeys();
+        runRotationTask();
         logger.info(String.format(DefaultLogMessages.MESSAGE_CONSTRUCTOR_CALLED, getClass().getName()));
     }
 
     @Override
-    public void rotateKeys() {
-        logger.info("... rotateKeys()");
-
+    public void runRotationTask() {
         final String nodeName = configurationLoader.getAppProperties().getProperty(APP_ENUM.APP_NODE_NAME.key);
         final int rsaTTL = Integer.parseInt(configurationLoader.getAppProperties().getProperty(APP_ENUM.APP_RSA_TTL.key));
         final long period = rsaTTL * 1000;
