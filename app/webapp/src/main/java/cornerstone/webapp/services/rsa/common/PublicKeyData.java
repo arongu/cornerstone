@@ -5,13 +5,25 @@ import java.util.UUID;
 
 public class PublicKeyData {
     private UUID uuid;
+    private int ttl;
+    private String node_name;
     private String base64_key;
-    private Timestamp expireDate;
+    private Timestamp creation_ts;
+    private Timestamp expire_ts;
 
-    public PublicKeyData(final UUID uuid, final String base64_key, final Timestamp expireDate) {
+    public PublicKeyData(final UUID uuid,
+                         final String node_name,
+                         final int ttl,
+                         final Timestamp creation_ts,
+                         final Timestamp expire_ts,
+                         final String base64_key) {
+
         this.uuid = uuid;
+        this.ttl = ttl;
+        this.node_name = node_name;
+        this.creation_ts = creation_ts;
+        this.expire_ts = expire_ts;
         this.base64_key = base64_key;
-        this.expireDate = expireDate;
     }
 
     public UUID getUUID() {
@@ -22,6 +34,22 @@ public class PublicKeyData {
         this.uuid = uuid;
     }
 
+    public int getTTL() {
+        return ttl;
+    }
+
+    public void setTTL(int ttl) {
+        this.ttl = ttl;
+    }
+
+    public String getNodeName(){
+        return node_name;
+    }
+
+    public void setNodeName(final String node_name){
+        this.node_name = node_name;
+    }
+
     public String getBase64Key() {
         return base64_key;
     }
@@ -30,11 +58,19 @@ public class PublicKeyData {
         this.base64_key = base64_key;
     }
 
+    public Timestamp getCreationDate() {
+        return creation_ts;
+    }
+
+    public void setCreationDate(final Timestamp creationDate) {
+        this.creation_ts = creationDate;
+    }
+
     public Timestamp getExpireDate() {
-        return expireDate;
+        return expire_ts;
     }
 
     public void setExpireDate(final Timestamp expireDate) {
-        this.expireDate = expireDate;
+        this.expire_ts = expireDate;
     }
 }

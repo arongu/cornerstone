@@ -16,25 +16,24 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.Provider;
 import java.util.List;
 
-@Provider
 @Singleton
 @Path("/account")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 public class AccountRestService {
     private static final Logger logger = LoggerFactory.getLogger(AccountRestService.class);
-    private final AccountManagerInterface accountAdmin;
+    private final AccountManagerInterface accountManager;
 
     @Inject
-    public AccountRestService(final AccountManagerInterface accountAdmin) {
-        this.accountAdmin = accountAdmin;
+    public AccountRestService(final AccountManagerInterface accountManager) {
+        this.accountManager = accountManager;
         logger.info(String.format(DefaultLogMessages.MESSAGE_CONSTRUCTOR_CALLED, getClass().getName()));
     }
 
     @POST
     public Response create(final EmailAndPassword account) throws AccountManagerException, BadRequestException {
         if (null != account) {
-            accountAdmin.create(account.email, account.password, false, false);
+            accountManager.create(account.email, account.password, false, false);
             return Response.status(Response.Status.CREATED).entity(account.email).build();
 
         } else {
@@ -45,7 +44,7 @@ public class AccountRestService {
     @DELETE
     public Response delete(final String emailAddress) throws AccountManagerException, BadRequestException {
         if (null != emailAddress) {
-            accountAdmin.delete(emailAddress);
+            accountManager.delete(emailAddress);
             return Response.status(Response.Status.OK).entity(emailAddress).build();
 
         } else {
@@ -58,7 +57,7 @@ public class AccountRestService {
     @Path("/mass")
     public Response massCreate(final List<EmailAndPassword> accounts) throws AccountManagerMultipleException, BadRequestException {
         if (accounts != null && !accounts.isEmpty()) {
-            accountAdmin.create(accounts);
+            accountManager.create(accounts);
             return Response.status(Response.Status.CREATED).entity(accounts).build();
 
         } else {
@@ -70,7 +69,7 @@ public class AccountRestService {
     @Path("/mass")
     public Response massDelete(final List<String> emailAddresses) throws AccountManagerMultipleException, BadRequestException {
         if (null != emailAddresses) {
-            accountAdmin.delete(emailAddresses);
+            accountManager.delete(emailAddresses);
             return Response.status(Response.Status.OK).entity(emailAddresses).build();
 
         } else {
