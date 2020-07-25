@@ -31,9 +31,9 @@ public class ConfigurationSorter {
             props.setProperty(key, value);
 
             if ( key.contains("password") || key.contains("key")) {
-                logger.info("[ {} ] <-- '{}' = *****", logPrefix, key);
+                logger.info(String.format("++ %-15s %-30s = *****", logPrefix, key));
             } else {
-                logger.info("[ {} ] <-- '{}' = '{}'", logPrefix, key, value);
+                logger.info(String.format("++ %-15s %-30s = '%s'", logPrefix, key, value));
             }
 
         } else {

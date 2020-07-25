@@ -15,16 +15,15 @@ public class DbPublicKeyStore implements DbPublicKeyStoreInterface {
     private static final Logger logger = LoggerFactory.getLogger(DbPublicKeyStore.class);
 
     // SQL
-    private static final String SQL_INSERT_PUBLIC_KEY           = "INSERT INTO secure.public_keys (uuid, node_name, ttl, base64_key) VALUES(?,?,?,?)";
     private static final String SQL_GET_ACTIVE_PUBLIC_KEY       = "SELECT base64_key,expire_ts FROM secure.public_keys WHERE uuid=? AND expire_ts >= NOW()";
+    private static final String SQL_INSERT_PUBLIC_KEY           = "INSERT INTO secure.public_keys (uuid, node_name, ttl, base64_key) VALUES(?,?,?,?)";
     private static final String SQL_DELETE_PUBLIC_KEY           = "DELETE FROM secure.public_keys WHERE uuid=?";
-    // TODO SYNC QUERIES
     private static final String SQL_GET_ACTIVE_PUBLIC_KEYS      = "SELECT uuid,base64_key,expire_ts FROM secure.public_keys WHERE expire_ts >= NOW()";
     private static final String SQL_DELETE_EXPIRED_PUBLIC_KEYS  = "DELETE FROM secure.public_keys WHERE expire_ts < NOW()";
 
     // messages
-    private static final String MESSAGE_PUBLIC_KEY_INSERTED  = "... public key INSERTED (UUID: '%s')";
-    private static final String MESSAGE_PUBLIC_KEY_DELETED   = "... public key DELETED (UUID: '%s')";
+    private static final String MESSAGE_PUBLIC_KEY_DELETED   = "... public key DELETED   (UUID: '%s')";
+    private static final String MESSAGE_PUBLIC_KEY_INSERTED  = "... public key INSERTED  (UUID: '%s')";
     private static final String MESSAGE_PUBLIC_KEY_RETRIEVED = "... public key RETRIEVED (UUID: '%s')";
     // error messages
     private static final String ERROR_MESSAGE_FAILED_TO_INSERT_PUBLIC_KEY = "Failed to INSERT public key! UUID: '%s', message: '%s', SQL state: '%s', error code: '%s'";
