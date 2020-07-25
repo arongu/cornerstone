@@ -1,24 +1,22 @@
-package cornerstone.workflow.webapp.services.account_service;
+package cornerstone.webapp.services.account.administration;
 
 import cornerstone.webapp.configuration.ConfigurationLoader;
+import cornerstone.webapp.configuration.enums.APP_ENUM;
 import cornerstone.webapp.datasources.UsersDB;
-import cornerstone.webapp.services.account.administration.AccountAdmin;
-import cornerstone.webapp.services.account.administration.AccountAdminException;
-import cornerstone.webapp.services.account.administration.AccountAdminInterface;
-import cornerstone.webapp.services.account.administration.AccountResultSet;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.util.NoSuchElementException;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-// This is more just a single login test, this heavily uses CRUD methods
-// All TCs cleanup after themselves!
-// TODO TCs for app_max_login_attempts -- rework!!!
-public class AccountServiceLoginTest {
-    private static AccountAdminInterface accountService;
+// THIS IS MORE THAN JUST A SINGLE LOGIN TEST, IT HEAVILY RELIES ON CRUD METHODS
+// ALL TCS CLEANUP AFTER THEMSELVES FOR DATABASE AND TEST CONSISTENCY!
+public class AccountManager_CRUD_AND_LOGIN_Test {
+    private static AccountManagerInterface accountManager;
+    private static int MAX_LOGIN_ATTEMPTS_FROM_TEST_CONFIG;
 
     @BeforeAll
     public static void setSystemProperties() {
@@ -31,7 +29,8 @@ public class AccountServiceLoginTest {
             cr.loadAndDecryptConfig();
 
             final UsersDB ds = new UsersDB(cr);
-            accountService = new AccountAdmin(ds);
+            accountManager = new AccountManager(ds, cr);
+            MAX_LOGIN_ATTEMPTS_FROM_TEST_CONFIG = Integer.parseInt(cr.getAppProperties().getProperty(APP_ENUM.APP_MAX_LOGIN_ATTEMPTS.key));
 
         } catch (final IOException e) {
             e.printStackTrace();
@@ -39,7 +38,7 @@ public class AccountServiceLoginTest {
     }
 
     @Test
-    public void login_shouldReturnTrue_whenAccountExistsNotLockedAndVerified() throws AccountAdminException {
+    public void login_shouldReturnTrue_whenAccountExistsNotLockedAndVerified() throws AccountManagerException {
         final String email = "melchior@login.me";
         final String password = "miciMacko#";
         final boolean locked = false;
@@ -48,40 +47,36 @@ public class AccountServiceLoginTest {
         final boolean loggedIn;
         final int creates;
         final int deletes;
-        final AccountResultSet accountShouldBeDeleted;
 
 
-        creates = accountService.create(email, password, locked, verified);
-        loggedIn = accountService.login(email, password);
-        deletes = accountService.delete(email);
-        accountShouldBeDeleted = accountService.get(email);
+        creates = accountManager.create(email, password, locked, verified);
+        loggedIn = accountManager.login(email, password);
+        deletes = accountManager.delete(email);
+        assertThrows(NoSuchElementException.class, () -> accountManager.get(email));
 
 
         assertEquals(1, creates);
         assertTrue(loggedIn);
         assertEquals(1, deletes);
-        assertNull(accountShouldBeDeleted);
     }
 
     @Test
-    public void login_shouldReturnFalse_whenAccountDoesNotExist() throws AccountAdminException {
+    public void login_shouldReturnFalse_whenAccountDoesNotExist() throws AccountManagerException {
         final String email = "xxxxx@doesnotexist.xu";
         final String password = "wow";
 
         final boolean loggedIn;
-        final AccountResultSet account;
 
 
-        loggedIn = accountService.login(email, password);
-        account = accountService.get(email);
+        loggedIn = accountManager.login(email, password);
+        assertThrows(NoSuchElementException.class, () -> accountManager.get(email));
 
 
         assertFalse(loggedIn);
-        assertNull(account);
     }
 
     @Test
-    public void login_shouldReturnFalse_whenAccountNotVerifiedAndNotLocked() throws AccountAdminException {
+    public void login_shouldReturnFalse_whenAccountNotVerifiedAndNotLocked() throws AccountManagerException {
         final String email = "casper@login.me";
         final String password = "casper#";
         final boolean locked = false;
@@ -91,14 +86,13 @@ public class AccountServiceLoginTest {
         final int creates;
         final int deletes;
         final AccountResultSet account;
-        final AccountResultSet accountShouldBeDeleted;
 
 
-        creates = accountService.create(email, password, locked, verified);
-        account = accountService.get(email);
-        loggedIn = accountService.login(email, password);
-        deletes = accountService.delete(email);
-        accountShouldBeDeleted = accountService.get(email);
+        creates = accountManager.create(email, password, locked, verified);
+        account = accountManager.get(email);
+        loggedIn = accountManager.login(email, password);
+        deletes = accountManager.delete(email);
+        assertThrows(NoSuchElementException.class, () -> accountManager.get(email));
 
 
         assertEquals(1, creates);
@@ -107,11 +101,10 @@ public class AccountServiceLoginTest {
         assertFalse(account.account_locked);
         assertFalse(account.email_address_verified);
         assertEquals(1, deletes);
-        assertNull(accountShouldBeDeleted);
     }
 
     @Test
-    public void login_shouldReturnFalse_whenAccountLocked() throws AccountAdminException {
+    public void login_shouldReturnFalse_whenAccountLocked() throws AccountManagerException {
         final String email = "locked@login.me";
         final String password = "locked#";
         final boolean locked = true;
@@ -121,25 +114,23 @@ public class AccountServiceLoginTest {
         final int creates;
         final int deletes;
         final AccountResultSet account;
-        final AccountResultSet accountShouldBeDeleted;
 
 
-        creates = accountService.create(email, password, locked, verified);
-        account = accountService.get(email);
-        loggedIn = accountService.login(email, password);
-        deletes = accountService.delete(email);
-        accountShouldBeDeleted = accountService.get(email);
+        creates = accountManager.create(email, password, locked, verified);
+        account = accountManager.get(email);
+        loggedIn = accountManager.login(email, password);
+        deletes = accountManager.delete(email);
+        assertThrows(NoSuchElementException.class, () -> accountManager.get(email));
 
 
         assertEquals(1, creates);
         assertTrue(account.account_locked);
         assertFalse(loggedIn);
         assertEquals(1, deletes);
-        assertNull(accountShouldBeDeleted);
     }
 
     @Test
-    public void login_shouldIncrementLoginAttempts_whenLoginFails() throws AccountAdminException {
+    public void login_shouldIncrementLoginAttempts_whenLoginFails() throws AccountManagerException {
         final String email = "badtyper@login.me";
         final String password = "secretpasswordd#";
         final String badPassword = "myBadPassword#";
@@ -150,16 +141,15 @@ public class AccountServiceLoginTest {
         final int creates;
         final int deletes;
         final AccountResultSet accountAfterBadLogins;
-        final AccountResultSet accountShouldBeDeleted;
 
 
-        creates = accountService.create(email, password, locked, verified);
-        logins[0] = accountService.login(email, badPassword);
-        logins[1] = accountService.login(email, badPassword);
-        logins[2] = accountService.login(email, badPassword);
-        accountAfterBadLogins = accountService.get(email);
-        deletes = accountService.delete(email);
-        accountShouldBeDeleted = accountService.get(email);
+        creates = accountManager.create(email, password, locked, verified);
+        logins[0] = accountManager.login(email, badPassword);
+        logins[1] = accountManager.login(email, badPassword);
+        logins[2] = accountManager.login(email, badPassword);
+        accountAfterBadLogins = accountManager.get(email);
+        deletes = accountManager.delete(email);
+        assertThrows(NoSuchElementException.class, () -> accountManager.get(email));
 
 
         assertEquals(1, creates);
@@ -168,11 +158,10 @@ public class AccountServiceLoginTest {
         assertFalse(logins[1]);
         assertFalse(logins[2]);
         assertEquals(1, deletes);
-        assertNull(accountShouldBeDeleted);
     }
 
     @Test
-    public void clearLoginAttempts_shouldClearLoginAttempts_whenCalled() throws AccountAdminException {
+    public void clearLoginAttempts_shouldClearLoginAttempts_whenCalled() throws AccountManagerException {
         final String email = "badtyper@login.me";
         final String password = "secretpasswordd#";
         final String badPassword = "myBadPassword#";
@@ -187,18 +176,17 @@ public class AccountServiceLoginTest {
         boolean thirdBadLogin;
         final AccountResultSet accountBeforeClear;
         final AccountResultSet accountAfterClear;
-        final AccountResultSet accountShouldBeDeleted;
 
 
-        creates = accountService.create(email, password, locked, verified);
-        firstGoodLogin = accountService.login(email, password);
-        secondBadLogin = accountService.login(email, badPassword);
-        thirdBadLogin = accountService.login(email, badPassword);
-        accountBeforeClear = accountService.get(email);
-        clears = accountService.clearLoginAttempts(email);
-        accountAfterClear = accountService.get(email);
-        deletes = accountService.delete(email);
-        accountShouldBeDeleted = accountService.get(email);
+        creates = accountManager.create(email, password, locked, verified);
+        firstGoodLogin = accountManager.login(email, password);
+        secondBadLogin = accountManager.login(email, badPassword);
+        thirdBadLogin = accountManager.login(email, badPassword);
+        accountBeforeClear = accountManager.get(email);
+        clears = accountManager.clearLoginAttempts(email);
+        accountAfterClear = accountManager.get(email);
+        deletes = accountManager.delete(email);
+        assertThrows(NoSuchElementException.class, () -> accountManager.get(email));
 
 
         assertEquals(1, creates);
@@ -209,12 +197,10 @@ public class AccountServiceLoginTest {
         assertEquals(1, clears);
         assertEquals(0, accountAfterClear.account_login_attempts);
         assertEquals(1, deletes);
-        assertNull(accountShouldBeDeleted);
     }
 
-
     @Test
-    public void login_shouldIncrementLoginAttemptsBy179TimesAccountShouldNotBeLocked_whenLoginFails179Times() throws AccountAdminException {
+    public void login_shouldIncrementLoginAttemptsToLessThanMaxLoginAndAccountShouldNotBeLocked_whenFailedToLoginThatMuchTimes() throws AccountManagerException {
         final String email = "badtyper180@login.me";
         final String password = "secretpasswordd#";
         final String badPassword = "alma";
@@ -223,32 +209,30 @@ public class AccountServiceLoginTest {
 
         final int creates;
         final int deletes;
-        final boolean[] logins = new boolean[179];
+        final boolean[] logins = new boolean[MAX_LOGIN_ATTEMPTS_FROM_TEST_CONFIG];
         final AccountResultSet account;
-        final AccountResultSet accountShouldBeDeleted;
 
 
-        creates = accountService.create(email, password, locked, verified);
-        for ( int i = 0; i < 179; i++ ) {
-            logins[i] = accountService.login(email, badPassword);
+        creates = accountManager.create(email, password, locked, verified);
+        for (int i = 0; i < MAX_LOGIN_ATTEMPTS_FROM_TEST_CONFIG; i++ ) {
+            logins[i] = accountManager.login(email, badPassword);
         }
-        account = accountService.get(email);
-        deletes = accountService.delete(email);
-        accountShouldBeDeleted = accountService.get(email);
+        account = accountManager.get(email);
+        deletes = accountManager.delete(email);
+        assertThrows(NoSuchElementException.class, () -> accountManager.get(email));
 
 
         assertEquals(1, creates);
         for (boolean login : logins) {
             assertFalse(login);
         }
-        assertEquals(179, account.account_login_attempts);
+        assertEquals(MAX_LOGIN_ATTEMPTS_FROM_TEST_CONFIG, account.account_login_attempts);
         assertFalse(account.account_locked);
         assertEquals(1, deletes);
-        assertNull(accountShouldBeDeleted);
     }
 
     @Test
-    public void login_shouldLockAccount_after180FailedLoginAttempts() throws AccountAdminException {
+    public void login_shouldLockAccount_whenMaxFailedLoginAttemptsExceeded() throws AccountManagerException {
         final String email = "autolock180@login.me";
         final String password = "secretpasswordd#";
         final String badPassword = "alma";
@@ -261,18 +245,18 @@ public class AccountServiceLoginTest {
         final boolean lockedLoginWithGoodPassword;
         final AccountResultSet accountNoBadLogins;
         final AccountResultSet accountShouldBeLocked;
-        final AccountResultSet accountShouldBeDeleted;
 
-        creates = accountService.create(email, password, locked, verified);
-        firstLogin = accountService.login(email, password);
-        accountNoBadLogins = accountService.get(email);
-        for ( int i = 0; i < 200; i++ ) {
-            accountService.login(email, badPassword);
+
+        creates = accountManager.create(email, password, locked, verified);
+        firstLogin = accountManager.login(email, password);
+        accountNoBadLogins = accountManager.get(email);
+        for (int i = 0; i < MAX_LOGIN_ATTEMPTS_FROM_TEST_CONFIG + 20; i++ ) {
+            accountManager.login(email, badPassword);
         }
-        lockedLoginWithGoodPassword = accountService.login(email, password);
-        accountShouldBeLocked = accountService.get(email);
-        deletes = accountService.delete(email);
-        accountShouldBeDeleted = accountService.get(email);
+        lockedLoginWithGoodPassword = accountManager.login(email, password);
+        accountShouldBeLocked = accountManager.get(email);
+        deletes = accountManager.delete(email);
+        assertThrows(NoSuchElementException.class, () -> accountManager.get(email));
 
 
         assertEquals(1, creates);
@@ -281,13 +265,12 @@ public class AccountServiceLoginTest {
         assertEquals(0, accountNoBadLogins.account_login_attempts);
         assertFalse(lockedLoginWithGoodPassword);
         assertTrue(accountShouldBeLocked.account_locked);
-        assertEquals(180, accountShouldBeLocked.account_login_attempts);
+        assertEquals(MAX_LOGIN_ATTEMPTS_FROM_TEST_CONFIG, accountShouldBeLocked.account_login_attempts);
         assertEquals(1, deletes);
-        assertNull(accountShouldBeDeleted);
     }
 
     @Test
-    public void login_LoginAttemptsShouldResetToZero_afterSuccessfulLogin() throws AccountAdminException {
+    public void login_LoginAttemptsShouldResetToZero_afterSuccessfulLogin() throws AccountManagerException {
         final String email = "lastnite@aaa.me";
         final String password = "woho#";
         final String badPassword = "bbbbb";
@@ -302,20 +285,19 @@ public class AccountServiceLoginTest {
         final boolean fourthGoodLogin;
         final AccountResultSet accountAfterThreeBadLogin;
         final AccountResultSet accountAfterGoodLoginShouldBeReset;
-        final AccountResultSet accountShouldBeDeleted;
 
 
-        creates = accountService.create(email, password, locked, verified);
-        firstBadLogin = accountService.login(email, badPassword);
-        secondBadLogin = accountService.login(email, badPassword);
-        thirdBadLogin = accountService.login(email, badPassword);
-        accountAfterThreeBadLogin = accountService.get(email);
+        creates = accountManager.create(email, password, locked, verified);
+        firstBadLogin = accountManager.login(email, badPassword);
+        secondBadLogin = accountManager.login(email, badPassword);
+        thirdBadLogin = accountManager.login(email, badPassword);
+        accountAfterThreeBadLogin = accountManager.get(email);
 
-        fourthGoodLogin = accountService.login(email, password);
-        accountAfterGoodLoginShouldBeReset = accountService.get(email);
+        fourthGoodLogin = accountManager.login(email, password);
+        accountAfterGoodLoginShouldBeReset = accountManager.get(email);
 
-        deletes = accountService.delete(email);
-        accountShouldBeDeleted = accountService.get(email);
+        deletes = accountManager.delete(email);
+        assertThrows(NoSuchElementException.class, () -> accountManager.get(email));
 
 
         assertEquals(1, creates);
@@ -326,6 +308,5 @@ public class AccountServiceLoginTest {
         assertTrue(fourthGoodLogin);
         assertEquals(0, accountAfterGoodLoginShouldBeReset.account_login_attempts);
         assertEquals(1, deletes);
-        assertNull(accountShouldBeDeleted);
     }
 }

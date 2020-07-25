@@ -1,23 +1,20 @@
-package cornerstone.workflow.webapp.services.account_service;
+package cornerstone.webapp.services.account.administration;
 
 import cornerstone.webapp.configuration.ConfigurationLoader;
 import cornerstone.webapp.datasources.UsersDB;
-import cornerstone.webapp.services.account.administration.AccountAdmin;
-import cornerstone.webapp.services.account.administration.AccountAdminException;
-import cornerstone.webapp.services.account.administration.AccountAdminInterface;
-import cornerstone.webapp.services.account.administration.AccountResultSet;
 import org.apache.commons.codec.digest.Crypt;
 import org.junit.jupiter.api.*;
 
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.sql.Timestamp;
+import java.util.NoSuchElementException;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class AccountServiceCRUDTest {
-    private static AccountAdminInterface accountService;
+public class AccountManager_CRUD_Test {
+    private static AccountManagerInterface accountManager;
 
     @BeforeAll
     public static void setSystemProperties() {
@@ -30,7 +27,7 @@ public class AccountServiceCRUDTest {
             cr.loadAndDecryptConfig();
 
             final UsersDB ds = new UsersDB(cr);
-            accountService = new AccountAdmin(ds);
+            accountManager = new AccountManager(ds, cr);
 
         } catch (final IOException e) {
             e.printStackTrace();
@@ -41,13 +38,13 @@ public class AccountServiceCRUDTest {
     // -------------------------------------------- TCs --------------------------------------------
     @Test
     @Order(0)
-    public void t00_get_shouldReturnNull_whenAccountDoesNotExist() throws AccountAdminException {
-        assertNull(accountService.get("nosuch@mail.com"));
+    public void t00_get_shouldThrwoNoSuchElementException_whenAccountDoesNotExist() throws AccountManagerException {
+        assertThrows(NoSuchElementException.class, () -> accountManager.get("thereisnoway@suchemailexist.net"));
     }
 
     @Test
     @Order(10)
-    public void t01_create_and_get_shouldCreateOneAccount_whenAccountDoesNotExist() throws AccountAdminException {
+    public void t01_create_and_get_shouldCreateOneAccount_whenAccountDoesNotExist() throws AccountManagerException {
         final String email = "almafa@gmail.com";
         final String password = "password";
         final boolean locked = false;
@@ -58,8 +55,8 @@ public class AccountServiceCRUDTest {
         final AccountResultSet account;
 
 
-        creates = accountService.create(email, password, locked, verified);
-        account = accountService.get(email);
+        creates = accountManager.create(email, password, locked, verified);
+        account = accountManager.get(email);
 
 
         // Knowable value tests
@@ -81,36 +78,31 @@ public class AccountServiceCRUDTest {
     @Test
     @Order(11)
     public void t01b_create_shouldThrowAccountServiceException_whenAccountAlreadyExists() {
-        assertThrows(AccountAdminException.class, () -> {
+        assertThrows(AccountManagerException.class, () -> {
             final String email = "almafa@gmail.com";
             final String password = "password";
             final boolean locked = false;
             final boolean verified = true;
 
-            accountService.create(email, password, locked, verified);
+            accountManager.create(email, password, locked, verified);
         });
     }
 
     @Test
     @Order(20)
-    public void t02_delete_previousAccountShouldBeDeleted() throws AccountAdminException {
+    public void t02_delete_previousAccountShouldBeDeleted() throws AccountManagerException {
         final String email = "almafa@gmail.com";
-
         final int deletes;
-        final AccountResultSet accountShouldBeDeleted;
 
+        deletes = accountManager.delete("almafa@gmail.com");
 
-        deletes = accountService.delete("almafa@gmail.com");
-        accountShouldBeDeleted = accountService.get(email);
-
-
+        assertThrows(NoSuchElementException.class, () -> accountManager.get(email));
         assertEquals(1, deletes);
-        assertNull(accountShouldBeDeleted);
     }
 
     @Test
     @Order(30)
-    public void t03_create_anotherAccountShouldBeCreated() throws AccountAdminException {
+    public void t03_create_anotherAccountShouldBeCreated() throws AccountManagerException {
         final String email = "crud_tests@x-mail.com";
         final String password = "password";
         final boolean locked = false;
@@ -120,8 +112,8 @@ public class AccountServiceCRUDTest {
         final AccountResultSet account;
 
 
-        creates = accountService.create(email, password, locked, verified);
-        account = accountService.get(email);
+        creates = accountManager.create(email, password, locked, verified);
+        account = accountManager.get(email);
 
 
         assertEquals(1, creates);
@@ -132,7 +124,7 @@ public class AccountServiceCRUDTest {
 
     @Test
     @Order(40)
-    public void t04_setNewEmailAddress_shouldSetNewEmailForPreviouslyCreatedAccount() throws AccountAdminException {
+    public void t04_setNewEmailAddress_shouldSetNewEmailForPreviouslyCreatedAccount() throws AccountManagerException {
         final String email = "crud_tests@x-mail.com";
         final String newEmail = "my_new_crud_tests_mail@yahoo.com";
 
@@ -141,20 +133,20 @@ public class AccountServiceCRUDTest {
         final AccountResultSet afterEmailChange;
 
 
-        beforeEmailChange = accountService.get(email);
-        emailChanges = accountService.setEmailAddress(email, newEmail);
-        afterEmailChange = accountService.get(newEmail);
+        beforeEmailChange = accountManager.get(email);
+        emailChanges = accountManager.setEmailAddress(email, newEmail);
+        afterEmailChange = accountManager.get(newEmail);
 
 
         assertEquals(1, emailChanges);
-        assertNull(accountService.get(email));                                      // old email should return null
-        assertEquals(newEmail, afterEmailChange.email_address);                     // get new email account should return account
-        assertEquals(beforeEmailChange.account_id, afterEmailChange.account_id);    // account id should be same for the new email
+        assertThrows(NoSuchElementException.class, () -> accountManager.get(email)); // old email should throw exception
+        assertEquals(newEmail, afterEmailChange.email_address);                      // get new email account should return account
+        assertEquals(beforeEmailChange.account_id, afterEmailChange.account_id);     // account id should be same for the new email
     }
 
     @Test
     @Order(50)
-    public void t05_lock_shouldLockAccount() throws AccountAdminException {
+    public void t05_lock_shouldLockAccount() throws AccountManagerException {
         final String email_address = "my_new_crud_tests_mail@yahoo.com";
         final String reason = "naughty";
 
@@ -163,9 +155,9 @@ public class AccountServiceCRUDTest {
         final AccountResultSet afterLock;
 
 
-        beforeLock = accountService.get(email_address);
-        locks = accountService.lock(email_address, reason);
-        afterLock = accountService.get(email_address);
+        beforeLock = accountManager.get(email_address);
+        locks = accountManager.lock(email_address, reason);
+        afterLock = accountManager.get(email_address);
 
 
         assertEquals(email_address, beforeLock.email_address);
@@ -181,7 +173,7 @@ public class AccountServiceCRUDTest {
 
     @Test
     @Order(60)
-    public void t06_unlock_shouldUnlockPreviouslyLockedAccount() throws AccountAdminException {
+    public void t06_unlock_shouldUnlockPreviouslyLockedAccount() throws AccountManagerException {
         final String email_address = "my_new_crud_tests_mail@yahoo.com";
         final String reason = "naughty";
 
@@ -190,9 +182,9 @@ public class AccountServiceCRUDTest {
         final AccountResultSet afterUnlock;
 
 
-        beforeUnlock = accountService.get(email_address);
-        unlocks = accountService.unlock(email_address);
-        afterUnlock = accountService.get(email_address);
+        beforeUnlock = accountManager.get(email_address);
+        unlocks = accountManager.unlock(email_address);
+        afterUnlock = accountManager.get(email_address);
 
 
         assertEquals(email_address, beforeUnlock.email_address);
@@ -205,7 +197,7 @@ public class AccountServiceCRUDTest {
 
     @Test
     @Order(70)
-    public void t07_changePassword_shouldChangePasswordOfAccount() throws AccountAdminException {
+    public void t07_changePassword_shouldChangePasswordOfAccount() throws AccountManagerException {
         final String email = "my_new_crud_tests_mail@yahoo.com";
         final String password = "password";
         final String newPassword = "almafa1234#";
@@ -215,9 +207,9 @@ public class AccountServiceCRUDTest {
         final AccountResultSet afterPasswordChange;
 
 
-        beforePasswordChange = accountService.get(email);
-        passwordSets = accountService.setPassword(email, newPassword);
-        afterPasswordChange = accountService.get(email);
+        beforePasswordChange = accountManager.get(email);
+        passwordSets = accountManager.setPassword(email, newPassword);
+        afterPasswordChange = accountManager.get(email);
 
 
         assertEquals(1, passwordSets);
@@ -227,18 +219,15 @@ public class AccountServiceCRUDTest {
 
     @Test
     @Order(80)
-    public void t08_delete_shouldDeleteAccount() throws AccountAdminException {
+    public void t08_delete_shouldDeleteAccount() throws AccountManagerException {
+        final int deletes;
         final String email = "my_new_crud_tests_mail@yahoo.com";
 
-        final int deletes;
-        final AccountResultSet accountShouldBeDeleted;
 
-
-        deletes = accountService.delete(email);
-        accountShouldBeDeleted = accountService.get(email);
+        deletes = accountManager.delete(email);
 
 
         assertEquals(1, deletes);
-        assertNull(accountShouldBeDeleted);
+        assertThrows(NoSuchElementException.class, () -> accountManager.get(email));
     }
 }

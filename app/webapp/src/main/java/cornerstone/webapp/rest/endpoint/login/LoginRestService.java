@@ -1,8 +1,8 @@
 package cornerstone.webapp.rest.endpoint.login;
 
 import cornerstone.webapp.rest.exceptions.BadRequestException;
-import cornerstone.webapp.services.account.administration.AccountAdminException;
-import cornerstone.webapp.services.account.administration.AccountAdminInterface;
+import cornerstone.webapp.services.account.administration.AccountManagerException;
+import cornerstone.webapp.services.account.administration.AccountManagerInterface;
 import cornerstone.webapp.services.jwt.AuthorizationServiceException;
 import cornerstone.webapp.services.jwt.AuthorizationServiceInterface;
 import cornerstone.webapp.rest.endpoint.account.EmailAndPassword;
@@ -28,17 +28,17 @@ import javax.ws.rs.ext.Provider;
 public class LoginRestService {
     private static final Logger logger = LoggerFactory.getLogger(LoginRestService.class);
 
-    private final AccountAdminInterface accountAdmin;
+    private final AccountManagerInterface accountAdmin;
     private final AuthorizationServiceInterface authorizationService;
 
     @Inject
-    public LoginRestService(final AccountAdminInterface accountAdmin, final AuthorizationServiceInterface authorizationService) {
+    public LoginRestService(final AccountManagerInterface accountAdmin, final AuthorizationServiceInterface authorizationService) {
         this.accountAdmin = accountAdmin;
         this.authorizationService = authorizationService;
     }
 
     @POST
-    public Response authenticateUser(final EmailAndPassword emailAndPassword) throws AccountAdminException, AuthorizationServiceException, BadRequestException {
+    public Response authenticateUser(final EmailAndPassword emailAndPassword) throws AccountManagerException, AuthorizationServiceException, BadRequestException {
         if (null != emailAndPassword &&
             null != emailAndPassword.email &&
             null != emailAndPassword.password ) {

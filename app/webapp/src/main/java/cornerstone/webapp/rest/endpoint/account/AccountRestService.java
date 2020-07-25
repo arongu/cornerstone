@@ -2,9 +2,9 @@ package cornerstone.webapp.rest.endpoint.account;
 
 import cornerstone.webapp.common.DefaultLogMessages;
 import cornerstone.webapp.rest.exceptions.BadRequestException;
-import cornerstone.webapp.services.account.administration.AccountAdminException;
-import cornerstone.webapp.services.account.administration.AccountAdminInterface;
-import cornerstone.webapp.services.account.administration.AccountAdminMultipleException;
+import cornerstone.webapp.services.account.administration.AccountManagerException;
+import cornerstone.webapp.services.account.administration.AccountManagerInterface;
+import cornerstone.webapp.services.account.administration.AccountManagerMultipleException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,16 +23,16 @@ import java.util.List;
 @Produces(MediaType.APPLICATION_JSON)
 public class AccountRestService {
     private static final Logger logger = LoggerFactory.getLogger(AccountRestService.class);
-    private final AccountAdminInterface accountAdmin;
+    private final AccountManagerInterface accountAdmin;
 
     @Inject
-    public AccountRestService(final AccountAdminInterface accountAdmin) {
+    public AccountRestService(final AccountManagerInterface accountAdmin) {
         this.accountAdmin = accountAdmin;
         logger.info(String.format(DefaultLogMessages.MESSAGE_CONSTRUCTOR_CALLED, getClass().getName()));
     }
 
     @POST
-    public Response create(final EmailAndPassword account) throws AccountAdminException, BadRequestException {
+    public Response create(final EmailAndPassword account) throws AccountManagerException, BadRequestException {
         if (null != account) {
             accountAdmin.create(account.email, account.password, false, false);
             return Response.status(Response.Status.CREATED).entity(account.email).build();
@@ -43,7 +43,7 @@ public class AccountRestService {
     }
 
     @DELETE
-    public Response delete(final String emailAddress) throws AccountAdminException, BadRequestException {
+    public Response delete(final String emailAddress) throws AccountManagerException, BadRequestException {
         if (null != emailAddress) {
             accountAdmin.delete(emailAddress);
             return Response.status(Response.Status.OK).entity(emailAddress).build();
@@ -56,7 +56,7 @@ public class AccountRestService {
     // /mass
     @POST
     @Path("/mass")
-    public Response massCreate(final List<EmailAndPassword> accounts) throws AccountAdminMultipleException, BadRequestException {
+    public Response massCreate(final List<EmailAndPassword> accounts) throws AccountManagerMultipleException, BadRequestException {
         if (accounts != null && !accounts.isEmpty()) {
             accountAdmin.create(accounts);
             return Response.status(Response.Status.CREATED).entity(accounts).build();
@@ -68,7 +68,7 @@ public class AccountRestService {
 
     @DELETE
     @Path("/mass")
-    public Response massDelete(final List<String> emailAddresses) throws AccountAdminMultipleException, BadRequestException {
+    public Response massDelete(final List<String> emailAddresses) throws AccountManagerMultipleException, BadRequestException {
         if (null != emailAddresses) {
             accountAdmin.delete(emailAddresses);
             return Response.status(Response.Status.OK).entity(emailAddresses).build();

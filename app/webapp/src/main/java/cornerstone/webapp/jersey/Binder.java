@@ -4,8 +4,8 @@ import cornerstone.webapp.configuration.ConfigurationDefaults;
 import cornerstone.webapp.configuration.ConfigurationLoader;
 import cornerstone.webapp.datasources.UsersDB;
 import cornerstone.webapp.datasources.WorkDB;
-import cornerstone.webapp.services.account.administration.AccountAdmin;
-import cornerstone.webapp.services.account.administration.AccountAdminInterface;
+import cornerstone.webapp.services.account.administration.AccountManager;
+import cornerstone.webapp.services.account.administration.AccountManagerInterface;
 import cornerstone.webapp.services.jwt.AuthorizationService;
 import cornerstone.webapp.services.jwt.AuthorizationServiceInterface;
 import cornerstone.webapp.services.rsa.rotation.KeyRotator;
@@ -71,7 +71,7 @@ public class Binder extends AbstractBinder {
             bindAsContract(WorkDB.class).in(Singleton.class);
 
             // account services <- UsersDB <- configuration
-            bind(AccountAdmin.class).to(AccountAdminInterface.class).in(Singleton.class);
+            bind(AccountManager.class).to(AccountManagerInterface.class).in(Singleton.class);
             bind(AuthorizationService.class).to(AuthorizationServiceInterface.class).in(Singleton.class);
 
             // dbPubKeyStore <- WorkDB <- configuration

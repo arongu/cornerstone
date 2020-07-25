@@ -1,4 +1,4 @@
-package cornerstone.workflow.webapp.services.rsa_key_services;
+package cornerstone.webapp.services.rsa_key_services;
 
 import cornerstone.webapp.configuration.ConfigurationLoader;
 import cornerstone.webapp.configuration.enums.APP_ENUM;

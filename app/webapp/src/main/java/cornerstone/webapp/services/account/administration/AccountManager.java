@@ -1,6 +1,8 @@
 package cornerstone.webapp.services.account.administration;
 
 import cornerstone.webapp.common.DefaultLogMessages;
+import cornerstone.webapp.configuration.ConfigurationLoader;
+import cornerstone.webapp.configuration.enums.APP_ENUM;
 import cornerstone.webapp.datasources.UsersDB;
 import cornerstone.webapp.rest.endpoint.account.EmailAndPassword;
 import org.apache.commons.codec.digest.Crypt;
@@ -13,9 +15,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 
-public class AccountAdmin implements AccountAdminInterface {
+public class AccountManager implements AccountManagerInterface {
     private static final String ERROR_MESSAGE_FAILED_TO_GET_ACCOUNT              = "Failed to get account: '%s', message: '%s', SQL state '%s'";
     private static final String ERROR_MESSAGE_FAILED_TO_CREATE_ACCOUNT           = "Failed to create account: '%s', message: '%s', SQL state: '%s'";
     private static final String ERROR_MESSAGE_FAILED_TO_DELETE_ACCOUNT           = "Failed to delete account: '%s', message: '%s', SQL state: '%s'";
@@ -35,12 +38,12 @@ public class AccountAdmin implements AccountAdminInterface {
     private static final String SQL_INCREMENT_LOGIN_ATTEMPTS      = "UPDATE user_data.accounts SET account_login_attempts=account_login_attempts+1 WHERE email_address=(?)";
     private static final String SQL_CLEAR_LOGIN_ATTEMPTS          = "UPDATE user_data.accounts SET account_login_attempts=0 WHERE email_address=(?)";
 
-    private static final Logger logger = LoggerFactory.getLogger(AccountAdmin.class);
+    private static final Logger logger = LoggerFactory.getLogger(AccountManager.class);
 
     private static int executeUpdateWithEmailAddress(final String emailAddress,
                                                      final String sqlStatement,
                                                      final String errorMessage,
-                                                     final UsersDB usersDB) throws AccountAdminException {
+                                                     final UsersDB usersDB) throws AccountManagerException {
 
         try (final Connection c = usersDB.getConnection();
              final PreparedStatement ps = c.prepareStatement(sqlStatement)) {
@@ -51,20 +54,22 @@ public class AccountAdmin implements AccountAdminInterface {
         } catch (final SQLException e) {
             final String msg = String.format(errorMessage, emailAddress, e.getMessage(), e.getSQLState());
             logger.error(msg);
-            throw new AccountAdminException(e.getMessage());
+            throw new AccountManagerException(e.getMessage());
         }
     }
 
     private final UsersDB usersDB;
+    private final ConfigurationLoader configurationLoader;
 
     @Inject
-    public AccountAdmin(final UsersDB usersDB) {
+    public AccountManager(final UsersDB usersDB, final ConfigurationLoader configurationLoader) {
         this.usersDB = usersDB;
+        this.configurationLoader = configurationLoader;
         logger.info(String.format(DefaultLogMessages.MESSAGE_CONSTRUCTOR_CALLED, getClass().getName()));
     }
 
     @Override
-    public AccountResultSet get(final String emailAddress) throws AccountAdminException {
+    public AccountResultSet get(final String emailAddress) throws AccountManagerException, NoSuchElementException {
         try (final Connection c = usersDB.getConnection();
              final PreparedStatement ps = c.prepareStatement(SQL_GET_ACCOUNT)) {
 
@@ -87,15 +92,13 @@ public class AccountAdmin implements AccountAdminInterface {
                 );
 
             } else {
-                // TODO this should throw NoSuchElementException
-                // TODO add logs
-                return null;
+                throw new NoSuchElementException();
             }
 
         } catch (final SQLException e) {
             final String msg = String.format(ERROR_MESSAGE_FAILED_TO_GET_ACCOUNT, emailAddress, e.getMessage(), e.getSQLState());
             logger.error(msg);
-            throw new AccountAdminException(e.getMessage());
+            throw new AccountManagerException(e.getMessage());
         }
     }
 
@@ -103,7 +106,7 @@ public class AccountAdmin implements AccountAdminInterface {
     public int create(final String emailAddress,
                       final String password,
                       final boolean accountLocked,
-                      final boolean verified) throws AccountAdminException {
+                      final boolean verified) throws AccountManagerException {
 
         try (final Connection c = usersDB.getConnection();
              final PreparedStatement ps = c.prepareStatement(SQL_CREATE_ACCOUNT)) {
@@ -118,14 +121,14 @@ public class AccountAdmin implements AccountAdminInterface {
         } catch (final SQLException e) {
             final String msg = String.format(ERROR_MESSAGE_FAILED_TO_CREATE_ACCOUNT, emailAddress, e.getMessage(), e.getSQLState());
             logger.error(msg);
-            throw new AccountAdminException(e.getMessage());
+            throw new AccountManagerException(e.getMessage());
         }
     }
 
     // mostly used for testing
     @Override
-    public int create(final List<EmailAndPassword> emailsAndPasswords) throws AccountAdminMultipleException {
-        AccountAdminMultipleException multipleException = null;
+    public int create(final List<EmailAndPassword> emailsAndPasswords) throws AccountManagerMultipleException {
+        AccountManagerMultipleException multipleException = null;
         int updatedRows = 0;
 
         try (final Connection c = usersDB.getConnection();
@@ -145,9 +148,9 @@ public class AccountAdmin implements AccountAdminInterface {
                         final String msg = String.format(ERROR_MESSAGE_FAILED_TO_CREATE_ACCOUNT, emailAndPassword.email, e.getMessage(), e.getSQLState());
 
                         if (null == multipleException) {
-                            multipleException = new AccountAdminMultipleException();
+                            multipleException = new AccountManagerMultipleException();
                         } else {
-                            multipleException.addException(new AccountAdminException(e.getMessage()));
+                            multipleException.addException(new AccountManagerException(e.getMessage()));
                         }
 
                         logger.error(msg);
@@ -158,9 +161,9 @@ public class AccountAdmin implements AccountAdminInterface {
         } catch (final SQLException e) {
             logger.error(e.getMessage());
             if (null == multipleException) {
-                multipleException = new AccountAdminMultipleException();
+                multipleException = new AccountManagerMultipleException();
             } else {
-                multipleException.addException(new AccountAdminException(e.getMessage()));
+                multipleException.addException(new AccountManagerException(e.getMessage()));
             }
         }
 
@@ -172,13 +175,13 @@ public class AccountAdmin implements AccountAdminInterface {
     }
 
     @Override
-    public int delete(final String emailAddress) throws AccountAdminException {
+    public int delete(final String emailAddress) throws AccountManagerException {
         return executeUpdateWithEmailAddress(emailAddress, SQL_DELETE_ACCOUNT, ERROR_MESSAGE_FAILED_TO_DELETE_ACCOUNT, usersDB);
     }
 
     @Override
-    public int delete(final List<String> emailAddresses) throws AccountAdminMultipleException {
-        AccountAdminMultipleException multipleException = null;
+    public int delete(final List<String> emailAddresses) throws AccountManagerMultipleException {
+        AccountManagerMultipleException multipleException = null;
         int updatedRows = 0;
 
         try (final Connection c = usersDB.getConnection();
@@ -193,20 +196,20 @@ public class AccountAdmin implements AccountAdminInterface {
                     final String msg = String.format(ERROR_MESSAGE_FAILED_TO_DELETE_ACCOUNT, email, e.getMessage(), e.getSQLState());
                     // create multiException if it does not exist
                     if (null == multipleException) {
-                        multipleException = new AccountAdminMultipleException();
+                        multipleException = new AccountManagerMultipleException();
                     }
 
-                    multipleException.addException(new AccountAdminException(e.getMessage()));
+                    multipleException.addException(new AccountManagerException(e.getMessage()));
                     logger.error(msg);
                 }
             }
 
         } catch (final SQLException e) {
             if (null == multipleException) {
-                multipleException = new AccountAdminMultipleException();
+                multipleException = new AccountManagerMultipleException();
             }
 
-            multipleException.addException(new AccountAdminException(e.getMessage()));
+            multipleException.addException(new AccountManagerException(e.getMessage()));
             logger.error(e.getMessage());
         }
 
@@ -218,7 +221,7 @@ public class AccountAdmin implements AccountAdminInterface {
     }
 
     @Override
-    public int setPassword(final String emailAddress, final String password) throws AccountAdminException {
+    public int setPassword(final String emailAddress, final String password) throws AccountManagerException {
         try (final Connection c = usersDB.getConnection();
              final PreparedStatement ps = c.prepareStatement(SQL_UPDATE_ACCOUNT_PASSWORD)) {
 
@@ -229,12 +232,12 @@ public class AccountAdmin implements AccountAdminInterface {
         } catch (final SQLException e) {
             final String msg = String.format(ERROR_MESSAGE_FAILED_TO_CHANGE_PASSWORD, emailAddress, e.getMessage(), e.getSQLState());
             logger.error(msg);
-            throw new AccountAdminException(msg);
+            throw new AccountManagerException(msg);
         }
     }
 
     @Override
-    public int setEmailAddress(final String emailAddress, final String newEmailAddress) throws AccountAdminException {
+    public int setEmailAddress(final String emailAddress, final String newEmailAddress) throws AccountManagerException {
         try (final Connection c = usersDB.getConnection();
              final PreparedStatement ps = c.prepareStatement(SQL_UPDATE_ACCOUNT_EMAIL_ADDRESS)) {
 
@@ -245,12 +248,12 @@ public class AccountAdmin implements AccountAdminInterface {
         } catch (final SQLException e) {
             final String msg = String.format(ERROR_MESSAGE_FAILED_TO_CHANGE_ADDRESS, emailAddress, newEmailAddress, e.getMessage(), e.getSQLState());
             logger.error(msg);
-            throw new AccountAdminException(e.getMessage());
+            throw new AccountManagerException(e.getMessage());
         }
     }
 
     @Override
-    public int lock(final String emailAddress, final String reason) throws AccountAdminException {
+    public int lock(final String emailAddress, final String reason) throws AccountManagerException {
         try (final Connection c = usersDB.getConnection();
              final PreparedStatement ps = c.prepareStatement(SQL_UPDATE_ACCOUNT_LOCKED)) {
 
@@ -262,12 +265,12 @@ public class AccountAdmin implements AccountAdminInterface {
         } catch (final SQLException e) {
             final String msg = String.format(ERROR_MESSAGE_FAILED_TO_CHANGE_ACCOUNT_LOCK, emailAddress, true, reason, e.getMessage(), e.getSQLState());
             logger.error(msg);
-            throw new AccountAdminException(e.getMessage());
+            throw new AccountManagerException(e.getMessage());
         }
     }
 
     @Override
-    public int unlock(final String emailAddress) throws AccountAdminException {
+    public int unlock(final String emailAddress) throws AccountManagerException {
         try (final Connection c = usersDB.getConnection();
              final PreparedStatement ps = c.prepareStatement(SQL_UPDATE_ACCOUNT_LOCKED)) {
 
@@ -280,22 +283,22 @@ public class AccountAdmin implements AccountAdminInterface {
         } catch ( final SQLException e ) {
             final String msg = String.format(ERROR_MESSAGE_FAILED_TO_CHANGE_ACCOUNT_LOCK, emailAddress, false, "", e.getMessage(), e.getSQLState());
             logger.error(msg);
-            throw new AccountAdminException(e.getMessage());
+            throw new AccountManagerException(e.getMessage());
         }
     }
 
     @Override
-    public int incrementLoginAttempts(final String emailAddress) throws AccountAdminException {
+    public int incrementLoginAttempts(final String emailAddress) throws AccountManagerException {
         return executeUpdateWithEmailAddress(emailAddress, SQL_INCREMENT_LOGIN_ATTEMPTS, ERROR_MESSAGE_FAILED_TO_INCREMENT_LOGIN_ATTEMPTS, usersDB);
     }
 
     @Override
-    public int clearLoginAttempts(final String emailAddress) throws AccountAdminException {
+    public int clearLoginAttempts(final String emailAddress) throws AccountManagerException {
         return executeUpdateWithEmailAddress(emailAddress, SQL_CLEAR_LOGIN_ATTEMPTS, ERROR_MESSAGE_FAILED_TO_CLEAR_LOGIN_ATTEMPTS, usersDB);
     }
 
     @Override
-    public boolean login(final String emailAddress, final String password) throws AccountAdminException {
+    public boolean login(final String emailAddress, final String password) throws AccountManagerException {
         try (final Connection c = usersDB.getConnection();
              final PreparedStatement ps = c.prepareStatement(SQL_GET_ACCOUNT_FOR_LOGIN) ) {
 
@@ -317,7 +320,7 @@ public class AccountAdmin implements AccountAdminInterface {
                         return true;
 
                     } else {
-                        if (loginAttempts < 180) {
+                        if (loginAttempts < Integer.parseInt(configurationLoader.getAppProperties().getProperty(APP_ENUM.APP_MAX_LOGIN_ATTEMPTS.key))) {
                             incrementLoginAttempts(emailAddress);
                         } else {
                             /* TODO create an exception for this, to able to PASS IP address of the origin

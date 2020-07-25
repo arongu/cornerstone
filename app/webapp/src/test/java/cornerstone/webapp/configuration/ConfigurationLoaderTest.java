@@ -1,6 +1,5 @@
-package cornerstone.workflow.webapp.configuration;
+package cornerstone.webapp.configuration;
 
-import cornerstone.webapp.configuration.ConfigurationLoader;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
