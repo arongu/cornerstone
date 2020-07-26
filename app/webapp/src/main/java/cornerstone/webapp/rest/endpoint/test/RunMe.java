@@ -56,6 +56,6 @@ public class RunMe {
     @Path("/exp")
     @DELETE
     public int removeExpiredKeys() throws DbPublicKeyStoreException {
-        return dbPublicKeyStore.removeExpiredPublicKeys();
+        return dbPublicKeyStore.deleteExpiredPublicKeys();
     }
 }

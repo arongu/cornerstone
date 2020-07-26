@@ -45,7 +45,7 @@ public class KeyRotationTask extends TimerTask {
             dbPublicKeyStore.addPublicKey(kpu.uuid, nodeName, rsaTTL, base64_key);
             logger.info(MESSAGE_ROTATION_TASK_FINISHED);
 
-        } catch (final DbPublicKeyStoreException e){
+        } catch (final DbPublicKeyStoreException e) {
             logger.error(String.format(ERROR_MESSAGE_FAILED_TO_STORE_PUBLIC_KEY_IN_DB, kpu.uuid));
         }
     }
@@ -61,7 +61,7 @@ public class KeyRotationTask extends TimerTask {
 
     private void removeExpiredKeysFromDb() {
         try {
-            final int n = dbPublicKeyStore.removeExpiredPublicKeys();
+            final int n = dbPublicKeyStore.deleteExpiredPublicKeys();
             logger.info(String.format(MESSAGE_N_EXPIRED_KEYS_REMOVED_FROM_DB, n));
 
         } catch (final DbPublicKeyStoreException e) {

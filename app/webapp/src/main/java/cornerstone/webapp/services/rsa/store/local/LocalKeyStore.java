@@ -9,19 +9,19 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class LocalKeyStore implements LocalKeyStoreInterface {
-    private static final String MESSAGE_PUBLIC_KEY_ADDED          = "... public key ADDED (UUID: '%s')";
-    private static final String MESSAGE_PUBLIC_KEY_DELETED        = "... public key DELETED (UUID: '%s')";
-    private static final String MESSAGE_PUBLIC_KEY_SERVED         = "... public key SERVED (UUID: '%s')";
-    private static final String MESSAGE_PUBLIC_KEY_DOES_NOT_EXIST = "... public key DOES NOT EXIST (UUID: '%s')";
+    private static final String MESSAGE_PUBLIC_KEY_ADDED           = "... public key ADDED (UUID: '%s')";
+    private static final String MESSAGE_PUBLIC_KEY_DELETED         = "... public key DELETED (UUID: '%s')";
+    private static final String MESSAGE_PUBLIC_KEY_SERVED          = "... public key SERVED (UUID: '%s')";
+    private static final String MESSAGE_PUBLIC_KEY_DOES_NOT_EXIST  = "... public key DOES NOT EXIST (UUID: '%s')";
 
-    private static final String MESSAGE_CLEANUP_KEEP_PUBLIC_KEY = "... CLEANUP: PUBLIC KEY KEPT    (UUID: '%s')";
-    private static final String MESSAGE_CLEANUP_REMOVE_PUBLIC_KEY = "... CLEANUP: PUBLIC KEY DELETED (UUID: '%s')";
+    private static final String MESSAGE_CLEANUP_KEEP_PUBLIC_KEY    = "... CLEANUP: PUBLIC KEY KEPT    (UUID: '%s')";
+    private static final String MESSAGE_CLEANUP_REMOVE_PUBLIC_KEY  = "... CLEANUP: PUBLIC KEY DELETED (UUID: '%s')";
 
-    private static final String MESSAGE_SIGNING_KEYS_SET          = "... signing keys SET (UUID: '%s')";
-    private static final String MESSAGE_SIGNING_KEYS_DELETED      = "... signing keys DELETED (UUID: '%s')";
-    private static final String MESSAGE_SIGNING_KEYS_SERVED       = "... signing keys SERVED (UUID: '%s')";
-    private static final String MESSAGE_SIGNING_KEYS_ARE_NOT_SET  = "... signing keys ARE NOT SET";
-    private static final String MESSAGE_RESET                     = "... RESET";
+    private static final String MESSAGE_SIGNING_KEYS_SET           = "... signing keys SET (UUID: '%s')";
+    private static final String MESSAGE_SIGNING_KEYS_DELETED       = "... signing keys DELETED (UUID: '%s')";
+    private static final String MESSAGE_SIGNING_KEYS_SERVED        = "... signing keys SERVED (UUID: '%s')";
+    private static final String MESSAGE_SIGNING_KEYS_ARE_NOT_SET   = "... signing keys ARE NOT SET";
+    private static final String MESSAGE_RESET                      = "... RESET";
 
     private static final Logger logger = LoggerFactory.getLogger(LocalKeyStore.class);
 
@@ -59,14 +59,15 @@ public class LocalKeyStore implements LocalKeyStoreInterface {
 
     @Override
     public void removePublicKeys(final List<UUID> uuidsToBeRemoved) {
-        for (final UUID uuid : publicKeys.keySet()){
+        publicKeys.keySet().forEach(uuid -> {
+            logger.info("------------------------------------------" + uuid);
             if (uuidsToBeRemoved.contains(uuid)){
                 publicKeys.remove(uuid);
                 logger.info(String.format(MESSAGE_CLEANUP_REMOVE_PUBLIC_KEY, uuid));
             } else {
                 logger.info(String.format(MESSAGE_CLEANUP_KEEP_PUBLIC_KEY, uuid));
             }
-        }
+        });
     }
 
     @Override
