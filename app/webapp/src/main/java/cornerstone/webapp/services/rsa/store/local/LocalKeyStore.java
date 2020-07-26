@@ -9,17 +9,17 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class LocalKeyStore implements LocalKeyStoreInterface {
-    private static final String MESSAGE_PUBLIC_KEY_ADDED           = "... public key ADDED (UUID: '%s')";
-    private static final String MESSAGE_PUBLIC_KEY_DELETED         = "... public key DELETED (UUID: '%s')";
-    private static final String MESSAGE_PUBLIC_KEY_SERVED          = "... public key SERVED (UUID: '%s')";
+    private static final String MESSAGE_PUBLIC_KEY_ADDED           = "... public key ADDED    (UUID: '%s')";
+    private static final String MESSAGE_PUBLIC_KEY_DELETED         = "... public key DELETED  (UUID: '%s')";
+    private static final String MESSAGE_PUBLIC_KEY_RETURNED        = "... public key RETURNED (UUID: '%s')";
     private static final String MESSAGE_PUBLIC_KEY_DOES_NOT_EXIST  = "... public key DOES NOT EXIST (UUID: '%s')";
 
-    private static final String MESSAGE_CLEANUP_KEEP_PUBLIC_KEY    = "... CLEANUP: PUBLIC KEY KEPT    (UUID: '%s')";
-    private static final String MESSAGE_CLEANUP_REMOVE_PUBLIC_KEY  = "... CLEANUP: PUBLIC KEY DELETED (UUID: '%s')";
+    private static final String MESSAGE_CLEANUP_KEEP_PUBLIC_KEY    = "... cleanup - public key KEPT    (UUID: '%s')";
+    private static final String MESSAGE_CLEANUP_REMOVE_PUBLIC_KEY  = "... cleanup - public key DELETED (UUID: '%s')";
 
     private static final String MESSAGE_SIGNING_KEYS_SET           = "... signing keys SET (UUID: '%s')";
     private static final String MESSAGE_SIGNING_KEYS_DELETED       = "... signing keys DELETED (UUID: '%s')";
-    private static final String MESSAGE_SIGNING_KEYS_SERVED        = "... signing keys SERVED (UUID: '%s')";
+    private static final String MESSAGE_SIGNING_KEYS_RETURNED      = "... signing keys RETURNED (UUID: '%s')";
     private static final String MESSAGE_SIGNING_KEYS_ARE_NOT_SET   = "... signing keys ARE NOT SET";
     private static final String MESSAGE_RESET                      = "... RESET";
 
@@ -37,7 +37,7 @@ public class LocalKeyStore implements LocalKeyStoreInterface {
     public PublicKey getPublicKey(final UUID uuid) throws NoSuchElementException {
         final PublicKey key = publicKeys.get(uuid);
         if (null != key){
-            logger.info(String.format(MESSAGE_PUBLIC_KEY_SERVED, uuid.toString()));
+            logger.info(String.format(MESSAGE_PUBLIC_KEY_RETURNED, uuid.toString()));
             return key;
         } else {
             logger.info(String.format(MESSAGE_PUBLIC_KEY_DOES_NOT_EXIST, uuid.toString()));
@@ -60,7 +60,6 @@ public class LocalKeyStore implements LocalKeyStoreInterface {
     @Override
     public void removePublicKeys(final List<UUID> uuidsToBeRemoved) {
         publicKeys.keySet().forEach(uuid -> {
-            logger.info("------------------------------------------" + uuid);
             if (uuidsToBeRemoved.contains(uuid)){
                 publicKeys.remove(uuid);
                 logger.info(String.format(MESSAGE_CLEANUP_REMOVE_PUBLIC_KEY, uuid));
@@ -71,7 +70,19 @@ public class LocalKeyStore implements LocalKeyStoreInterface {
     }
 
     @Override
-    public void setSigningKey(final UUID uuid, final PrivateKey privateKey, final PublicKey publicKey){
+    public void keepOnly(final List<UUID> toBeKept){
+        publicKeys.keySet().forEach(uuid -> {
+            if (uuid == signingKeyUUID || toBeKept.contains(uuid)){
+                logger.info(String.format(MESSAGE_CLEANUP_KEEP_PUBLIC_KEY, uuid));
+            } else {
+                publicKeys.remove(uuid);
+                logger.info(String.format(MESSAGE_CLEANUP_REMOVE_PUBLIC_KEY, uuid));
+            }
+        });
+    }
+
+    @Override
+    public void setKeysForSigning(final UUID uuid, final PrivateKey privateKey, final PublicKey publicKey){
         signingKeyUUID = uuid;
         this.privateKey = privateKey;
         publicKeys.put(uuid, publicKey);
@@ -84,9 +95,9 @@ public class LocalKeyStore implements LocalKeyStoreInterface {
     }
 
     @Override
-    public PrivateKeyWithUUID getSigningKey() throws NoSuchElementException {
+    public PrivateKeyWithUUID getPrivateKey() throws NoSuchElementException {
         if (null != privateKey) {
-            logger.info(String.format(MESSAGE_SIGNING_KEYS_SERVED, signingKeyUUID.toString()));
+            logger.info(String.format(MESSAGE_SIGNING_KEYS_RETURNED, signingKeyUUID.toString()));
             return new PrivateKeyWithUUID(signingKeyUUID, privateKey);
         } else {
             logger.info(MESSAGE_SIGNING_KEYS_ARE_NOT_SET);
@@ -95,14 +106,14 @@ public class LocalKeyStore implements LocalKeyStoreInterface {
     }
 
     @Override
-    public void unsetSigningKey() {
+    public void dropPrivateKey() {
         privateKey  = null;
         signingKeyUUID = null;
         logger.info(MESSAGE_SIGNING_KEYS_DELETED);
     }
 
     @Override
-    public void resetAll() {
+    public void dropEverything() {
         publicKeys = new HashMap<>();
 
         signingKeyUUID = null;
