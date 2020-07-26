@@ -4,7 +4,7 @@ import cornerstone.webapp.configuration.ConfigurationLoader;
 import cornerstone.webapp.configuration.enums.APP_ENUM;
 import cornerstone.webapp.common.DefaultLogMessages;
 import cornerstone.webapp.services.rsa.store.local.LocalKeyStoreInterface;
-import cornerstone.webapp.services.rsa.store.db.DbPublicKeyStoreInterface;
+import cornerstone.webapp.services.rsa.store.db.PublicKeyStoreInterface;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,14 +14,14 @@ import java.util.Timer;
 public class KeyRotator implements KeyRotatorInterface {
     private static final Logger logger = LoggerFactory.getLogger(KeyRotator.class);
 
-    private final DbPublicKeyStoreInterface databasePublicKeyStore;
+    private final PublicKeyStoreInterface databasePublicKeyStore;
     private final LocalKeyStoreInterface localKeyStore;
     private final ConfigurationLoader configurationLoader;
     private final Timer timer;
 
     @Inject
     public KeyRotator(final ConfigurationLoader configurationLoader,
-                      final DbPublicKeyStoreInterface dbPublicKeyStore,
+                      final PublicKeyStoreInterface dbPublicKeyStore,
                       final LocalKeyStoreInterface localKeyStore) {
 
         this.configurationLoader = configurationLoader;

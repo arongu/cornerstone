@@ -3,8 +3,8 @@ package cornerstone.webapp.rest.endpoint.test;
 import cornerstone.webapp.rest.security.Secured;
 import cornerstone.webapp.services.rsa.common.PublicKeyData;
 import cornerstone.webapp.services.rsa.rotation.KeyRotatorInterface;
-import cornerstone.webapp.services.rsa.store.db.DbPublicKeyStoreException;
-import cornerstone.webapp.services.rsa.store.db.DbPublicKeyStoreInterface;
+import cornerstone.webapp.services.rsa.store.db.PublicKeyStoreException;
+import cornerstone.webapp.services.rsa.store.db.PublicKeyStoreInterface;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,18 +26,18 @@ import java.util.UUID;
 @Produces(MediaType.APPLICATION_JSON)
 public class RunMe {
     private static final Logger logger = LoggerFactory.getLogger(RunMe.class);
-    private final DbPublicKeyStoreInterface dbPublicKeyStore;
+    private final PublicKeyStoreInterface dbPublicKeyStore;
 
     @Inject
-    public RunMe(final KeyRotatorInterface keyRotator, final DbPublicKeyStoreInterface dbPublicKeyStore){
+    public RunMe(final KeyRotatorInterface keyRotator, final PublicKeyStoreInterface dbPublicKeyStore){
         this.dbPublicKeyStore = dbPublicKeyStore;
     }
 
     @Path("/active")
     @GET
-    public List<PublicKeyData> active() throws DbPublicKeyStoreException {
+    public List<PublicKeyData> active() throws PublicKeyStoreException {
         try {
-            return dbPublicKeyStore.getActivePublicKeys();
+            return dbPublicKeyStore.getLiveKeys();
         } catch (NoSuchElementException e){
             return null;
         }
@@ -45,7 +45,7 @@ public class RunMe {
 
     @Path("/exp")
     @GET
-    public List<UUID> exp() throws DbPublicKeyStoreException {
+    public List<UUID> exp() throws PublicKeyStoreException {
         try {
             return dbPublicKeyStore.getExpiredKeyUUIDs();
         } catch (NoSuchElementException e) {
@@ -55,7 +55,7 @@ public class RunMe {
 
     @Path("/exp")
     @DELETE
-    public int removeExpiredKeys() throws DbPublicKeyStoreException {
-        return dbPublicKeyStore.deleteExpiredPublicKeys();
+    public int removeExpiredKeys() throws PublicKeyStoreException {
+        return dbPublicKeyStore.deleteExpiredKeys();
     }
 }

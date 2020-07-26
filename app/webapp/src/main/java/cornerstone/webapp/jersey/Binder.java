@@ -10,8 +10,8 @@ import cornerstone.webapp.services.jwt.AuthorizationService;
 import cornerstone.webapp.services.jwt.AuthorizationServiceInterface;
 import cornerstone.webapp.services.rsa.rotation.KeyRotator;
 import cornerstone.webapp.services.rsa.rotation.KeyRotatorInterface;
-import cornerstone.webapp.services.rsa.store.db.DbPublicKeyStore;
-import cornerstone.webapp.services.rsa.store.db.DbPublicKeyStoreInterface;
+import cornerstone.webapp.services.rsa.store.db.PublicKeyStore;
+import cornerstone.webapp.services.rsa.store.db.PublicKeyStoreInterface;
 import cornerstone.webapp.services.rsa.store.local.LocalKeyStore;
 import cornerstone.webapp.services.rsa.store.local.LocalKeyStoreInterface;
 import org.glassfish.jersey.internal.inject.AbstractBinder;
@@ -76,7 +76,7 @@ public class Binder extends AbstractBinder {
 
             // dbPubKeyStore <- WorkDB <- configuration
             bind(LocalKeyStore.class).to(LocalKeyStoreInterface.class).in(Singleton.class);
-            bind(DbPublicKeyStore.class).to(DbPublicKeyStoreInterface.class).in(Singleton.class);
+            bind(PublicKeyStore.class).to(PublicKeyStoreInterface.class).in(Singleton.class);
 
             // rotation <- localKeyStore, dbPublicKeyStore
             bind(KeyRotator.class).to(KeyRotatorInterface.class).in(Singleton.class);

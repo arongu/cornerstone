@@ -4,8 +4,8 @@ import cornerstone.webapp.configuration.ConfigurationLoader;
 import cornerstone.webapp.configuration.enums.APP_ENUM;
 import cornerstone.webapp.datasources.WorkDB;
 import cornerstone.webapp.services.rsa.rotation.KeyPairWithUUID;
-import cornerstone.webapp.services.rsa.store.db.DbPublicKeyStore;
-import cornerstone.webapp.services.rsa.store.db.DbPublicKeyStoreException;
+import cornerstone.webapp.services.rsa.store.db.PublicKeyStore;
+import cornerstone.webapp.services.rsa.store.db.PublicKeyStoreException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -14,7 +14,7 @@ import java.nio.file.Paths;
 import java.util.Base64;
 
 public class SSLLocalKeyStorageServiceTest {
-    private static DbPublicKeyStore sslKeyService;
+    private static PublicKeyStore sslKeyService;
     private static ConfigurationLoader configurationLoader;
 
     @BeforeAll
@@ -28,7 +28,7 @@ public class SSLLocalKeyStorageServiceTest {
             configurationLoader.loadAndDecryptConfig();
 
             final WorkDB ds = new WorkDB(configurationLoader);
-            sslKeyService = new DbPublicKeyStore(ds);
+            sslKeyService = new PublicKeyStore(ds);
 
         } catch (final IOException e) {
             e.printStackTrace();
@@ -36,7 +36,7 @@ public class SSLLocalKeyStorageServiceTest {
     }
 
     @Test
-    public void test() throws DbPublicKeyStoreException {
+    public void test() throws PublicKeyStoreException {
         final Base64.Encoder encoder = Base64.getEncoder();
         final String nodeName = configurationLoader.getAppProperties().getProperty(APP_ENUM.APP_NODE_NAME.key);
 
@@ -46,7 +46,7 @@ public class SSLLocalKeyStorageServiceTest {
             start = System.currentTimeMillis();
             final KeyPairWithUUID keyPairWithUUID = new KeyPairWithUUID();
             final String base64pubkey = encoder.encodeToString(keyPairWithUUID.keyPair.getPublic().getEncoded());
-            int result = sslKeyService.addPublicKey(keyPairWithUUID.uuid, nodeName, 172800, base64pubkey);
+            int result = sslKeyService.addKey(keyPairWithUUID.uuid, nodeName, 172800, base64pubkey);
 
             end = (double)(System.currentTimeMillis() - start) / 1000;
             System.out.println(
