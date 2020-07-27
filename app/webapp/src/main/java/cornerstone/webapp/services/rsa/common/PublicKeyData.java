@@ -73,4 +73,9 @@ public class PublicKeyData {
     public void setExpireDate(final Timestamp expireDate) {
         this.expire_ts = expireDate;
     }
+
+    @Override
+    public String toString() {
+        return "{uuid=" + uuid + ", node_name=" + node_name + ", ttl=" + ttl + ", creation_ts=" + creation_ts + ", expire_ts=" + expire_ts + "}";
+    }
 }

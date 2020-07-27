@@ -8,18 +8,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Base64;
-import java.util.List;
 import java.util.TimerTask;
-import java.util.UUID;
 
 public class KeyRotationTask extends TimerTask {
     private static final Logger logger = LoggerFactory.getLogger(KeyRotationTask.class);
     private static final String MESSAGE_ROTATION_TASK_STARTED                       = "... key rotation task STARTED";
     private static final String MESSAGE_ROTATION_TASK_FINISHED                      = "... key rotation task FINISHED";
-    private static final String MESSAGE_N_EXPIRED_KEYS_DELETED_FROM_DB              = "... %d expired key(s) DELETED from DB";
-    private static final String ERROR_MESSAGE_FAILED_TO_STORE_PUBLIC_KEY_IN_DB      = "... key rotation task FAILURE - FAILED TO STORE PUBLIC KEY IN DB (%s)";
-    private static final String ERROR_MESSAGE_FAILED_TO_SYNC_LOCAL_STORE_WITH_DB    = "... key rotation task FAILURE - FAILED TO SYNC KEYS WITH DB (KEEPING EVERYTHING IN MEMORY)";
-    private static final String ERROR_MESSAGE_FAILED_TO_DELETE_EXPIRED_KEYS_FROM_DB = "... key rotation task FAILURE - FAILED TO DELETE EXPIRED KEYS FROM DB";
+    private static final String ERROR_MESSAGE_FAILED_TO_STORE_PUBLIC_KEY_IN_DB      = "... key rotation task -- FAILED TO STORE PUBLIC KEY IN DB (%s)";
+    private static final String ERROR_MESSAGE_FAILED_TO_SYNC_LOCAL_STORE_WITH_DB    = "... key rotation task -- FAILED TO SYNC KEYS WITH DB (KEEPING EVERYTHING IN MEMORY)";
+    private static final String ERROR_MESSAGE_FAILED_TO_DELETE_EXPIRED_KEYS_FROM_DB = "... key rotation task -- FAILED TO DELETE EXPIRED KEYS FROM DB";
+
 
     private final LocalKeyStoreInterface localKeyStore;
     private final PublicKeyStoreInterface dbPublicKeyStore;
@@ -44,6 +42,7 @@ public class KeyRotationTask extends TimerTask {
         final String base64_pub_key = Base64.getEncoder().encodeToString(kp.keyPair.getPublic().getEncoded());
 
         localKeyStore.setPublicAndPrivateKeys(kp.uuid, kp.keyPair.getPrivate(), kp.keyPair.getPublic());
+
         try {
             dbPublicKeyStore.addKey(kp.uuid, nodeName, rsaTTL, base64_pub_key);
         } catch (final PublicKeyStoreException e) {
@@ -54,20 +53,17 @@ public class KeyRotationTask extends TimerTask {
     // step 2
     private void cleanUpLocalPublicKeysKeepOnlyActiveKeysFromDb() {
         try{
-            final List<UUID> uuids = dbPublicKeyStore.getLiveKeyUUIDs();
-            localKeyStore.sync(uuids);
+            localKeyStore.sync(dbPublicKeyStore.getLiveKeyUUIDs());
 
         } catch (final PublicKeyStoreException e){
             logger.error(ERROR_MESSAGE_FAILED_TO_SYNC_LOCAL_STORE_WITH_DB);
         }
-
     }
 
     // step 3
     private void cleanUpDbRemoveExpiredPublicKeys() {
         try {
-            final int n = dbPublicKeyStore.deleteExpiredKeys();
-            logger.info(String.format(MESSAGE_N_EXPIRED_KEYS_DELETED_FROM_DB, n));
+            dbPublicKeyStore.deleteExpiredKeys();
 
         } catch (final PublicKeyStoreException e) {
             logger.error(ERROR_MESSAGE_FAILED_TO_DELETE_EXPIRED_KEYS_FROM_DB);

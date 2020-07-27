@@ -3,6 +3,7 @@ package cornerstone.webapp.services.rsa.store.db;
 import cornerstone.webapp.common.DefaultLogMessages;
 import cornerstone.webapp.datasources.WorkDB;
 import cornerstone.webapp.services.rsa.common.PublicKeyData;
+import cornerstone.webapp.services.rsa.store.LoggingMessageFormats;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,23 +15,13 @@ public class PublicKeyStore implements PublicKeyStoreInterface {
     private static final Logger logger = LoggerFactory.getLogger(PublicKeyStore.class);
 
     // SQL queries
-    private static final String SQL_SELECT_PUBLIC_KEY                = "SELECT node_name,ttl,creation_ts,expire_ts,base64_key FROM secure.public_keys WHERE uuid=?";
-    private static final String SQL_INSERT_PUBLIC_KEY                = "INSERT INTO secure.public_keys (uuid, node_name, ttl, base64_key) VALUES(?,?,?,?)";
-    private static final String SQL_DELETE_PUBLIC_KEY                = "DELETE FROM secure.public_keys WHERE uuid=?";
-    private static final String SQL_SELECT_ACTIVE_PUBLIC_KEYS        = "SELECT uuid,node_name,ttl,creation_ts,expire_ts,base64_key FROM secure.public_keys WHERE expire_ts > NOW()";
-    private static final String SQL_SELECT_ACTIVE_PUBLIC_KEY_UUIDS   = "SELECT uuid FROM secure.public_keys WHERE expire_ts > NOW()";
-    private static final String SQL_SELECT_EXPIRED_PUBLIC_KEY_UUIDS  = "SELECT uuid FROM secure.public_keys WHERE expire_ts < NOW()";
-    private static final String SQL_DELETE_EXPIRED_PUBLIC_KEYS       = "DELETE FROM secure.public_keys WHERE expire_ts < NOW()";
-
-    // log messages
-    private static final String MESSAGE_PUBLIC_KEY_ADDED                     = "... public key ADDED       (UUID: '%s')";
-    private static final String MESSAGE_PUBLIC_KEY_DELETED                   = "... public key DELETED     (UUID: '%s')";
-    private static final String MESSAGE_PUBLIC_KEY_RETRIEVED                 = "... public key RETRIEVED   (UUID: '%s')";
-    private static final String MESSAGE_PUBLIC_KEY_NO_SUCH_KEY               = "... public key NO SUCH KEY (UUID: '%s')";
-    private static final String MESSAGE_N_PUBLIC_KEYS_RETRIEVED              = "... %d public key(s) RETRIEVED";
-    private static final String MESSAGE_N_ACTIVE_PUBLIC_KEY_UUIDS_RETRIEVED  = "... %d active  UUID(s) RETRIEVED : (%s)";
-    private static final String MESSAGE_N_EXPIRED_PUBLIC_KEY_UUIDS_RETRIEVED = "... %d expired UUID(s) RETRIEVED : (%s)";
-    private static final String MESSAGE_N_EXPIRED_PUBLIC_KEY_DELETED         = "... %d expired public key(s) DELETED";
+    private static final String SQL_SELECT_PUBLIC_KEY                   = "SELECT node_name,ttl,creation_ts,expire_ts,base64_key FROM secure.public_keys WHERE uuid=?";
+    private static final String SQL_INSERT_PUBLIC_KEY                   = "INSERT INTO secure.public_keys (uuid, node_name, ttl, base64_key) VALUES(?,?,?,?)";
+    private static final String SQL_DELETE_PUBLIC_KEY                   = "DELETE FROM secure.public_keys WHERE uuid=?";
+    private static final String SQL_SELECT_NON_EXPIRED_PUBLIC_KEYS      = "SELECT uuid,node_name,ttl,creation_ts,expire_ts,base64_key FROM secure.public_keys WHERE expire_ts > NOW()";
+    private static final String SQL_SELECT_NON_EXPIRED_PUBLIC_KEY_UUIDS = "SELECT uuid FROM secure.public_keys WHERE expire_ts > NOW()";
+    private static final String SQL_SELECT_EXPIRED_PUBLIC_KEY_UUIDS     = "SELECT uuid FROM secure.public_keys WHERE expire_ts < NOW()";
+    private static final String SQL_DELETE_EXPIRED_PUBLIC_KEYS          = "DELETE FROM secure.public_keys WHERE expire_ts < NOW()";
 
     // sql-error log messages
     private static final String ERROR_MESSAGE_FAILED_TO_SELECT_PUBLIC_KEY               = "Failed to SELECT public key! UUID: '%s', message: '%s', SQL state: '%s', error code: '%s'";
@@ -56,7 +47,7 @@ public class PublicKeyStore implements PublicKeyStoreInterface {
             ps.setInt(3, ttl);
             ps.setString(4, base64_key);
 
-            logger.info(String.format(MESSAGE_PUBLIC_KEY_ADDED, uuid));
+            logger.info(String.format(LoggingMessageFormats.MESSAGE_FORMAT_SPACES_FIELD1_DATA, "  ", "ADDED KEY", uuid));
             return ps.executeUpdate();
 
         } catch (final SQLException e) {
@@ -69,7 +60,7 @@ public class PublicKeyStore implements PublicKeyStoreInterface {
     public int deleteKey(final UUID uuid) throws PublicKeyStoreException {
         try (final Connection c = workDB.getConnection(); final PreparedStatement ps = c.prepareStatement(SQL_DELETE_PUBLIC_KEY)) {
             ps.setObject(1, uuid);
-            logger.info(String.format(MESSAGE_PUBLIC_KEY_DELETED, uuid));
+            logger.info(String.format(LoggingMessageFormats.MESSAGE_FORMAT_SPACES_FIELD1_DATA, "  ", "DELETED KEY", uuid));
             return ps.executeUpdate();
 
         } catch (final SQLException e) {
@@ -85,12 +76,11 @@ public class PublicKeyStore implements PublicKeyStoreInterface {
             final ResultSet rs = ps.executeQuery();
 
             if (!rs.isBeforeFirst()) {
-                logger.info(String.format(MESSAGE_PUBLIC_KEY_NO_SUCH_KEY, uuid));
+                logger.info(String.format(LoggingMessageFormats.MESSAGE_FORMAT_SPACES_FIELD1_DATA, "  ", "NO SUCH KEY", uuid));
                 throw new NoSuchElementException();
 
             } else {
-                logger.info(String.format(MESSAGE_PUBLIC_KEY_RETRIEVED, uuid));
-                return new PublicKeyData(
+                final PublicKeyData keyData = new PublicKeyData(
                         uuid,
                         rs.getString("node_name"),
                         rs.getInt("ttl"),
@@ -98,6 +88,9 @@ public class PublicKeyStore implements PublicKeyStoreInterface {
                         rs.getTimestamp("expire_ts"),
                         rs.getString("base64_key")
                 );
+
+                logger.info(String.format(LoggingMessageFormats.MESSAGE_FORMAT_SPACES_FIELD1_DATA, "  ", "RETRIEVED KEY", keyData));
+                return keyData;
             }
 
         } catch (final SQLException e) {
@@ -108,29 +101,24 @@ public class PublicKeyStore implements PublicKeyStoreInterface {
 
     @Override
     public List<PublicKeyData> getLiveKeys() throws PublicKeyStoreException {
-        try (final Connection c = workDB.getConnection(); final PreparedStatement ps = c.prepareStatement(SQL_SELECT_ACTIVE_PUBLIC_KEYS)) {
-            final List<PublicKeyData> resultList = new LinkedList<>();
-
+        try (final Connection c = workDB.getConnection(); final PreparedStatement ps = c.prepareStatement(SQL_SELECT_NON_EXPIRED_PUBLIC_KEYS)) {
             final ResultSet rs = ps.executeQuery();
-            if (!rs.isBeforeFirst()) {
-                logger.info(String.format(MESSAGE_N_PUBLIC_KEYS_RETRIEVED, 0));
+            final List<PublicKeyData> keys = new LinkedList<>();
 
-            } else {
-                while (rs.next()){
-                    final UUID uuid = (UUID) rs.getObject("uuid");
-                    final int ttl = rs.getInt("ttl");
-                    final String node_name = rs.getString("node_name");
-                    final Timestamp creation_ts = rs.getTimestamp("creation_ts");
-                    final Timestamp expire_ts = rs.getTimestamp("expire_ts");
-                    final String base64_key = rs.getString("base64_key");
-
-                    resultList.add(new PublicKeyData(uuid, node_name, ttl, creation_ts, expire_ts, base64_key));
-                    logger.info(String.format(MESSAGE_PUBLIC_KEY_RETRIEVED, uuid));
-                }
-                logger.info(String.format(MESSAGE_N_PUBLIC_KEYS_RETRIEVED, resultList.size()));
+            while (rs.next()){
+                final UUID uuid = (UUID) rs.getObject("uuid");
+                final int ttl = rs.getInt("ttl");
+                final String node_name = rs.getString("node_name");
+                final Timestamp creation_ts = rs.getTimestamp("creation_ts");
+                final Timestamp expire_ts = rs.getTimestamp("expire_ts");
+                final String base64_key = rs.getString("base64_key");
+                final PublicKeyData keyData = new PublicKeyData(uuid, node_name, ttl, creation_ts, expire_ts, base64_key);
+                keys.add(keyData);
             }
 
-            return resultList;
+            logger.info(String.format(LoggingMessageFormats.MESSAGE_FORMAT_SPACES_FIELD1_DATA, "  ", "RETRIEVED KEYS", keys));
+            logger.info(String.format(LoggingMessageFormats.MESSAGE_FORMAT_SPACES_FIELD1_DATA, "  ", "KEYS RECEIVED", keys.size()));
+            return keys;
 
         } catch (final SQLException e) {
             logger.error(String.format(ERROR_MESSAGE_FAILED_TO_SELECT_ACTIVE_PUBLIC_KEYS, e.getMessage(), e.getSQLState(), e.getErrorCode()));
@@ -140,21 +128,17 @@ public class PublicKeyStore implements PublicKeyStoreInterface {
 
     @Override
     public List<UUID> getLiveKeyUUIDs() throws PublicKeyStoreException {
-        try (final Connection c = workDB.getConnection(); final PreparedStatement ps = c.prepareStatement(SQL_SELECT_ACTIVE_PUBLIC_KEY_UUIDS)) {
-            final List<UUID> resultList = new LinkedList<>();
-
+        try (final Connection c = workDB.getConnection(); final PreparedStatement ps = c.prepareStatement(SQL_SELECT_NON_EXPIRED_PUBLIC_KEY_UUIDS)) {
             final ResultSet rs = ps.executeQuery();
-            if (!rs.isBeforeFirst()) {
-                logger.info(String.format(MESSAGE_N_ACTIVE_PUBLIC_KEY_UUIDS_RETRIEVED, 0, "[]"));
+            final List<UUID> uuids = new LinkedList<>();
 
-            } else {
-                while (rs.next()){
-                    resultList.add((UUID) rs.getObject("uuid"));
-                }
-                logger.info(String.format(MESSAGE_N_ACTIVE_PUBLIC_KEY_UUIDS_RETRIEVED, resultList.size(), resultList));
+            while (rs.next()){
+                uuids.add((UUID) rs.getObject("uuid"));
             }
 
-            return resultList;
+            logger.info(String.format(LoggingMessageFormats.MESSAGE_FORMAT_SPACES_FIELD1_DATA, "  ", "RETRIEVED KEY UUIDS", uuids));
+            logger.info(String.format(LoggingMessageFormats.MESSAGE_FORMAT_SPACES_FIELD1_DATA, "  ", "UUIDS RECEIVED", uuids.size()));
+            return uuids;
 
         } catch (final SQLException e) {
             logger.error(String.format(ERROR_MESSAGE_FAILED_TO_SELECT_EXPIRED_PUBLIC_KEY_UUIDS, e.getMessage(), e.getSQLState(), e.getErrorCode()));
@@ -165,22 +149,16 @@ public class PublicKeyStore implements PublicKeyStoreInterface {
     @Override
     public List<UUID> getExpiredKeyUUIDs() throws PublicKeyStoreException, NoSuchElementException {
         try (final Connection c = workDB.getConnection(); final PreparedStatement ps = c.prepareStatement(SQL_SELECT_EXPIRED_PUBLIC_KEY_UUIDS)) {
-            final List<UUID> resultList = new LinkedList<>();
-
             final ResultSet rs = ps.executeQuery();
-            if (!rs.isBeforeFirst()) {
-                logger.info(String.format(MESSAGE_N_EXPIRED_PUBLIC_KEY_UUIDS_RETRIEVED, 0, "[]"));
+            final List<UUID> expired_uuids = new ArrayList<>();
 
-            } else {
-                final List<UUID> list = new ArrayList<>();
-                while (rs.next()){
-                    list.add((UUID) rs.getObject("uuid"));
-                }
-
-                logger.info(String.format(MESSAGE_N_EXPIRED_PUBLIC_KEY_UUIDS_RETRIEVED, list.size(), list));
+            while (rs.next()){
+                expired_uuids.add((UUID) rs.getObject("uuid"));
             }
 
-            return resultList;
+            logger.info(String.format(LoggingMessageFormats.MESSAGE_FORMAT_SPACES_FIELD1_DATA, "  ", "RETRIEVED EXPIRED KEY UUIDS", expired_uuids));
+            logger.info(String.format(LoggingMessageFormats.MESSAGE_FORMAT_SPACES_FIELD1_DATA, "  ", "EXPIRED KEY UUIDS RECEIVED", expired_uuids.size()));
+            return expired_uuids;
 
         } catch (final SQLException e) {
             logger.error(String.format(ERROR_MESSAGE_FAILED_TO_SELECT_EXPIRED_PUBLIC_KEY_UUIDS, e.getMessage(), e.getSQLState(), e.getErrorCode()));
@@ -192,7 +170,7 @@ public class PublicKeyStore implements PublicKeyStoreInterface {
     public int deleteExpiredKeys() throws PublicKeyStoreException {
         try (final Connection c = workDB.getConnection(); final PreparedStatement ps = c.prepareStatement(SQL_DELETE_EXPIRED_PUBLIC_KEYS)) {
             final int deletes = ps.executeUpdate();
-            logger.info(String.format(MESSAGE_N_EXPIRED_PUBLIC_KEY_DELETED, deletes));
+            logger.info(String.format(LoggingMessageFormats.MESSAGE_FORMAT_SPACES_FIELD1_DATA, "  ", "EXPIRED KEYS DELETED", deletes));
             return deletes;
 
         } catch (final SQLException e) {
