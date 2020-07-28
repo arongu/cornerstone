@@ -75,11 +75,7 @@ public class PublicKeyStore implements PublicKeyStoreInterface {
             ps.setObject(1, uuid);
             final ResultSet rs = ps.executeQuery();
 
-            if (!rs.isBeforeFirst()) {
-                logger.info(String.format(LoggingMessageFormats.MESSAGE_FORMAT_SPACES_FIELD1_DATA, "  ", "NO SUCH PUBLIC KEY WITH UUID (DB)", uuid));
-                throw new NoSuchElementException();
-
-            } else {
+            if (rs != null && rs.next()) {
                 final PublicKeyData keyData = new PublicKeyData(
                         uuid,
                         rs.getString("node_name"),
@@ -91,6 +87,10 @@ public class PublicKeyStore implements PublicKeyStoreInterface {
 
                 logger.info(String.format(LoggingMessageFormats.MESSAGE_FORMAT_SPACES_FIELD1_DATA, "  ", "RETRIEVED PUBLIC KEY (DB)", keyData));
                 return keyData;
+
+            } else {
+                logger.info(String.format(LoggingMessageFormats.MESSAGE_FORMAT_SPACES_FIELD1_DATA, "  ", "NO SUCH PUBLIC KEY WITH UUID (DB)", uuid));
+                throw new NoSuchElementException();
             }
 
         } catch (final SQLException e) {
@@ -105,16 +105,19 @@ public class PublicKeyStore implements PublicKeyStoreInterface {
             final ResultSet rs = ps.executeQuery();
             final List<PublicKeyData> keys = new LinkedList<>();
 
-            while (rs.next()){
-                final UUID uuid = (UUID) rs.getObject("uuid");
-                final int ttl = rs.getInt("ttl");
-                final String node_name = rs.getString("node_name");
-                final Timestamp creation_ts = rs.getTimestamp("creation_ts");
-                final Timestamp expire_ts = rs.getTimestamp("expire_ts");
-                final String base64_key = rs.getString("base64_key");
-                final PublicKeyData keyData = new PublicKeyData(uuid, node_name, ttl, creation_ts, expire_ts, base64_key);
-                keys.add(keyData);
+            if (rs != null) {
+                while (rs.next()){
+                    final UUID uuid = (UUID) rs.getObject("uuid");
+                    final int ttl = rs.getInt("ttl");
+                    final String node_name = rs.getString("node_name");
+                    final Timestamp creation_ts = rs.getTimestamp("creation_ts");
+                    final Timestamp expire_ts = rs.getTimestamp("expire_ts");
+                    final String base64_key = rs.getString("base64_key");
+                    final PublicKeyData keyData = new PublicKeyData(uuid, node_name, ttl, creation_ts, expire_ts, base64_key);
+                    keys.add(keyData);
+                }
             }
+
             logger.info(String.format(LoggingMessageFormats.MESSAGE_FORMAT_SPACES_FIELD1_DATA, "  ", "NUMBER OF RETRIEVED PUBLIC KEYS (DB)", keys.size()));
             logger.info(String.format(LoggingMessageFormats.MESSAGE_FORMAT_SPACES_FIELD1_DATA, "  ", "RETRIEVED PUBLIC KEYS (DB)", keys));
             return keys;
@@ -131,8 +134,10 @@ public class PublicKeyStore implements PublicKeyStoreInterface {
             final ResultSet rs = ps.executeQuery();
             final List<UUID> uuids = new LinkedList<>();
 
-            while (rs.next()){
-                uuids.add((UUID) rs.getObject("uuid"));
+            if (rs != null){
+                while (rs.next()){
+                    uuids.add((UUID) rs.getObject("uuid"));
+                }
             }
 
             logger.info(String.format(LoggingMessageFormats.MESSAGE_FORMAT_SPACES_FIELD1_DATA, "  ", "NUMBER OF RETRIEVED PUBLIC KEY UUIDS (DB)", uuids.size()));
@@ -151,8 +156,10 @@ public class PublicKeyStore implements PublicKeyStoreInterface {
             final ResultSet rs = ps.executeQuery();
             final List<UUID> expired_uuids = new ArrayList<>();
 
-            while (rs.next()){
-                expired_uuids.add((UUID) rs.getObject("uuid"));
+            if(rs != null){
+                while (rs.next()){
+                    expired_uuids.add((UUID) rs.getObject("uuid"));
+                }
             }
 
             logger.info(String.format(LoggingMessageFormats.MESSAGE_FORMAT_SPACES_FIELD1_DATA, "  ", "NUMBER OF EXPIRED PUBLIC KEY UUIDS RETRIEVED (DB)", expired_uuids.size()));

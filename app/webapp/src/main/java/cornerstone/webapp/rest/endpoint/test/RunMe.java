@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
-@Secured
+//@Secured
 @Path("/")
 @Singleton
 @Produces(MediaType.APPLICATION_JSON)
@@ -40,7 +40,7 @@ public class RunMe {
         this.authorizationService = authorizationService;
     }
 
-    @Path("/active")
+    @Path("active")
     @GET
     public List<PublicKeyData> active() throws PublicKeyStoreException {
         try {
@@ -50,7 +50,7 @@ public class RunMe {
         }
     }
 
-    @Path("/exp")
+    @Path("exp")
     @GET
     public List<UUID> exp() throws PublicKeyStoreException {
         try {
@@ -60,14 +60,14 @@ public class RunMe {
         }
     }
 
-    @Path("/exp")
+    @Path("exp")
     @DELETE
     public int removeExpiredKeys() throws PublicKeyStoreException {
         return dbPublicKeyStore.deleteExpiredKeys();
     }
 
     @Produces(MediaType.TEXT_PLAIN)
-    @Path("/auth")
+    @Path("authx")
     @GET
     public String auth() throws AuthorizationServiceException {
         return authorizationService.issueJWT("test@mail.com");

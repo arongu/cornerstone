@@ -36,7 +36,6 @@ public class LocalKeyStore implements LocalKeyStoreInterface {
     public PublicKey getPublicKey(final UUID uuid) throws NoSuchElementException {
         final PublicKey keyData = publicKeys.get(uuid);
         if (null != keyData){
-            logger.info(String.format(LoggingMessageFormats.MESSAGE_FORMAT_SPACES_FIELD1_DATA, "  ", "RETURNED KEY (LOCAL)", keyData));
             return keyData;
         } else {
             logger.info(String.format(LoggingMessageFormats.MESSAGE_FORMAT_SPACES_FIELD1_DATA, "  ", "NO SUCH KEY (LOCAL)", uuid));
@@ -85,7 +84,6 @@ public class LocalKeyStore implements LocalKeyStoreInterface {
     @Override
     public PrivateKeyWithUUID getPrivateKey() throws NoSuchElementException {
         if (null != privateKey) {
-            logger.info(String.format(LoggingMessageFormats.MESSAGE_FORMAT_SPACES_FIELD1_DATA, "", "PUBLIC AND PRIVATE KEY RETURNED (LOCAL)", currentUUID));
             return new PrivateKeyWithUUID(currentUUID, privateKey);
         } else {
             logger.info(String.format(LoggingMessageFormats.MESSAGE_FORMAT_SPACES_FIELD1, "", "PUBLIC AND PRIVATE KEY ARE NOT SET (LOCAL)"));
@@ -97,7 +95,7 @@ public class LocalKeyStore implements LocalKeyStoreInterface {
     public void dropPrivateKey() {
         privateKey  = null;
         currentUUID = null;
-        logger.info(String.format(LoggingMessageFormats.MESSAGE_FORMAT_SPACES_FIELD1, "", "PRIVATE KEY DELETED (LOCAL)"));
+        logger.info(String.format(LoggingMessageFormats.MESSAGE_FORMAT_SPACES_FIELD1, "", "PRIVATE KEY DROPPED (LOCAL)"));
     }
 
     @Override

@@ -1,12 +1,12 @@
 package cornerstone.webapp.rest.endpoint.login;
 
+import cornerstone.webapp.rest.endpoint.account.EmailAndPassword;
 import cornerstone.webapp.rest.exceptions.BadRequestException;
+import cornerstone.webapp.rest.util.HttpMessage;
 import cornerstone.webapp.services.account.administration.AccountManagerException;
 import cornerstone.webapp.services.account.administration.AccountManagerInterface;
 import cornerstone.webapp.services.jwt.AuthorizationServiceException;
 import cornerstone.webapp.services.jwt.AuthorizationServiceInterface;
-import cornerstone.webapp.rest.endpoint.account.EmailAndPassword;
-import cornerstone.webapp.rest.util.HttpMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,9 +18,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.ext.Provider;
 
-@Provider
 @Singleton
 @Path("/login")
 @Consumes(MediaType.APPLICATION_JSON)
