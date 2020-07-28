@@ -1,6 +1,8 @@
 package cornerstone.webapp.rest.endpoint.test;
 
 import cornerstone.webapp.rest.security.Secured;
+import cornerstone.webapp.services.jwt.AuthorizationServiceException;
+import cornerstone.webapp.services.jwt.AuthorizationServiceInterface;
 import cornerstone.webapp.services.rsa.common.PublicKeyData;
 import cornerstone.webapp.services.rsa.rotation.KeyRotatorInterface;
 import cornerstone.webapp.services.rsa.store.db.PublicKeyStoreException;
@@ -27,10 +29,15 @@ import java.util.UUID;
 public class RunMe {
     private static final Logger logger = LoggerFactory.getLogger(RunMe.class);
     private final PublicKeyStoreInterface dbPublicKeyStore;
+    private final AuthorizationServiceInterface authorizationService;
 
     @Inject
-    public RunMe(final KeyRotatorInterface keyRotator, final PublicKeyStoreInterface dbPublicKeyStore){
+    public RunMe(final KeyRotatorInterface keyRotator,
+                 final PublicKeyStoreInterface dbPublicKeyStore,
+                 final AuthorizationServiceInterface authorizationService){
+
         this.dbPublicKeyStore = dbPublicKeyStore;
+        this.authorizationService = authorizationService;
     }
 
     @Path("/active")
@@ -57,5 +64,12 @@ public class RunMe {
     @DELETE
     public int removeExpiredKeys() throws PublicKeyStoreException {
         return dbPublicKeyStore.deleteExpiredKeys();
+    }
+
+    @Produces(MediaType.TEXT_PLAIN)
+    @Path("/auth")
+    @GET
+    public String auth() throws AuthorizationServiceException {
+        return authorizationService.issueJWT("test@mail.com");
     }
 }

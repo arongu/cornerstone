@@ -80,6 +80,8 @@ public class Binder extends AbstractBinder {
 
             // rotation <- localKeyStore, dbPublicKeyStore
             bind(KeyRotator.class).to(KeyRotatorInterface.class).in(Singleton.class);
+            // authorization
+            bind(AuthorizationService.class).to(AuthorizationServiceInterface.class).in(Singleton.class);
 
         } catch (final IOException e) {
             throw new RuntimeException(e.getMessage());

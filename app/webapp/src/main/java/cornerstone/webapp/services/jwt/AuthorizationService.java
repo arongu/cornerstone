@@ -1,70 +1,52 @@
 package cornerstone.webapp.services.jwt;
 
-import cornerstone.webapp.configuration.ConfigurationLoader;
 import cornerstone.webapp.common.DefaultLogMessages;
+import cornerstone.webapp.configuration.ConfigurationLoader;
+import cornerstone.webapp.configuration.enums.APP_ENUM;
+import cornerstone.webapp.services.rsa.store.local.LocalKeyStoreInterface;
+import cornerstone.webapp.services.rsa.store.local.PrivateKeyWithUUID;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.security.Keys;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.security.Key;
+import javax.inject.Inject;
 import java.time.Instant;
-import java.util.Base64;
 import java.util.Date;
+import java.util.NoSuchElementException;
+import java.util.Properties;
 
 public class AuthorizationService implements AuthorizationServiceInterface {
     private static final Logger logger = LoggerFactory.getLogger(AuthorizationService.class);
-    private Key key;
 
-    // TODO fix implementation , wip dozer
-    public void loadKey(final ConfigurationLoader configurationLoader) {
-        final String base64key = "alma";
-                //(String) configReader.getAppProperties().get(ApplicationConfigFields.APP_JWS_KEY.key);
+    private final ConfigurationLoader configurationLoader;
+    private final LocalKeyStoreInterface localKeyStore;
 
-        if ( base64key != null &&
-           ! base64key.isEmpty() ) {
-
-            key = Keys.hmacShaKeyFor(
-                    Base64.getDecoder().decode(base64key)
-            );
-
-        } else {
-            logger.error("JWS key for JWT token generation is set to null or empty, the app will not work correctly!");
-        }
-    }
-
-    //@Inject
-    public AuthorizationService(final ConfigurationLoader cp) {
+    @Inject
+    public AuthorizationService(final ConfigurationLoader configurationLoader, final LocalKeyStoreInterface localKeyStore){
+        this.configurationLoader = configurationLoader;
+        this.localKeyStore = localKeyStore;
         logger.info(String.format(DefaultLogMessages.MESSAGE_CONSTRUCTOR_CALLED, getClass().getName()));
-        loadKey(cp);
     }
 
     @Override
     public String issueJWT(final String emailAddress) throws AuthorizationServiceException {
-        if ( null != key ) {
+        //.signWith(Keys.hmacShaKeyFor(privateKeyWithUUID.privateKey.getEncoded()))
+        try {
+            final PrivateKeyWithUUID privateKeyWithUUID = localKeyStore.getPrivateKey();
+            final Properties properties = configurationLoader.getAppProperties();
+            final long jwtTTL = Long.parseLong(properties.getProperty(APP_ENUM.APP_JWT_TTL.key));
 
+            logger.info("-------------------- ISSUED --------------------------------------");
             return Jwts.builder()
                     .setIssuer(this.getClass().getName())
                     .setSubject(emailAddress)
                     .claim("scope", "user")
-                    .setIssuedAt(
-                            Date.from(
-                                    Instant.ofEpochSecond(
-                                            Instant.now().getEpochSecond()
-                                    )
-                            )
-                    )
-                    .setExpiration(
-                            Date.from(
-                                    Instant.ofEpochSecond(
-                                            Instant.now().getEpochSecond() + 86400L // valid for 24h
-                                    )
-                            )
-                    )
-                    .signWith(key)
+                    .setIssuedAt  (Date.from(Instant.ofEpochSecond(Instant.now().getEpochSecond())))
+                    .setExpiration(Date.from(Instant.ofEpochSecond(Instant.now().getEpochSecond() + jwtTTL)))
+                    .signWith(privateKeyWithUUID.privateKey)
                     .compact();
-        } else {
-            // TODO add proper DTO, error message, JSON... etc
+
+        } catch (final NoSuchElementException e){
             logger.error("key is null");
             throw new AuthorizationServiceException();
         }

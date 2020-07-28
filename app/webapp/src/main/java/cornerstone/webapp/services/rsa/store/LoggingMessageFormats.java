@@ -7,6 +7,7 @@ public final class LoggingMessageFormats {
     // %s to display and data
     private LoggingMessageFormats(){};
 
-    public static final String MESSAGE_FORMAT_SPACES_FIELD1                 = "%s%30s";
-    public static final String MESSAGE_FORMAT_SPACES_FIELD1_DATA            = "%s%30s : %s";
+    public static final String MESSAGE_FORMAT_SPACES_FIELD1                 = "%s%50s";
+    public static final String MESSAGE_FORMAT_SPACES_FIELD1_DATA            = "%s%50s : %s";
+    public static final String MESSAGE_FORMAT_SPACES_FIELD1_DATA1_DATA2     = "%s%50s : %s, %s";
 }

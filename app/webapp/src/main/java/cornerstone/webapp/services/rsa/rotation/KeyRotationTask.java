@@ -12,11 +12,11 @@ import java.util.TimerTask;
 
 public class KeyRotationTask extends TimerTask {
     private static final Logger logger = LoggerFactory.getLogger(KeyRotationTask.class);
-    private static final String MESSAGE_ROTATION_TASK_STARTED                       = "... key rotation task STARTED";
-    private static final String MESSAGE_ROTATION_TASK_FINISHED                      = "... key rotation task FINISHED";
-    private static final String ERROR_MESSAGE_FAILED_TO_STORE_PUBLIC_KEY_IN_DB      = "... key rotation task -- FAILED TO STORE PUBLIC KEY IN DB (%s)";
-    private static final String ERROR_MESSAGE_FAILED_TO_SYNC_LOCAL_STORE_WITH_DB    = "... key rotation task -- FAILED TO SYNC KEYS WITH DB (KEEPING EVERYTHING IN MEMORY)";
-    private static final String ERROR_MESSAGE_FAILED_TO_DELETE_EXPIRED_KEYS_FROM_DB = "... key rotation task -- FAILED TO DELETE EXPIRED KEYS FROM DB";
+    private static final String MESSAGE_ROTATION_TASK_STARTED                       = "STARTED";
+    private static final String MESSAGE_ROTATION_TASK_FINISHED                      = "FINISHED";
+    private static final String ERROR_MESSAGE_FAILED_TO_STORE_PUBLIC_KEY_IN_DB      = "FAILED TO STORE PUBLIC KEY IN DB (%s)";
+    private static final String ERROR_MESSAGE_FAILED_TO_SYNC_LOCAL_STORE_WITH_DB    = "FAILED TO SYNC KEYS WITH DB (KEEPING EVERYTHING IN MEMORY)";
+    private static final String ERROR_MESSAGE_FAILED_TO_DELETE_EXPIRED_KEYS_FROM_DB = "FAILED TO DELETE EXPIRED KEYS FROM DB";
 
 
     private final LocalKeyStoreInterface localKeyStore;
