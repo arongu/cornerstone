@@ -57,15 +57,15 @@ public class LocalKeyStoreImpl implements LocalKeyStore {
         int deleted = 0;
         for (final UUID uuid : publicKeys.keySet()) {
             if (uuid == currentUUID || toBeKept.contains(uuid)){
-                logger.info(String.format(LoggingMessageFormats.MESSAGE_FORMAT_SPACES_FIELD1_DATA, "", "SYNCING - KEEPING KEY WITH UUID (MEMORY)", uuid));
+                logger.info(String.format(LoggingMessageFormats.MESSAGE_FORMAT_SPACES_FIELD1_DATA, "", "SYNCING - KEEPING KEY WITH UUID (LOCAL)", uuid));
             } else {
                 publicKeys.remove(uuid);
                 deleted++;
-                logger.info(String.format(LoggingMessageFormats.MESSAGE_FORMAT_SPACES_FIELD1_DATA, "", "SYNCING - DELETED KEY WITH UUID (MEMORY)", uuid));
+                logger.info(String.format(LoggingMessageFormats.MESSAGE_FORMAT_SPACES_FIELD1_DATA, "", "SYNCING - DELETED KEY WITH UUID (LOCAL)", uuid));
             }
         }
 
-        logger.info(String.format(LoggingMessageFormats.MESSAGE_FORMAT_SPACES_FIELD1_DATA1_DATA2, "", "KEEPING, DELETED (MEMORY)", publicKeys.size(), deleted));
+        logger.info(String.format(LoggingMessageFormats.MESSAGE_FORMAT_SPACES_FIELD1_DATA1_DATA2, "", "KEEPING, DELETED (LOCAL)", publicKeys.size(), deleted));
     }
 
     @Override
