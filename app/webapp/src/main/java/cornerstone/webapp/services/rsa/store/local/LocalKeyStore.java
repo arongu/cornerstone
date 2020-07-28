@@ -1,6 +1,7 @@
 package cornerstone.webapp.services.rsa.store.local;
 
 import cornerstone.webapp.services.rsa.store.LoggingMessageFormats;
+import org.jvnet.hk2.annotations.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -9,6 +10,7 @@ import java.security.PublicKey;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
+@Service
 public class LocalKeyStore implements LocalKeyStoreInterface {
     private static final Logger logger = LoggerFactory.getLogger(LocalKeyStore.class);
 

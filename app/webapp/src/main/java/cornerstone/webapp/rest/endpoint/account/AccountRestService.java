@@ -30,7 +30,7 @@ public class AccountRestService {
     }
 
     @POST
-    public Response create(final EmailAndPassword account) throws AccountManagerException, BadRequestException {
+    public Response create(final AccountEmailPassword account) throws AccountManagerException, BadRequestException {
         if (null != account) {
             accountManager.create(account.email, account.password, false, false);
             return Response.status(Response.Status.CREATED).entity(account.email).build();
@@ -54,7 +54,7 @@ public class AccountRestService {
     // /mass
     @POST
     @Path("/mass")
-    public Response massCreate(final List<EmailAndPassword> accounts) throws AccountManagerMultipleException, BadRequestException {
+    public Response massCreate(final List<AccountEmailPassword> accounts) throws AccountManagerMultipleException, BadRequestException {
         if (accounts != null && !accounts.isEmpty()) {
             accountManager.create(accounts);
             return Response.status(Response.Status.CREATED).entity(accounts).build();

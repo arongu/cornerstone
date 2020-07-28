@@ -1,6 +1,6 @@
 package cornerstone.webapp.services.account.administration;
 
-import cornerstone.webapp.rest.endpoint.account.EmailAndPassword;
+import cornerstone.webapp.rest.endpoint.account.AccountEmailPassword;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -8,7 +8,7 @@ import java.util.NoSuchElementException;
 public interface AccountManagerInterface {
     // Create
     int create(final String emailAddress, final String password, final boolean accountLocked, final boolean verified) throws AccountManagerException;
-    int create(final List<EmailAndPassword> list) throws AccountManagerMultipleException;
+    int create(final List<AccountEmailPassword> list) throws AccountManagerMultipleException;
 
     // Read
     AccountResultSet get(final String emailAddress) throws AccountManagerException, NoSuchElementException;

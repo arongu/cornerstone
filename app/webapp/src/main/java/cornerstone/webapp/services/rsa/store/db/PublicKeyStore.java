@@ -4,6 +4,7 @@ import cornerstone.webapp.common.DefaultLogMessages;
 import cornerstone.webapp.datasources.WorkDB;
 import cornerstone.webapp.services.rsa.common.PublicKeyData;
 import cornerstone.webapp.services.rsa.store.LoggingMessageFormats;
+import org.jvnet.hk2.annotations.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,6 +12,7 @@ import javax.inject.Inject;
 import java.sql.*;
 import java.util.*;
 
+@Service
 public class PublicKeyStore implements PublicKeyStoreInterface {
     private static final Logger logger = LoggerFactory.getLogger(PublicKeyStore.class);
 

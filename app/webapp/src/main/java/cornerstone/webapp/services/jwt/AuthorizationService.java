@@ -30,13 +30,11 @@ public class AuthorizationService implements AuthorizationServiceInterface {
 
     @Override
     public String issueJWT(final String emailAddress) throws AuthorizationServiceException {
-        //.signWith(Keys.hmacShaKeyFor(privateKeyWithUUID.privateKey.getEncoded()))
         try {
             final PrivateKeyWithUUID privateKeyWithUUID = localKeyStore.getPrivateKey();
             final Properties properties = configurationLoader.getAppProperties();
             final long jwtTTL = Long.parseLong(properties.getProperty(APP_ENUM.APP_JWT_TTL.key));
 
-            logger.info("-------------------- ISSUED --------------------------------------");
             return Jwts.builder()
                     .setIssuer(this.getClass().getName())
                     .setSubject(emailAddress)

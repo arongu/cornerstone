@@ -4,7 +4,7 @@ import cornerstone.webapp.common.DefaultLogMessages;
 import cornerstone.webapp.configuration.ConfigurationLoader;
 import cornerstone.webapp.configuration.enums.APP_ENUM;
 import cornerstone.webapp.datasources.UsersDB;
-import cornerstone.webapp.rest.endpoint.account.EmailAndPassword;
+import cornerstone.webapp.rest.endpoint.account.AccountEmailPassword;
 import org.apache.commons.codec.digest.Crypt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -141,25 +141,25 @@ public class AccountManager implements AccountManagerInterface {
 
     // mostly used for testing
     @Override
-    public int create(final List<EmailAndPassword> emailsAndPasswords) throws AccountManagerMultipleException {
+    public int create(final List<AccountEmailPassword> emailsAndPasswords) throws AccountManagerMultipleException {
         AccountManagerMultipleException multipleException = null;
         int updatedRows = 0;
 
         try (final Connection c = usersDB.getConnection();
              final PreparedStatement ps = c.prepareStatement(SQL_CREATE_ACCOUNT)) {
 
-            for (final EmailAndPassword emailAndPassword : emailsAndPasswords) {
-                if (null != emailAndPassword) {
+            for (final AccountEmailPassword accountEmailPassword : emailsAndPasswords) {
+                if (null != accountEmailPassword) {
                     try {
-                        ps.setString(1, Crypt.crypt(emailAndPassword.password));
-                        ps.setString(2, emailAndPassword.email.toLowerCase());
+                        ps.setString(1, Crypt.crypt(accountEmailPassword.password));
+                        ps.setString(2, accountEmailPassword.email.toLowerCase());
                         ps.setBoolean(3, true);
                         ps.setBoolean(4, false); // false by default
                         updatedRows += ps.executeUpdate();
-                        logger.info(String.format(MESSAGE_ACCOUNT_CREATED, emailAndPassword.email));
+                        logger.info(String.format(MESSAGE_ACCOUNT_CREATED, accountEmailPassword.email));
 
                     } catch (final SQLException e) {
-                        final String msg = String.format(ERROR_MESSAGE_FAILED_TO_CREATE_ACCOUNT, emailAndPassword.email, e.getMessage(), e.getSQLState());
+                        final String msg = String.format(ERROR_MESSAGE_FAILED_TO_CREATE_ACCOUNT, accountEmailPassword.email, e.getMessage(), e.getSQLState());
 
                         if (null == multipleException) {
                             multipleException = new AccountManagerMultipleException();

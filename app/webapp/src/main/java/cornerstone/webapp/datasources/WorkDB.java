@@ -4,6 +4,7 @@ import cornerstone.webapp.configuration.ConfigurationLoader;
 import cornerstone.webapp.configuration.enums.DB_WORK_ENUM;
 import cornerstone.webapp.common.DefaultLogMessages;
 import org.apache.commons.dbcp2.BasicDataSource;
+import org.jvnet.hk2.annotations.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,6 +12,7 @@ import javax.inject.Inject;
 import java.util.Properties;
 
 // main/work database connection provider (singleton JerseyBinder.class)
+@Service
 public class WorkDB extends BasicDataSource {
     private static final Logger logger = LoggerFactory.getLogger(WorkDB.class);
     

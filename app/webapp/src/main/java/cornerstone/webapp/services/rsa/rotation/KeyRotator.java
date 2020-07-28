@@ -1,16 +1,18 @@
 package cornerstone.webapp.services.rsa.rotation;
 
+import cornerstone.webapp.common.DefaultLogMessages;
 import cornerstone.webapp.configuration.ConfigurationLoader;
 import cornerstone.webapp.configuration.enums.APP_ENUM;
-import cornerstone.webapp.common.DefaultLogMessages;
-import cornerstone.webapp.services.rsa.store.local.LocalKeyStoreInterface;
 import cornerstone.webapp.services.rsa.store.db.PublicKeyStoreInterface;
+import cornerstone.webapp.services.rsa.store.local.LocalKeyStoreInterface;
+import org.jvnet.hk2.annotations.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import java.util.Timer;
 
+@Service
 public class KeyRotator implements KeyRotatorInterface {
     private static final Logger logger = LoggerFactory.getLogger(KeyRotator.class);
 

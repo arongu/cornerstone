@@ -1,25 +1,25 @@
-package cornerstone.webapp.rest.endpoint.auth;
+package cornerstone.webapp.rest.endpoint.pubkey;
 
+import cornerstone.webapp.services.rsa.common.PublicKeyData;
 import cornerstone.webapp.services.rsa.store.db.PublicKeyStoreException;
 import cornerstone.webapp.services.rsa.store.db.PublicKeyStoreInterface;
 import cornerstone.webapp.services.rsa.store.local.LocalKeyStoreInterface;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 import java.util.Base64;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
 @Singleton
-@Path("/auth")
+@Path("/pubkeys")
 public class PublicKeyService {
-    private static final Logger logger = LoggerFactory.getLogger(PublicKeyService.class);
-
     private final LocalKeyStoreInterface localKeyStore;
     private final PublicKeyStoreInterface publicKeyStore;
 
@@ -30,17 +30,33 @@ public class PublicKeyService {
     }
 
     @GET
-    @Path("pubkey/{uuid}")
+    @Produces(MediaType.TEXT_PLAIN)
+    @Path("/uuid/{uuid}")
     public String publicKey(@PathParam("uuid") String uuid) throws PublicKeyStoreException, NoSuchElementException {
-        logger.info("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
         try {
-            logger.info("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb");
-            final String b64 = Base64.getEncoder().encodeToString(localKeyStore.getPublicKey(UUID.fromString(uuid)).getEncoded());
-            logger.info("b64 " + b64);
-            return b64;
-        } catch (final NoSuchElementException ignored){}
+            return Base64.getEncoder().encodeToString(localKeyStore.getPublicKey(UUID.fromString(uuid)).getEncoded());
+        } catch (final NoSuchElementException ignored){
 
-        logger.info("ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc");
+        }
+
         return publicKeyStore.getKey(UUID.fromString(uuid)).getBase64Key();
+    }
+
+    @GET
+    @Path("/live")
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<PublicKeyData> getLivePublicKeys() throws PublicKeyStoreException {
+        try {
+            return publicKeyStore.getLiveKeys();
+        } catch (NoSuchElementException e){
+            return null;
+        }
+    }
+
+    @GET
+    @Path("/expired")
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<UUID> getExpiredKeys() throws PublicKeyStoreException {
+        return publicKeyStore.getExpiredKeyUUIDs();
     }
 }

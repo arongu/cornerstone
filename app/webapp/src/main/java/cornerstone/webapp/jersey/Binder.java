@@ -67,20 +67,20 @@ public class Binder extends AbstractBinder {
             bind(configurationLoader).to(ConfigurationLoader.class).in(Singleton.class);
 
             // data sources <- configuration
-            bindAsContract(UsersDB.class).in(Singleton.class);
-            bindAsContract(WorkDB.class).in(Singleton.class);
+            //bindAsContract(UsersDB.class);
+            //bindAsContract(WorkDB.class).in(Singleton.class);
 
             // account services <- UsersDB <- configuration
             bind(AccountManager.class).to(AccountManagerInterface.class).in(Singleton.class);
             bind(AuthorizationService.class).to(AuthorizationServiceInterface.class).in(Singleton.class);
 
-            // dbPubKeyStore <- WorkDB <- configuration
-            bind(LocalKeyStore.class).to(LocalKeyStoreInterface.class).in(Singleton.class);
+            // PublicKeyStore <- WorkDB <- configuration
             bind(PublicKeyStore.class).to(PublicKeyStoreInterface.class).in(Singleton.class);
+            bind(LocalKeyStore.class).to(LocalKeyStoreInterface.class).in(Singleton.class);
 
-            // rotation <- localKeyStore, dbPublicKeyStore
-            bind(KeyRotator.class).to(KeyRotatorInterface.class).in(Singleton.class);
-            // authorization
+            // rotation <- LocalKeyStore, PublicKeyStore
+            bind(KeyRotator.class).to(KeyRotatorInterface.class);
+            // auth
             bind(AuthorizationService.class).to(AuthorizationServiceInterface.class).in(Singleton.class);
 
         } catch (final IOException e) {

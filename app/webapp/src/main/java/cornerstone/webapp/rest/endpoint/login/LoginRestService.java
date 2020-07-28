@@ -1,6 +1,6 @@
 package cornerstone.webapp.rest.endpoint.login;
 
-import cornerstone.webapp.rest.endpoint.account.EmailAndPassword;
+import cornerstone.webapp.rest.endpoint.account.AccountEmailPassword;
 import cornerstone.webapp.rest.exceptions.BadRequestException;
 import cornerstone.webapp.rest.util.HttpMessage;
 import cornerstone.webapp.services.account.administration.AccountManagerException;
@@ -36,24 +36,24 @@ public class LoginRestService {
     }
 
     @POST
-    public Response authenticateUser(final EmailAndPassword emailAndPassword) throws AccountManagerException, AuthorizationServiceException, BadRequestException {
-        if (null != emailAndPassword &&
-            null != emailAndPassword.email &&
-            null != emailAndPassword.password ) {
+    public Response authenticateUser(final AccountEmailPassword accountEmailPassword) throws AccountManagerException, AuthorizationServiceException, BadRequestException {
+        if (null != accountEmailPassword &&
+            null != accountEmailPassword.email &&
+            null != accountEmailPassword.password ) {
 
             final Response response;
             final boolean authenticated;
 
-            authenticated = accountAdmin.login(emailAndPassword.email, emailAndPassword.password);
+            authenticated = accountAdmin.login(accountEmailPassword.email, accountEmailPassword.password);
             if ( authenticated ) {
-                final String jwt = authorizationService.issueJWT(emailAndPassword.email);
+                final String jwt = authorizationService.issueJWT(accountEmailPassword.email);
                 response = Response.status(Response.Status.ACCEPTED).entity(jwt).build();
-                logger.info("[ NEW ACCESS TOKEN ][ GRANTED ] -- '{}'", emailAndPassword.email);
+                logger.info("[ NEW ACCESS TOKEN ][ GRANTED ] -- '{}'", accountEmailPassword.email);
 
             } else {
                 final HttpMessage httpMessage = new HttpMessage(Response.Status.FORBIDDEN.toString(), Response.Status.FORBIDDEN.getStatusCode());
                 response = Response.status(Response.Status.FORBIDDEN).entity(httpMessage).build();
-                logger.info("[ NEW ACCESS TOKEN ][ DENIED ] -- '{}'", emailAndPassword.email);
+                logger.info("[ NEW ACCESS TOKEN ][ DENIED ] -- '{}'", accountEmailPassword.email);
             }
 
             return response;
