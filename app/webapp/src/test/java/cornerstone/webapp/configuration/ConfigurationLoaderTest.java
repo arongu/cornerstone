@@ -15,14 +15,14 @@ public class ConfigurationLoaderTest {
     private static final String confFile = Paths.get(TEST_CONFIG_DIR + "app.conf").toAbsolutePath().normalize().toString();
 
     @Test
-    public void loadAndDecryptConfig_shouldThrowIOException_whenFilesDoNotExist() throws IOException {
-        final ConfigurationLoader cr = new ConfigurationLoader("xxx", "xxx");
-
-        assertThrows(IOException.class, cr::loadAndDecryptConfig);
+    public void constructor_shouldThrowIOException_whenFilesDoNotExist() {
+        assertThrows(IOException.class, () -> {
+            new ConfigurationLoader("xxx", "xxx");
+        });
     }
 
     @Test
-    public void loadAndDecryptConfig_shouldLoadConfig_whenAllSet() throws IOException {
+    public void constructorAndLoadAndDecryptConfig_shouldLoadConfig_whenAllSet() throws IOException {
         final ConfigurationLoader cr = new ConfigurationLoader(keyFile, confFile);
 
         cr.loadAndDecryptConfig();

@@ -2,8 +2,8 @@ package cornerstone.webapp.rest.endpoint.pubkey;
 
 import cornerstone.webapp.services.rsa.common.PublicKeyData;
 import cornerstone.webapp.services.rsa.store.db.PublicKeyStoreException;
-import cornerstone.webapp.services.rsa.store.db.PublicKeyStoreInterface;
-import cornerstone.webapp.services.rsa.store.local.LocalKeyStoreInterface;
+import cornerstone.webapp.services.rsa.store.db.PublicKeyStore;
+import cornerstone.webapp.services.rsa.store.local.LocalKeyStore;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -20,11 +20,11 @@ import java.util.UUID;
 @Singleton
 @Path("/pubkeys")
 public class PublicKeyService {
-    private final LocalKeyStoreInterface localKeyStore;
-    private final PublicKeyStoreInterface publicKeyStore;
+    private final LocalKeyStore localKeyStore;
+    private final PublicKeyStore publicKeyStore;
 
     @Inject
-    public PublicKeyService(final LocalKeyStoreInterface localKeyStore, final PublicKeyStoreInterface publicKeyStore){
+    public PublicKeyService(final LocalKeyStore localKeyStore, final PublicKeyStore publicKeyStore){
         this.localKeyStore = localKeyStore;
         this.publicKeyStore = publicKeyStore;
     }

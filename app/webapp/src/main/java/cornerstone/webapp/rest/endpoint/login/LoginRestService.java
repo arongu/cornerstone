@@ -4,9 +4,9 @@ import cornerstone.webapp.rest.endpoint.account.AccountEmailPassword;
 import cornerstone.webapp.rest.exceptions.BadRequestException;
 import cornerstone.webapp.rest.util.HttpMessage;
 import cornerstone.webapp.services.account.administration.AccountManagerException;
-import cornerstone.webapp.services.account.administration.AccountManagerInterface;
+import cornerstone.webapp.services.account.administration.AccountManager;
 import cornerstone.webapp.services.jwt.AuthorizationServiceException;
-import cornerstone.webapp.services.jwt.AuthorizationServiceInterface;
+import cornerstone.webapp.services.jwt.AuthorizationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,11 +26,11 @@ import javax.ws.rs.core.Response;
 public class LoginRestService {
     private static final Logger logger = LoggerFactory.getLogger(LoginRestService.class);
 
-    private final AccountManagerInterface accountAdmin;
-    private final AuthorizationServiceInterface authorizationService;
+    private final AccountManager accountAdmin;
+    private final AuthorizationService authorizationService;
 
     @Inject
-    public LoginRestService(final AccountManagerInterface accountAdmin, final AuthorizationServiceInterface authorizationService) {
+    public LoginRestService(final AccountManager accountAdmin, final AuthorizationService authorizationService) {
         this.accountAdmin = accountAdmin;
         this.authorizationService = authorizationService;
     }

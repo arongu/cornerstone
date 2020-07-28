@@ -13,8 +13,8 @@ import java.util.NoSuchElementException;
 import static org.junit.jupiter.api.Assertions.*;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class AccountManager_CRUD_Test {
-    private static AccountManagerInterface accountManager;
+public class AccountManager_Impl_CRUD_Test {
+    private static AccountManager accountManager;
 
     @BeforeAll
     public static void setSystemProperties() {
@@ -27,7 +27,7 @@ public class AccountManager_CRUD_Test {
             cr.loadAndDecryptConfig();
 
             final UsersDB ds = new UsersDB(cr);
-            accountManager = new AccountManager(ds, cr);
+            accountManager = new AccountManagerImpl(ds, cr);
 
         } catch (final IOException e) {
             e.printStackTrace();

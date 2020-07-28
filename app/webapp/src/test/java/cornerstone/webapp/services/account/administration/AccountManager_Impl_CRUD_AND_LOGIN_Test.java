@@ -14,8 +14,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 // THIS IS MORE THAN JUST A SINGLE LOGIN TEST, IT HEAVILY RELIES ON CRUD METHODS
 // ALL TCS CLEANUP AFTER THEMSELVES FOR DATABASE AND TEST CONSISTENCY!
-public class AccountManager_CRUD_AND_LOGIN_Test {
-    private static AccountManagerInterface accountManager;
+public class AccountManager_Impl_CRUD_AND_LOGIN_Test {
+    private static AccountManager accountManager;
     private static int MAX_LOGIN_ATTEMPTS_FROM_TEST_CONFIG;
 
     @BeforeAll
@@ -29,7 +29,7 @@ public class AccountManager_CRUD_AND_LOGIN_Test {
             cr.loadAndDecryptConfig();
 
             final UsersDB ds = new UsersDB(cr);
-            accountManager = new AccountManager(ds, cr);
+            accountManager = new AccountManagerImpl(ds, cr);
             MAX_LOGIN_ATTEMPTS_FROM_TEST_CONFIG = Integer.parseInt(cr.getAppProperties().getProperty(APP_ENUM.APP_MAX_LOGIN_ATTEMPTS.key));
 
         } catch (final IOException e) {

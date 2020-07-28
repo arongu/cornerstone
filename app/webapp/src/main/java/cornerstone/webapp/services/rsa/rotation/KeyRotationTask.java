@@ -2,8 +2,8 @@ package cornerstone.webapp.services.rsa.rotation;
 
 import cornerstone.webapp.common.DefaultLogMessages;
 import cornerstone.webapp.services.rsa.store.db.PublicKeyStoreException;
-import cornerstone.webapp.services.rsa.store.db.PublicKeyStoreInterface;
-import cornerstone.webapp.services.rsa.store.local.LocalKeyStoreInterface;
+import cornerstone.webapp.services.rsa.store.db.PublicKeyStore;
+import cornerstone.webapp.services.rsa.store.local.LocalKeyStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,13 +19,13 @@ public class KeyRotationTask extends TimerTask {
     private static final String ERROR_MESSAGE_FAILED_TO_DELETE_EXPIRED_KEYS_FROM_DB = "FAILED TO DELETE EXPIRED KEYS FROM DB";
 
 
-    private final LocalKeyStoreInterface localKeyStore;
-    private final PublicKeyStoreInterface dbPublicKeyStore;
+    private final LocalKeyStore localKeyStore;
+    private final PublicKeyStore dbPublicKeyStore;
     private final int rsaTTL;
     private final String nodeName;
 
-    public KeyRotationTask(final LocalKeyStoreInterface localKeyStore,
-                           final PublicKeyStoreInterface dbPublicKeyStore,
+    public KeyRotationTask(final LocalKeyStore localKeyStore,
+                           final PublicKeyStore dbPublicKeyStore,
                            final int rsaTTL,
                            final String nodeName) {
 

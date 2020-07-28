@@ -20,6 +20,7 @@ public class ConfigurationLoader {
     public ConfigurationLoader(final String keyFile, final String confFile) throws IOException {
         this.keyFile = keyFile;
         this.confFile = confFile;
+        loadAndDecryptConfig();
     }
 
     public void loadAndDecryptConfig() throws IOException {

@@ -3,7 +3,7 @@ package cornerstone.webapp.rest.endpoint.account;
 import cornerstone.webapp.common.DefaultLogMessages;
 import cornerstone.webapp.rest.exceptions.BadRequestException;
 import cornerstone.webapp.services.account.administration.AccountManagerException;
-import cornerstone.webapp.services.account.administration.AccountManagerInterface;
+import cornerstone.webapp.services.account.administration.AccountManager;
 import cornerstone.webapp.services.account.administration.AccountManagerMultipleException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,10 +21,10 @@ import java.util.List;
 @Produces(MediaType.APPLICATION_JSON)
 public class AccountRestService {
     private static final Logger logger = LoggerFactory.getLogger(AccountRestService.class);
-    private final AccountManagerInterface accountManager;
+    private final AccountManager accountManager;
 
     @Inject
-    public AccountRestService(final AccountManagerInterface accountManager) {
+    public AccountRestService(final AccountManager accountManager) {
         this.accountManager = accountManager;
         logger.info(String.format(DefaultLogMessages.MESSAGE_CONSTRUCTOR_CALLED, getClass().getName()));
     }
