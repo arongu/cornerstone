@@ -113,7 +113,7 @@ public class PublicKeyStoreTest {
         assertEquals(expired_keys_to_be_created, got_expired_keys_first);
         assertEquals(expired_keys_to_be_created, expired_keys_deleted);
         assertEquals(0, got_expired_keys_second);
-        System.out.println(String.format("creates, deletes: %d, :%d", expired_keys_created, expired_keys_deleted));
+        System.out.println(String.format("created, deleted: %d, %d", expired_keys_created, expired_keys_deleted));
     }
 
     @Order(3)

@@ -17,6 +17,5 @@ public interface LocalKeyStore {
 
     void setPublicAndPrivateKeys(final UUID uuid, final PrivateKey privateKey, final PublicKey publicKey);
     PrivateKeyWithUUID getPrivateKey() throws NoSuchElementException;
-    void dropPrivateKey();
     void dropEverything();
 }
