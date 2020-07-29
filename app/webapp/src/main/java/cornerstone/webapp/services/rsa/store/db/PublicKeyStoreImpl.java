@@ -47,7 +47,7 @@ public class PublicKeyStoreImpl implements PublicKeyStore {
             ps.setInt(3, ttl);
             ps.setString(4, base64_key);
 
-            logger.info(String.format(LoggingMessageFormats.MESSAGE_FORMAT_SPACES_FIELD1_DATA, "  ", "ADDED PUBLIC KEY WITH UUID (DB)", uuid));
+            logger.info(String.format(LoggingMessageFormats.MESSAGE_FORMAT_SPACES_FIELD1_DATA, "  ", "ADDED KEY WITH UUID (DB)", uuid));
             return ps.executeUpdate();
 
         } catch (final SQLException e) {
@@ -60,7 +60,7 @@ public class PublicKeyStoreImpl implements PublicKeyStore {
     public int deleteKey(final UUID uuid) throws PublicKeyStoreException {
         try (final Connection c = workDB.getConnection(); final PreparedStatement ps = c.prepareStatement(SQL_DELETE_PUBLIC_KEY)) {
             ps.setObject(1, uuid);
-            logger.info(String.format(LoggingMessageFormats.MESSAGE_FORMAT_SPACES_FIELD1_DATA, "  ", "DELETED PUBLIC KEY WITH UUID (DB)", uuid));
+            logger.info(String.format(LoggingMessageFormats.MESSAGE_FORMAT_SPACES_FIELD1_DATA, "  ", "DELETED KEY WITH UUID (DB)", uuid));
             return ps.executeUpdate();
 
         } catch (final SQLException e) {
@@ -85,11 +85,11 @@ public class PublicKeyStoreImpl implements PublicKeyStore {
                         rs.getString("base64_key")
                 );
 
-                logger.info(String.format(LoggingMessageFormats.MESSAGE_FORMAT_SPACES_FIELD1_DATA, "  ", "RETRIEVED PUBLIC KEY (DB)", keyData));
+                logger.info(String.format(LoggingMessageFormats.MESSAGE_FORMAT_SPACES_FIELD1_DATA, "  ", "RETRIEVED KEY (DB)", keyData));
                 return keyData;
 
             } else {
-                logger.info(String.format(LoggingMessageFormats.MESSAGE_FORMAT_SPACES_FIELD1_DATA, "  ", "NO SUCH PUBLIC KEY WITH UUID (DB)", uuid));
+                logger.info(String.format(LoggingMessageFormats.MESSAGE_FORMAT_SPACES_FIELD1_DATA, "  ", "NO SUCH KEY (DB)", uuid));
                 throw new NoSuchElementException();
             }
 
@@ -118,8 +118,8 @@ public class PublicKeyStoreImpl implements PublicKeyStore {
                 }
             }
 
-            logger.info(String.format(LoggingMessageFormats.MESSAGE_FORMAT_SPACES_FIELD1_DATA, "  ", "NUMBER OF RETRIEVED PUBLIC KEYS (DB)", keys.size()));
-            logger.info(String.format(LoggingMessageFormats.MESSAGE_FORMAT_SPACES_FIELD1_DATA, "  ", "RETRIEVED PUBLIC KEYS (DB)", keys));
+            logger.info(String.format(LoggingMessageFormats.MESSAGE_FORMAT_SPACES_FIELD1_DATA, "  ", "LIVE KEYS RETRIEVED (DB)", keys.size()));
+            logger.info(String.format(LoggingMessageFormats.MESSAGE_FORMAT_SPACES_FIELD1_DATA, "  ", "LIVE KEYS (DB)", keys));
             return keys;
 
         } catch (final SQLException e) {
@@ -140,8 +140,8 @@ public class PublicKeyStoreImpl implements PublicKeyStore {
                 }
             }
 
-            logger.info(String.format(LoggingMessageFormats.MESSAGE_FORMAT_SPACES_FIELD1_DATA, "  ", "NUMBER OF RETRIEVED PUBLIC KEY UUIDS (DB)", uuids.size()));
-            logger.info(String.format(LoggingMessageFormats.MESSAGE_FORMAT_SPACES_FIELD1_DATA, "  ", "RETRIEVED PUBLIC KEY UUIDS (DB)", uuids));
+            logger.info(String.format(LoggingMessageFormats.MESSAGE_FORMAT_SPACES_FIELD1_DATA, "  ", "LIVE KEY UUIDS RETRIEVED (DB)", uuids.size()));
+            logger.info(String.format(LoggingMessageFormats.MESSAGE_FORMAT_SPACES_FIELD1_DATA, "  ", "LIVE KEY UUIDS (DB)", uuids));
             return uuids;
 
         } catch (final SQLException e) {
@@ -162,8 +162,8 @@ public class PublicKeyStoreImpl implements PublicKeyStore {
                 }
             }
 
-            logger.info(String.format(LoggingMessageFormats.MESSAGE_FORMAT_SPACES_FIELD1_DATA, "  ", "NUMBER OF EXPIRED PUBLIC KEY UUIDS RETRIEVED (DB)", expired_uuids.size()));
-            logger.info(String.format(LoggingMessageFormats.MESSAGE_FORMAT_SPACES_FIELD1_DATA, "  ", "RETRIEVED EXPIRED PUBLIC KEY UUIDS (DB)", expired_uuids));
+            logger.info(String.format(LoggingMessageFormats.MESSAGE_FORMAT_SPACES_FIELD1_DATA, "  ", "EXPIRED KEY UUIDS RETRIEVED (DB)", expired_uuids.size()));
+            logger.info(String.format(LoggingMessageFormats.MESSAGE_FORMAT_SPACES_FIELD1_DATA, "  ", "EXPIRED KEY UUIDS (DB)", expired_uuids));
             return expired_uuids;
 
         } catch (final SQLException e) {
@@ -176,7 +176,7 @@ public class PublicKeyStoreImpl implements PublicKeyStore {
     public int deleteExpiredKeys() throws PublicKeyStoreException {
         try (final Connection c = workDB.getConnection(); final PreparedStatement ps = c.prepareStatement(SQL_DELETE_EXPIRED_PUBLIC_KEYS)) {
             final int deletes = ps.executeUpdate();
-            logger.info(String.format(LoggingMessageFormats.MESSAGE_FORMAT_SPACES_FIELD1_DATA, "  ", "EXPIRED PUBLIC KEYS DELETED (DB)", deletes));
+            logger.info(String.format(LoggingMessageFormats.MESSAGE_FORMAT_SPACES_FIELD1_DATA, "  ", "EXPIRED KEYS DELETED (DB)", deletes));
             return deletes;
 
         } catch (final SQLException e) {

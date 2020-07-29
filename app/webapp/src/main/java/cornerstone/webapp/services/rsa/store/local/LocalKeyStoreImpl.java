@@ -23,13 +23,13 @@ public class LocalKeyStoreImpl implements LocalKeyStore {
     @Override
     public void addPublicKey(final UUID uuid, final PublicKey publicKey) {
         publicKeys.put(uuid, publicKey);
-        logger.info(String.format(LoggingMessageFormats.MESSAGE_FORMAT_SPACES_FIELD1_DATA, "  ", "ADDED KEY (LOCAL)", uuid));
+        logger.info(String.format(LoggingMessageFormats.MESSAGE_FORMAT_SPACES_FIELD1_DATA, "  ", "ADDED PUBLIC KEY (LOCAL)", uuid));
     }
 
     @Override
     public void deletePublicKey(final UUID uuid) {
         publicKeys.remove(uuid);
-        logger.info(String.format(LoggingMessageFormats.MESSAGE_FORMAT_SPACES_FIELD1_DATA, "  ", "DELETED KEY (LOCAL)", uuid));
+        logger.info(String.format(LoggingMessageFormats.MESSAGE_FORMAT_SPACES_FIELD1_DATA, "  ", "DELETED PUBLIC KEY (LOCAL)", uuid));
     }
 
     @Override
@@ -38,7 +38,7 @@ public class LocalKeyStoreImpl implements LocalKeyStore {
         if (null != keyData){
             return keyData;
         } else {
-            logger.info(String.format(LoggingMessageFormats.MESSAGE_FORMAT_SPACES_FIELD1_DATA, "  ", "NO SUCH KEY (LOCAL)", uuid));
+            logger.info(String.format(LoggingMessageFormats.MESSAGE_FORMAT_SPACES_FIELD1_DATA, "  ", "NO SUCH PUBLIC KEY (LOCAL)", uuid));
             throw new NoSuchElementException();
         }
     }
@@ -57,11 +57,11 @@ public class LocalKeyStoreImpl implements LocalKeyStore {
         int deleted = 0;
         for (final UUID uuid : publicKeys.keySet()) {
             if (uuid == currentUUID || toBeKept.contains(uuid)){
-                logger.info(String.format(LoggingMessageFormats.MESSAGE_FORMAT_SPACES_FIELD1_DATA, "  ", "SYNCING - KEEPING KEY WITH UUID (LOCAL)", uuid));
+                logger.info(String.format(LoggingMessageFormats.MESSAGE_FORMAT_SPACES_FIELD1_DATA, "  ", "SYNCING - KEEPING PUBLIC KEY WITH UUID (LOCAL)", uuid));
             } else {
                 publicKeys.remove(uuid);
                 deleted++;
-                logger.info(String.format(LoggingMessageFormats.MESSAGE_FORMAT_SPACES_FIELD1_DATA, "  ", "SYNCING - DELETED KEY WITH UUID (LOCAL)", uuid));
+                logger.info(String.format(LoggingMessageFormats.MESSAGE_FORMAT_SPACES_FIELD1_DATA, "  ", "SYNCING - DELETED PUBLIC KEY WITH UUID (LOCAL)", uuid));
             }
         }
 
@@ -86,7 +86,7 @@ public class LocalKeyStoreImpl implements LocalKeyStore {
         if (null != privateKey) {
             return new PrivateKeyWithUUID(currentUUID, privateKey);
         } else {
-            logger.info(String.format(LoggingMessageFormats.MESSAGE_FORMAT_SPACES_FIELD1, "  ", "PUBLIC AND PRIVATE KEY ARE NOT SET (LOCAL)"));
+            logger.info(String.format(LoggingMessageFormats.MESSAGE_FORMAT_SPACES_FIELD1, "  ", "PUBLIC AND PRIVATE KEYS ARE NOT SET (LOCAL)"));
             throw new NoSuchElementException();
         }
     }
