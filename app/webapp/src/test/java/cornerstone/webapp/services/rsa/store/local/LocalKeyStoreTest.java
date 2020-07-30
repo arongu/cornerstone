@@ -28,7 +28,7 @@ public class LocalKeyStoreTest {
 
     @Test
     public void deletePublicKeys_shouldDeleteAllKeys() {
-        final int to_be_created = 10;
+        final int to_be_created = 5;
         int no_such_element_throws = 0;
         final LocalKeyStore keyStore = new LocalKeyStoreImpl();
         final Set<UUID> created_uuids = new HashSet<>();
@@ -62,8 +62,8 @@ public class LocalKeyStoreTest {
     }
 
     @Test
-    public void sync_shouldSyncKeys357_shouldBeKeptRestShouldBeDeleted() {
-        final int to_be_created = 10;
+    public void sync_shouldSyncKeys024_shouldBeKeptRestShouldBeDeleted() {
+        final int to_be_created = 5;
         final List<UUID> uuids = new ArrayList<>();
         final Map<UUID,PublicKey> map = new HashMap<>();
         final LocalKeyStore localKeyStore = new LocalKeyStoreImpl();
@@ -80,23 +80,18 @@ public class LocalKeyStoreTest {
 
 
         final List<UUID> toBeKept = new LinkedList<>();
-        toBeKept.add(uuids.get(3));
-        toBeKept.add(uuids.get(7));
-        toBeKept.add(uuids.get(9));
+        toBeKept.add(uuids.get(0));
+        toBeKept.add(uuids.get(2));
+        toBeKept.add(uuids.get(4));
         localKeyStore.sync(toBeKept);
 
 
         assertEquals(3, localKeyStore.getPublicKeyUUIDs().size());
-        assertEquals(map.get(uuids.get(3)), localKeyStore.getPublicKey(uuids.get(3)));
-        assertEquals(map.get(uuids.get(7)), localKeyStore.getPublicKey(uuids.get(7)));
-        assertEquals(map.get(uuids.get(9)), localKeyStore.getPublicKey(uuids.get(9)));
-        assertThrows(NoSuchElementException.class, () -> localKeyStore.getPublicKey(uuids.get(0)));
+        assertEquals(map.get(uuids.get(0)), localKeyStore.getPublicKey(uuids.get(0)));
+        assertEquals(map.get(uuids.get(2)), localKeyStore.getPublicKey(uuids.get(2)));
+        assertEquals(map.get(uuids.get(4)), localKeyStore.getPublicKey(uuids.get(4)));
         assertThrows(NoSuchElementException.class, () -> localKeyStore.getPublicKey(uuids.get(1)));
-        assertThrows(NoSuchElementException.class, () -> localKeyStore.getPublicKey(uuids.get(2)));
-        assertThrows(NoSuchElementException.class, () -> localKeyStore.getPublicKey(uuids.get(4)));
-        assertThrows(NoSuchElementException.class, () -> localKeyStore.getPublicKey(uuids.get(5)));
-        assertThrows(NoSuchElementException.class, () -> localKeyStore.getPublicKey(uuids.get(6)));
-        assertThrows(NoSuchElementException.class, () -> localKeyStore.getPublicKey(uuids.get(8)));
+        assertThrows(NoSuchElementException.class, () -> localKeyStore.getPublicKey(uuids.get(3)));
     }
 
     @Test

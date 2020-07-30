@@ -36,7 +36,7 @@ public class PublicKeyStoreTest {
     public void t00_addKey_shouldCreate10Keys_whenCalled10Times() throws PublicKeyStoreException {
         long startTime;
         double endTime;
-        int keys_to_be_added = 10;
+        int keys_to_be_added = 5;
         int keys_added = 0;
 
         for (int i = 0; i < keys_to_be_added; i++) {
@@ -90,7 +90,7 @@ public class PublicKeyStoreTest {
     @Order(2)
     @Test
     public void t02_deleteExpiredKeys_shouldDeleteAllExpiredKey_whenCalled() throws PublicKeyStoreException {
-        int expired_keys_to_be_created = 10;
+        int expired_keys_to_be_created = 5;
         int expired_keys_created = 0;
 
         int expired_keys_deleted;
@@ -119,7 +119,7 @@ public class PublicKeyStoreTest {
     @Order(3)
     @Test
     public void t03_add_get_delete_verify_CRUD_test() throws PublicKeyStoreException {
-        int number_of_cruds = 20;
+        int number_of_cruds = 5;
         int added = 0;
         int got = 0;
 
