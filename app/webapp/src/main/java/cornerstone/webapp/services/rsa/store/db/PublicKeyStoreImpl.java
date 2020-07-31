@@ -3,7 +3,7 @@ package cornerstone.webapp.services.rsa.store.db;
 import cornerstone.webapp.common.DefaultLogMessages;
 import cornerstone.webapp.datasources.WorkDB;
 import cornerstone.webapp.services.rsa.common.PublicKeyData;
-import cornerstone.webapp.services.rsa.store.LoggingMessageFormats;
+import cornerstone.webapp.common.LogMessageLines;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,7 +36,7 @@ public class PublicKeyStoreImpl implements PublicKeyStore {
     @Inject
     public PublicKeyStoreImpl(final WorkDB workDB) {
         this.workDB = workDB;
-        logger.info(String.format(DefaultLogMessages.MESSAGE_CONSTRUCTOR_CALLED, getClass().getName()));
+        logger.info(String.format(DefaultLogMessages.MESSAGE_CONSTRUCTOR_CALLED, getClass().getCanonicalName()));
     }
 
     @Override
@@ -47,7 +47,12 @@ public class PublicKeyStoreImpl implements PublicKeyStore {
             ps.setInt(3, ttl);
             ps.setString(4, base64_key);
 
-            logger.info(String.format(LoggingMessageFormats.MESSAGE_FORMAT_SPACES_FIELD1_DATA, "  ", "ADDED KEY WITH UUID (DB)", uuid));
+            logger.info(String.format(
+                    LogMessageLines.MESSAGE_FORMAT_SPACES_FIELD1_DATA,
+                    LogMessageLines.classNameOffsetSpaces.get(getClass().getCanonicalName()),
+                    "ADDED KEY WITH UUID (DB)", uuid)
+            );
+
             return ps.executeUpdate();
 
         } catch (final SQLException e) {
@@ -60,7 +65,12 @@ public class PublicKeyStoreImpl implements PublicKeyStore {
     public int deleteKey(final UUID uuid) throws PublicKeyStoreException {
         try (final Connection c = workDB.getConnection(); final PreparedStatement ps = c.prepareStatement(SQL_DELETE_PUBLIC_KEY)) {
             ps.setObject(1, uuid);
-            logger.info(String.format(LoggingMessageFormats.MESSAGE_FORMAT_SPACES_FIELD1_DATA, "  ", "DELETED KEY WITH UUID (DB)", uuid));
+            logger.info(String.format(
+                    LogMessageLines.MESSAGE_FORMAT_SPACES_FIELD1_DATA,
+                    LogMessageLines.classNameOffsetSpaces.get(getClass().getCanonicalName()),
+                    "DELETED KEY WITH UUID (DB)", uuid)
+            );
+
             return ps.executeUpdate();
 
         } catch (final SQLException e) {
@@ -85,11 +95,21 @@ public class PublicKeyStoreImpl implements PublicKeyStore {
                         rs.getString("base64_key")
                 );
 
-                logger.info(String.format(LoggingMessageFormats.MESSAGE_FORMAT_SPACES_FIELD1_DATA, "  ", "RETRIEVED KEY (DB)", keyData));
+                logger.info(String.format(
+                        LogMessageLines.MESSAGE_FORMAT_SPACES_FIELD1_DATA,
+                        LogMessageLines.classNameOffsetSpaces.get(getClass().getCanonicalName()),
+                        "RETRIEVED KEY (DB)", keyData)
+                );
+
                 return keyData;
 
             } else {
-                logger.info(String.format(LoggingMessageFormats.MESSAGE_FORMAT_SPACES_FIELD1_DATA, "  ", "NO SUCH KEY (DB)", uuid));
+                logger.info(String.format(
+                        LogMessageLines.MESSAGE_FORMAT_SPACES_FIELD1_DATA,
+                        LogMessageLines.classNameOffsetSpaces.get(getClass().getCanonicalName()),
+                        "NO SUCH KEY (DB)", uuid)
+                );
+
                 throw new NoSuchElementException();
             }
 
@@ -118,8 +138,18 @@ public class PublicKeyStoreImpl implements PublicKeyStore {
                 }
             }
 
-            logger.info(String.format(LoggingMessageFormats.MESSAGE_FORMAT_SPACES_FIELD1_DATA, "  ", "LIVE KEYS RETRIEVED (DB)", keys.size()));
-            logger.info(String.format(LoggingMessageFormats.MESSAGE_FORMAT_SPACES_FIELD1_DATA, "  ", "LIVE KEYS (DB)", keys));
+            logger.info(String.format(
+                    LogMessageLines.MESSAGE_FORMAT_SPACES_FIELD1_DATA,
+                    LogMessageLines.classNameOffsetSpaces.get(getClass().getCanonicalName()),
+                    "LIVE KEYS RETRIEVED (DB)", keys.size())
+            );
+
+            logger.info(String.format(
+                    LogMessageLines.MESSAGE_FORMAT_SPACES_FIELD1_DATA,
+                    LogMessageLines.classNameOffsetSpaces.get(getClass().getCanonicalName()),
+                    "LIVE KEYS (DB)", keys)
+            );
+
             return keys;
 
         } catch (final SQLException e) {
@@ -140,8 +170,18 @@ public class PublicKeyStoreImpl implements PublicKeyStore {
                 }
             }
 
-            logger.info(String.format(LoggingMessageFormats.MESSAGE_FORMAT_SPACES_FIELD1_DATA, "  ", "LIVE KEY UUIDS RETRIEVED (DB)", uuids.size()));
-            logger.info(String.format(LoggingMessageFormats.MESSAGE_FORMAT_SPACES_FIELD1_DATA, "  ", "LIVE KEY UUIDS (DB)", uuids));
+            logger.info(String.format(
+                    LogMessageLines.MESSAGE_FORMAT_SPACES_FIELD1_DATA,
+                    LogMessageLines.classNameOffsetSpaces.get(getClass().getCanonicalName()),
+                    "LIVE KEY UUIDS RETRIEVED (DB)", uuids.size())
+            );
+
+            logger.info(String.format(
+                    LogMessageLines.MESSAGE_FORMAT_SPACES_FIELD1_DATA,
+                    LogMessageLines.classNameOffsetSpaces.get(getClass().getCanonicalName()),
+                    "LIVE KEY UUIDS (DB)", uuids)
+            );
+
             return uuids;
 
         } catch (final SQLException e) {
@@ -162,8 +202,18 @@ public class PublicKeyStoreImpl implements PublicKeyStore {
                 }
             }
 
-            logger.info(String.format(LoggingMessageFormats.MESSAGE_FORMAT_SPACES_FIELD1_DATA, "  ", "EXPIRED KEY UUIDS RETRIEVED (DB)", expired_uuids.size()));
-            logger.info(String.format(LoggingMessageFormats.MESSAGE_FORMAT_SPACES_FIELD1_DATA, "  ", "EXPIRED KEY UUIDS (DB)", expired_uuids));
+            logger.info(String.format(
+                    LogMessageLines.MESSAGE_FORMAT_SPACES_FIELD1_DATA,
+                    LogMessageLines.classNameOffsetSpaces.get(getClass().getCanonicalName()),
+                    "EXPIRED KEY UUIDS RETRIEVED (DB)", expired_uuids.size())
+            );
+
+            logger.info(String.format(
+                    LogMessageLines.MESSAGE_FORMAT_SPACES_FIELD1_DATA,
+                    LogMessageLines.classNameOffsetSpaces.get(getClass().getCanonicalName()),
+                    "EXPIRED KEY UUIDS (DB)", expired_uuids)
+            );
+
             return expired_uuids;
 
         } catch (final SQLException e) {
@@ -176,7 +226,12 @@ public class PublicKeyStoreImpl implements PublicKeyStore {
     public int deleteExpiredKeys() throws PublicKeyStoreException {
         try (final Connection c = workDB.getConnection(); final PreparedStatement ps = c.prepareStatement(SQL_DELETE_EXPIRED_PUBLIC_KEYS)) {
             final int deletes = ps.executeUpdate();
-            logger.info(String.format(LoggingMessageFormats.MESSAGE_FORMAT_SPACES_FIELD1_DATA, "  ", "EXPIRED KEYS DELETED (DB)", deletes));
+            logger.info(String.format(
+                    LogMessageLines.MESSAGE_FORMAT_SPACES_FIELD1_DATA,
+                    LogMessageLines.classNameOffsetSpaces.get(getClass().getCanonicalName()),
+                    "EXPIRED KEYS DELETED (DB)", deletes)
+            );
+
             return deletes;
 
         } catch (final SQLException e) {
