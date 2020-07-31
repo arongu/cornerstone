@@ -48,9 +48,9 @@ public class PublicKeyStoreImpl implements PublicKeyStore {
             ps.setString(4, base64_key);
 
             logger.info(String.format(
-                    LogMessageLines.MESSAGE_FORMAT_SPACES_FIELD1_DATA,
+                    LogMessageLines.SPACES__STATUS_WORD__FIELD__DATA,
                     LogMessageLines.classNameOffsetSpaces.get(getClass().getCanonicalName()),
-                    "ADDED KEY WITH UUID (DB)", uuid)
+                    "ADDED", "PUBLIC KEY (DB)", uuid)
             );
 
             return ps.executeUpdate();
@@ -66,9 +66,9 @@ public class PublicKeyStoreImpl implements PublicKeyStore {
         try (final Connection c = workDB.getConnection(); final PreparedStatement ps = c.prepareStatement(SQL_DELETE_PUBLIC_KEY)) {
             ps.setObject(1, uuid);
             logger.info(String.format(
-                    LogMessageLines.MESSAGE_FORMAT_SPACES_FIELD1_DATA,
+                    LogMessageLines.SPACES__STATUS_WORD__FIELD__DATA,
                     LogMessageLines.classNameOffsetSpaces.get(getClass().getCanonicalName()),
-                    "DELETED KEY WITH UUID (DB)", uuid)
+                    "DELETED", "PUBLIC KEY (DB)", uuid)
             );
 
             return ps.executeUpdate();
@@ -96,18 +96,18 @@ public class PublicKeyStoreImpl implements PublicKeyStore {
                 );
 
                 logger.info(String.format(
-                        LogMessageLines.MESSAGE_FORMAT_SPACES_FIELD1_DATA,
+                        LogMessageLines.SPACES__STATUS_WORD__FIELD__DATA,
                         LogMessageLines.classNameOffsetSpaces.get(getClass().getCanonicalName()),
-                        "RETRIEVED KEY (DB)", keyData)
+                        "RETRIEVED", "PUBLIC KEY (DB)", keyData)
                 );
 
                 return keyData;
 
             } else {
                 logger.info(String.format(
-                        LogMessageLines.MESSAGE_FORMAT_SPACES_FIELD1_DATA,
+                        LogMessageLines.SPACES__STATUS_WORD__FIELD__DATA,
                         LogMessageLines.classNameOffsetSpaces.get(getClass().getCanonicalName()),
-                        "NO SUCH KEY (DB)", uuid)
+                        "NO SUCH", "PUBLIC KEY (DB)", uuid)
                 );
 
                 throw new NoSuchElementException();
@@ -139,15 +139,9 @@ public class PublicKeyStoreImpl implements PublicKeyStore {
             }
 
             logger.info(String.format(
-                    LogMessageLines.MESSAGE_FORMAT_SPACES_FIELD1_DATA,
+                    LogMessageLines.SPACES__STATUS_WORD__FIELD__DATA,
                     LogMessageLines.classNameOffsetSpaces.get(getClass().getCanonicalName()),
-                    "LIVE KEYS RETRIEVED (DB)", keys.size())
-            );
-
-            logger.info(String.format(
-                    LogMessageLines.MESSAGE_FORMAT_SPACES_FIELD1_DATA,
-                    LogMessageLines.classNameOffsetSpaces.get(getClass().getCanonicalName()),
-                    "LIVE KEYS (DB)", keys)
+                    "RETRIEVED", "PUBLIC KEYS (DB)", keys.size())
             );
 
             return keys;
@@ -171,15 +165,15 @@ public class PublicKeyStoreImpl implements PublicKeyStore {
             }
 
             logger.info(String.format(
-                    LogMessageLines.MESSAGE_FORMAT_SPACES_FIELD1_DATA,
+                    LogMessageLines.SPACES__STATUS_WORD__FIELD__DATA,
                     LogMessageLines.classNameOffsetSpaces.get(getClass().getCanonicalName()),
-                    "LIVE KEY UUIDS RETRIEVED (DB)", uuids.size())
+                    "RETRIEVED", "LIVE KEY UUIDS (DB)", uuids.size())
             );
 
             logger.info(String.format(
-                    LogMessageLines.MESSAGE_FORMAT_SPACES_FIELD1_DATA,
+                    LogMessageLines.SPACES__STATUS_WORD__FIELD__DATA,
                     LogMessageLines.classNameOffsetSpaces.get(getClass().getCanonicalName()),
-                    "LIVE KEY UUIDS (DB)", uuids)
+                    "RETRIEVED", "LIVE KEY UUIDS (DB)", uuids)
             );
 
             return uuids;
@@ -203,13 +197,13 @@ public class PublicKeyStoreImpl implements PublicKeyStore {
             }
 
             logger.info(String.format(
-                    LogMessageLines.MESSAGE_FORMAT_SPACES_FIELD1_DATA,
+                    LogMessageLines.SPACES_FIELD__DATA,
                     LogMessageLines.classNameOffsetSpaces.get(getClass().getCanonicalName()),
                     "EXPIRED KEY UUIDS RETRIEVED (DB)", expired_uuids.size())
             );
 
             logger.info(String.format(
-                    LogMessageLines.MESSAGE_FORMAT_SPACES_FIELD1_DATA,
+                    LogMessageLines.SPACES_FIELD__DATA,
                     LogMessageLines.classNameOffsetSpaces.get(getClass().getCanonicalName()),
                     "EXPIRED KEY UUIDS (DB)", expired_uuids)
             );
@@ -227,7 +221,7 @@ public class PublicKeyStoreImpl implements PublicKeyStore {
         try (final Connection c = workDB.getConnection(); final PreparedStatement ps = c.prepareStatement(SQL_DELETE_EXPIRED_PUBLIC_KEYS)) {
             final int deletes = ps.executeUpdate();
             logger.info(String.format(
-                    LogMessageLines.MESSAGE_FORMAT_SPACES_FIELD1_DATA,
+                    LogMessageLines.SPACES_FIELD__DATA,
                     LogMessageLines.classNameOffsetSpaces.get(getClass().getCanonicalName()),
                     "EXPIRED KEYS DELETED (DB)", deletes)
             );
