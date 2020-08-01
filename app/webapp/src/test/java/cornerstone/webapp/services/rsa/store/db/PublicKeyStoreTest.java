@@ -11,6 +11,7 @@ import java.nio.file.Paths;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class PublicKeyStoreTest {
@@ -33,58 +34,68 @@ public class PublicKeyStoreTest {
 
     @Order(0)
     @Test
-    public void t00_addKey_shouldCreate10Keys_whenCalled10Times() throws PublicKeyStoreException {
-        long startTime;
-        double endTime;
-        int keys_to_be_added = 5;
-        int keys_added = 0;
+    public void t00_addKey_shouldAddNKeys_whenCalledNTimes() throws PublicKeyStoreException {
+        int desired_count = 5;
+        int count_added = 0;
+        int count_fetched = 0;
+        final Map<UUID, String> keys_to_be_added = new HashMap<>();
 
-        for (int i = 0; i < keys_to_be_added; i++) {
-            startTime = System.currentTimeMillis();
-            final KeyPairWithUUID keyPairWithUUID = new KeyPairWithUUID();
-            final String base64pubkey = Base64.getEncoder().encodeToString(keyPairWithUUID.keyPair.getPublic().getEncoded());
+        final Base64.Encoder encoder = Base64.getEncoder();
+        for (int i = 0; i < desired_count; i++) {
+            final KeyPairWithUUID kp = new KeyPairWithUUID();
+            final String b64_pubkey = encoder.encodeToString(kp.keyPair.getPublic().getEncoded());
 
-            keys_added += publicKeyStore.addKey(keyPairWithUUID.uuid, getClass().getName(), 111_222_333, base64pubkey);
-            endTime = (double)(System.currentTimeMillis() - startTime) / 1000;
-
-            System.out.println(
-                    String.format("[ OK ] %03d/%03d -- elapsed (%.03fs) -- uuid: '%s', pubkey: '%s'",
-                            i+1,
-                            keys_to_be_added,
-                            endTime,
-                            keyPairWithUUID.uuid.toString(), base64pubkey
-                    )
-            );
+            keys_to_be_added.put(kp.uuid, b64_pubkey);
         }
 
-        assertEquals(keys_to_be_added, keys_added);
+        // ADD
+        for (final Map.Entry<UUID,String> e : keys_to_be_added.entrySet()) {
+            count_added += publicKeyStore.addKey(e.getKey(), getClass().getName(), 111_222_333, e.getValue());
+        }
+
+        // GET
+        List<PublicKeyData> liveKeys = publicKeyStore.getLiveKeys();
+
+
+        for (final Map.Entry<UUID,String> e : keys_to_be_added.entrySet()) {
+            for (final PublicKeyData liveKey : liveKeys) {
+                if (e.getKey().equals(liveKey.getUUID())) {
+                    count_fetched++;
+                    assertEquals(keys_to_be_added.get(liveKey.getUUID()), liveKey.getBase64Key());
+                }
+            }
+        }
+
+        assertEquals(desired_count, count_added);
+        assertEquals(desired_count, count_fetched);
+        assertTrue(liveKeys.size() >= desired_count);
     }
 
     @Order(1)
     @Test
     public void t01_getThePreviouslyCreatedLiveAndExpiredKeysThenDeleteThemOneByOne_shouldDeleteAllKeys() throws PublicKeyStoreException {
-        final List<UUID> expiredUUIDS;
-        final List<UUID> liveUUIDs;
-        int number_of_uuids;
+        final List<UUID> uuid_list_expired;
+        final List<UUID> uuid_list_live;
+        int uuids;
         int deletes = 0;
 
 
-        expiredUUIDS = publicKeyStore.getExpiredKeyUUIDs();
-        liveUUIDs = publicKeyStore.getLiveKeyUUIDs();
-        number_of_uuids = expiredUUIDS.size() + liveUUIDs.size();
+        uuid_list_expired = publicKeyStore.getExpiredKeyUUIDs();
+        uuid_list_live    = publicKeyStore.getLiveKeyUUIDs();
+        uuids = uuid_list_expired.size() + uuid_list_live.size();
 
-        for (final UUID uuid : expiredUUIDS){
+        for (final UUID uuid : uuid_list_expired){
             publicKeyStore.deleteKey(uuid);
             deletes++;
         }
 
-        for (final UUID uuid : liveUUIDs){
+        for (final UUID uuid : uuid_list_live){
             publicKeyStore.deleteKey(uuid);
             deletes++;
         }
 
-        System.out.println(String.format("number_of_uuids, deletes: %d, %d", number_of_uuids, deletes));
-        assertEquals(number_of_uuids, deletes);
+        System.out.println(String.format("uuids, deletes: %d, %d", uuids, deletes));
+        assertEquals(uuids, deletes);
     }
 
     @Order(2)
@@ -97,10 +108,11 @@ public class PublicKeyStoreTest {
         int got_expired_keys_first;
         int got_expired_keys_second;
 
-        for (int i = 0; i < expired_keys_to_be_created; i++){
-            final KeyPairWithUUID keyPairWithUUID = new KeyPairWithUUID();
-            final String base64pubkey = Base64.getEncoder().encodeToString(keyPairWithUUID.keyPair.getPublic().getEncoded());
-            expired_keys_created += publicKeyStore.addKey(keyPairWithUUID.uuid, getClass().getName(), 0, base64pubkey);
+        final Base64.Encoder enc = Base64.getEncoder();
+        for (int i = 0; i < expired_keys_to_be_created; i++) {
+            final KeyPairWithUUID kp = new KeyPairWithUUID();
+            final String base64pubkey = enc.encodeToString(kp.keyPair.getPublic().getEncoded());
+            expired_keys_created += publicKeyStore.addKey(kp.uuid, getClass().getName(), 0, base64pubkey);
         }
 
 
@@ -129,38 +141,40 @@ public class PublicKeyStoreTest {
         int verified_pubkey_matches = 0;
 
 
-        Map<UUID, String> generated_data = new HashMap<>();
+        Map<UUID, String> keys_to_be_added = new HashMap<>();
         Map<UUID, PublicKeyData> received_data = new HashMap<>();
 
         // ADD
-        for (int i = 0; i < number_of_cruds; i++){
-            final KeyPairWithUUID keyPairWithUUID = new KeyPairWithUUID();
-            final String base64pubkey = Base64.getEncoder().encodeToString(keyPairWithUUID.keyPair.getPublic().getEncoded());
+        final Base64.Encoder enc = Base64.getEncoder();
+        for (int i = 0; i < number_of_cruds; i++) {
+            final KeyPairWithUUID kp = new KeyPairWithUUID();
+            final String base64pubkey = enc.encodeToString(kp.keyPair.getPublic().getEncoded());
 
-            generated_data.put(keyPairWithUUID.uuid, base64pubkey);
-            added += publicKeyStore.addKey(keyPairWithUUID.uuid, getClass().getName(), 1_000_000, base64pubkey);
+            keys_to_be_added.put(kp.uuid, base64pubkey);
+            added += publicKeyStore.addKey(kp.uuid, getClass().getName(), 1_000_000, base64pubkey);
         }
 
         // GET
-        for(Map.Entry<UUID, String> entry : generated_data.entrySet()){
+        for (Map.Entry<UUID, String> entry : keys_to_be_added.entrySet()) {
             final UUID uuid = entry.getKey();
             received_data.put(uuid, publicKeyStore.getKey(uuid));
             got++;
         }
 
         // DELETE & GET
-        for(Map.Entry<UUID, String> entry : generated_data.entrySet()){
+        for (Map.Entry<UUID, String> entry : keys_to_be_added.entrySet()) {
             final UUID uuid = entry.getKey();
             deleted += publicKeyStore.deleteKey(uuid);
             try {
                 publicKeyStore.getKey(uuid);
                 got_after_delete++;
             } catch (final NoSuchElementException ignored){
+
             }
         }
 
         // Verify Data
-        for(Map.Entry<UUID, String> entry : generated_data.entrySet()){
+        for (Map.Entry<UUID, String> entry : keys_to_be_added.entrySet()) {
             final String generated_key = entry.getValue();
             final PublicKeyData data = received_data.get(entry.getKey());
 

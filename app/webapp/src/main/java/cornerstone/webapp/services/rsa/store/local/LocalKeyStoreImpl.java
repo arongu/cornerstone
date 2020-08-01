@@ -27,7 +27,7 @@ public class LocalKeyStoreImpl implements LocalKeyStore {
         logger.info(String.format(
                 LogMessageLines.SPACES__STATUS_WORD__FIELD__DATA,
                 LogMessageLines.classNameOffsetSpaces.get(getClass().getName()),
-                "ADDED", "PUBLIC KEY (LOCAL)", uuid)
+                "(LOCAL) ADDED", "PUBLIC KEY", uuid)
         );
     }
 
@@ -37,7 +37,7 @@ public class LocalKeyStoreImpl implements LocalKeyStore {
         logger.info(String.format(
                 LogMessageLines.SPACES__STATUS_WORD__FIELD__DATA,
                 LogMessageLines.classNameOffsetSpaces.get(getClass().getName()),
-                "DELETED", "PUBLIC KEY (LOCAL)", uuid)
+                "(LOCAL) DELETED", "PUBLIC KEY", uuid)
         );
     }
 
@@ -50,7 +50,7 @@ public class LocalKeyStoreImpl implements LocalKeyStore {
             logger.info(String.format(
                     LogMessageLines.SPACES__STATUS_WORD__FIELD__DATA,
                     LogMessageLines.classNameOffsetSpaces.get(getClass().getName()),
-                    "NO SUCH", "PUBLIC KEY (LOCAL)", uuid)
+                    "(LOCAL) NO SUCH", "PUBLIC KEY", uuid)
             );
 
             throw new NoSuchElementException();
@@ -74,7 +74,7 @@ public class LocalKeyStoreImpl implements LocalKeyStore {
                 logger.info(String.format(
                         LogMessageLines.SPACES__STATUS_WORD__FIELD__DATA,
                         LogMessageLines.classNameOffsetSpaces.get(getClass().getName()),
-                        "SYNC KEEP", "PUBLIC KEY (LOCAL)", uuid)
+                        "(LOCAL) SYNC", "PUBLIC KEY KEPT", uuid)
                 );
 
             } else {
@@ -84,7 +84,7 @@ public class LocalKeyStoreImpl implements LocalKeyStore {
                 logger.info(String.format(
                         LogMessageLines.SPACES__STATUS_WORD__FIELD__DATA,
                         LogMessageLines.classNameOffsetSpaces.get(getClass().getName()),
-                        "SYNC DELETE", "PUBLIC KEY (LOCAL)", uuid)
+                        "(LOCAL) SYNC", "PUBLIC KEY DELETED", uuid)
                 );
             }
         }
@@ -92,7 +92,7 @@ public class LocalKeyStoreImpl implements LocalKeyStore {
         logger.info(String.format(
                 LogMessageLines.SPACES__STATUS_WORD__FIELD__DATA__DATA,
                 LogMessageLines.classNameOffsetSpaces.get(getClass().getName()),
-                "SYNC KEPT, DELETED", "PUBLIC KEY (LOCAL)", publicKeys.size(), deleted)
+                "(LOCAL) SYNC", "PUBLIC KEY KEPT, DELETED", publicKeys.size(), deleted)
         );
     }
 
@@ -105,7 +105,7 @@ public class LocalKeyStoreImpl implements LocalKeyStore {
         logger.info(String.format(
                 LogMessageLines.SPACES__STATUS_WORD__FIELD__DATA,
                 LogMessageLines.classNameOffsetSpaces.get(getClass().getName()),
-                "SET", "PUBLIC AND PRIVATE KEY (LOCAL)", uuid)
+                "(LOCAL) SET", "PUBLIC AND PRIVATE KEY", uuid)
         );
     }
 
@@ -122,7 +122,7 @@ public class LocalKeyStoreImpl implements LocalKeyStore {
             logger.info(String.format(
                     LogMessageLines.SPACES__STATUS_WORD__FIELD,
                     LogMessageLines.classNameOffsetSpaces.get(getClass().getName()),
-                    "NOT SET", "PUBLIC AND PRIVATE KEY (LOCAL)")
+                    "(LOCAL) NOT SET", "PUBLIC AND PRIVATE KEY")
             );
 
             throw new NoSuchElementException();
@@ -137,7 +137,7 @@ public class LocalKeyStoreImpl implements LocalKeyStore {
         logger.info(String.format(
                 LogMessageLines.SPACES__STATUS_WORD__FIELD,
                 LogMessageLines.classNameOffsetSpaces.get(getClass().getName()),
-                "DROPPED ALL", "PUBLIC AND PRIVATE KEY (LOCAL)")
+                "(LOCAL) DROPPED ALL", "PUBLIC AND PRIVATE KEY")
         );
     }
 }
