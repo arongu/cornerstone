@@ -13,12 +13,6 @@ import java.util.TimerTask;
 
 public class KeyRotationTask extends TimerTask {
     private static final Logger logger = LoggerFactory.getLogger(KeyRotationTask.class);
-    private static final String MESSAGE_ROTATION_TASK_STARTED                       = "----------------------------------------- STARTED  -----------------------------------------";
-    private static final String MESSAGE_ROTATION_TASK_FINISHED                      = "----------------------------------------- FINISHED -----------------------------------------";
-    private static final String ERROR_MESSAGE_FAILED_TO_STORE_PUBLIC_KEY_IN_DB      = "FAILED TO STORE PUBLIC KEY IN DB (%s)";
-    private static final String ERROR_MESSAGE_FAILED_TO_SYNC_LOCAL_STORE_WITH_DB    = "FAILED TO SYNC KEYS WITH DB (KEEPING EVERYTHING IN MEMORY)";
-    private static final String ERROR_MESSAGE_FAILED_TO_DELETE_EXPIRED_KEYS_FROM_DB = "FAILED TO DELETE EXPIRED KEYS FROM DB";
-
 
     private final LocalKeyStore localKeyStore;
     private final PublicKeyStore dbPublicKeyStore;
@@ -46,18 +40,26 @@ public class KeyRotationTask extends TimerTask {
 
         try {
             dbPublicKeyStore.addKey(kp.uuid, nodeName, rsaTTL, base64_pub_key);
+
         } catch (final PublicKeyStoreException e) {
-            logger.error(String.format(ERROR_MESSAGE_FAILED_TO_STORE_PUBLIC_KEY_IN_DB, kp.uuid));
+            logger.error(String.format(AlignedLogMessages.FORMAT__OFFSET_S_S,
+                    AlignedLogMessages.OFFSETS_KEYSTORE_CLASSES.get(getClass().getName()),
+                    "FAILED TO STORE PUBLIC KEY IN DB",
+                    kp.uuid)
+            );
         }
     }
 
     // step 2
     private void cleanUpLocalPublicKeysKeepOnlyActiveKeysFromDb() {
-        try{
+        try {
             localKeyStore.sync(dbPublicKeyStore.getLiveKeyUUIDs());
 
-        } catch (final PublicKeyStoreException e){
-            logger.error(ERROR_MESSAGE_FAILED_TO_SYNC_LOCAL_STORE_WITH_DB);
+        } catch (final PublicKeyStoreException e) {
+            logger.error(String.format(AlignedLogMessages.FORMAT__OFFSET_S,
+                    AlignedLogMessages.OFFSETS_KEYSTORE_CLASSES.get(getClass().getName()),
+                    "FAILED TO SYNC LOCAL <- DB (KEEPING EVERYTHING IN LOCAL STORE)")
+            );
         }
     }
 
@@ -67,7 +69,10 @@ public class KeyRotationTask extends TimerTask {
             dbPublicKeyStore.deleteExpiredKeys();
 
         } catch (final PublicKeyStoreException e) {
-            logger.error(ERROR_MESSAGE_FAILED_TO_DELETE_EXPIRED_KEYS_FROM_DB);
+            logger.error(String.format(AlignedLogMessages.FORMAT__OFFSET_S,
+                    AlignedLogMessages.OFFSETS_KEYSTORE_CLASSES.get(getClass().getName()),
+                    "FAILED TO DELETE EXPIRED KEYS FROM DB")
+            );
         }
     }
 
@@ -75,7 +80,7 @@ public class KeyRotationTask extends TimerTask {
     public void run() {
         logger.info(String.format(AlignedLogMessages.FORMAT__OFFSET_S,
                 AlignedLogMessages.OFFSETS_KEYSTORE_CLASSES.get(getClass().getName()),
-                MESSAGE_ROTATION_TASK_STARTED)
+                "STARTED  ------------------------------------------------------------------------------------------")
         );
 
         changeLocalKeysThenStorePublicKeyAndItsUUIDinDb();
@@ -84,7 +89,7 @@ public class KeyRotationTask extends TimerTask {
 
         logger.info(String.format(AlignedLogMessages.FORMAT__OFFSET_S,
                 AlignedLogMessages.OFFSETS_KEYSTORE_CLASSES.get(getClass().getName()),
-                MESSAGE_ROTATION_TASK_FINISHED)
+                "------------------------------------------------------------------------------------------ FINISHED")
         );
     }
 }

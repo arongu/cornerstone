@@ -28,6 +28,7 @@ public final class AlignedLogMessages {
 
     // Log message lines
     public static final String FORMAT__OFFSET_S                 = "%s%s";
+    public static final String FORMAT__OFFSET_S_S               = "%s%s %s";
     public static final String FORMAT__OFFSET_30C_30C           = "%s%-30s%-30s";
     public static final String FORMAT__OFFSET_30C_30C_S         = "%s%-30s%-30s : %s";
     public static final String FORMAT__OFFSET_30C_30C_S_S       = "%s%-30s%-30s : %s, %s";

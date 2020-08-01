@@ -59,7 +59,13 @@ public class PublicKeyStoreImpl implements PublicKeyStore {
             return ps.executeUpdate();
 
         } catch (final SQLException e) {
-            logger.error(String.format(ERROR_MESSAGE_FAILED_TO_INSERT_PUBLIC_KEY, uuid.toString(), e.getMessage(), e.getSQLState(), e.getErrorCode()));
+            logger.error(
+                    String.format("%s%s",
+                            AlignedLogMessages.OFFSETS_KEYSTORE_CLASSES.get(getClass().getName()),
+                            String.format(ERROR_MESSAGE_FAILED_TO_INSERT_PUBLIC_KEY, uuid.toString(), e.getMessage(), e.getSQLState(), e.getErrorCode())
+                    )
+            );
+
             throw new PublicKeyStoreException();
         }
     }
@@ -78,7 +84,13 @@ public class PublicKeyStoreImpl implements PublicKeyStore {
             return ps.executeUpdate();
 
         } catch (final SQLException e) {
-            logger.error(String.format(ERROR_MESSAGE_FAILED_TO_DELETE_PUBLIC_KEY, uuid.toString(), e.getMessage(), e.getSQLState(), e.getErrorCode()));
+            logger.error(
+                    String.format("%s%s",
+                            AlignedLogMessages.OFFSETS_KEYSTORE_CLASSES.get(getClass().getName()),
+                            String.format(ERROR_MESSAGE_FAILED_TO_DELETE_PUBLIC_KEY, uuid.toString(), e.getMessage(), e.getSQLState(), e.getErrorCode())
+                    )
+            );
+
             throw new PublicKeyStoreException();
         }
     }
@@ -120,7 +132,13 @@ public class PublicKeyStoreImpl implements PublicKeyStore {
             }
 
         } catch (final SQLException e) {
-            logger.error(String.format(ERROR_MESSAGE_FAILED_TO_SELECT_PUBLIC_KEY, uuid.toString(), e.getMessage(), e.getSQLState(), e.getErrorCode()));
+            logger.error(
+                    String.format("%s%s",
+                            AlignedLogMessages.OFFSETS_KEYSTORE_CLASSES.get(getClass().getName()),
+                            String.format(ERROR_MESSAGE_FAILED_TO_SELECT_PUBLIC_KEY, uuid.toString(), e.getMessage(), e.getSQLState(), e.getErrorCode())
+                    )
+            );
+
             throw new PublicKeyStoreException();
         }
     }
@@ -163,7 +181,13 @@ public class PublicKeyStoreImpl implements PublicKeyStore {
             return keys;
 
         } catch (final SQLException e) {
-            logger.error(String.format(ERROR_MESSAGE_FAILED_TO_SELECT_ACTIVE_PUBLIC_KEYS, e.getMessage(), e.getSQLState(), e.getErrorCode()));
+            logger.error(
+                    String.format("%s%s",
+                            AlignedLogMessages.OFFSETS_KEYSTORE_CLASSES.get(getClass().getName()),
+                            String.format(ERROR_MESSAGE_FAILED_TO_SELECT_ACTIVE_PUBLIC_KEYS, e.getMessage(), e.getSQLState(), e.getErrorCode())
+                    )
+            );
+
             throw new PublicKeyStoreException();
         }
     }
@@ -199,7 +223,13 @@ public class PublicKeyStoreImpl implements PublicKeyStore {
             return uuids;
 
         } catch (final SQLException e) {
-            logger.error(String.format(ERROR_MESSAGE_FAILED_TO_SELECT_EXPIRED_PUBLIC_KEY_UUIDS, e.getMessage(), e.getSQLState(), e.getErrorCode()));
+            logger.error(
+                    String.format("%s%s",
+                            AlignedLogMessages.OFFSETS_KEYSTORE_CLASSES.get(getClass().getName()),
+                            String.format(ERROR_MESSAGE_FAILED_TO_SELECT_EXPIRED_PUBLIC_KEY_UUIDS, e.getMessage(), e.getSQLState(), e.getErrorCode())
+                    )
+            );
+
             throw new PublicKeyStoreException();
         }
     }
@@ -210,7 +240,7 @@ public class PublicKeyStoreImpl implements PublicKeyStore {
             final ResultSet rs = ps.executeQuery();
             final List<UUID> expired_uuids = new ArrayList<>();
 
-            if(rs != null){
+            if (rs != null){
                 while (rs.next()){
                     expired_uuids.add((UUID) rs.getObject("uuid"));
                 }
@@ -235,7 +265,13 @@ public class PublicKeyStoreImpl implements PublicKeyStore {
             return expired_uuids;
 
         } catch (final SQLException e) {
-            logger.error(String.format(ERROR_MESSAGE_FAILED_TO_SELECT_EXPIRED_PUBLIC_KEY_UUIDS, e.getMessage(), e.getSQLState(), e.getErrorCode()));
+            logger.error(
+                    String.format("%s%s",
+                            AlignedLogMessages.OFFSETS_KEYSTORE_CLASSES.get(getClass().getName()),
+                            String.format(ERROR_MESSAGE_FAILED_TO_SELECT_EXPIRED_PUBLIC_KEY_UUIDS, e.getMessage(), e.getSQLState(), e.getErrorCode())
+                    )
+            );
+
             throw new PublicKeyStoreException();
         }
     }
@@ -254,7 +290,11 @@ public class PublicKeyStoreImpl implements PublicKeyStore {
             return deletes;
 
         } catch (final SQLException e) {
-            logger.error(String.format(ERROR_MESSAGE_FAILED_TO_DELETE_EXPIRED_PUBLIC_KEYS, e.getMessage(), e.getSQLState(), e.getErrorCode()));
+            logger.error(String.format("%s%s",
+                    AlignedLogMessages.OFFSETS_KEYSTORE_CLASSES.get(getClass().getName()),
+                    String.format(ERROR_MESSAGE_FAILED_TO_DELETE_EXPIRED_PUBLIC_KEYS, e.getMessage(), e.getSQLState(), e.getErrorCode()))
+            );
+
             throw new PublicKeyStoreException();
         }
     }
