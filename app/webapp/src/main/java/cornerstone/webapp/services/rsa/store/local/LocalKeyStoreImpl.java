@@ -1,6 +1,7 @@
 package cornerstone.webapp.services.rsa.store.local;
 
-import cornerstone.webapp.common.LogMessageLines;
+import cornerstone.webapp.common.AlignedLogMessages;
+import cornerstone.webapp.services.rsa.store.log.MessageElements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,9 +26,11 @@ public class LocalKeyStoreImpl implements LocalKeyStore {
         publicKeys.put(uuid, publicKey);
 
         logger.info(String.format(
-                LogMessageLines.SPACES__STATUS_WORD__FIELD__DATA,
-                LogMessageLines.classNameOffsetSpaces.get(getClass().getName()),
-                "(LOCAL) ADDED", "PUBLIC KEY", uuid)
+                AlignedLogMessages.SPACES__30C_30C_DATA,
+                AlignedLogMessages.OFFSET_SPACES.get(getClass().getName()),
+                MessageElements.PREFIX_LOCAL + MessageElements.ADDED,
+                MessageElements.PUBLIC_KEY,
+                uuid)
         );
     }
 
@@ -35,9 +38,11 @@ public class LocalKeyStoreImpl implements LocalKeyStore {
     public void deletePublicKey(final UUID uuid) {
         publicKeys.remove(uuid);
         logger.info(String.format(
-                LogMessageLines.SPACES__STATUS_WORD__FIELD__DATA,
-                LogMessageLines.classNameOffsetSpaces.get(getClass().getName()),
-                "(LOCAL) DELETED", "PUBLIC KEY", uuid)
+                AlignedLogMessages.SPACES__30C_30C_DATA,
+                AlignedLogMessages.OFFSET_SPACES.get(getClass().getName()),
+                MessageElements.PREFIX_LOCAL + MessageElements.DELETED,
+                MessageElements.PUBLIC_KEY,
+                uuid)
         );
     }
 
@@ -48,9 +53,11 @@ public class LocalKeyStoreImpl implements LocalKeyStore {
             return keyData;
         } else {
             logger.info(String.format(
-                    LogMessageLines.SPACES__STATUS_WORD__FIELD__DATA,
-                    LogMessageLines.classNameOffsetSpaces.get(getClass().getName()),
-                    "(LOCAL) NO SUCH", "PUBLIC KEY", uuid)
+                    AlignedLogMessages.SPACES__30C_30C_DATA,
+                    AlignedLogMessages.OFFSET_SPACES.get(getClass().getName()),
+                    MessageElements.PREFIX_LOCAL + MessageElements.NO_SUCH,
+                    MessageElements.PUBLIC_KEY,
+                    uuid)
             );
 
             throw new NoSuchElementException();
@@ -72,9 +79,11 @@ public class LocalKeyStoreImpl implements LocalKeyStore {
         for (final UUID uuid : publicKeys.keySet()) {
             if (uuid == currentUUID || toBeKept.contains(uuid)){
                 logger.info(String.format(
-                        LogMessageLines.SPACES__STATUS_WORD__FIELD__DATA,
-                        LogMessageLines.classNameOffsetSpaces.get(getClass().getName()),
-                        "(LOCAL) SYNC", "PUBLIC KEY KEPT", uuid)
+                        AlignedLogMessages.SPACES__30C_30C_DATA,
+                        AlignedLogMessages.OFFSET_SPACES.get(getClass().getName()),
+                        MessageElements.PREFIX_LOCAL + MessageElements.SYNC,
+                        MessageElements.PUBLIC_KEY + " " + MessageElements.KEPT,
+                        uuid)
                 );
 
             } else {
@@ -82,17 +91,20 @@ public class LocalKeyStoreImpl implements LocalKeyStore {
                 deleted++;
 
                 logger.info(String.format(
-                        LogMessageLines.SPACES__STATUS_WORD__FIELD__DATA,
-                        LogMessageLines.classNameOffsetSpaces.get(getClass().getName()),
-                        "(LOCAL) SYNC", "PUBLIC KEY DELETED", uuid)
+                        AlignedLogMessages.SPACES__30C_30C_DATA,
+                        AlignedLogMessages.OFFSET_SPACES.get(getClass().getName()),
+                        MessageElements.PREFIX_LOCAL + MessageElements.SYNC, MessageElements.PUBLIC_KEY + " " + MessageElements.DELETED,
+                        uuid)
                 );
             }
         }
 
         logger.info(String.format(
-                LogMessageLines.SPACES__STATUS_WORD__FIELD__DATA__DATA,
-                LogMessageLines.classNameOffsetSpaces.get(getClass().getName()),
-                "(LOCAL) SYNC", "PUBLIC KEY KEPT, DELETED", publicKeys.size(), deleted)
+                AlignedLogMessages.LINE__SPACES_30C_30C_DATA_DATA,
+                AlignedLogMessages.OFFSET_SPACES.get(getClass().getName()),
+                MessageElements.PREFIX_LOCAL + MessageElements.SYNC,
+                MessageElements.PUBLIC_KEY + " " + MessageElements.KEPT + ", " + MessageElements.DELETED,
+                toBeKept.size(), deleted)
         );
     }
 
@@ -103,9 +115,11 @@ public class LocalKeyStoreImpl implements LocalKeyStore {
         publicKeys.put(uuid, publicKey);
 
         logger.info(String.format(
-                LogMessageLines.SPACES__STATUS_WORD__FIELD__DATA,
-                LogMessageLines.classNameOffsetSpaces.get(getClass().getName()),
-                "(LOCAL) SET", "PUBLIC AND PRIVATE KEY", uuid)
+                AlignedLogMessages.SPACES__30C_30C_DATA,
+                AlignedLogMessages.OFFSET_SPACES.get(getClass().getName()),
+                MessageElements.PREFIX_LOCAL + MessageElements.SET,
+                MessageElements.PUBLIC_AND_PRIVATE_KEY,
+                uuid)
         );
     }
 
@@ -120,9 +134,10 @@ public class LocalKeyStoreImpl implements LocalKeyStore {
             return new PrivateKeyWithUUID(currentUUID, privateKey);
         } else {
             logger.info(String.format(
-                    LogMessageLines.SPACES__STATUS_WORD__FIELD,
-                    LogMessageLines.classNameOffsetSpaces.get(getClass().getName()),
-                    "(LOCAL) NOT SET", "PUBLIC AND PRIVATE KEY")
+                    AlignedLogMessages.SPACES__30C_30C,
+                    AlignedLogMessages.OFFSET_SPACES.get(getClass().getName()),
+                    MessageElements.PREFIX_LOCAL + MessageElements.NOT_SET,
+                    MessageElements.PUBLIC_AND_PRIVATE_KEY)
             );
 
             throw new NoSuchElementException();
@@ -135,9 +150,10 @@ public class LocalKeyStoreImpl implements LocalKeyStore {
         currentUUID = null;
         privateKey = null;
         logger.info(String.format(
-                LogMessageLines.SPACES__STATUS_WORD__FIELD,
-                LogMessageLines.classNameOffsetSpaces.get(getClass().getName()),
-                "(LOCAL) DROPPED ALL", "PUBLIC AND PRIVATE KEY")
+                AlignedLogMessages.SPACES__30C_30C,
+                AlignedLogMessages.OFFSET_SPACES.get(getClass().getName()),
+                MessageElements.PREFIX_LOCAL + "DROPPED ALL",
+                MessageElements.PUBLIC_AND_PRIVATE_KEY)
         );
     }
 }

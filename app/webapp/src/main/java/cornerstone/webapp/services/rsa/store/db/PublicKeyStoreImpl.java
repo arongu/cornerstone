@@ -3,7 +3,7 @@ package cornerstone.webapp.services.rsa.store.db;
 import cornerstone.webapp.common.DefaultLogMessages;
 import cornerstone.webapp.datasources.WorkDB;
 import cornerstone.webapp.services.rsa.common.PublicKeyData;
-import cornerstone.webapp.common.LogMessageLines;
+import cornerstone.webapp.common.AlignedLogMessages;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,8 +48,8 @@ public class PublicKeyStoreImpl implements PublicKeyStore {
             ps.setString(4, base64_key);
 
             logger.info(String.format(
-                    LogMessageLines.SPACES__STATUS_WORD__FIELD__DATA,
-                    LogMessageLines.classNameOffsetSpaces.get(getClass().getName()),
+                    AlignedLogMessages.SPACES__30C_30C_DATA,
+                    AlignedLogMessages.OFFSET_SPACES.get(getClass().getName()),
                     "(DB) ADDED", "PUBLIC KEY", uuid)
             );
 
@@ -66,8 +66,8 @@ public class PublicKeyStoreImpl implements PublicKeyStore {
         try (final Connection c = workDB.getConnection(); final PreparedStatement ps = c.prepareStatement(SQL_DELETE_PUBLIC_KEY)) {
             ps.setObject(1, uuid);
             logger.info(String.format(
-                    LogMessageLines.SPACES__STATUS_WORD__FIELD__DATA,
-                    LogMessageLines.classNameOffsetSpaces.get(getClass().getName()),
+                    AlignedLogMessages.SPACES__30C_30C_DATA,
+                    AlignedLogMessages.OFFSET_SPACES.get(getClass().getName()),
                     "(DB) DELETED", "PUBLIC KEY", uuid)
             );
 
@@ -96,8 +96,8 @@ public class PublicKeyStoreImpl implements PublicKeyStore {
                 );
 
                 logger.info(String.format(
-                        LogMessageLines.SPACES__STATUS_WORD__FIELD__DATA,
-                        LogMessageLines.classNameOffsetSpaces.get(getClass().getName()),
+                        AlignedLogMessages.SPACES__30C_30C_DATA,
+                        AlignedLogMessages.OFFSET_SPACES.get(getClass().getName()),
                         "(DB) FETCHED", "PUBLIC KEY", keyData)
                 );
 
@@ -105,8 +105,8 @@ public class PublicKeyStoreImpl implements PublicKeyStore {
 
             } else {
                 logger.info(String.format(
-                        LogMessageLines.SPACES__STATUS_WORD__FIELD__DATA,
-                        LogMessageLines.classNameOffsetSpaces.get(getClass().getName()),
+                        AlignedLogMessages.SPACES__30C_30C_DATA,
+                        AlignedLogMessages.OFFSET_SPACES.get(getClass().getName()),
                         "(DB) NO SUCH", "PUBLIC KEY", uuid)
                 );
 
@@ -139,8 +139,8 @@ public class PublicKeyStoreImpl implements PublicKeyStore {
             }
 
             logger.info(String.format(
-                    LogMessageLines.SPACES__STATUS_WORD__FIELD__DATA,
-                    LogMessageLines.classNameOffsetSpaces.get(getClass().getName()),
+                    AlignedLogMessages.SPACES__30C_30C_DATA,
+                    AlignedLogMessages.OFFSET_SPACES.get(getClass().getName()),
                     "(DB) NUMBER OF FETCHED", "PUBLIC KEYS (LIVE)", keys.size())
             );
 
@@ -165,14 +165,14 @@ public class PublicKeyStoreImpl implements PublicKeyStore {
             }
 
             logger.info(String.format(
-                    LogMessageLines.SPACES__STATUS_WORD__FIELD__DATA,
-                    LogMessageLines.classNameOffsetSpaces.get(getClass().getName()),
+                    AlignedLogMessages.SPACES__30C_30C_DATA,
+                    AlignedLogMessages.OFFSET_SPACES.get(getClass().getName()),
                     "(DB) NUMBER OF FETCHED", "PUBLIC KEY UUIDS (LIVE)", uuids.size())
             );
 
             logger.info(String.format(
-                    LogMessageLines.SPACES__STATUS_WORD__FIELD__DATA,
-                    LogMessageLines.classNameOffsetSpaces.get(getClass().getName()),
+                    AlignedLogMessages.SPACES__30C_30C_DATA,
+                    AlignedLogMessages.OFFSET_SPACES.get(getClass().getName()),
                     "(DB) FETCHED", "PUBLIC KEY UUIDS (LIVE)", uuids)
             );
 
@@ -197,14 +197,14 @@ public class PublicKeyStoreImpl implements PublicKeyStore {
             }
 
             logger.info(String.format(
-                    LogMessageLines.SPACES__STATUS_WORD__FIELD__DATA,
-                    LogMessageLines.classNameOffsetSpaces.get(getClass().getName()),
+                    AlignedLogMessages.SPACES__30C_30C_DATA,
+                    AlignedLogMessages.OFFSET_SPACES.get(getClass().getName()),
                     "(DB) FETCHED", "PUBLIC KEY UUIDS (EXPIRED)", expired_uuids.size())
             );
 
             logger.info(String.format(
-                    LogMessageLines.SPACES__STATUS_WORD__FIELD__DATA,
-                    LogMessageLines.classNameOffsetSpaces.get(getClass().getName()),
+                    AlignedLogMessages.SPACES__30C_30C_DATA,
+                    AlignedLogMessages.OFFSET_SPACES.get(getClass().getName()),
                     "(DB) FETCHED", "PUBLIC KEYS (EXPIRED)", expired_uuids)
             );
 
@@ -221,8 +221,8 @@ public class PublicKeyStoreImpl implements PublicKeyStore {
         try (final Connection c = workDB.getConnection(); final PreparedStatement ps = c.prepareStatement(SQL_DELETE_EXPIRED_PUBLIC_KEYS)) {
             final int deletes = ps.executeUpdate();
             logger.info(String.format(
-                    LogMessageLines.SPACES__STATUS_WORD__FIELD__DATA,
-                    LogMessageLines.classNameOffsetSpaces.get(getClass().getName()),
+                    AlignedLogMessages.SPACES__30C_30C_DATA,
+                    AlignedLogMessages.OFFSET_SPACES.get(getClass().getName()),
                     "(DB) DELETED", "PUBLIC KEYS (EXPIRED)", deletes)
             );
 
