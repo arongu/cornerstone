@@ -26,8 +26,8 @@ public class LocalKeyStoreImpl implements LocalKeyStore {
         publicKeys.put(uuid, publicKey);
 
         logger.info(String.format(
-                AlignedLogMessages.SPACES__30C_30C_DATA,
-                AlignedLogMessages.OFFSET_SPACES.get(getClass().getName()),
+                AlignedLogMessages.FORMAT__30C_30C_DATA,
+                AlignedLogMessages.OFFSETS_KEYSTORE_CLASSES.get(getClass().getName()),
                 MessageElements.PREFIX_LOCAL + MessageElements.ADDED,
                 MessageElements.PUBLIC_KEY,
                 uuid)
@@ -38,8 +38,8 @@ public class LocalKeyStoreImpl implements LocalKeyStore {
     public void deletePublicKey(final UUID uuid) {
         publicKeys.remove(uuid);
         logger.info(String.format(
-                AlignedLogMessages.SPACES__30C_30C_DATA,
-                AlignedLogMessages.OFFSET_SPACES.get(getClass().getName()),
+                AlignedLogMessages.FORMAT__30C_30C_DATA,
+                AlignedLogMessages.OFFSETS_KEYSTORE_CLASSES.get(getClass().getName()),
                 MessageElements.PREFIX_LOCAL + MessageElements.DELETED,
                 MessageElements.PUBLIC_KEY,
                 uuid)
@@ -53,8 +53,8 @@ public class LocalKeyStoreImpl implements LocalKeyStore {
             return keyData;
         } else {
             logger.info(String.format(
-                    AlignedLogMessages.SPACES__30C_30C_DATA,
-                    AlignedLogMessages.OFFSET_SPACES.get(getClass().getName()),
+                    AlignedLogMessages.FORMAT__30C_30C_DATA,
+                    AlignedLogMessages.OFFSETS_KEYSTORE_CLASSES.get(getClass().getName()),
                     MessageElements.PREFIX_LOCAL + MessageElements.NO_SUCH,
                     MessageElements.PUBLIC_KEY,
                     uuid)
@@ -79,8 +79,8 @@ public class LocalKeyStoreImpl implements LocalKeyStore {
         for (final UUID uuid : publicKeys.keySet()) {
             if (uuid == currentUUID || toBeKept.contains(uuid)){
                 logger.info(String.format(
-                        AlignedLogMessages.SPACES__30C_30C_DATA,
-                        AlignedLogMessages.OFFSET_SPACES.get(getClass().getName()),
+                        AlignedLogMessages.FORMAT__30C_30C_DATA,
+                        AlignedLogMessages.OFFSETS_KEYSTORE_CLASSES.get(getClass().getName()),
                         MessageElements.PREFIX_LOCAL + MessageElements.SYNC,
                         MessageElements.PUBLIC_KEY + " " + MessageElements.KEPT,
                         uuid)
@@ -91,8 +91,8 @@ public class LocalKeyStoreImpl implements LocalKeyStore {
                 deleted++;
 
                 logger.info(String.format(
-                        AlignedLogMessages.SPACES__30C_30C_DATA,
-                        AlignedLogMessages.OFFSET_SPACES.get(getClass().getName()),
+                        AlignedLogMessages.FORMAT__30C_30C_DATA,
+                        AlignedLogMessages.OFFSETS_KEYSTORE_CLASSES.get(getClass().getName()),
                         MessageElements.PREFIX_LOCAL + MessageElements.SYNC, MessageElements.PUBLIC_KEY + " " + MessageElements.DELETED,
                         uuid)
                 );
@@ -100,8 +100,8 @@ public class LocalKeyStoreImpl implements LocalKeyStore {
         }
 
         logger.info(String.format(
-                AlignedLogMessages.LINE__SPACES_30C_30C_DATA_DATA,
-                AlignedLogMessages.OFFSET_SPACES.get(getClass().getName()),
+                AlignedLogMessages.FORMAT__SPACES_30C_30C_DATA_DATA,
+                AlignedLogMessages.OFFSETS_KEYSTORE_CLASSES.get(getClass().getName()),
                 MessageElements.PREFIX_LOCAL + MessageElements.SYNC,
                 MessageElements.PUBLIC_KEY + " " + MessageElements.KEPT + ", " + MessageElements.DELETED,
                 toBeKept.size(), deleted)
@@ -115,8 +115,8 @@ public class LocalKeyStoreImpl implements LocalKeyStore {
         publicKeys.put(uuid, publicKey);
 
         logger.info(String.format(
-                AlignedLogMessages.SPACES__30C_30C_DATA,
-                AlignedLogMessages.OFFSET_SPACES.get(getClass().getName()),
+                AlignedLogMessages.FORMAT__30C_30C_DATA,
+                AlignedLogMessages.OFFSETS_KEYSTORE_CLASSES.get(getClass().getName()),
                 MessageElements.PREFIX_LOCAL + MessageElements.SET,
                 MessageElements.PUBLIC_AND_PRIVATE_KEY,
                 uuid)
@@ -134,8 +134,8 @@ public class LocalKeyStoreImpl implements LocalKeyStore {
             return new PrivateKeyWithUUID(currentUUID, privateKey);
         } else {
             logger.info(String.format(
-                    AlignedLogMessages.SPACES__30C_30C,
-                    AlignedLogMessages.OFFSET_SPACES.get(getClass().getName()),
+                    AlignedLogMessages.FORMAT__30C_30C,
+                    AlignedLogMessages.OFFSETS_KEYSTORE_CLASSES.get(getClass().getName()),
                     MessageElements.PREFIX_LOCAL + MessageElements.NOT_SET,
                     MessageElements.PUBLIC_AND_PRIVATE_KEY)
             );
@@ -150,8 +150,8 @@ public class LocalKeyStoreImpl implements LocalKeyStore {
         currentUUID = null;
         privateKey = null;
         logger.info(String.format(
-                AlignedLogMessages.SPACES__30C_30C,
-                AlignedLogMessages.OFFSET_SPACES.get(getClass().getName()),
+                AlignedLogMessages.FORMAT__30C_30C,
+                AlignedLogMessages.OFFSETS_KEYSTORE_CLASSES.get(getClass().getName()),
                 MessageElements.PREFIX_LOCAL + "DROPPED ALL",
                 MessageElements.PUBLIC_AND_PRIVATE_KEY)
         );

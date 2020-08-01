@@ -1,9 +1,10 @@
 package cornerstone.webapp.services.rsa.store.db;
 
+import cornerstone.webapp.common.AlignedLogMessages;
 import cornerstone.webapp.common.DefaultLogMessages;
 import cornerstone.webapp.datasources.WorkDB;
 import cornerstone.webapp.services.rsa.common.PublicKeyData;
-import cornerstone.webapp.common.AlignedLogMessages;
+import cornerstone.webapp.services.rsa.store.log.MessageElements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,9 +49,11 @@ public class PublicKeyStoreImpl implements PublicKeyStore {
             ps.setString(4, base64_key);
 
             logger.info(String.format(
-                    AlignedLogMessages.SPACES__30C_30C_DATA,
-                    AlignedLogMessages.OFFSET_SPACES.get(getClass().getName()),
-                    "(DB) ADDED", "PUBLIC KEY", uuid)
+                    AlignedLogMessages.FORMAT__30C_30C_DATA,
+                    AlignedLogMessages.OFFSETS_KEYSTORE_CLASSES.get(getClass().getName()),
+                    MessageElements.PREFIX_DB + MessageElements.ADDED,
+                    MessageElements.PUBLIC_KEY,
+                    uuid)
             );
 
             return ps.executeUpdate();
@@ -66,9 +69,10 @@ public class PublicKeyStoreImpl implements PublicKeyStore {
         try (final Connection c = workDB.getConnection(); final PreparedStatement ps = c.prepareStatement(SQL_DELETE_PUBLIC_KEY)) {
             ps.setObject(1, uuid);
             logger.info(String.format(
-                    AlignedLogMessages.SPACES__30C_30C_DATA,
-                    AlignedLogMessages.OFFSET_SPACES.get(getClass().getName()),
-                    "(DB) DELETED", "PUBLIC KEY", uuid)
+                    AlignedLogMessages.FORMAT__30C_30C_DATA,
+                    AlignedLogMessages.OFFSETS_KEYSTORE_CLASSES.get(getClass().getName()),
+                    MessageElements.PREFIX_DB + MessageElements.DELETED,
+                    MessageElements.PUBLIC_KEY, uuid)
             );
 
             return ps.executeUpdate();
@@ -96,18 +100,20 @@ public class PublicKeyStoreImpl implements PublicKeyStore {
                 );
 
                 logger.info(String.format(
-                        AlignedLogMessages.SPACES__30C_30C_DATA,
-                        AlignedLogMessages.OFFSET_SPACES.get(getClass().getName()),
-                        "(DB) FETCHED", "PUBLIC KEY", keyData)
+                        AlignedLogMessages.FORMAT__30C_30C_DATA,
+                        AlignedLogMessages.OFFSETS_KEYSTORE_CLASSES.get(getClass().getName()),
+                        MessageElements.PREFIX_DB + MessageElements.FETCHED,
+                        MessageElements.PUBLIC_KEY, keyData)
                 );
 
                 return keyData;
 
             } else {
                 logger.info(String.format(
-                        AlignedLogMessages.SPACES__30C_30C_DATA,
-                        AlignedLogMessages.OFFSET_SPACES.get(getClass().getName()),
-                        "(DB) NO SUCH", "PUBLIC KEY", uuid)
+                        AlignedLogMessages.FORMAT__30C_30C_DATA,
+                        AlignedLogMessages.OFFSETS_KEYSTORE_CLASSES.get(getClass().getName()),
+                        MessageElements.PREFIX_DB + MessageElements.NO_SUCH,
+                        MessageElements.PUBLIC_KEY, uuid)
                 );
 
                 throw new NoSuchElementException();
@@ -139,9 +145,19 @@ public class PublicKeyStoreImpl implements PublicKeyStore {
             }
 
             logger.info(String.format(
-                    AlignedLogMessages.SPACES__30C_30C_DATA,
-                    AlignedLogMessages.OFFSET_SPACES.get(getClass().getName()),
-                    "(DB) NUMBER OF FETCHED", "PUBLIC KEYS (LIVE)", keys.size())
+                    AlignedLogMessages.FORMAT__30C_30C_DATA,
+                    AlignedLogMessages.OFFSETS_KEYSTORE_CLASSES.get(getClass().getName()),
+                    MessageElements.PREFIX_DB + MessageElements.NUMBER_OF_FETCHED,
+                    MessageElements.PUBLIC_KEYS + MessageElements.POSTFIX_LIVE,
+                    keys.size())
+            );
+
+            logger.info(String.format(
+                    AlignedLogMessages.FORMAT__30C_30C_DATA,
+                    AlignedLogMessages.OFFSETS_KEYSTORE_CLASSES.get(getClass().getName()),
+                    MessageElements.PREFIX_DB + MessageElements.FETCHED,
+                    MessageElements.PUBLIC_KEYS + MessageElements.POSTFIX_LIVE,
+                    keys)
             );
 
             return keys;
@@ -165,15 +181,19 @@ public class PublicKeyStoreImpl implements PublicKeyStore {
             }
 
             logger.info(String.format(
-                    AlignedLogMessages.SPACES__30C_30C_DATA,
-                    AlignedLogMessages.OFFSET_SPACES.get(getClass().getName()),
-                    "(DB) NUMBER OF FETCHED", "PUBLIC KEY UUIDS (LIVE)", uuids.size())
+                    AlignedLogMessages.FORMAT__30C_30C_DATA,
+                    AlignedLogMessages.OFFSETS_KEYSTORE_CLASSES.get(getClass().getName()),
+                    MessageElements.PREFIX_DB + MessageElements.NUMBER_OF_FETCHED,
+                    MessageElements.PUBLIC_KEY_UUIDS + MessageElements.POSTFIX_LIVE,
+                    uuids.size())
             );
 
             logger.info(String.format(
-                    AlignedLogMessages.SPACES__30C_30C_DATA,
-                    AlignedLogMessages.OFFSET_SPACES.get(getClass().getName()),
-                    "(DB) FETCHED", "PUBLIC KEY UUIDS (LIVE)", uuids)
+                    AlignedLogMessages.FORMAT__30C_30C_DATA,
+                    AlignedLogMessages.OFFSETS_KEYSTORE_CLASSES.get(getClass().getName()),
+                    MessageElements.PREFIX_DB + MessageElements.FETCHED,
+                    MessageElements.PUBLIC_KEY_UUIDS + MessageElements.POSTFIX_LIVE,
+                    uuids)
             );
 
             return uuids;
@@ -197,15 +217,19 @@ public class PublicKeyStoreImpl implements PublicKeyStore {
             }
 
             logger.info(String.format(
-                    AlignedLogMessages.SPACES__30C_30C_DATA,
-                    AlignedLogMessages.OFFSET_SPACES.get(getClass().getName()),
-                    "(DB) FETCHED", "PUBLIC KEY UUIDS (EXPIRED)", expired_uuids.size())
+                    AlignedLogMessages.FORMAT__30C_30C_DATA,
+                    AlignedLogMessages.OFFSETS_KEYSTORE_CLASSES.get(getClass().getName()),
+                    MessageElements.PREFIX_DB + MessageElements.NUMBER_OF_FETCHED,
+                    MessageElements.PUBLIC_KEY_UUIDS + MessageElements.POSTFIX_EXPIRED,
+                    expired_uuids.size())
             );
 
             logger.info(String.format(
-                    AlignedLogMessages.SPACES__30C_30C_DATA,
-                    AlignedLogMessages.OFFSET_SPACES.get(getClass().getName()),
-                    "(DB) FETCHED", "PUBLIC KEYS (EXPIRED)", expired_uuids)
+                    AlignedLogMessages.FORMAT__30C_30C_DATA,
+                    AlignedLogMessages.OFFSETS_KEYSTORE_CLASSES.get(getClass().getName()),
+                    MessageElements.PREFIX_DB + MessageElements.FETCHED,
+                    MessageElements.PUBLIC_KEY_UUIDS + MessageElements.POSTFIX_EXPIRED,
+                    expired_uuids)
             );
 
             return expired_uuids;
@@ -221,9 +245,10 @@ public class PublicKeyStoreImpl implements PublicKeyStore {
         try (final Connection c = workDB.getConnection(); final PreparedStatement ps = c.prepareStatement(SQL_DELETE_EXPIRED_PUBLIC_KEYS)) {
             final int deletes = ps.executeUpdate();
             logger.info(String.format(
-                    AlignedLogMessages.SPACES__30C_30C_DATA,
-                    AlignedLogMessages.OFFSET_SPACES.get(getClass().getName()),
-                    "(DB) DELETED", "PUBLIC KEYS (EXPIRED)", deletes)
+                    AlignedLogMessages.FORMAT__30C_30C_DATA,
+                    AlignedLogMessages.OFFSETS_KEYSTORE_CLASSES.get(getClass().getName()),
+                    MessageElements.PREFIX_DB + MessageElements.DELETED,
+                    MessageElements.PUBLIC_KEYS + MessageElements.POSTFIX_EXPIRED, deletes)
             );
 
             return deletes;
