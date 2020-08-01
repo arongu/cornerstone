@@ -27,9 +27,10 @@ public final class AlignedLogMessages {
     }
 
     // Log message lines
-    public static final String FORMAT__30C_30C                  = "%s%-30s%-30s";
-    public static final String FORMAT__30C_30C_DATA             = "%s%-30s%-30s : %s";
-    public static final String FORMAT__SPACES_30C_30C_DATA_DATA = "%s%-30s%-30s : %s, %s";
+    public static final String FORMAT__OFFSET_S                 = "%s%s";
+    public static final String FORMAT__OFFSET_30C_30C           = "%s%-30s%-30s";
+    public static final String FORMAT__OFFSET_30C_30C_S         = "%s%-30s%-30s : %s";
+    public static final String FORMAT__OFFSET_30C_30C_S_S       = "%s%-30s%-30s : %s, %s";
 
     public static final HashMap<String, String> OFFSETS_KEYSTORE_CLASSES;
     static {
@@ -41,8 +42,8 @@ public final class AlignedLogMessages {
 
         // Offset alignment group for Key Store related classes:
         String[] KEYSTORE_CLASSES = {
-                PublicKeyStoreImpl.class.getName(),
                 LocalKeyStoreImpl.class.getName(),
+                PublicKeyStoreImpl.class.getName(),
                 KeyRotatorImpl.class.getName(),
                 KeyRotationTask.class.getName()
         };

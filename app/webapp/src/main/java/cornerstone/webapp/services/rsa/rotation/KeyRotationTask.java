@@ -1,8 +1,9 @@
 package cornerstone.webapp.services.rsa.rotation;
 
+import cornerstone.webapp.common.AlignedLogMessages;
 import cornerstone.webapp.common.DefaultLogMessages;
-import cornerstone.webapp.services.rsa.store.db.PublicKeyStoreException;
 import cornerstone.webapp.services.rsa.store.db.PublicKeyStore;
+import cornerstone.webapp.services.rsa.store.db.PublicKeyStoreException;
 import cornerstone.webapp.services.rsa.store.local.LocalKeyStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,8 +13,8 @@ import java.util.TimerTask;
 
 public class KeyRotationTask extends TimerTask {
     private static final Logger logger = LoggerFactory.getLogger(KeyRotationTask.class);
-    private static final String MESSAGE_ROTATION_TASK_STARTED                       = "STARTED";
-    private static final String MESSAGE_ROTATION_TASK_FINISHED                      = "FINISHED";
+    private static final String MESSAGE_ROTATION_TASK_STARTED                       = "----------------------------------------- STARTED  -----------------------------------------";
+    private static final String MESSAGE_ROTATION_TASK_FINISHED                      = "----------------------------------------- FINISHED -----------------------------------------";
     private static final String ERROR_MESSAGE_FAILED_TO_STORE_PUBLIC_KEY_IN_DB      = "FAILED TO STORE PUBLIC KEY IN DB (%s)";
     private static final String ERROR_MESSAGE_FAILED_TO_SYNC_LOCAL_STORE_WITH_DB    = "FAILED TO SYNC KEYS WITH DB (KEEPING EVERYTHING IN MEMORY)";
     private static final String ERROR_MESSAGE_FAILED_TO_DELETE_EXPIRED_KEYS_FROM_DB = "FAILED TO DELETE EXPIRED KEYS FROM DB";
@@ -72,10 +73,18 @@ public class KeyRotationTask extends TimerTask {
 
     @Override
     public void run() {
-        logger.info(MESSAGE_ROTATION_TASK_STARTED);
+        logger.info(String.format(AlignedLogMessages.FORMAT__OFFSET_S,
+                AlignedLogMessages.OFFSETS_KEYSTORE_CLASSES.get(getClass().getName()),
+                MESSAGE_ROTATION_TASK_STARTED)
+        );
+
         changeLocalKeysThenStorePublicKeyAndItsUUIDinDb();
         cleanUpLocalPublicKeysKeepOnlyActiveKeysFromDb();
         cleanUpDbRemoveExpiredPublicKeys();
-        logger.info(MESSAGE_ROTATION_TASK_FINISHED);
+
+        logger.info(String.format(AlignedLogMessages.FORMAT__OFFSET_S,
+                AlignedLogMessages.OFFSETS_KEYSTORE_CLASSES.get(getClass().getName()),
+                MESSAGE_ROTATION_TASK_FINISHED)
+        );
     }
 }
