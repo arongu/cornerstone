@@ -40,17 +40,17 @@ public class AccountManagerImpl implements AccountManager {
     private static final String ERROR_MESSAGE_FAILED_TO_INCREMENT_LOGIN_ATTEMPTS = "Failed to increment login attempts of account: '%s', message: '%s', SQL state: '%s'";
     private static final String ERROR_MESSAGE_FAILED_TO_CLEAR_LOGIN_ATTEMPTS     = "Failed to clear login attempts of account: '%s', message: '%s', SQL state: '%s'";
 
-    private static final String CREATED                           = "CREATED";
-    private static final String DELETED                           = "DELETED";
-    private static final String EMAIL_ADDRESS_CHANGED             = "EMAIL ADDRESS CHANGED";
-    private static final String FAILED_LOGIN_ATTEMPTS_CLEARED     = "FAILED LOGIN ATTEMPTS CLEARED";
-    private static final String FAILED_LOGIN_ATTEMPTS_INCREMENTED = "FAILED LOGIN ATTEMPTS INCREMENTED";
-    private static final String LOCKED                            = "LOCKED";
-    private static final String LOGGED_IN                         = "LOGGED IN";
-    private static final String LOGIN_FAILED                      = "FAILED LOGIN";
-    private static final String PASSWORD_CHANGED                  = "PASSWORD CHANGED";
-    private static final String RETRIEVED                         = "RETRIEVED";
-    private static final String UNLOCKED                          = "UNLOCKED";
+    private static final String CREATED                    = "CREATED";
+    private static final String DELETED                    = "DELETED";
+    private static final String EMAIL_ADDRESS_CHANGED      = "EMAIL ADDRESS CHANGED";
+    private static final String LOCKED                     = "LOCKED";
+    private static final String LOGGED_IN                  = "LOGGED IN";
+    private static final String LOGIN_ATTEMPTS_CLEARED     = "LOGIN ATTEMPTS CLEARED";
+    private static final String LOGIN_ATTEMPTS_INCREMENTED = "LOGIN ATTEMPTS INCREMENTED";
+    private static final String LOGIN_FAILED               = "LOGIN FAILED";
+    private static final String PASSWORD_CHANGED           = "PASSWORD CHANGED";
+    private static final String RETRIEVED                  = "RETRIEVED";
+    private static final String UNLOCKED                   = "UNLOCKED";
 
     private static final Logger logger = LoggerFactory.getLogger(AccountManagerImpl.class);
 
@@ -314,14 +314,14 @@ public class AccountManagerImpl implements AccountManager {
     @Override
     public int incrementLoginAttempts(final String emailAddress) throws AccountManagerException {
         final int updates =  executeUpdateWithEmailAddress(emailAddress, SQL_UPDATE_LOGIN_ATTEMPTS_INCREMENT, ERROR_MESSAGE_FAILED_TO_INCREMENT_LOGIN_ATTEMPTS, usersDB);
-        logger.info(String.format(LOG_FORMAT, FAILED_LOGIN_ATTEMPTS_INCREMENTED, emailAddress));
+        logger.info(String.format(LOG_FORMAT, LOGIN_ATTEMPTS_INCREMENTED, emailAddress));
         return updates;
     }
 
     @Override
     public int clearLoginAttempts(final String emailAddress) throws AccountManagerException {
         final int updates = executeUpdateWithEmailAddress(emailAddress, SQL_UPDATE_LOGIN_ATTEMPTS_CLEAR, ERROR_MESSAGE_FAILED_TO_CLEAR_LOGIN_ATTEMPTS, usersDB);
-        logger.info(String.format(LOG_FORMAT, FAILED_LOGIN_ATTEMPTS_CLEARED, emailAddress));
+        logger.info(String.format(LOG_FORMAT, LOGIN_ATTEMPTS_CLEARED, emailAddress));
         return updates;
     }
 
