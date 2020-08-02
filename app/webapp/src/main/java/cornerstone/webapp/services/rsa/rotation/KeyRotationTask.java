@@ -80,7 +80,7 @@ public class KeyRotationTask extends TimerTask {
     public void run() {
         logger.info(String.format(AlignedLogMessages.FORMAT__OFFSET_S,
                 AlignedLogMessages.OFFSETS_KEYSTORE_CLASSES.get(getClass().getName()),
-                "STARTED  ------------------------------------------------------------------------------------------")
+                "(STARTED)  ------------------------------------------------------------------------------------------")
         );
 
         changeLocalKeysThenStorePublicKeyAndItsUUIDinDb();
@@ -89,7 +89,7 @@ public class KeyRotationTask extends TimerTask {
 
         logger.info(String.format(AlignedLogMessages.FORMAT__OFFSET_S,
                 AlignedLogMessages.OFFSETS_KEYSTORE_CLASSES.get(getClass().getName()),
-                "------------------------------------------------------------------------------------------ FINISHED")
+                "------------------------------------------------------------------------------------------ (FINISHED)")
         );
     }
 }

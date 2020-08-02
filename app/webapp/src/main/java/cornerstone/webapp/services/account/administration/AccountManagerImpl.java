@@ -19,6 +19,8 @@ import java.util.NoSuchElementException;
 import java.util.Objects;
 
 public class AccountManagerImpl implements AccountManager {
+    private static final String LOG_FORMAT = "%-45s : %s";
+
     private static final String ERROR_MESSAGE_FAILED_TO_GET_ACCOUNT              = "Failed to get account: '%s', message: '%s', SQL state '%s'";
     private static final String ERROR_MESSAGE_FAILED_TO_CREATE_ACCOUNT           = "Failed to create account: '%s', message: '%s', SQL state: '%s'";
     private static final String ERROR_MESSAGE_FAILED_TO_DELETE_ACCOUNT           = "Failed to delete account: '%s', message: '%s', SQL state: '%s'";
@@ -28,17 +30,17 @@ public class AccountManagerImpl implements AccountManager {
     private static final String ERROR_MESSAGE_FAILED_TO_INCREMENT_LOGIN_ATTEMPTS = "Failed to increment login attempts of account: '%s', message: '%s', SQL state: '%s'";
     private static final String ERROR_MESSAGE_FAILED_TO_CLEAR_LOGIN_ATTEMPTS     = "Failed to clear login attempts of account: '%s', message: '%s', SQL state: '%s'";
 
-    private static final String MESSAGE_ACCOUNT_RETRIEVED                         = "... Account RETRIEVED ----------------------- '%s'";
-    private static final String MESSAGE_ACCOUNT_CREATED                           = "... Account CREATED ------------------------- '%s'";
-    private static final String MESSAGE_ACCOUNT_DELETED                           = "... Account DELETED ------------------------- '%s'";
-    private static final String MESSAGE_ACCOUNT_PASSWORD_CHANGED                  = "... Account PASSWORD CHANGED ---------------- '%s'";
-    private static final String MESSAGE_ACCOUNT_EMAIL_ADDRESS_CHANGED             = "... Account EMAIL ADDRESS CHANGED ----------- '%s' -> '%s'";
-    private static final String MESSAGE_ACCOUNT_LOGIN_SUCCEEDED                   = "... Account LOGIN SUCCEEDED ----------------- '%s'";
-    private static final String MESSAGE_ACCOUNT_LOGIN_FAILED                      = "... Account LOGIN FAILED -------------------- '%s'";
-    private static final String MESSAGE_ACCOUNT_LOCKED                            = "... Account LOCKED -------------------------- '%s'";
-    private static final String MESSAGE_ACCOUNT_UNLOCKED                          = "... Account UNLOCKED ------------------------ '%s'";
-    private static final String MESSAGE_ACCOUNT_FAILED_LOGIN_ATTEMPTS_INCREMENTED = "... Account FAILED LOGIN ATTEMPTS INCREMENTED '%s'";
-    private static final String MESSAGE_ACCOUNT_FAILED_LOGIN_ATTEMPTS_CLEARED     = "... Account FAILED LOGIN ATTEMPTS CLEARED --- '%s'";
+    private static final String MESSAGE_ACCOUNT_RETRIEVED                         = "ACCOUNT RETRIEVED";
+    private static final String MESSAGE_ACCOUNT_CREATED                           = "ACCOUNT CREATED";
+    private static final String MESSAGE_ACCOUNT_DELETED                           = "ACCOUNT DELETED";
+    private static final String MESSAGE_ACCOUNT_PASSWORD_CHANGED                  = "ACCOUNT PASSWORD CHANGED";
+    private static final String MESSAGE_ACCOUNT_EMAIL_ADDRESS_CHANGED             = "ACCOUNT EMAIL ADDRESS CHANGED";
+    private static final String MESSAGE_ACCOUNT_LOGIN_SUCCEEDED                   = "LOGIN SUCCEEDED";
+    private static final String MESSAGE_ACCOUNT_LOGIN_FAILED                      = "LOGIN FAILED";
+    private static final String MESSAGE_ACCOUNT_LOCKED                            = "ACCOUNT LOCKED";
+    private static final String MESSAGE_ACCOUNT_UNLOCKED                          = "ACCOUNT UNLOCKED";
+    private static final String MESSAGE_ACCOUNT_FAILED_LOGIN_ATTEMPTS_INCREMENTED = "FAILED LOGIN ATTEMPTS INCREMENTED";
+    private static final String MESSAGE_ACCOUNT_FAILED_LOGIN_ATTEMPTS_CLEARED     = "FAILED LOGIN ATTEMPTS CLEARED";
 
 
     private static final String SQL_GET_ACCOUNT                   = "SELECT * FROM user_data.accounts WHERE email_address=(?)";
@@ -89,7 +91,7 @@ public class AccountManagerImpl implements AccountManager {
             ps.setString(1, emailAddress.toLowerCase());
             final ResultSet rs = ps.executeQuery();
             if (rs.next()) {
-                logger.info(String.format(MESSAGE_ACCOUNT_RETRIEVED, emailAddress));
+                logger.info(String.format(LOG_FORMAT, MESSAGE_ACCOUNT_RETRIEVED, emailAddress));
                 return new AccountResultSet(
                         rs.getInt("account_id"),
                         rs.getTimestamp("account_registration_ts"),
@@ -129,7 +131,7 @@ public class AccountManagerImpl implements AccountManager {
             ps.setString(2, emailAddress.toLowerCase());
             ps.setBoolean(3, accountLocked);
             ps.setBoolean(4, verified);
-            logger.info(String.format(MESSAGE_ACCOUNT_CREATED, emailAddress));
+            logger.info(String.format(LOG_FORMAT, MESSAGE_ACCOUNT_CREATED, emailAddress));
             return ps.executeUpdate();
 
         } catch (final SQLException e) {
@@ -156,7 +158,7 @@ public class AccountManagerImpl implements AccountManager {
                         ps.setBoolean(3, true);
                         ps.setBoolean(4, false); // false by default
                         updatedRows += ps.executeUpdate();
-                        logger.info(String.format(MESSAGE_ACCOUNT_CREATED, accountEmailPassword.email));
+                        logger.info(String.format(LOG_FORMAT, MESSAGE_ACCOUNT_CREATED, accountEmailPassword.email));
 
                     } catch (final SQLException e) {
                         final String msg = String.format(ERROR_MESSAGE_FAILED_TO_CREATE_ACCOUNT, accountEmailPassword.email, e.getMessage(), e.getSQLState());
@@ -191,7 +193,7 @@ public class AccountManagerImpl implements AccountManager {
     @Override
     public int delete(final String emailAddress) throws AccountManagerException {
         final int deletes = executeUpdateWithEmailAddress(emailAddress, SQL_DELETE_ACCOUNT, ERROR_MESSAGE_FAILED_TO_DELETE_ACCOUNT, usersDB);
-        logger.info(String.format(MESSAGE_ACCOUNT_DELETED, emailAddress));
+        logger.info(String.format(LOG_FORMAT, MESSAGE_ACCOUNT_DELETED, emailAddress));
         return deletes;
     }
 
@@ -207,7 +209,7 @@ public class AccountManagerImpl implements AccountManager {
                 try {
                     ps.setString(1, email);
                     updatedRows += ps.executeUpdate();
-                    logger.info(String.format(MESSAGE_ACCOUNT_DELETED, emailAddresses));
+                    logger.info(String.format(LOG_FORMAT, MESSAGE_ACCOUNT_DELETED, emailAddresses));
 
                 } catch (final SQLException e) {
                     final String msg = String.format(ERROR_MESSAGE_FAILED_TO_DELETE_ACCOUNT, email, e.getMessage(), e.getSQLState());
@@ -244,7 +246,7 @@ public class AccountManagerImpl implements AccountManager {
             ps.setString(1, Crypt.crypt(password));
             ps.setString(2, emailAddress);
             final int executes = ps.executeUpdate();
-            logger.info(String.format(MESSAGE_ACCOUNT_PASSWORD_CHANGED, emailAddress));
+            logger.info(String.format(LOG_FORMAT, MESSAGE_ACCOUNT_PASSWORD_CHANGED, emailAddress));
             return executes;
 
         } catch (final SQLException e) {
@@ -262,7 +264,7 @@ public class AccountManagerImpl implements AccountManager {
             ps.setString(1, newEmailAddress);
             ps.setString(2, emailAddress);
             final int executes = ps.executeUpdate();
-            logger.info(String.format(MESSAGE_ACCOUNT_EMAIL_ADDRESS_CHANGED, emailAddress, newEmailAddress));
+            logger.info(String.format("%-45s : %s -> %s", MESSAGE_ACCOUNT_EMAIL_ADDRESS_CHANGED, emailAddress, newEmailAddress));
             return executes;
 
         } catch (final SQLException e) {
@@ -281,7 +283,7 @@ public class AccountManagerImpl implements AccountManager {
             ps.setString(2, reason);
             ps.setString(3, emailAddress);
             final int executes = ps.executeUpdate();
-            logger.info(String.format(MESSAGE_ACCOUNT_LOCKED, emailAddress));
+            logger.info(String.format(LOG_FORMAT, MESSAGE_ACCOUNT_LOCKED, emailAddress));
             return executes;
 
         } catch (final SQLException e) {
@@ -300,7 +302,7 @@ public class AccountManagerImpl implements AccountManager {
             ps.setString(2, null);
             ps.setString(3, emailAddress);
             final int executes = ps.executeUpdate();
-            logger.info(String.format(MESSAGE_ACCOUNT_UNLOCKED, emailAddress));
+            logger.info(String.format(LOG_FORMAT, MESSAGE_ACCOUNT_UNLOCKED, emailAddress));
             return executes;
 
         } catch ( final SQLException e ) {
@@ -313,14 +315,14 @@ public class AccountManagerImpl implements AccountManager {
     @Override
     public int incrementLoginAttempts(final String emailAddress) throws AccountManagerException {
         final int updates =  executeUpdateWithEmailAddress(emailAddress, SQL_INCREMENT_LOGIN_ATTEMPTS, ERROR_MESSAGE_FAILED_TO_INCREMENT_LOGIN_ATTEMPTS, usersDB);
-        logger.info(String.format(MESSAGE_ACCOUNT_FAILED_LOGIN_ATTEMPTS_INCREMENTED, emailAddress));
+        logger.info(String.format(LOG_FORMAT, MESSAGE_ACCOUNT_FAILED_LOGIN_ATTEMPTS_INCREMENTED, emailAddress));
         return updates;
     }
 
     @Override
     public int clearLoginAttempts(final String emailAddress) throws AccountManagerException {
         final int updates = executeUpdateWithEmailAddress(emailAddress, SQL_CLEAR_LOGIN_ATTEMPTS, ERROR_MESSAGE_FAILED_TO_CLEAR_LOGIN_ATTEMPTS, usersDB);
-        logger.info(String.format(MESSAGE_ACCOUNT_FAILED_LOGIN_ATTEMPTS_CLEARED, emailAddress));
+        logger.info(String.format(LOG_FORMAT, MESSAGE_ACCOUNT_FAILED_LOGIN_ATTEMPTS_CLEARED, emailAddress));
         return updates;
     }
 
@@ -344,11 +346,11 @@ public class AccountManagerImpl implements AccountManager {
                         if (loginAttempts > 0) {
                             clearLoginAttempts(emailAddress);
                         }
-                        logger.info(String.format(MESSAGE_ACCOUNT_LOGIN_SUCCEEDED, emailAddress));
+                        logger.info(String.format(LOG_FORMAT, MESSAGE_ACCOUNT_LOGIN_SUCCEEDED, emailAddress));
                         return true;
 
                     } else {
-                        logger.info(String.format(MESSAGE_ACCOUNT_LOGIN_FAILED, emailAddress));
+                        logger.info(String.format(LOG_FORMAT, MESSAGE_ACCOUNT_LOGIN_FAILED, emailAddress));
                         if (loginAttempts < Integer.parseInt(configurationLoader.getAppProperties().getProperty(APP_ENUM.APP_MAX_LOGIN_ATTEMPTS.key))) {
                             incrementLoginAttempts(emailAddress);
                         } else {
