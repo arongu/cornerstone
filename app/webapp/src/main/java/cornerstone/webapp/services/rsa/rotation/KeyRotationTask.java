@@ -15,17 +15,17 @@ public class KeyRotationTask extends TimerTask {
     private static final Logger logger = LoggerFactory.getLogger(KeyRotationTask.class);
 
     private final LocalKeyStore localKeyStore;
-    private final PublicKeyStore dbPublicKeyStore;
+    private final PublicKeyStore publicKeyStore;
     private final int rsaTTL;
     private final String nodeName;
 
     public KeyRotationTask(final LocalKeyStore localKeyStore,
-                           final PublicKeyStore dbPublicKeyStore,
+                           final PublicKeyStore publicKeyStore,
                            final int rsaTTL,
                            final String nodeName) {
 
         this.localKeyStore = localKeyStore;
-        this.dbPublicKeyStore = dbPublicKeyStore;
+        this.publicKeyStore = publicKeyStore;
         this.rsaTTL = rsaTTL;
         this.nodeName = nodeName;
         logger.info(String.format(DefaultLogMessages.MESSAGE_CONSTRUCTOR_CALLED, getClass().getName()));
@@ -39,7 +39,7 @@ public class KeyRotationTask extends TimerTask {
         localKeyStore.setPublicAndPrivateKeys(kp.uuid, kp.keyPair.getPrivate(), kp.keyPair.getPublic());
 
         try {
-            dbPublicKeyStore.addKey(kp.uuid, nodeName, rsaTTL, base64_pub_key);
+            publicKeyStore.addKey(kp.uuid, nodeName, rsaTTL, base64_pub_key);
 
         } catch (final PublicKeyStoreException e) {
             logger.error(String.format(AlignedLogMessages.FORMAT__OFFSET_S_S,
@@ -53,7 +53,7 @@ public class KeyRotationTask extends TimerTask {
     // step 2
     private void cleanUpLocalPublicKeysKeepOnlyActiveKeysFromDb() {
         try {
-            localKeyStore.sync(dbPublicKeyStore.getLiveKeyUUIDs());
+            localKeyStore.sync(publicKeyStore.getLiveKeyUUIDs());
 
         } catch (final PublicKeyStoreException e) {
             logger.error(String.format(AlignedLogMessages.FORMAT__OFFSET_S,
@@ -66,7 +66,7 @@ public class KeyRotationTask extends TimerTask {
     // step 3
     private void cleanUpDbRemoveExpiredPublicKeys() {
         try {
-            dbPublicKeyStore.deleteExpiredKeys();
+            publicKeyStore.deleteExpiredKeys();
 
         } catch (final PublicKeyStoreException e) {
             logger.error(String.format(AlignedLogMessages.FORMAT__OFFSET_S,

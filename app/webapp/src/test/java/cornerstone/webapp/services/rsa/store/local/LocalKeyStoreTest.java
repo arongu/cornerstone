@@ -30,7 +30,7 @@ public class LocalKeyStoreTest {
     public void deletePublicKeys_shouldDeleteAllKeys() {
         final int to_be_created = 5;
         int no_such_element_throws = 0;
-        final LocalKeyStore keyStore = new LocalKeyStoreImpl();
+        final LocalKeyStore localKeyStore = new LocalKeyStoreImpl();
         final Set<UUID> created_uuids = new HashSet<>();
 
 
@@ -40,17 +40,17 @@ public class LocalKeyStoreTest {
             UUID uuid = kp.uuid;
             PublicKey pubKey = kp.keyPair.getPublic();
 
-            keyStore.addPublicKey(uuid, pubKey);
+            localKeyStore.addPublicKey(uuid, pubKey);
             created_uuids.add(uuid);
         }
-        assertEquals(created_uuids, keyStore.getPublicKeyUUIDs());
+        assertEquals(created_uuids, localKeyStore.getPublicKeyUUIDs());
 
 
         // delete
-        keyStore.deletePublicKeys(new ArrayList<>(created_uuids));
+        localKeyStore.deletePublicKeys(new ArrayList<>(created_uuids));
         for (final UUID uuid : created_uuids){
             try {
-                keyStore.getPublicKey(uuid);
+                localKeyStore.getPublicKey(uuid);
             } catch (final NoSuchElementException e){
                 no_such_element_throws++;
             }
@@ -62,13 +62,14 @@ public class LocalKeyStoreTest {
     }
 
     @Test
-    public void sync_shouldSyncKeys024_shouldBeKeptRestShouldBeDeleted() {
+    public void sync_shouldSyncKeys_shouldKeepToBeeKeptAndDeleteTheRest() {
         final int to_be_created = 5;
         final List<UUID> uuids = new ArrayList<>();
         final Map<UUID,PublicKey> map = new HashMap<>();
         final LocalKeyStore localKeyStore = new LocalKeyStoreImpl();
 
-        for (int i = 0; i < to_be_created; i++){
+        // create data
+        for (int i = 0; i < to_be_created; i++) {
             final KeyPairWithUUID kp = new KeyPairWithUUID();
             final UUID uuid = kp.uuid;
             final PublicKey pubKey = kp.keyPair.getPublic();
@@ -79,11 +80,11 @@ public class LocalKeyStoreTest {
         }
 
 
-        final List<UUID> toBeKept = new LinkedList<>();
-        toBeKept.add(uuids.get(0));
-        toBeKept.add(uuids.get(2));
-        toBeKept.add(uuids.get(4));
-        localKeyStore.sync(toBeKept);
+        final List<UUID> uuids_to_be_kept = new LinkedList<>();
+        uuids_to_be_kept.add(uuids.get(0));
+        uuids_to_be_kept.add(uuids.get(2));
+        uuids_to_be_kept.add(uuids.get(4));
+        localKeyStore.sync(uuids_to_be_kept);
 
 
         assertEquals(3, localKeyStore.getPublicKeyUUIDs().size());

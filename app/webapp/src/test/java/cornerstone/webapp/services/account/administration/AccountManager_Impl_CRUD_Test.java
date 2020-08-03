@@ -38,41 +38,41 @@ public class AccountManager_Impl_CRUD_Test {
     // -------------------------------------------- TCs --------------------------------------------
     @Test
     @Order(0)
-    public void t00_get_shouldThrwoNoSuchElementException_whenAccountDoesNotExist() throws AccountManagerException {
+    public void t00_get_shouldThrwNoSuchElementException_whenAccountDoesNotExist() throws AccountManagerException {
         assertThrows(NoSuchElementException.class, () -> accountManager.get("thereisnoway@suchemailexist.net"));
     }
 
     @Test
     @Order(10)
-    public void t01_create_and_get_shouldCreateOneAccount_whenAccountDoesNotExist() throws AccountManagerException {
+    public void t01a_create_and_get_shouldCreateOneAccount_whenAccountDoesNotExist() throws AccountManagerException {
         final String email = "almafa@gmail.com";
         final String password = "password";
         final boolean locked = false;
         final boolean verified = true;
         final Timestamp ts = new Timestamp(System.currentTimeMillis());
 
-        final int creates;
-        final AccountResultSet account;
+        final int number_of_account_created;
+        final AccountResultSet received_account;
 
 
-        creates = accountManager.create(email, password, locked, verified);
-        account = accountManager.get(email);
+        number_of_account_created = accountManager.create(email, password, locked, verified);
+        received_account = accountManager.get(email);
 
 
         // Knowable value tests
-        assertEquals(1, creates);
-        assertEquals(email, account.email_address);
-        assertEquals(locked, account.account_locked);
-        assertNull(account.account_lock_reason);
-        assertEquals(verified, account.email_address_verified);
-        assertEquals(0, account.account_login_attempts);
+        assertEquals(1, number_of_account_created);
+        assertEquals(email, received_account.email_address);
+        assertEquals(locked, received_account.account_locked);
+        assertNull(received_account.account_lock_reason);
+        assertEquals(verified, received_account.email_address_verified);
+        assertEquals(0, received_account.account_login_attempts);
 
-        assertTrue(account.account_id > 0);
-        assertEquals(account.email_address_ts, account.account_registration_ts); // happens same time
-        assertEquals(account.email_address_ts, account.password_hash_ts);        // happens same time
-        assertTrue(ts.before(account.account_registration_ts));
-        assertTrue(ts.before(account.account_locked_ts));
-        assertTrue(ts.before(account.password_hash_ts));
+        assertTrue(received_account.account_id > 0);
+        assertEquals(received_account.email_address_ts, received_account.account_registration_ts); // happens same time
+        assertEquals(received_account.email_address_ts, received_account.password_hash_ts);        // happens same time
+        assertTrue(ts.before(received_account.account_registration_ts));
+        assertTrue(ts.before(received_account.account_locked_ts));
+        assertTrue(ts.before(received_account.password_hash_ts));
     }
 
     @Test
@@ -92,12 +92,12 @@ public class AccountManager_Impl_CRUD_Test {
     @Order(20)
     public void t02_delete_previousAccountShouldBeDeleted() throws AccountManagerException {
         final String email = "almafa@gmail.com";
-        final int deletes;
+        final int number_of_account_deleted;
 
-        deletes = accountManager.delete("almafa@gmail.com");
+        number_of_account_deleted = accountManager.delete("almafa@gmail.com");
 
         assertThrows(NoSuchElementException.class, () -> accountManager.get(email));
-        assertEquals(1, deletes);
+        assertEquals(1, number_of_account_deleted);
     }
 
     @Test
@@ -108,39 +108,39 @@ public class AccountManager_Impl_CRUD_Test {
         final boolean locked = false;
         final boolean verified = true;
 
-        final int creates;
-        final AccountResultSet account;
+        final int number_of_account_created;
+        final AccountResultSet received_account;
 
 
-        creates = accountManager.create(email, password, locked, verified);
-        account = accountManager.get(email);
+        number_of_account_created = accountManager.create(email, password, locked, verified);
+        received_account = accountManager.get(email);
 
 
-        assertEquals(1, creates);
-        assertEquals(account.email_address, email);
-        assertEquals(account.account_locked, locked);
-        assertEquals(account.password_hash, Crypt.crypt(password, account.password_hash));
+        assertEquals(1, number_of_account_created);
+        assertEquals(received_account.email_address, email);
+        assertEquals(received_account.account_locked, locked);
+        assertEquals(received_account.password_hash, Crypt.crypt(password, received_account.password_hash));
     }
 
     @Test
     @Order(40)
     public void t04_setNewEmailAddress_shouldSetNewEmailForPreviouslyCreatedAccount() throws AccountManagerException {
         final String email = "crud_tests@x-mail.com";
-        final String newEmail = "my_new_crud_tests_mail@yahoo.com";
+        final String new_email = "my_new_crud_tests_mail@yahoo.com";
 
-        final int emailChanges;
+        final int number_of_email_changes;
         final AccountResultSet beforeEmailChange;
         final AccountResultSet afterEmailChange;
 
 
         beforeEmailChange = accountManager.get(email);
-        emailChanges = accountManager.setEmailAddress(email, newEmail);
-        afterEmailChange = accountManager.get(newEmail);
+        number_of_email_changes = accountManager.setEmailAddress(email, new_email);
+        afterEmailChange = accountManager.get(new_email);
 
 
-        assertEquals(1, emailChanges);
+        assertEquals(1, number_of_email_changes);
         assertThrows(NoSuchElementException.class, () -> accountManager.get(email)); // old email should throw exception
-        assertEquals(newEmail, afterEmailChange.email_address);                      // get new email account should return account
+        assertEquals(new_email, afterEmailChange.email_address);                      // get new email account should return account
         assertEquals(beforeEmailChange.account_id, afterEmailChange.account_id);     // account id should be same for the new email
     }
 

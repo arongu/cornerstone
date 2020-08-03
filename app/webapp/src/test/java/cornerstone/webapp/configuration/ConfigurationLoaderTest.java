@@ -16,9 +16,7 @@ public class ConfigurationLoaderTest {
 
     @Test
     public void constructor_shouldThrowIOException_whenFilesDoNotExist() {
-        assertThrows(IOException.class, () -> {
-            new ConfigurationLoader("xxx", "xxx");
-        });
+        assertThrows(IOException.class, () -> new ConfigurationLoader("xxx", "xxx"));
     }
 
     @Test
