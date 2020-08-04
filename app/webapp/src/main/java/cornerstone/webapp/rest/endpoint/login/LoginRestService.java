@@ -38,22 +38,22 @@ public class LoginRestService {
     @POST
     public Response authenticateUser(final AccountEmailPassword accountEmailPassword) throws AccountManagerException, AuthorizationServiceException, BadRequestException {
         if (null != accountEmailPassword &&
-            null != accountEmailPassword.email &&
-            null != accountEmailPassword.password ) {
+            null != accountEmailPassword.getEmail() &&
+            null != accountEmailPassword.getPassword()) {
 
             final Response response;
             final boolean authenticated;
 
-            authenticated = accountAdmin.login(accountEmailPassword.email, accountEmailPassword.password);
+            authenticated = accountAdmin.login(accountEmailPassword.getEmail(), accountEmailPassword.getPassword());
             if ( authenticated ) {
-                final String jwt = authorizationService.issueJWT(accountEmailPassword.email);
+                final String jwt = authorizationService.issueJWT(accountEmailPassword.getPassword());
                 response = Response.status(Response.Status.ACCEPTED).entity(jwt).build();
-                logger.info("[ NEW ACCESS TOKEN ][ GRANTED ] -- '{}'", accountEmailPassword.email);
+                logger.info("[ NEW ACCESS TOKEN ][ GRANTED ] -- '{}'", accountEmailPassword.getEmail());
 
             } else {
                 final HttpMessage httpMessage = new HttpMessage(Response.Status.FORBIDDEN.toString(), Response.Status.FORBIDDEN.getStatusCode());
                 response = Response.status(Response.Status.FORBIDDEN).entity(httpMessage).build();
-                logger.info("[ NEW ACCESS TOKEN ][ DENIED ] -- '{}'", accountEmailPassword.email);
+                logger.info("[ NEW ACCESS TOKEN ][ DENIED ] -- '{}'", accountEmailPassword.getEmail());
             }
 
             return response;

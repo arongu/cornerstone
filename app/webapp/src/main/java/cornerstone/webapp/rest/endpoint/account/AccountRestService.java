@@ -30,10 +30,13 @@ public class AccountRestService {
     }
 
     @POST
-    public Response create(final AccountEmailPassword account) throws AccountManagerException, BadRequestException {
-        if (null != account) {
-            accountManager.create(account.email, account.password, false, false);
-            return Response.status(Response.Status.CREATED).entity(account.email).build();
+    public Response create(final AccountEmailPassword accountEmailPassword) throws AccountManagerException, BadRequestException {
+        if (null != accountEmailPassword) {
+            final String email = accountEmailPassword.getEmail();
+            final String password = accountEmailPassword.getPassword();
+
+            accountManager.create(email, password, false, false);
+            return Response.status(Response.Status.CREATED).entity(email).build();
 
         } else {
             throw new BadRequestException();

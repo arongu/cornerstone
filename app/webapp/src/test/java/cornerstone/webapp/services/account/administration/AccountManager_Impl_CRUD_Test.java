@@ -38,7 +38,7 @@ public class AccountManager_Impl_CRUD_Test {
     // -------------------------------------------- TCs --------------------------------------------
     @Test
     @Order(0)
-    public void t00_get_shouldThrwNoSuchElementException_whenAccountDoesNotExist() throws AccountManagerException {
+    public void t00_get_shouldThrowNoSuchElementException_whenAccountDoesNotExist() throws AccountManagerException {
         assertThrows(NoSuchElementException.class, () -> accountManager.get("thereisnoway@suchemailexist.net"));
     }
 
