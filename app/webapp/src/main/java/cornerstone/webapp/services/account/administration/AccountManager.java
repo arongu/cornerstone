@@ -7,26 +7,26 @@ import java.util.NoSuchElementException;
 
 public interface AccountManager {
     // Create
-    int create(final String emailAddress, final String password, final boolean accountLocked, final boolean verified) throws AccountManagerException;
-    int create(final List<AccountEmailPassword> list) throws AccountManagerMultipleException;
+    int create(final String emailAddress, final String password, final boolean accountLocked, final boolean verified) throws AccountManagerSqlException;
+    int create(final List<AccountEmailPassword> list) throws AccountManagerSqlBulkException, AccountManagerSqlException;
 
     // Read
-    AccountResultSet get(final String emailAddress) throws AccountManagerException, NoSuchElementException;
+    AccountResultSet get(final String emailAddress) throws AccountManagerSqlException, NoSuchElementException;
 
     // Update
-    int setPassword(final String emailAddress, final String password) throws AccountManagerException;
-    int setEmailAddress(final String emailAddress, final String newEmailAddress) throws AccountManagerException;
+    int setPassword(final String emailAddress, final String password) throws AccountManagerSqlException;
+    int setEmailAddress(final String emailAddress, final String newEmailAddress) throws AccountManagerSqlException;
 
-    int incrementLoginAttempts(final String emailAddress) throws AccountManagerException;
-    int clearLoginAttempts(final String emailAddress) throws AccountManagerException;
+    int incrementLoginAttempts(final String emailAddress) throws AccountManagerSqlException;
+    int clearLoginAttempts(final String emailAddress) throws AccountManagerSqlException;
 
-    int lock(final String emailAddress, final String reason) throws AccountManagerException;
-    int unlock(final String emailAddress) throws AccountManagerException;
+    int lock(final String emailAddress, final String reason) throws AccountManagerSqlException;
+    int unlock(final String emailAddress) throws AccountManagerSqlException;
 
     // Delete
-    int delete(final String emailAddress) throws AccountManagerException;
-    int delete(final List<String> emailAddresses) throws AccountManagerMultipleException;
+    int delete(final String emailAddress) throws AccountManagerSqlException;
+    int delete(final List<String> emailAddresses) throws AccountManagerSqlException, AccountManagerSqlBulkException;
 
     // Login
-    boolean login(final String emailAddress, final String password) throws AccountManagerException;
+    boolean login(final String emailAddress, final String password) throws AccountManagerSqlException;
 }

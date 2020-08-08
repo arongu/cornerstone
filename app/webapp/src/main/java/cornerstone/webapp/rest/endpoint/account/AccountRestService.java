@@ -1,10 +1,10 @@
 package cornerstone.webapp.rest.endpoint.account;
 
 import cornerstone.webapp.common.DefaultLogMessages;
-import cornerstone.webapp.rest.exceptions.BadRequestException;
-import cornerstone.webapp.services.account.administration.AccountManagerException;
+import cornerstone.webapp.rest.exceptions.Exception;
+import cornerstone.webapp.services.account.administration.AccountManagerSqlException;
 import cornerstone.webapp.services.account.administration.AccountManager;
-import cornerstone.webapp.services.account.administration.AccountManagerMultipleException;
+import cornerstone.webapp.services.account.administration.AccountManagerSqlBulkException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,7 +30,7 @@ public class AccountRestService {
     }
 
     @POST
-    public Response create(final AccountEmailPassword accountEmailPassword) throws AccountManagerException, BadRequestException {
+    public Response create(final AccountEmailPassword accountEmailPassword) throws AccountManagerSqlException, Exception {
         if (null != accountEmailPassword) {
             final String email = accountEmailPassword.getEmail();
             final String password = accountEmailPassword.getPassword();
@@ -39,43 +39,43 @@ public class AccountRestService {
             return Response.status(Response.Status.CREATED).entity(email).build();
 
         } else {
-            throw new BadRequestException();
+            throw new Exception();
         }
     }
 
     @DELETE
-    public Response delete(final String emailAddress) throws AccountManagerException, BadRequestException {
+    public Response delete(final String emailAddress) throws AccountManagerSqlException, Exception {
         if (null != emailAddress) {
             accountManager.delete(emailAddress);
             return Response.status(Response.Status.OK).entity(emailAddress).build();
 
         } else {
-            throw new BadRequestException();
+            throw new Exception();
         }
     }
 
     // /mass
     @POST
     @Path("/mass")
-    public Response massCreate(final List<AccountEmailPassword> accounts) throws AccountManagerMultipleException, BadRequestException {
+    public Response massCreate(final List<AccountEmailPassword> accounts) throws AccountManagerSqlBulkException, Exception {
         if (accounts != null && !accounts.isEmpty()) {
             accountManager.create(accounts);
             return Response.status(Response.Status.CREATED).entity(accounts).build();
 
         } else {
-            throw new BadRequestException();
+            throw new Exception();
         }
     }
 
     @DELETE
     @Path("/mass")
-    public Response massDelete(final List<String> emailAddresses) throws AccountManagerMultipleException, BadRequestException {
+    public Response massDelete(final List<String> emailAddresses) throws AccountManagerSqlBulkException, Exception {
         if (null != emailAddresses) {
             accountManager.delete(emailAddresses);
             return Response.status(Response.Status.OK).entity(emailAddresses).build();
 
         } else {
-            throw new BadRequestException();
+            throw new Exception();
         }
     }
 }

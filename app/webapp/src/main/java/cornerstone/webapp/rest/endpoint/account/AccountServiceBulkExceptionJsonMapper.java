@@ -1,7 +1,7 @@
 package cornerstone.webapp.rest.endpoint.account;
 
-import cornerstone.webapp.services.account.administration.AccountManagerException;
-import cornerstone.webapp.services.account.administration.AccountManagerMultipleException;
+import cornerstone.webapp.services.account.administration.AccountManagerSqlException;
+import cornerstone.webapp.services.account.administration.AccountManagerSqlBulkException;
 
 import javax.inject.Singleton;
 import javax.ws.rs.core.MediaType;
@@ -13,12 +13,12 @@ import java.util.List;
 
 @Singleton
 @Provider
-public class AccountServiceBulkExceptionJsonMapper implements ExceptionMapper<AccountManagerMultipleException> {
+public class AccountServiceBulkExceptionJsonMapper implements ExceptionMapper<AccountManagerSqlBulkException> {
     @Override
-    public Response toResponse(final AccountManagerMultipleException accountManagerMultipleException) {
+    public Response toResponse(final AccountManagerSqlBulkException accountManagerSqlBulkException) {
         final List<String> exceptionMessages = new LinkedList<>();
 
-        for (AccountManagerException e : accountManagerMultipleException.getExceptions()){
+        for (AccountManagerSqlException e : accountManagerSqlBulkException.getExceptionMessages()){
             exceptionMessages.add(e.getMessage());
         }
 

@@ -38,7 +38,7 @@ public class AccountManager_Impl_CRUD_AND_LOGIN_Test {
     }
 
     @Test
-    public void login_shouldReturnTrue_whenAccountExistsNotLockedAndVerified() throws AccountManagerException {
+    public void login_shouldReturnTrue_whenAccountExistsNotLockedAndVerified() throws AccountManagerSqlException {
         final String email = "melchior@login.me";
         final String password = "miciMacko#";
         final boolean locked = false;
@@ -63,7 +63,7 @@ public class AccountManager_Impl_CRUD_AND_LOGIN_Test {
     }
 
     @Test
-    public void login_shouldReturnFalse_whenAccountDoesNotExist() throws AccountManagerException {
+    public void login_shouldReturnFalse_whenAccountDoesNotExist() throws AccountManagerSqlException {
         final String email = "xxxxx@doesnotexist.xu";
         final String password = "wow";
         final boolean login_result;
@@ -77,7 +77,7 @@ public class AccountManager_Impl_CRUD_AND_LOGIN_Test {
     }
 
     @Test
-    public void login_shouldReturnFalse_whenAccountNotVerifiedAndNotLocked() throws AccountManagerException {
+    public void login_shouldReturnFalse_whenAccountNotVerifiedAndNotLocked() throws AccountManagerSqlException {
         final String email = "casper@login.me";
         final String password = "casper#";
         final boolean locked = false;
@@ -107,7 +107,7 @@ public class AccountManager_Impl_CRUD_AND_LOGIN_Test {
     }
 
     @Test
-    public void login_shouldReturnFalse_whenAccountLocked() throws AccountManagerException {
+    public void login_shouldReturnFalse_whenAccountLocked() throws AccountManagerSqlException {
         final String email = "locked@login.me";
         final String password = "locked#";
         final boolean locked = true;
@@ -135,7 +135,7 @@ public class AccountManager_Impl_CRUD_AND_LOGIN_Test {
     }
 
     @Test
-    public void login_shouldIncrementLoginAttempts_whenLoginFails() throws AccountManagerException {
+    public void login_shouldIncrementLoginAttempts_whenLoginFails() throws AccountManagerSqlException {
         final String email = "badtyper@login.me";
         final String password = "secretpasswordd#";
         final String bad_password = "myBadPassword#";
@@ -168,7 +168,7 @@ public class AccountManager_Impl_CRUD_AND_LOGIN_Test {
     }
 
     @Test
-    public void clearLoginAttempts_shouldClearLoginAttempts_whenCalled() throws AccountManagerException {
+    public void clearLoginAttempts_shouldClearLoginAttempts_whenCalled() throws AccountManagerSqlException {
         final String email = "badtyper@login.me";
         final String password = "secretpasswordd#";
         final String bad_password = "myBadPassword#";
@@ -209,7 +209,7 @@ public class AccountManager_Impl_CRUD_AND_LOGIN_Test {
     }
 
     @Test
-    public void login_shouldIncrementLoginAttemptsToLessThanMaxLoginAndAccountShouldNotBeLocked_whenFailedToLoginThatManyTimes() throws AccountManagerException {
+    public void login_shouldIncrementLoginAttemptsToLessThanMaxLoginAndAccountShouldNotBeLocked_whenFailedToLoginThatManyTimes() throws AccountManagerSqlException {
         final String email = "badtyper180@login.me";
         final String password = "secretpasswordd#";
         final String bad_password = "alma";
@@ -243,7 +243,7 @@ public class AccountManager_Impl_CRUD_AND_LOGIN_Test {
     }
 
     @Test
-    public void login_shouldLockAccount_whenMaxFailedLoginAttemptsExceeded() throws AccountManagerException {
+    public void login_shouldLockAccount_whenMaxFailedLoginAttemptsExceeded() throws AccountManagerSqlException {
         final String email = "autolock180@login.me";
         final String password = "secretpasswordd#";
         final String bad_password = "alma";
@@ -283,7 +283,7 @@ public class AccountManager_Impl_CRUD_AND_LOGIN_Test {
     }
 
     @Test
-    public void login_loginAttemptsShouldResetToZero_whenLoginIsSuccess() throws AccountManagerException {
+    public void login_loginAttemptsShouldResetToZero_whenLoginIsSuccess() throws AccountManagerSqlException {
         final String email = "lastnite@aaa.me";
         final String password = "woho#";
         final String bad_password = "bbbbb";

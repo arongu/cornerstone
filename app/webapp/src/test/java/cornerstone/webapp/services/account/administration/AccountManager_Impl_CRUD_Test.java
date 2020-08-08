@@ -38,13 +38,13 @@ public class AccountManager_Impl_CRUD_Test {
     // -------------------------------------------- TCs --------------------------------------------
     @Test
     @Order(0)
-    public void t00_get_shouldThrowNoSuchElementException_whenAccountDoesNotExist() throws AccountManagerException {
+    public void t00_get_shouldThrowNoSuchElementException_whenAccountDoesNotExist() throws AccountManagerSqlException {
         assertThrows(NoSuchElementException.class, () -> accountManager.get("thereisnoway@suchemailexist.net"));
     }
 
     @Test
     @Order(10)
-    public void t01a_create_and_get_shouldCreateOneAccount_whenAccountDoesNotExist() throws AccountManagerException {
+    public void t01a_create_and_get_shouldCreateOneAccount_whenAccountDoesNotExist() throws AccountManagerSqlException {
         final String email = "almafa@gmail.com";
         final String password = "password";
         final boolean locked = false;
@@ -78,7 +78,7 @@ public class AccountManager_Impl_CRUD_Test {
     @Test
     @Order(11)
     public void t01b_create_shouldThrowAccountServiceException_whenAccountAlreadyExists() {
-        assertThrows(AccountManagerException.class, () -> {
+        assertThrows(AccountManagerSqlException.class, () -> {
             final String email = "almafa@gmail.com";
             final String password = "password";
             final boolean locked = false;
@@ -90,7 +90,7 @@ public class AccountManager_Impl_CRUD_Test {
 
     @Test
     @Order(20)
-    public void t02_delete_previousAccountShouldBeDeleted() throws AccountManagerException {
+    public void t02_delete_previousAccountShouldBeDeleted() throws AccountManagerSqlException {
         final String email = "almafa@gmail.com";
         final int number_of_account_deleted;
 
@@ -102,7 +102,7 @@ public class AccountManager_Impl_CRUD_Test {
 
     @Test
     @Order(30)
-    public void t03_create_anotherAccountShouldBeCreated() throws AccountManagerException {
+    public void t03_create_anotherAccountShouldBeCreated() throws AccountManagerSqlException {
         final String email = "crud_tests@x-mail.com";
         final String password = "password";
         final boolean locked = false;
@@ -124,7 +124,7 @@ public class AccountManager_Impl_CRUD_Test {
 
     @Test
     @Order(40)
-    public void t04_setNewEmailAddress_shouldSetNewEmailForPreviouslyCreatedAccount() throws AccountManagerException {
+    public void t04_setNewEmailAddress_shouldSetNewEmailForPreviouslyCreatedAccount() throws AccountManagerSqlException {
         final String email = "crud_tests@x-mail.com";
         final String new_email = "my_new_crud_tests_mail@yahoo.com";
 
@@ -146,7 +146,7 @@ public class AccountManager_Impl_CRUD_Test {
 
     @Test
     @Order(50)
-    public void t05_lock_shouldLockAccount() throws AccountManagerException {
+    public void t05_lock_shouldLockAccount() throws AccountManagerSqlException {
         final String email_address = "my_new_crud_tests_mail@yahoo.com";
         final String reason = "naughty";
 
@@ -173,7 +173,7 @@ public class AccountManager_Impl_CRUD_Test {
 
     @Test
     @Order(60)
-    public void t06_unlock_shouldUnlockPreviouslyLockedAccount() throws AccountManagerException {
+    public void t06_unlock_shouldUnlockPreviouslyLockedAccount() throws AccountManagerSqlException {
         final String email_address = "my_new_crud_tests_mail@yahoo.com";
         final String reason = "naughty";
 
@@ -197,7 +197,7 @@ public class AccountManager_Impl_CRUD_Test {
 
     @Test
     @Order(70)
-    public void t07_changePassword_shouldChangePasswordOfAccount() throws AccountManagerException {
+    public void t07_changePassword_shouldChangePasswordOfAccount() throws AccountManagerSqlException {
         final String email = "my_new_crud_tests_mail@yahoo.com";
         final String password = "password";
         final String newPassword = "almafa1234#";
@@ -219,7 +219,7 @@ public class AccountManager_Impl_CRUD_Test {
 
     @Test
     @Order(80)
-    public void t08_delete_shouldDeleteAccount() throws AccountManagerException {
+    public void t08_delete_shouldDeleteAccount() throws AccountManagerSqlException {
         final int deletes;
         final String email = "my_new_crud_tests_mail@yahoo.com";
 

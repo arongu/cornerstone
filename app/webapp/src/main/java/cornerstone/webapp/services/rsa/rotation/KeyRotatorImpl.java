@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
+import java.util.Properties;
 import java.util.Timer;
 
 public class KeyRotatorImpl implements KeyRotator {
@@ -35,9 +36,11 @@ public class KeyRotatorImpl implements KeyRotator {
 
     @Override
     public void runRotationTask() {
-        final String nodeName = configurationLoader.getAppProperties().getProperty(APP_ENUM.APP_NODE_NAME.key);
-        final int rsaTTL = Integer.parseInt(configurationLoader.getAppProperties().getProperty(APP_ENUM.APP_RSA_TTL.key));
+        final Properties appProperties = configurationLoader.getAppProperties();
+        final String nodeName = appProperties.getProperty(APP_ENUM.APP_NODE_NAME.key);
+        final int rsaTTL = Integer.parseInt(appProperties.getProperty(APP_ENUM.APP_RSA_TTL.key));
+        final int jwtTTL = Integer.parseInt(appProperties.getProperty(APP_ENUM.APP_JWT_TTL.key));
         final long period = rsaTTL * 1000;
-        timer.schedule(new KeyRotationTask(localKeyStore, databasePublicKeyStore, rsaTTL, nodeName), 0, period);
+        timer.schedule(new KeyRotationTask(localKeyStore, databasePublicKeyStore, rsaTTL, jwtTTL, nodeName), 0, period);
     }
 }

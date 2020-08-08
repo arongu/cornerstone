@@ -1,12 +1,11 @@
 package cornerstone.webapp.rest.endpoint.login;
 
 import cornerstone.webapp.rest.endpoint.account.AccountEmailPassword;
-import cornerstone.webapp.rest.exceptions.BadRequestException;
 import cornerstone.webapp.rest.util.HttpMessage;
-import cornerstone.webapp.services.account.administration.AccountManagerException;
 import cornerstone.webapp.services.account.administration.AccountManager;
-import cornerstone.webapp.services.jwt.AuthorizationServiceException;
+import cornerstone.webapp.services.account.administration.AccountManagerSqlException;
 import cornerstone.webapp.services.jwt.AuthorizationService;
+import cornerstone.webapp.services.jwt.AuthorizationServiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,7 +35,7 @@ public class LoginRestService {
     }
 
     @POST
-    public Response authenticateUser(final AccountEmailPassword accountEmailPassword) throws AccountManagerException, AuthorizationServiceException, BadRequestException {
+    public Response authenticateUser(final AccountEmailPassword accountEmailPassword) throws AccountManagerSqlException, AuthorizationServiceException, Exception {
         if (null != accountEmailPassword &&
             null != accountEmailPassword.getEmail() &&
             null != accountEmailPassword.getPassword()) {
@@ -59,7 +58,7 @@ public class LoginRestService {
             return response;
 
         } else {
-            throw new BadRequestException();
+            throw new Exception();
         }
     }
 }

@@ -17,16 +17,19 @@ public class KeyRotationTask extends TimerTask {
     private final LocalKeyStore localKeyStore;
     private final PublicKeyStore publicKeyStore;
     private final int rsaTTL;
+    private final int jwtTTL;
     private final String nodeName;
 
     public KeyRotationTask(final LocalKeyStore localKeyStore,
                            final PublicKeyStore publicKeyStore,
                            final int rsaTTL,
+                           final int jwtTTL,
                            final String nodeName) {
 
         this.localKeyStore = localKeyStore;
         this.publicKeyStore = publicKeyStore;
         this.rsaTTL = rsaTTL;
+        this.jwtTTL = jwtTTL;
         this.nodeName = nodeName;
         logger.info(String.format(DefaultLogMessages.MESSAGE_CONSTRUCTOR_CALLED, getClass().getName()));
     }
@@ -39,7 +42,11 @@ public class KeyRotationTask extends TimerTask {
         localKeyStore.setPublicAndPrivateKeys(kp.uuid, kp.keyPair.getPrivate(), kp.keyPair.getPublic());
 
         try {
-            publicKeyStore.addKey(kp.uuid, nodeName, rsaTTL, base64_pub_key);
+            // TTL = the last second when the RSA expires + JWT token TTL
+            // SCENARIO: someone gets a token in the last moment before the RSA expires
+            // JWT still needs to be valid - therefore TTL is calculated as worst case scenario
+            // RSA key rotates still as RSA TTL demands it, however public key pairs are available = now() + RSA TTL + JWT TTL
+            publicKeyStore.addKey(kp.uuid, nodeName, rsaTTL + jwtTTL, base64_pub_key);
 
         } catch (final PublicKeyStoreException e) {
             logger.error(String.format(AlignedLogMessages.FORMAT__OFFSET_S_S,
