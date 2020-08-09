@@ -1,8 +1,10 @@
 package cornerstone.webapp.rest.endpoint.login;
 
 import cornerstone.webapp.rest.endpoint.account.AccountEmailPassword;
-import cornerstone.webapp.rest.util.HttpMessage;
 import cornerstone.webapp.services.account.administration.AccountManager;
+import cornerstone.webapp.services.account.administration.exceptions.AccountManagerAccountDoesNotExistException;
+import cornerstone.webapp.services.account.administration.exceptions.AccountManagerAccountLockedException;
+import cornerstone.webapp.services.account.administration.exceptions.AccountManagerEmailNotVerifiedException;
 import cornerstone.webapp.services.account.administration.exceptions.AccountManagerSqlException;
 import cornerstone.webapp.services.jwt.AuthorizationService;
 import cornerstone.webapp.services.jwt.AuthorizationServiceException;
@@ -35,30 +37,29 @@ public class LoginRestService {
     }
 
     @POST
-    public Response authenticateUser(final AccountEmailPassword accountEmailPassword) throws AccountManagerSqlException, AuthorizationServiceException, Exception {
+    public Response authenticateUser(final AccountEmailPassword accountEmailPassword) throws
+            AuthorizationServiceException,
+            AccountManagerAccountLockedException,
+            AccountManagerAccountDoesNotExistException,
+            AccountManagerSqlException,
+            AccountManagerEmailNotVerifiedException {
+
         if (null != accountEmailPassword &&
             null != accountEmailPassword.getEmail() &&
             null != accountEmailPassword.getPassword()) {
 
-            final Response response;
             final boolean authenticated;
 
             authenticated = accountAdmin.login(accountEmailPassword.getEmail(), accountEmailPassword.getPassword());
             if ( authenticated ) {
                 final String jwt = authorizationService.issueJWT(accountEmailPassword.getPassword());
-                response = Response.status(Response.Status.ACCEPTED).entity(jwt).build();
-                logger.info("[ NEW ACCESS TOKEN ][ GRANTED ] -- '{}'", accountEmailPassword.getEmail());
-
+                logger.info("[ ACCESS TOKEN ][ GRANTED ] -- '{}'", accountEmailPassword.getEmail());
+                return Response.status(Response.Status.ACCEPTED).entity(jwt).build();
             } else {
-                final HttpMessage httpMessage = new HttpMessage(Response.Status.FORBIDDEN.toString(), Response.Status.FORBIDDEN.getStatusCode());
-                response = Response.status(Response.Status.FORBIDDEN).entity(httpMessage).build();
-                logger.info("[ NEW ACCESS TOKEN ][ DENIED ] -- '{}'", accountEmailPassword.getEmail());
+                logger.info("[ ACCESS TOKEN ][ DENIED ] -- '{}'", accountEmailPassword.getEmail());
             }
-
-            return response;
-
-        } else {
-            throw new Exception();
         }
+
+        return Response.status(Response.Status.FORBIDDEN).entity("Access denied").build();
     }
 }
