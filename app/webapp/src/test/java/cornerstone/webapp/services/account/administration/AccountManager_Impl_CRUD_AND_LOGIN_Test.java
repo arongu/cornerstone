@@ -3,6 +3,7 @@ package cornerstone.webapp.services.account.administration;
 import cornerstone.webapp.configuration.ConfigurationLoader;
 import cornerstone.webapp.configuration.enums.APP_ENUM;
 import cornerstone.webapp.datasources.UsersDB;
+import cornerstone.webapp.services.account.administration.exceptions.AccountManagerSqlException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 

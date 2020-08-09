@@ -1,32 +1,36 @@
 package cornerstone.webapp.services.account.administration;
 
 import cornerstone.webapp.rest.endpoint.account.AccountEmailPassword;
+import cornerstone.webapp.services.account.administration.exceptions.*;
 
 import java.util.List;
 import java.util.NoSuchElementException;
 
 public interface AccountManager {
     // Create
-    int create(final String emailAddress, final String password, final boolean accountLocked, final boolean verified) throws AccountManagerSqlException;
-    int create(final List<AccountEmailPassword> list) throws AccountManagerSqlBulkException, AccountManagerSqlException;
+    int create(final String email, final String password, final boolean locked, final boolean verified) throws AccountManagerSqlException;
+    int create(final List<AccountEmailPassword> list)                                                   throws AccountManagerSqlException, AccountManagerSqlBulkException;
 
     // Read
-    AccountResultSet get(final String emailAddress) throws AccountManagerSqlException, NoSuchElementException;
+    AccountResultSet get(final String email) throws AccountManagerSqlException, NoSuchElementException;
 
     // Update
-    int setPassword(final String emailAddress, final String password) throws AccountManagerSqlException;
-    int setEmailAddress(final String emailAddress, final String newEmailAddress) throws AccountManagerSqlException;
+    int setPassword    (final String email, final String password)        throws AccountManagerSqlException;
+    int setEmail       (final String currentEmail, final String newEmail) throws AccountManagerSqlException;
 
-    int incrementLoginAttempts(final String emailAddress) throws AccountManagerSqlException;
-    int clearLoginAttempts(final String emailAddress) throws AccountManagerSqlException;
+    int incrementLoginAttempts(final String email) throws AccountManagerSqlException;
+    int clearLoginAttempts    (final String email) throws AccountManagerSqlException;
 
-    int lock(final String emailAddress, final String reason) throws AccountManagerSqlException;
-    int unlock(final String emailAddress) throws AccountManagerSqlException;
+    int lock  (final String email, final String reason) throws AccountManagerSqlException;
+    int unlock(final String email)                      throws AccountManagerSqlException;
 
     // Delete
-    int delete(final String emailAddress) throws AccountManagerSqlException;
-    int delete(final List<String> emailAddresses) throws AccountManagerSqlException, AccountManagerSqlBulkException;
+    int delete(final String email)        throws AccountManagerSqlException;
+    int delete(final List<String> emails) throws AccountManagerSqlException, AccountManagerSqlBulkException;
 
     // Login
-    boolean login(final String emailAddress, final String password) throws AccountManagerSqlException;
+    boolean login(final String email, final String password) throws AccountManagerSqlException,
+                                                                    AccountManagerAccountLockedException,
+                                                                    AccountManagerEmailNotVerifiedException,
+                                                                    AccountManagerAccountDoesNotExistException;
 }

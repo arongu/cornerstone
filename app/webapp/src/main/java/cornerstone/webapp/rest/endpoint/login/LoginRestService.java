@@ -3,7 +3,7 @@ package cornerstone.webapp.rest.endpoint.login;
 import cornerstone.webapp.rest.endpoint.account.AccountEmailPassword;
 import cornerstone.webapp.rest.util.HttpMessage;
 import cornerstone.webapp.services.account.administration.AccountManager;
-import cornerstone.webapp.services.account.administration.AccountManagerSqlException;
+import cornerstone.webapp.services.account.administration.exceptions.AccountManagerSqlException;
 import cornerstone.webapp.services.jwt.AuthorizationService;
 import cornerstone.webapp.services.jwt.AuthorizationServiceException;
 import org.slf4j.Logger;

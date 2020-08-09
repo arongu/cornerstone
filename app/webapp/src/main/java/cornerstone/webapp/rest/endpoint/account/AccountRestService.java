@@ -1,10 +1,9 @@
 package cornerstone.webapp.rest.endpoint.account;
 
 import cornerstone.webapp.common.DefaultLogMessages;
-import cornerstone.webapp.rest.exceptions.Exception;
-import cornerstone.webapp.services.account.administration.AccountManagerSqlException;
 import cornerstone.webapp.services.account.administration.AccountManager;
-import cornerstone.webapp.services.account.administration.AccountManagerSqlBulkException;
+import cornerstone.webapp.services.account.administration.exceptions.AccountManagerSqlBulkException;
+import cornerstone.webapp.services.account.administration.exceptions.AccountManagerSqlException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -1,4 +1,4 @@
-package cornerstone.webapp.services.account.administration;
+package cornerstone.webapp.services.account.administration.exceptions;
 
 import java.util.LinkedList;
 import java.util.List;

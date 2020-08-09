@@ -1,7 +1,7 @@
 package cornerstone.webapp.rest.endpoint.account;
 
-import cornerstone.webapp.services.account.administration.AccountManagerSqlException;
-import cornerstone.webapp.services.account.administration.AccountManagerSqlBulkException;
+import cornerstone.webapp.services.account.administration.exceptions.AccountManagerSqlException;
+import cornerstone.webapp.services.account.administration.exceptions.AccountManagerSqlBulkException;
 
 import javax.inject.Singleton;
 import javax.ws.rs.core.MediaType;
