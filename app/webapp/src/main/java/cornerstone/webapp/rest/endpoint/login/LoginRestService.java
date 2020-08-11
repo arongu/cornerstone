@@ -3,11 +3,10 @@ package cornerstone.webapp.rest.endpoint.login;
 import cornerstone.webapp.rest.endpoint.account.AccountEmailPassword;
 import cornerstone.webapp.service.account.administration.AccountManager;
 import cornerstone.webapp.service.account.administration.exceptions.AccountDoesNotExistException;
-import cornerstone.webapp.service.account.administration.exceptions.AccountLockedException;
 import cornerstone.webapp.service.account.administration.exceptions.AccountEmailNotVerifiedException;
+import cornerstone.webapp.service.account.administration.exceptions.AccountLockedException;
 import cornerstone.webapp.service.account.administration.exceptions.SqlException;
-import cornerstone.webapp.service.jwt.AuthorizationService;
-import cornerstone.webapp.service.jwt.AuthorizationServiceException;
+import cornerstone.webapp.service.jwt.JWTService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,21 +27,20 @@ public class LoginRestService {
     private static final Logger logger = LoggerFactory.getLogger(LoginRestService.class);
 
     private final AccountManager accountAdmin;
-    private final AuthorizationService authorizationService;
+    private final JWTService JWTService;
 
     @Inject
-    public LoginRestService(final AccountManager accountAdmin, final AuthorizationService authorizationService) {
+    public LoginRestService(final AccountManager accountAdmin, final JWTService JWTService) {
         this.accountAdmin = accountAdmin;
-        this.authorizationService = authorizationService;
+        this.JWTService = JWTService;
     }
 
     @POST
     public Response authenticateUser(final AccountEmailPassword accountEmailPassword) throws
-            AuthorizationServiceException,
+            AccountEmailNotVerifiedException,
             AccountLockedException,
             AccountDoesNotExistException,
-            SqlException,
-            AccountEmailNotVerifiedException {
+            SqlException {
 
         if (null != accountEmailPassword &&
             null != accountEmailPassword.getEmail() &&
@@ -52,7 +50,7 @@ public class LoginRestService {
 
             authenticated = accountAdmin.login(accountEmailPassword.getEmail(), accountEmailPassword.getPassword());
             if ( authenticated ) {
-                final String jwt = authorizationService.issueJWT(accountEmailPassword.getPassword());
+                final String jwt = JWTService.issueJWT(accountEmailPassword.getPassword(), null);
                 logger.info("[ ACCESS TOKEN ][ GRANTED ] -- '{}'", accountEmailPassword.getEmail());
                 return Response.status(Response.Status.ACCEPTED).entity(jwt).build();
             } else {

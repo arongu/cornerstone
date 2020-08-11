@@ -25,8 +25,6 @@ public class AccountManager_Impl_CRUD_Test {
 
         try {
             final ConfigurationLoader cr = new ConfigurationLoader(keyFile, confFile);
-            cr.loadAndDecryptConfig();
-
             final UsersDB ds = new UsersDB(cr);
             accountManager = new AccountManagerImpl(ds, cr);
 
@@ -34,7 +32,6 @@ public class AccountManager_Impl_CRUD_Test {
             e.printStackTrace();
         }
     }
-
 
     // -------------------------------------------- TCs --------------------------------------------
     @Test

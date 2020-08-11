@@ -6,8 +6,8 @@ import cornerstone.webapp.datasources.UsersDB;
 import cornerstone.webapp.datasources.WorkDB;
 import cornerstone.webapp.service.account.administration.AccountManager;
 import cornerstone.webapp.service.account.administration.AccountManagerImpl;
-import cornerstone.webapp.service.jwt.AuthorizationService;
-import cornerstone.webapp.service.jwt.AuthorizationServiceImpl;
+import cornerstone.webapp.service.jwt.JWTService;
+import cornerstone.webapp.service.jwt.JWTServiceImpl;
 import cornerstone.webapp.service.rsa.rotation.KeyRotator;
 import cornerstone.webapp.service.rsa.rotation.KeyRotatorImpl;
 import cornerstone.webapp.service.rsa.store.db.PublicKeyStore;
@@ -75,7 +75,7 @@ public class ApplicationBinder extends AbstractBinder {
 
             // implementation -> interface bindings
             bind(AccountManagerImpl.class).to(AccountManager.class).in(Singleton.class);
-            bind(AuthorizationServiceImpl.class).to(AuthorizationService.class).in(Singleton.class);
+            bind(JWTServiceImpl.class).to(JWTService.class).in(Singleton.class);
             bind(LocalKeyStoreImpl.class).to(LocalKeyStore.class).in(Singleton.class);
             bind(KeyRotatorImpl.class).to(KeyRotator.class).in(Immediate.class);
             bind(PublicKeyStoreImpl.class).to(PublicKeyStore.class).in(Singleton.class);
