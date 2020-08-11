@@ -1,9 +1,9 @@
 package cornerstone.webapp.rest.endpoint.pubkey;
 
-import cornerstone.webapp.services.rsa.common.PublicKeyData;
-import cornerstone.webapp.services.rsa.store.db.PublicKeyStoreException;
-import cornerstone.webapp.services.rsa.store.db.PublicKeyStore;
-import cornerstone.webapp.services.rsa.store.local.LocalKeyStore;
+import cornerstone.webapp.service.rsa.common.PublicKeyData;
+import cornerstone.webapp.service.rsa.store.db.PublicKeyStoreException;
+import cornerstone.webapp.service.rsa.store.db.PublicKeyStore;
+import cornerstone.webapp.service.rsa.store.local.LocalKeyStore;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;

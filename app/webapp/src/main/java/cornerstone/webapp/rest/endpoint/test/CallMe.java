@@ -1,7 +1,6 @@
 package cornerstone.webapp.rest.endpoint.test;
 
-import cornerstone.webapp.services.rsa.store.local.LocalKeyStore;
-import org.glassfish.hk2.api.Immediate;
+import cornerstone.webapp.service.rsa.store.local.LocalKeyStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

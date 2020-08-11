@@ -1,9 +1,9 @@
 package cornerstone.webapp.rest.endpoint.account;
 
 import cornerstone.webapp.common.DefaultLogMessages;
-import cornerstone.webapp.services.account.administration.AccountManager;
-import cornerstone.webapp.services.account.administration.exceptions.AccountManagerSqlBulkException;
-import cornerstone.webapp.services.account.administration.exceptions.AccountManagerSqlException;
+import cornerstone.webapp.service.account.administration.AccountManager;
+import cornerstone.webapp.service.account.administration.exceptions.SqlBulkException;
+import cornerstone.webapp.service.account.administration.exceptions.SqlException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,7 +29,7 @@ public class AccountRestService {
     }
 
     @POST
-    public Response create(final AccountEmailPassword accountEmailPassword) throws AccountManagerSqlException, Exception {
+    public Response create(final AccountEmailPassword accountEmailPassword) throws SqlException, Exception {
         if (null != accountEmailPassword) {
             final String email = accountEmailPassword.getEmail();
             final String password = accountEmailPassword.getPassword();
@@ -43,7 +43,7 @@ public class AccountRestService {
     }
 
     @DELETE
-    public Response delete(final String emailAddress) throws AccountManagerSqlException, Exception {
+    public Response delete(final String emailAddress) throws SqlException, Exception {
         if (null != emailAddress) {
             accountManager.delete(emailAddress);
             return Response.status(Response.Status.OK).entity(emailAddress).build();
@@ -56,7 +56,7 @@ public class AccountRestService {
     // /mass
     @POST
     @Path("/mass")
-    public Response massCreate(final List<AccountEmailPassword> accounts) throws AccountManagerSqlBulkException, Exception {
+    public Response massCreate(final List<AccountEmailPassword> accounts) throws SqlBulkException, Exception {
         if (accounts != null && !accounts.isEmpty()) {
             accountManager.create(accounts);
             return Response.status(Response.Status.CREATED).entity(accounts).build();
@@ -68,7 +68,7 @@ public class AccountRestService {
 
     @DELETE
     @Path("/mass")
-    public Response massDelete(final List<String> emailAddresses) throws AccountManagerSqlBulkException, Exception {
+    public Response massDelete(final List<String> emailAddresses) throws SqlBulkException, Exception {
         if (null != emailAddresses) {
             accountManager.delete(emailAddresses);
             return Response.status(Response.Status.OK).entity(emailAddresses).build();

@@ -1,13 +1,13 @@
 package cornerstone.webapp.rest.endpoint.login;
 
 import cornerstone.webapp.rest.endpoint.account.AccountEmailPassword;
-import cornerstone.webapp.services.account.administration.AccountManager;
-import cornerstone.webapp.services.account.administration.exceptions.AccountManagerAccountDoesNotExistException;
-import cornerstone.webapp.services.account.administration.exceptions.AccountManagerAccountLockedException;
-import cornerstone.webapp.services.account.administration.exceptions.AccountManagerEmailNotVerifiedException;
-import cornerstone.webapp.services.account.administration.exceptions.AccountManagerSqlException;
-import cornerstone.webapp.services.jwt.AuthorizationService;
-import cornerstone.webapp.services.jwt.AuthorizationServiceException;
+import cornerstone.webapp.service.account.administration.AccountManager;
+import cornerstone.webapp.service.account.administration.exceptions.AccountDoesNotExistException;
+import cornerstone.webapp.service.account.administration.exceptions.AccountLockedException;
+import cornerstone.webapp.service.account.administration.exceptions.AccountEmailNotVerifiedException;
+import cornerstone.webapp.service.account.administration.exceptions.SqlException;
+import cornerstone.webapp.service.jwt.AuthorizationService;
+import cornerstone.webapp.service.jwt.AuthorizationServiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,10 +39,10 @@ public class LoginRestService {
     @POST
     public Response authenticateUser(final AccountEmailPassword accountEmailPassword) throws
             AuthorizationServiceException,
-            AccountManagerAccountLockedException,
-            AccountManagerAccountDoesNotExistException,
-            AccountManagerSqlException,
-            AccountManagerEmailNotVerifiedException {
+            AccountLockedException,
+            AccountDoesNotExistException,
+            SqlException,
+            AccountEmailNotVerifiedException {
 
         if (null != accountEmailPassword &&
             null != accountEmailPassword.getEmail() &&
