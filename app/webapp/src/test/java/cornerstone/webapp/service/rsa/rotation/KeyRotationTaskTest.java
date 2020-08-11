@@ -40,7 +40,7 @@ public class KeyRotationTaskTest {
 
 
 
-        verify(local_key_store, times(1)).setPublicAndPrivateKeys(any(UUID.class), any(PrivateKey.class), any(PublicKey.class));
+        verify(local_key_store, times(1)).setLiveKeyData(any(UUID.class), any(PrivateKey.class), any(PublicKey.class));
         verify(public_key_store, times(1)).addKey(any(UUID.class), eq(given_node_name), eq(given_rsa_ttl + given_jwt_ttl), anyString());
         verify(public_key_store, times(1)).getLiveKeyUUIDs();
         verify(local_key_store, times(1)).sync(eq(given_uuid_list));

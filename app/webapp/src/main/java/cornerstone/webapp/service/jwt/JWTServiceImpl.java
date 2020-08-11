@@ -3,15 +3,17 @@ package cornerstone.webapp.service.jwt;
 import cornerstone.webapp.common.DefaultLogMessages;
 import cornerstone.webapp.configuration.ConfigurationLoader;
 import cornerstone.webapp.configuration.enums.APP_ENUM;
+import cornerstone.webapp.service.rsa.store.local.LiveKeyData;
 import cornerstone.webapp.service.rsa.store.local.LocalKeyStore;
-import cornerstone.webapp.service.rsa.store.local.PrivateKeyWithUUID;
 import io.jsonwebtoken.Jwts;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import java.time.Instant;
-import java.util.*;
+import java.util.Date;
+import java.util.Map;
+import java.util.Properties;
 
 public class JWTServiceImpl implements JWTService {
     private static final Logger logger = LoggerFactory.getLogger(JWTServiceImpl.class);
@@ -28,7 +30,7 @@ public class JWTServiceImpl implements JWTService {
 
     @Override
     public String issueJWT(String email) {
-        final PrivateKeyWithUUID privateKeyWithUUID = localKeyStore.getPrivateKey();
+        final LiveKeyData liveKeyData = localKeyStore.getLiveKeyData();
         final Properties properties = configurationLoader.getAppProperties();
         final long jwtTTL = Long.parseLong(properties.getProperty(APP_ENUM.APP_JWT_TTL.key));
 
@@ -37,25 +39,25 @@ public class JWTServiceImpl implements JWTService {
                 .setSubject(email)
                 .setIssuedAt(Date.from(Instant.ofEpochSecond(Instant.now().getEpochSecond())))
                 .setExpiration(Date.from(Instant.ofEpochSecond(Instant.now().getEpochSecond() + jwtTTL)))
-                .setId(privateKeyWithUUID.uuid.toString())
-                .signWith(privateKeyWithUUID.privateKey)
+                .setId(liveKeyData.uuid.toString())
+                .signWith(liveKeyData.privateKey)
                 .compact();
     }
 
     @Override
     public String issueJWT(final String email, final Map<String,Object> claims) {
-        final PrivateKeyWithUUID privateKeyWithUUID = localKeyStore.getPrivateKey();
+        final LiveKeyData liveKeyData = localKeyStore.getLiveKeyData();
         final Properties properties = configurationLoader.getAppProperties();
         final long jwtTTL = Long.parseLong(properties.getProperty(APP_ENUM.APP_JWT_TTL.key));
 
         return Jwts.builder()
-                    .setIssuer(properties.getProperty(APP_ENUM.APP_NODE_NAME.key))
-                    .setSubject(email)
-                    .setIssuedAt(Date.from(Instant.ofEpochSecond(Instant.now().getEpochSecond())))
-                    .setClaims(claims)
-                    .setExpiration(Date.from(Instant.ofEpochSecond(Instant.now().getEpochSecond() + jwtTTL)))
-                    .setId(privateKeyWithUUID.uuid.toString())
-                    .signWith(privateKeyWithUUID.privateKey)
-                    .compact();
+                .setIssuer(properties.getProperty(APP_ENUM.APP_NODE_NAME.key))
+                .setSubject(email)
+                .setClaims(claims)
+                .setIssuedAt(Date.from(Instant.ofEpochSecond(Instant.now().getEpochSecond())))
+                .setExpiration(Date.from(Instant.ofEpochSecond(Instant.now().getEpochSecond() + jwtTTL)))
+                .setId(liveKeyData.uuid.toString())
+                .signWith(liveKeyData.privateKey)
+                .compact();
     }
 }

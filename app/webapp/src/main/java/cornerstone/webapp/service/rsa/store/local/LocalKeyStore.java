@@ -10,12 +10,13 @@ import java.util.UUID;
 public interface LocalKeyStore {
     Set<UUID> getPublicKeyUUIDs();
     PublicKey getPublicKey(final UUID uuid) throws NoSuchElementException;
+
     void addPublicKey(final UUID uuid, final PublicKey publicKey);
     void deletePublicKey(final UUID uuid);
     void deletePublicKeys(final List<UUID> uuidsToBeRemoved);
     void sync(final List<UUID> toBeKept);
 
-    void setPublicAndPrivateKeys(final UUID uuid, final PrivateKey privateKey, final PublicKey publicKey);
-    PrivateKeyWithUUID getPrivateKey() throws NoSuchElementException;
+    void setLiveKeyData(final UUID uuid, final PrivateKey privateKey, final PublicKey publicKey);
+    LiveKeyData getLiveKeyData() throws NoSuchElementException;
     void dropEverything();
 }

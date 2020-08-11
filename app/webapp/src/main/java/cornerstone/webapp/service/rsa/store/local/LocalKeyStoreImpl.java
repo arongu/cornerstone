@@ -14,8 +14,9 @@ public class LocalKeyStoreImpl implements LocalKeyStore {
     private static final Logger logger = LoggerFactory.getLogger(LocalKeyStoreImpl.class);
 
     private Map<UUID, PublicKey> publicKeys;
-    private PrivateKey privateKey = null;
-    private UUID currentUUID = null;
+    private PrivateKey livePrivateKey = null;
+    private PublicKey livePublicKey = null;
+    private UUID liveUuid = null;
 
     public LocalKeyStoreImpl() {
         publicKeys = new ConcurrentHashMap<>();
@@ -77,7 +78,7 @@ public class LocalKeyStoreImpl implements LocalKeyStore {
     public void sync(final List<UUID> toBeKept){
         int deleted = 0;
         for (final UUID uuid : publicKeys.keySet()) {
-            if (uuid == currentUUID || toBeKept.contains(uuid)){
+            if (uuid == liveUuid || toBeKept.contains(uuid)){
                 logger.info(String.format(
                         AlignedLogMessages.FORMAT__OFFSET_30C_30C_S,
                         AlignedLogMessages.OFFSETS_KEYSTORE_CLASSES.get(getClass().getName()),
@@ -109,9 +110,10 @@ public class LocalKeyStoreImpl implements LocalKeyStore {
     }
 
     @Override
-    public void setPublicAndPrivateKeys(final UUID uuid, final PrivateKey privateKey, final PublicKey publicKey){
-        currentUUID = uuid;
-        this.privateKey = privateKey;
+    public void setLiveKeyData(final UUID uuid, final PrivateKey privateKey, final PublicKey publicKey){
+        this.liveUuid = uuid;
+        this.livePrivateKey = privateKey;
+        this.livePublicKey = publicKey;
         publicKeys.put(uuid, publicKey);
 
         logger.info(String.format(
@@ -129,9 +131,9 @@ public class LocalKeyStoreImpl implements LocalKeyStore {
     }
 
     @Override
-    public PrivateKeyWithUUID getPrivateKey() throws NoSuchElementException {
-        if (null != privateKey) {
-            return new PrivateKeyWithUUID(currentUUID, privateKey);
+    public LiveKeyData getLiveKeyData() throws NoSuchElementException {
+        if (null != livePrivateKey) {
+            return new LiveKeyData(liveUuid, livePrivateKey, livePublicKey);
         } else {
             logger.info(String.format(
                     AlignedLogMessages.FORMAT__OFFSET_30C_30C,
@@ -147,8 +149,8 @@ public class LocalKeyStoreImpl implements LocalKeyStore {
     @Override
     public void dropEverything() {
         publicKeys = new HashMap<>();
-        currentUUID = null;
-        privateKey = null;
+        liveUuid = null;
+        livePrivateKey = null;
         logger.info(String.format(
                 AlignedLogMessages.FORMAT__OFFSET_30C_30C,
                 AlignedLogMessages.OFFSETS_KEYSTORE_CLASSES.get(getClass().getName()),
