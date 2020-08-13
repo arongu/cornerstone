@@ -39,8 +39,8 @@ public class JWTServiceTest {
     }
 
     @Test
-    public void fieldTests() {
-        final JWTService JWTService = new JWTServiceImpl(configurationLoader, localKeyStore);
+    public void issueJWT_shouldAddTheContentsOfTheMapAsClaims() {
+        final JWTService jwtService = new JWTServiceImpl(configurationLoader, localKeyStore);
         final Map<String,Object> m = new HashMap<>();
         m.put("claimOne", "one");
         m.put("claimTwo", 2);
@@ -48,12 +48,12 @@ public class JWTServiceTest {
 
 
 
-        final String jwt_string = JWTService.issueJWT("almafa@gmail.com", m);
-        final String[] parsed = jwt_string.split("\\.");
+        final String jwt_string      = jwtService.issueJWT("almafa@gmail.com", m);
+        final String[] parsed        = jwt_string.split("\\.");
         final Base64.Decoder decoder = Base64.getDecoder();
-        final String uuid      = localKeyStore.getLiveKeyData().uuid.toString();
-        final String header    = new String(decoder.decode(parsed[0]));
-        final String payload   = new String(decoder.decode(parsed[1]));
+        final String uuid            = localKeyStore.getLiveKeyData().uuid.toString();
+        final String header          = new String(decoder.decode(parsed[0]));
+        final String payload         = new String(decoder.decode(parsed[1]));
 
 
 
@@ -63,13 +63,4 @@ public class JWTServiceTest {
         assertTrue(payload.contains("\"claimThree\":3.2"));
         assertTrue(payload.contains("\"jti\":\"" + uuid + "\""));
     }
-
-    @Test
-    public void x(){
-        // TODO https://github.com/jwtk/jjwt#jws-read-claims
-    }
 }
-// test fields
-// iat - exp match
-// claims there
-// security

@@ -109,18 +109,18 @@
             <dependency>
                 <groupId>io.jsonwebtoken</groupId>
                 <artifactId>jjwt-api</artifactId>
-                <version>0.10.8</version>
+                <version>0.11.2</version>
             </dependency>
             <dependency>
                 <groupId>io.jsonwebtoken</groupId>
                 <artifactId>jjwt-impl</artifactId>
-                <version>0.10.8</version>
+                <version>0.11.2</version>
                 <scope>runtime</scope>
             </dependency>
             <dependency>
                 <groupId>io.jsonwebtoken</groupId>
                 <artifactId>jjwt-jackson</artifactId>
-                <version>0.10.8</version>
+                <version>0.11.2</version>
                 <scope>runtime</scope>
             </dependency>
             <!-- mockito -->
@@ -178,26 +178,6 @@
                     <groupId>org.flywaydb</groupId>
                     <artifactId>flyway-maven-plugin</artifactId>
                     <version>6.2.4</version>
-                </plugin>
-
-                <!-- PMD -->
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-pmd-plugin</artifactId>
-                    <version>3.13.0</version>
-                    <configuration>
-                        <outputDirectory>target/surefire-reports</outputDirectory>
-                        <linkXRef>false</linkXRef>
-                    </configuration>
-                    <executions>
-                        <execution>
-                            <id>during-tests</id>
-                            <phase>test</phase>
-                            <goals>
-                                <goal>report</goal>
-                            </goals>
-                        </execution>
-                    </executions>
                 </plugin>
                 <!-- PLUGINS -->
             </plugins>
