@@ -14,7 +14,7 @@ import java.sql.Timestamp;
 import static org.junit.jupiter.api.Assertions.*;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class AccountManager_Impl_CRUD_Test {
+public class AccountManagerCrudTest {
     private static AccountManager accountManager;
 
     @BeforeAll

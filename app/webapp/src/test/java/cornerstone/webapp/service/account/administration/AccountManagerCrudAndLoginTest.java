@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 // THIS IS MORE THAN JUST A SINGLE LOGIN TEST, IT HEAVILY RELIES ON CRUD METHODS
 // ALL TCS CLEANUP AFTER THEMSELVES FOR DATABASE AND TEST CONSISTENCY!
-public class AccountManager_Impl_CRUD_AND_LOGIN_Test {
+public class AccountManagerCrudAndLoginTest {
     private static AccountManager accountManager;
     private static int MAX_LOGIN_ATTEMPTS_FROM_TEST_CONFIG;
 

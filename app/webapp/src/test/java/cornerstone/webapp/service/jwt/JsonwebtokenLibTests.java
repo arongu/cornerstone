@@ -1,13 +1,11 @@
 package cornerstone.webapp.service.jwt;
 
 import cornerstone.webapp.configuration.ConfigurationLoader;
-import cornerstone.webapp.configuration.enums.APP_ENUM;
 import cornerstone.webapp.service.rsa.rotation.KeyPairWithUUID;
 import cornerstone.webapp.service.rsa.store.local.LocalKeyStore;
 import cornerstone.webapp.service.rsa.store.local.LocalKeyStoreImpl;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.IncorrectClaimException;
-import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.SignatureException;
 import org.junit.jupiter.api.BeforeAll;
@@ -21,7 +19,7 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class JsonWebTokenTest {
+public class JsonwebtokenLibTests {
     private static ConfigurationLoader configurationLoader;
     private static LocalKeyStore localKeyStore;
 
@@ -134,6 +132,22 @@ public class JsonWebTokenTest {
         assertEquals("one", claims.get("claimOne"));
         assertEquals(2, claims.get("claimTwo"));
         assertEquals(3.2, claims.get("claimThree"));
+    }
+
+    @Test
+    void x(){
+        final JWTService jwtService = new JWTServiceImpl(configurationLoader, localKeyStore);
+        final String email = "hellomoto@xmal.com";
+        final Map<String,Object> m = new HashMap<>();
+        m.put("claimOne", "one");
+        m.put("claimTwo", 2);
+        m.put("claimThree", 3.2);
+
+
+        final String jws = jwtService.issueJWT(email, m);
+        final PublicKey validKey = localKeyStore.getLiveKeyData().publicKey;
+        final Claims claims = Jwts.parserBuilder().setSigningKey(validKey).build().parseClaimsJws(jws).getBody();
+        System.out.println(claims);
     }
 }
 

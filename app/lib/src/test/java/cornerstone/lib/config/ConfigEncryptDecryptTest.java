@@ -1,6 +1,5 @@
-package cornerstone.workflow.lib.config;
+package cornerstone.lib.config;
 
-import cornerstone.lib.config.ConfigEncryptDecrypt;
 import org.apache.commons.codec.binary.Hex;
 import org.junit.jupiter.api.Test;
 
