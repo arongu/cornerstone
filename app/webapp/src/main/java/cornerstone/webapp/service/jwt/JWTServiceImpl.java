@@ -33,12 +33,13 @@ public class JWTServiceImpl implements JWTService {
         final LiveKeyData liveKeyData = localKeyStore.getLiveKeyData();
         final Properties properties = configurationLoader.getAppProperties();
         final long jwtTTL = Long.parseLong(properties.getProperty(APP_ENUM.APP_JWT_TTL.key));
+        final long epochSecondsNow = Instant.now().getEpochSecond();
 
         return Jwts.builder()
                 .setIssuer(properties.getProperty(APP_ENUM.APP_NODE_NAME.key))
                 .setSubject(email)
-                .setIssuedAt(Date.from(Instant.ofEpochSecond(Instant.now().getEpochSecond())))
-                .setExpiration(Date.from(Instant.ofEpochSecond(Instant.now().getEpochSecond() + jwtTTL)))
+                .setIssuedAt(Date.from(Instant.ofEpochSecond(epochSecondsNow)))
+                .setExpiration(Date.from(Instant.ofEpochSecond(epochSecondsNow + jwtTTL)))
                 .setId(liveKeyData.uuid.toString())
                 .signWith(liveKeyData.privateKey)
                 .compact();
@@ -49,13 +50,14 @@ public class JWTServiceImpl implements JWTService {
         final LiveKeyData liveKeyData = localKeyStore.getLiveKeyData();
         final Properties properties = configurationLoader.getAppProperties();
         final long jwtTTL = Long.parseLong(properties.getProperty(APP_ENUM.APP_JWT_TTL.key));
+        final long epochSecondsNow = Instant.now().getEpochSecond();
 
         return Jwts.builder()
                 .setIssuer(properties.getProperty(APP_ENUM.APP_NODE_NAME.key))
                 .setSubject(email)
                 .setClaims(claims)
-                .setIssuedAt(Date.from(Instant.ofEpochSecond(Instant.now().getEpochSecond())))
-                .setExpiration(Date.from(Instant.ofEpochSecond(Instant.now().getEpochSecond() + jwtTTL)))
+                .setIssuedAt(Date.from(Instant.ofEpochSecond(epochSecondsNow)))
+                .setExpiration(Date.from(Instant.ofEpochSecond(epochSecondsNow + jwtTTL)))
                 .setId(liveKeyData.uuid.toString())
                 .signWith(liveKeyData.privateKey)
                 .compact();

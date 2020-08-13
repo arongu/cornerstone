@@ -1,6 +1,7 @@
 package cornerstone.webapp.service.jwt;
 
 import cornerstone.webapp.configuration.ConfigurationLoader;
+import cornerstone.webapp.configuration.enums.APP_ENUM;
 import cornerstone.webapp.service.rsa.rotation.KeyPairWithUUID;
 import cornerstone.webapp.service.rsa.store.local.LocalKeyStore;
 import cornerstone.webapp.service.rsa.store.local.LocalKeyStoreImpl;
@@ -135,21 +136,20 @@ public class JsonwebtokenLibTests {
     }
 
     @Test
-    void x(){
+    void expMinusIatShouldBeEqualToJwtTTL() {
         final JWTService jwtService = new JWTServiceImpl(configurationLoader, localKeyStore);
-        final String email = "hellomoto@xmal.com";
-        final Map<String,Object> m = new HashMap<>();
-        m.put("claimOne", "one");
-        m.put("claimTwo", 2);
-        m.put("claimThree", 3.2);
-
-
-        final String jws = jwtService.issueJWT(email, m);
         final PublicKey validKey = localKeyStore.getLiveKeyData().publicKey;
+        final Integer jwtTTL = Integer.valueOf((String)configurationLoader.getAppProperties().get(APP_ENUM.APP_JWT_TTL.key));
+        final String email = "hellomoto@xmal.com";
+
+
+        final String jws = jwtService.issueJWT(email);
         final Claims claims = Jwts.parserBuilder().setSigningKey(validKey).build().parseClaimsJws(jws).getBody();
-        System.out.println(claims);
+        final Integer issuedEpoch = (Integer) claims.get("iat");
+        final Integer expiresEpoch = (Integer) claims.get("exp");
+
+
+        assertEquals(jwtTTL, expiresEpoch - issuedEpoch);
     }
 }
 
-// iat - exp match
-// exp -
