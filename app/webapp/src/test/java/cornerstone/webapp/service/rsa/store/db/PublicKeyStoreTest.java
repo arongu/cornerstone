@@ -1,6 +1,6 @@
 package cornerstone.webapp.service.rsa.store.db;
 
-import cornerstone.webapp.configuration.ConfigurationLoader;
+import cornerstone.webapp.configuration.ConfigLoader;
 import cornerstone.webapp.datasources.WorkDB;
 import cornerstone.webapp.service.rsa.common.PublicKeyData;
 import cornerstone.webapp.service.rsa.rotation.KeyPairWithUUID;
@@ -24,7 +24,7 @@ public class PublicKeyStoreTest {
         final String conf_file = Paths.get(test_files_dir + "app.conf").toAbsolutePath().normalize().toString();
 
         try {
-            ConfigurationLoader cl = new ConfigurationLoader(key_file, conf_file);
+            ConfigLoader cl = new ConfigLoader(key_file, conf_file);
             publicKeyStore  = new PublicKeyStoreImpl(new WorkDB(cl));
 
         } catch (final IOException e) {

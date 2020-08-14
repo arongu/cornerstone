@@ -1,6 +1,6 @@
 package cornerstone.webapp.service.account.administration;
 
-import cornerstone.webapp.configuration.ConfigurationLoader;
+import cornerstone.webapp.configuration.ConfigLoader;
 import cornerstone.webapp.datasources.UsersDB;
 import cornerstone.webapp.service.account.administration.exceptions.AccountDoesNotExistException;
 import cornerstone.webapp.service.account.administration.exceptions.SqlException;
@@ -24,7 +24,7 @@ public class AccountManagerCrudTest {
         final String confFile = Paths.get(test_files_dir + "app.conf").toAbsolutePath().normalize().toString();
 
         try {
-            final ConfigurationLoader cr = new ConfigurationLoader(keyFile, confFile);
+            final ConfigLoader cr = new ConfigLoader(keyFile, confFile);
             final UsersDB ds = new UsersDB(cr);
             accountManager = new AccountManagerImpl(ds, cr);
 

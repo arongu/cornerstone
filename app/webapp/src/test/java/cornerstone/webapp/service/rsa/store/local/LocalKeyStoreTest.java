@@ -103,19 +103,19 @@ public class LocalKeyStoreTest {
 
 
         // get without set -> throw
-        assertThrows(NoSuchElementException.class, localKeyStore::getLiveKeyData);
+        assertThrows(NoSuchElementException.class, localKeyStore::getLiveKeys);
         localKeyStore.setLiveKeyData(reference_key.uuid, reference_key.keyPair.getPrivate(), reference_key.keyPair.getPublic());
 
 
         // get key after set
-        final LiveKeyData stored_key = localKeyStore.getLiveKeyData();
+        final LiveKeys stored_key = localKeyStore.getLiveKeys();
         assertEquals(reference_key.uuid, stored_key.uuid);
         assertEquals(reference_key.keyPair.getPrivate(), stored_key.privateKey);
 
 
         // drop
         localKeyStore.dropEverything();
-        assertThrows(NoSuchElementException.class, localKeyStore::getLiveKeyData);
+        assertThrows(NoSuchElementException.class, localKeyStore::getLiveKeys);
         assertThrows(NoSuchElementException.class, () -> localKeyStore.getPublicKey(reference_key.uuid));
     }
 }

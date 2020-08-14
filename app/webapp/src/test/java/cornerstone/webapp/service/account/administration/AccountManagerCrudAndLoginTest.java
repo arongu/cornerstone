@@ -1,6 +1,6 @@
 package cornerstone.webapp.service.account.administration;
 
-import cornerstone.webapp.configuration.ConfigurationLoader;
+import cornerstone.webapp.configuration.ConfigLoader;
 import cornerstone.webapp.configuration.enums.APP_ENUM;
 import cornerstone.webapp.datasources.UsersDB;
 import cornerstone.webapp.service.account.administration.exceptions.AccountDoesNotExistException;
@@ -28,7 +28,7 @@ public class AccountManagerCrudAndLoginTest {
         final String confFile = Paths.get(test_files_dir + "app.conf").toAbsolutePath().normalize().toString();
 
         try {
-            final ConfigurationLoader cr = new ConfigurationLoader(keyFile, confFile);
+            final ConfigLoader cr = new ConfigLoader(keyFile, confFile);
             cr.loadAndDecryptConfig();
 
             final UsersDB ds = new UsersDB(cr);

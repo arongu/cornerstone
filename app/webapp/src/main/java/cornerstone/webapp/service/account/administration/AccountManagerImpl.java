@@ -1,7 +1,7 @@
 package cornerstone.webapp.service.account.administration;
 
 import cornerstone.webapp.common.DefaultLogMessages;
-import cornerstone.webapp.configuration.ConfigurationLoader;
+import cornerstone.webapp.configuration.ConfigLoader;
 import cornerstone.webapp.configuration.enums.APP_ENUM;
 import cornerstone.webapp.datasources.UsersDB;
 import cornerstone.webapp.rest.endpoint.account.AccountEmailPassword;
@@ -16,7 +16,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 public class AccountManagerImpl implements AccountManager {
     private static final String LOG_FORMAT = "%-35s : %s";
@@ -73,12 +72,12 @@ public class AccountManagerImpl implements AccountManager {
     }
 
     private final UsersDB usersDB;
-    private final ConfigurationLoader configurationLoader;
+    private final ConfigLoader configLoader;
 
     @Inject
-    public AccountManagerImpl(final UsersDB usersDB, final ConfigurationLoader configurationLoader) {
+    public AccountManagerImpl(final UsersDB usersDB, final ConfigLoader configLoader) {
         this.usersDB = usersDB;
-        this.configurationLoader = configurationLoader;
+        this.configLoader = configLoader;
         logger.info(String.format(DefaultLogMessages.MESSAGE_CONSTRUCTOR_CALLED, getClass().getName()));
     }
 
@@ -352,7 +351,7 @@ public class AccountManagerImpl implements AccountManager {
 
                 } else {
                     logger.info(String.format(LOG_FORMAT, LOGIN_FAILED, email));
-                    if (loginAttempts < Integer.parseInt(configurationLoader.getAppProperties().getProperty(APP_ENUM.APP_MAX_LOGIN_ATTEMPTS.key))) {
+                    if (loginAttempts < Integer.parseInt(configLoader.getAppProperties().getProperty(APP_ENUM.APP_MAX_LOGIN_ATTEMPTS.key))) {
                         incrementLoginAttempts(email);
                     } else {
                         lock(email, "Maximum login attempts reached.");

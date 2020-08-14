@@ -1,6 +1,6 @@
 package cornerstone.webapp.service.jwt;
 
-import cornerstone.webapp.configuration.ConfigurationLoader;
+import cornerstone.webapp.configuration.ConfigLoader;
 import cornerstone.webapp.service.rsa.rotation.KeyPairWithUUID;
 import cornerstone.webapp.service.rsa.store.local.LocalKeyStore;
 import cornerstone.webapp.service.rsa.store.local.LocalKeyStoreImpl;
@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class JWTServiceTest {
-    private static ConfigurationLoader configurationLoader;
+    private static ConfigLoader configLoader;
     private static LocalKeyStore localKeyStore;
 
     @BeforeAll
@@ -27,7 +27,7 @@ public class JWTServiceTest {
         final String confFile = Paths.get(test_files_dir + "app.conf").toAbsolutePath().normalize().toString();
 
         try {
-            configurationLoader = new ConfigurationLoader(keyFile, confFile);
+            configLoader = new ConfigLoader(keyFile, confFile);
 
             localKeyStore = new LocalKeyStoreImpl();
             final KeyPairWithUUID kp = new KeyPairWithUUID();
@@ -40,7 +40,7 @@ public class JWTServiceTest {
 
     @Test
     public void issueJWT_shouldAddTheContentsOfTheMapAsClaims() {
-        final JWTService jwtService = new JWTServiceImpl(configurationLoader, localKeyStore);
+        final JWTService jwtService = new JWTServiceImpl(configLoader, localKeyStore);
         final Map<String,Object> m = new HashMap<>();
         m.put("claimOne", "one");
         m.put("claimTwo", 2);
@@ -48,10 +48,10 @@ public class JWTServiceTest {
 
 
 
+        final Base64.Decoder decoder = Base64.getDecoder();
         final String jwt_string      = jwtService.issueJWT("almafa@gmail.com", m);
         final String[] parsed        = jwt_string.split("\\.");
-        final Base64.Decoder decoder = Base64.getDecoder();
-        final String uuid            = localKeyStore.getLiveKeyData().uuid.toString();
+        final String uuid            = localKeyStore.getLiveKeys().uuid.toString();
         final String header          = new String(decoder.decode(parsed[0]));
         final String payload         = new String(decoder.decode(parsed[1]));
 

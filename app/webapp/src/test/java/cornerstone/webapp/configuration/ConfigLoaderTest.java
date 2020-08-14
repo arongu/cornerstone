@@ -8,7 +8,7 @@ import java.nio.file.Paths;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class ConfigurationLoaderTest {
+public class ConfigLoaderTest {
     private static final String TEST_CONFIG_DIR = "../../_test_config/";
 
     private static final String keyFile  = Paths.get(TEST_CONFIG_DIR + "key.conf").toAbsolutePath().normalize().toString();
@@ -16,12 +16,12 @@ public class ConfigurationLoaderTest {
 
     @Test
     public void constructor_shouldThrowIOException_whenFilesDoNotExist() {
-        assertThrows(IOException.class, () -> new ConfigurationLoader("xxx", "xxx"));
+        assertThrows(IOException.class, () -> new ConfigLoader("xxx", "xxx"));
     }
 
     @Test
     public void constructorAndLoadAndDecryptConfig_shouldLoadConfig_whenAllSet() throws IOException {
-        final ConfigurationLoader cr = new ConfigurationLoader(keyFile, confFile);
+        final ConfigLoader cr = new ConfigLoader(keyFile, confFile);
 
         cr.loadAndDecryptConfig();
 

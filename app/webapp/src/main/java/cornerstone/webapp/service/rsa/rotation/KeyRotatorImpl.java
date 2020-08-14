@@ -1,7 +1,7 @@
 package cornerstone.webapp.service.rsa.rotation;
 
 import cornerstone.webapp.common.DefaultLogMessages;
-import cornerstone.webapp.configuration.ConfigurationLoader;
+import cornerstone.webapp.configuration.ConfigLoader;
 import cornerstone.webapp.configuration.enums.APP_ENUM;
 import cornerstone.webapp.service.rsa.store.db.PublicKeyStore;
 import cornerstone.webapp.service.rsa.store.local.LocalKeyStore;
@@ -17,15 +17,15 @@ public class KeyRotatorImpl implements KeyRotator {
 
     private final PublicKeyStore databasePublicKeyStore;
     private final LocalKeyStore localKeyStore;
-    private final ConfigurationLoader configurationLoader;
+    private final ConfigLoader configLoader;
     private final Timer timer;
 
     @Inject
-    public KeyRotatorImpl(final ConfigurationLoader configurationLoader,
+    public KeyRotatorImpl(final ConfigLoader configLoader,
                           final PublicKeyStore dbPublicKeyStore,
                           final LocalKeyStore localKeyStore) {
 
-        this.configurationLoader = configurationLoader;
+        this.configLoader = configLoader;
         this.localKeyStore = localKeyStore;
         this.databasePublicKeyStore = dbPublicKeyStore;
 
@@ -36,7 +36,7 @@ public class KeyRotatorImpl implements KeyRotator {
 
     @Override
     public void runRotationTask() {
-        final Properties appProperties = configurationLoader.getAppProperties();
+        final Properties appProperties = configLoader.getAppProperties();
         final String nodeName = appProperties.getProperty(APP_ENUM.APP_NODE_NAME.key);
         final int rsaTTL = Integer.parseInt(appProperties.getProperty(APP_ENUM.APP_RSA_TTL.key));
         final int jwtTTL = Integer.parseInt(appProperties.getProperty(APP_ENUM.APP_JWT_TTL.key));

@@ -1,7 +1,7 @@
 package cornerstone.webapp.datasources;
 
 import cornerstone.webapp.common.DefaultLogMessages;
-import cornerstone.webapp.configuration.ConfigurationLoader;
+import cornerstone.webapp.configuration.ConfigLoader;
 import cornerstone.webapp.configuration.enums.DB_WORK_ENUM;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.slf4j.Logger;
@@ -14,9 +14,9 @@ public class WorkDB extends BasicDataSource {
     private static final Logger logger = LoggerFactory.getLogger(WorkDB.class);
     
     @Inject
-    public WorkDB(final ConfigurationLoader configurationLoader) {
+    public WorkDB(final ConfigLoader configLoader) {
         super();
-        final Properties p = configurationLoader.getWorkDbProperties();
+        final Properties p = configLoader.getWorkDbProperties();
         
         setDriverClassName                          (p.getProperty(DB_WORK_ENUM.DB_DRIVER.key));
         setUrl                                      (p.getProperty(DB_WORK_ENUM.DB_URL.key));

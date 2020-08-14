@@ -8,8 +8,8 @@ import javax.crypto.SecretKey;
 import java.io.IOException;
 import java.util.Properties;
 
-public class ConfigurationLoader {
-    private static final Logger logger = LoggerFactory.getLogger(ConfigurationLoader.class);
+public class ConfigLoader {
+    private static final Logger logger = LoggerFactory.getLogger(ConfigLoader.class);
 
     private Properties db_users_properties;
     private Properties db_work_properties;
@@ -17,7 +17,7 @@ public class ConfigurationLoader {
     private String keyFile;
     private String confFile;
 
-    public ConfigurationLoader(final String keyFile, final String confFile) throws IOException {
+    public ConfigLoader(final String keyFile, final String confFile) throws IOException {
         this.keyFile = keyFile;
         this.confFile = confFile;
         loadAndDecryptConfig();

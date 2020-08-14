@@ -1,7 +1,7 @@
 package cornerstone.webapp.datasources;
 
 import cornerstone.webapp.common.DefaultLogMessages;
-import cornerstone.webapp.configuration.ConfigurationLoader;
+import cornerstone.webapp.configuration.ConfigLoader;
 import cornerstone.webapp.configuration.enums.DB_USERS_ENUM;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.slf4j.Logger;
@@ -14,9 +14,9 @@ public class UsersDB extends BasicDataSource {
     private static final Logger logger = LoggerFactory.getLogger(UsersDB.class);
 
     @Inject
-    public UsersDB(final ConfigurationLoader configurationLoader){
+    public UsersDB(final ConfigLoader configLoader){
         super();
-        final Properties p = configurationLoader.getUsersDbProperties();
+        final Properties p = configLoader.getUsersDbProperties();
 
         setDriverClassName                           (p.getProperty(DB_USERS_ENUM.DB_DRIVER.key));
         setUrl                                       (p.getProperty(DB_USERS_ENUM.DB_URL.key));

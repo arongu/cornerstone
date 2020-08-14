@@ -1,7 +1,7 @@
 package cornerstone.webapp.jersey;
 
 import cornerstone.webapp.configuration.ConfigurationDefaults;
-import cornerstone.webapp.configuration.ConfigurationLoader;
+import cornerstone.webapp.configuration.ConfigLoader;
 import cornerstone.webapp.datasources.UsersDB;
 import cornerstone.webapp.datasources.WorkDB;
 import cornerstone.webapp.service.account.administration.AccountManager;
@@ -23,7 +23,7 @@ import javax.inject.Singleton;
 import java.io.IOException;
 
 public class ApplicationBinder extends AbstractBinder {
-    private static final Logger logger = LoggerFactory.getLogger(ConfigurationLoader.class);
+    private static final Logger logger = LoggerFactory.getLogger(ConfigLoader.class);
 
     private static final String LOG_MESSAGE_PROPERTY_SET                        = "[ System.getProperty ][ '{}' ] = '{}'";
     private static final String LOG_MESSAGE_PROPERTY_NOT_SET                    = "[ System.getProperty ][ '{}' ] is not set!";
@@ -67,7 +67,7 @@ public class ApplicationBinder extends AbstractBinder {
             // WORKS ONLY WELL ON @PATH ANNOTATED CLASSES !!!
 
             // create an instance and register it as singleton
-            bind(new ConfigurationLoader(keyFile, confFile)).to(ConfigurationLoader.class).in(Singleton.class);
+            bind(new ConfigLoader(keyFile, confFile)).to(ConfigLoader.class).in(Singleton.class);
 
             // register data sources
             bindAsContract(UsersDB.class).in(Singleton.class);

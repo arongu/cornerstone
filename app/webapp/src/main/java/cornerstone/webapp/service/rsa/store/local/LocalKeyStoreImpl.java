@@ -131,9 +131,9 @@ public class LocalKeyStoreImpl implements LocalKeyStore {
     }
 
     @Override
-    public LiveKeyData getLiveKeyData() throws NoSuchElementException {
+    public LiveKeys getLiveKeys() throws NoSuchElementException {
         if (null != livePrivateKey) {
-            return new LiveKeyData(liveUuid, livePrivateKey, livePublicKey);
+            return new LiveKeys(liveUuid, livePrivateKey, livePublicKey);
         } else {
             logger.info(String.format(
                     AlignedLogMessages.FORMAT__OFFSET_30C_30C,

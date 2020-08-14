@@ -17,6 +17,6 @@ public interface LocalKeyStore {
     void sync(final List<UUID> toBeKept);
 
     void setLiveKeyData(final UUID uuid, final PrivateKey privateKey, final PublicKey publicKey);
-    LiveKeyData getLiveKeyData() throws NoSuchElementException;
+    LiveKeys getLiveKeys() throws NoSuchElementException;
     void dropEverything();
 }
