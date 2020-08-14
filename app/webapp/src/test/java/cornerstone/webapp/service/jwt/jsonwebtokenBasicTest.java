@@ -22,7 +22,7 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class jsonwebtoken_basic_tests {
+public class jsonwebtokenBasicTest {
     private static ConfigLoader configLoader;
     private static LocalKeyStore localKeyStore;
 
@@ -33,8 +33,8 @@ public class jsonwebtoken_basic_tests {
         final String conf_file       = Paths.get(test_config_dir + "app.conf").toAbsolutePath().normalize().toString();
 
         try {
-            configLoader             = new ConfigLoader(key_file, conf_file);
-            localKeyStore            = new LocalKeyStoreImpl();
+            configLoader                          = new ConfigLoader(key_file, conf_file);
+            localKeyStore                         = new LocalKeyStoreImpl();
             final KeyPairWithUUID keyPairWithUUID = new KeyPairWithUUID();
             localKeyStore.setLiveKeys(keyPairWithUUID.uuid, keyPairWithUUID.keyPair.getPrivate(), keyPairWithUUID.keyPair.getPublic());
 
@@ -94,54 +94,38 @@ public class jsonwebtoken_basic_tests {
     }
 
     @Test
-    public void claimTests() {
+    public void createJwsWithParseClaims_shouldReturnClaimsFromMap() {
         final JWTService jwtService = new JWTServiceImpl(configLoader, localKeyStore);
-        final String email = "hellomoto@xmal.com";
-        final Map<String,Object> m = new HashMap<>();
+        final Key publicKey         = localKeyStore.getLiveKeys().publicKey;
+        final String email          = "hellomoto@xmal.com";
+        final Map<String,Object> m  = new HashMap<>();
         m.put("claimOne", "one");
         m.put("claimTwo", 2);
         m.put("claimThree", 3.2);
 
 
-        // should throw SignatureException
-        // when claims are there but
-        // key is invalid
-        assertThrows(SignatureException.class, () -> {
-            final PublicKey invalidKey = new KeyPairWithUUID().keyPair.getPublic();
-            final String jws           = jwtService.createJws(email, m);
-            Jwts.parserBuilder().setSigningKey(invalidKey).build().parseClaimsJws(jws);
-        });
+        final String jws    = jwtService.createJws(email, m);
+        final Claims claims = Jwts.parserBuilder().setSigningKey(publicKey).build().parseClaimsJws(jws).getBody();
+        final String  claimOne  = (String)  claims.get("claimOne");
+        final Integer claimTwo  = (Integer) claims.get("claimTwo");
+        final Double claimThree = (Double)  claims.get("claimThree");
 
 
-        // should not throw exception
-        // when claims are there and
-        // key is valid
-        assertDoesNotThrow(() -> {
-            final String jws         = jwtService.createJws(email, m);
-            final PublicKey validKey = localKeyStore.getLiveKeys().publicKey;
-            Jwts.parserBuilder().setSigningKey(validKey).build().parseClaimsJws(jws);
-        });
-
-
-        // check claims
-        final String jws = jwtService.createJws(email, m);
-        final PublicKey validKey = localKeyStore.getLiveKeys().publicKey;
-        final Claims claims      = Jwts.parserBuilder().setSigningKey(validKey).build().parseClaimsJws(jws).getBody();
-        assertEquals("one", claims.get("claimOne"));
-        assertEquals(2, claims.get("claimTwo"));
-        assertEquals(3.2, claims.get("claimThree"));
+        assertEquals("one", claimOne);
+        assertEquals(2, claimTwo);
+        assertEquals(3.2, claimThree);
     }
 
     @Test
     public void expMinusIatShouldBeEqualToJwtTTL() {
         final JWTService jwtService = new JWTServiceImpl(configLoader, localKeyStore);
-        final PublicKey validKey    = localKeyStore.getLiveKeys().publicKey;
+        final PublicKey publicKey   = localKeyStore.getLiveKeys().publicKey;
         final Integer jwtTTL        = Integer.valueOf((String) configLoader.getAppProperties().get(APP_ENUM.APP_JWT_TTL.key));
         final String email          = "hellomoto@xmal.com";
 
 
         final String jws           = jwtService.createJws(email);
-        final Claims claims        = Jwts.parserBuilder().setSigningKey(validKey).build().parseClaimsJws(jws).getBody();
+        final Claims claims        = Jwts.parserBuilder().setSigningKey(publicKey).build().parseClaimsJws(jws).getBody();
         final Integer issuedEpoch  = (Integer) claims.get("iat");
         final Integer expiresEpoch = (Integer) claims.get("exp");
 
