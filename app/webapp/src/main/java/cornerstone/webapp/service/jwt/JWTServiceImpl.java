@@ -29,7 +29,7 @@ public class JWTServiceImpl implements JWTService {
     }
 
     @Override
-    public String issueJWT(String email) {
+    public String createJws(String email) {
         final LiveKeys liveKeys       = localKeyStore.getLiveKeys();
         final Properties properties   = configLoader.getAppProperties();
         final long jwtTTL             = Long.parseLong(properties.getProperty(APP_ENUM.APP_JWT_TTL.key));
@@ -46,7 +46,7 @@ public class JWTServiceImpl implements JWTService {
     }
 
     @Override
-    public String issueJWT(final String email, final Map<String,Object> claims) {
+    public String createJws(final String email, final Map<String,Object> claims) {
         final LiveKeys liveKeys     = localKeyStore.getLiveKeys();
         final Properties properties = configLoader.getAppProperties();
         final long jwtTTL           = Long.parseLong(properties.getProperty(APP_ENUM.APP_JWT_TTL.key));

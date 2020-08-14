@@ -31,7 +31,7 @@ public class JWTServiceTest {
 
             localKeyStore = new LocalKeyStoreImpl();
             final KeyPairWithUUID kp = new KeyPairWithUUID();
-            localKeyStore.setLiveKeyData(kp.uuid, kp.keyPair.getPrivate(), kp.keyPair.getPublic());
+            localKeyStore.setLiveKeys(kp.uuid, kp.keyPair.getPrivate(), kp.keyPair.getPublic());
 
         } catch (final IOException e) {
             e.printStackTrace();
@@ -49,7 +49,7 @@ public class JWTServiceTest {
 
 
         final Base64.Decoder decoder = Base64.getDecoder();
-        final String jwt_string      = jwtService.issueJWT("almafa@gmail.com", m);
+        final String jwt_string      = jwtService.createJws("almafa@gmail.com", m);
         final String[] parsed        = jwt_string.split("\\.");
         final String uuid            = localKeyStore.getLiveKeys().uuid.toString();
         final String header          = new String(decoder.decode(parsed[0]));

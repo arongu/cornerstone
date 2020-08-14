@@ -110,7 +110,7 @@ public class LocalKeyStoreImpl implements LocalKeyStore {
     }
 
     @Override
-    public void setLiveKeyData(final UUID uuid, final PrivateKey privateKey, final PublicKey publicKey){
+    public void setLiveKeys(final UUID uuid, final PrivateKey privateKey, final PublicKey publicKey){
         this.liveUuid = uuid;
         this.livePrivateKey = privateKey;
         this.livePublicKey = publicKey;

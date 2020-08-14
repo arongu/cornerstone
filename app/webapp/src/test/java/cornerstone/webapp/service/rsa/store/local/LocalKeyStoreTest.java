@@ -104,7 +104,7 @@ public class LocalKeyStoreTest {
 
         // get without set -> throw
         assertThrows(NoSuchElementException.class, localKeyStore::getLiveKeys);
-        localKeyStore.setLiveKeyData(reference_key.uuid, reference_key.keyPair.getPrivate(), reference_key.keyPair.getPublic());
+        localKeyStore.setLiveKeys(reference_key.uuid, reference_key.keyPair.getPrivate(), reference_key.keyPair.getPublic());
 
 
         // get key after set

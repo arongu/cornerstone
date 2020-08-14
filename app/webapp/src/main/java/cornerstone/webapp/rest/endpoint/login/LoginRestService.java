@@ -50,7 +50,7 @@ public class LoginRestService {
 
             authenticated = accountAdmin.login(accountEmailPassword.getEmail(), accountEmailPassword.getPassword());
             if ( authenticated ) {
-                final String jwt = JWTService.issueJWT(accountEmailPassword.getPassword(), null);
+                final String jwt = JWTService.createJws(accountEmailPassword.getPassword(), null);
                 logger.info("[ ACCESS TOKEN ][ GRANTED ] -- '{}'", accountEmailPassword.getEmail());
                 return Response.status(Response.Status.ACCEPTED).entity(jwt).build();
             } else {
