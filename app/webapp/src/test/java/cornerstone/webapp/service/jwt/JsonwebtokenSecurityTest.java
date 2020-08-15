@@ -83,12 +83,13 @@ public class JsonwebtokenSecurityTest {
         // Forging jws
         final Base64.Decoder decoder    = Base64.getDecoder();
         final String[] parsed           = jws.split("\\.");
+        final String header             = parsed[0];
         final String payload            = new String(decoder.decode(parsed[1]));
         final String signature          = parsed[2];
-        final Base64.Encoder encoder    = Base64.getEncoder();
+        // tempered payload
         final String temperedPayload    = payload.replaceFirst(subject, temperedSubject);
-        final String b64temperedPayload = new String(encoder.encode(temperedPayload.getBytes()));
-        final String temperedJWS        = parsed[0] + "." + b64temperedPayload + "." + parsed[2];
+        final String b64temperedPayload = new String(Base64.getEncoder().encode(temperedPayload.getBytes()));
+        final String temperedJWS        = header + "." + b64temperedPayload + "." + signature;
 
 
         // valid, tempered
