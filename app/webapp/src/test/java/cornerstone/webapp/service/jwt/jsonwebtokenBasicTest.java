@@ -132,49 +132,5 @@ public class jsonwebtokenBasicTest {
 
         assertEquals(jwtTTL, expiresEpoch - issuedEpoch);
     }
-
-    @Test
-    public void emailAkaSubjectTemperingTest() {
-        final JWTService jwtService = new JWTServiceImpl(configLoader, localKeyStore);
-        final PublicKey validKey    = localKeyStore.getLiveKeys().publicKey;
-        final String email          = "hellomoto@xmal.com";
-        final String jws            = jwtService.createJws(email);
-
-
-        // original, valid jws
-        final Base64.Decoder decoder = Base64.getDecoder();
-        final String[] parsed        = jws.split("\\.");
-        final String header          = new String(decoder.decode(parsed[0]));
-        final String payload         = new String(decoder.decode(parsed[1]));
-        final String signature       = parsed[2];
-
-
-        // tempered account email
-        final String temperedPayload = payload.replaceFirst(email, "haxor@mail.com");
-        final Base64.Encoder encode = Base64.getEncoder();
-        final String b64temperedPayload = new String(encode.encode(temperedPayload.getBytes()));
-        final String temperedJWS = parsed[0] + "." + b64temperedPayload + "." + parsed[2];
-
-
-        // display data
-        System.out.println("original jws header   : " + header);
-        System.out.println("tempered jws header   : " + header);
-        System.out.println("original jws payload  : " + payload);
-        System.out.println("tempered jws payload  : " + temperedPayload);
-        System.out.println("original jws signature: " + signature);
-        System.out.println("tempered jws signature: " + signature);
-        System.out.println("original jws: " + jws);
-        System.out.println("tempered jws: " + temperedJWS);
-
-
-
-        // valid
-        assertEquals(email, Jwts.parserBuilder().setSigningKey(validKey).build().parseClaimsJws(jws).getBody().getSubject());
-        assertTrue(Jwts.parserBuilder().setSigningKey(validKey).build().isSigned(jws));
-        // tempered
-        assertThrows(SignatureException.class, () -> Jwts.parserBuilder().setSigningKey(validKey).build().parseClaimsJws(temperedJWS).getBody().getSubject());
-        // !!!!! Signed but tempered
-        assertTrue(Jwts.parserBuilder().setSigningKey(validKey).build().isSigned(temperedJWS));
-    }
 }
 
