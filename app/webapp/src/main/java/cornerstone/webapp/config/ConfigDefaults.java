@@ -1,7 +1,7 @@
-package cornerstone.webapp.configuration;
+package cornerstone.webapp.config;
 
-public final class ConfigurationDefaults {
-    private ConfigurationDefaults(){};
+public final class ConfigDefaults {
+    private ConfigDefaults(){};
 
     // Environment variables
     public static final String SYSTEM_PROPERTY_KEY_FILE  = "KEY_FILE";

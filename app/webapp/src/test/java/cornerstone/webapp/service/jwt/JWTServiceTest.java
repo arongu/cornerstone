@@ -1,6 +1,6 @@
 package cornerstone.webapp.service.jwt;
 
-import cornerstone.webapp.configuration.ConfigLoader;
+import cornerstone.webapp.config.ConfigLoader;
 import cornerstone.webapp.service.rsa.rotation.KeyPairWithUUID;
 import cornerstone.webapp.service.rsa.store.local.LocalKeyStore;
 import cornerstone.webapp.service.rsa.store.local.LocalKeyStoreImpl;

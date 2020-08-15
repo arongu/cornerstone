@@ -1,4 +1,4 @@
-package cornerstone.webapp.configuration;
+package cornerstone.webapp.config;
 
 import org.junit.jupiter.api.Test;
 

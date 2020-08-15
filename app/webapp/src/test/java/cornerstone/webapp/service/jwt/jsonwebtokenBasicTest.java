@@ -1,7 +1,7 @@
 package cornerstone.webapp.service.jwt;
 
-import cornerstone.webapp.configuration.ConfigLoader;
-import cornerstone.webapp.configuration.enums.APP_ENUM;
+import cornerstone.webapp.config.ConfigLoader;
+import cornerstone.webapp.config.enums.APP_ENUM;
 import cornerstone.webapp.service.rsa.rotation.KeyPairWithUUID;
 import cornerstone.webapp.service.rsa.store.local.LocalKeyStore;
 import cornerstone.webapp.service.rsa.store.local.LocalKeyStoreImpl;
@@ -16,7 +16,6 @@ import java.io.IOException;
 import java.nio.file.Paths;
 import java.security.Key;
 import java.security.PublicKey;
-import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 

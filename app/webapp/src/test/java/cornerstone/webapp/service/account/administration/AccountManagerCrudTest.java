@@ -1,6 +1,6 @@
 package cornerstone.webapp.service.account.administration;
 
-import cornerstone.webapp.configuration.ConfigLoader;
+import cornerstone.webapp.config.ConfigLoader;
 import cornerstone.webapp.datasources.UsersDB;
 import cornerstone.webapp.service.account.administration.exceptions.AccountDoesNotExistException;
 import cornerstone.webapp.service.account.administration.exceptions.SqlException;

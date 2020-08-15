@@ -1,8 +1,8 @@
-package cornerstone.webapp.configuration;
+package cornerstone.webapp.config;
 
-import cornerstone.webapp.configuration.enums.APP_ENUM;
-import cornerstone.webapp.configuration.enums.DB_USERS_ENUM;
-import cornerstone.webapp.configuration.enums.DB_WORK_ENUM;
+import cornerstone.webapp.config.enums.APP_ENUM;
+import cornerstone.webapp.config.enums.DB_USERS_ENUM;
+import cornerstone.webapp.config.enums.DB_WORK_ENUM;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -10,8 +10,8 @@ import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
 
-public class ConfigurationSorter {
-    private static final Logger logger = LoggerFactory.getLogger(ConfigurationSorter.class);
+public class ConfigSorter {
+    private static final Logger logger = LoggerFactory.getLogger(ConfigSorter.class);
     private static final String errorMessage  = "'{}' is not set!";
 
     private Properties rawProperties;
@@ -19,7 +19,7 @@ public class ConfigurationSorter {
     private Properties properties_db_work;
     private Properties properties_app;
 
-    public ConfigurationSorter(final Properties properties) {
+    public ConfigSorter(final Properties properties) {
         rawProperties = properties;
     }
 
@@ -41,7 +41,7 @@ public class ConfigurationSorter {
         }
     }
 
-    public void sortProperties() throws ConfigurationSorterException {
+    public void sortProperties() throws ConfigSorterException {
         final Set<String> missingProperties = new HashSet<>();
         // WORK DB
         properties_db_work = new Properties();
@@ -82,7 +82,7 @@ public class ConfigurationSorter {
         if (missingProperties.size() != 0) {
             final String msg = "The following configuration fields are not set: " + missingProperties.toString();
             logger.error(msg);
-            throw new ConfigurationSorterException(msg);
+            throw new ConfigSorterException(msg);
         }
     }
 

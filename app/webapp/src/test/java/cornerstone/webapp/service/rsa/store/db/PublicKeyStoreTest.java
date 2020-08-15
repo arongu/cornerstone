@@ -1,6 +1,6 @@
 package cornerstone.webapp.service.rsa.store.db;
 
-import cornerstone.webapp.configuration.ConfigLoader;
+import cornerstone.webapp.config.ConfigLoader;
 import cornerstone.webapp.datasources.WorkDB;
 import cornerstone.webapp.service.rsa.common.PublicKeyData;
 import cornerstone.webapp.service.rsa.rotation.KeyPairWithUUID;

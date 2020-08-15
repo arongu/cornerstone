@@ -1,4 +1,4 @@
-package cornerstone.webapp.configuration.enums;
+package cornerstone.webapp.config.enums;
 
 public enum DB_WORK_ENUM {
     DB_DRIVER("db_work_driver"),

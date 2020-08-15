@@ -1,8 +1,8 @@
 package cornerstone.webapp.service.jwt;
 
 import cornerstone.webapp.common.DefaultLogMessages;
-import cornerstone.webapp.configuration.ConfigLoader;
-import cornerstone.webapp.configuration.enums.APP_ENUM;
+import cornerstone.webapp.config.ConfigLoader;
+import cornerstone.webapp.config.enums.APP_ENUM;
 import cornerstone.webapp.service.rsa.store.local.LiveKeys;
 import cornerstone.webapp.service.rsa.store.local.LocalKeyStore;
 import io.jsonwebtoken.Jwts;

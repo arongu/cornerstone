@@ -1,4 +1,4 @@
-package cornerstone.webapp.configuration.enums;
+package cornerstone.webapp.config.enums;
 
 public enum APP_ENUM {
     APP_NODE_NAME("app_node_name"),

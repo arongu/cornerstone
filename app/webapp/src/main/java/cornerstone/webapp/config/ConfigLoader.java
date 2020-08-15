@@ -1,4 +1,4 @@
-package cornerstone.webapp.configuration;
+package cornerstone.webapp.config;
 
 import cornerstone.lib.config.ConfigEncryptDecrypt;
 import org.slf4j.Logger;
@@ -28,14 +28,14 @@ public class ConfigLoader {
         final Properties properties = ConfigEncryptDecrypt.decryptConfig(secretKey, confFile);
 
         try {
-            final ConfigurationSorter sorter = new ConfigurationSorter(properties);
+            final ConfigSorter sorter = new ConfigSorter(properties);
             sorter.sortProperties();
 
             db_users_properties = sorter.getPropertiesForUsersDB();
             db_work_properties  = sorter.getPropertiesForWorkDB();
             app_properties      = sorter.getPropertiesForApp();
 
-        } catch (final ConfigurationSorterException e) {
+        } catch (final ConfigSorterException e) {
             logger.error(e.getMessage());
             throw new RuntimeException(e.getMessage());
         }

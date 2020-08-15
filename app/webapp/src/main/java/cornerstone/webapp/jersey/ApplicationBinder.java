@@ -1,7 +1,7 @@
 package cornerstone.webapp.jersey;
 
-import cornerstone.webapp.configuration.ConfigurationDefaults;
-import cornerstone.webapp.configuration.ConfigLoader;
+import cornerstone.webapp.config.ConfigDefaults;
+import cornerstone.webapp.config.ConfigLoader;
 import cornerstone.webapp.datasources.UsersDB;
 import cornerstone.webapp.datasources.WorkDB;
 import cornerstone.webapp.service.account.administration.AccountManager;
@@ -33,26 +33,26 @@ public class ApplicationBinder extends AbstractBinder {
     private String confFile;
 
     private void setKeyFileFromEnv() {
-        keyFile = System.getProperty(ConfigurationDefaults.SYSTEM_PROPERTY_KEY_FILE);
+        keyFile = System.getProperty(ConfigDefaults.SYSTEM_PROPERTY_KEY_FILE);
         if (null != keyFile) {
-            logger.info(LOG_MESSAGE_PROPERTY_SET, ConfigurationDefaults.SYSTEM_PROPERTY_KEY_FILE, keyFile);
+            logger.info(LOG_MESSAGE_PROPERTY_SET, ConfigDefaults.SYSTEM_PROPERTY_KEY_FILE, keyFile);
 
         } else {
-            keyFile = ConfigurationDefaults.DEFAULT_KEY_FILE;
-            logger.info(LOG_MESSAGE_PROPERTY_NOT_SET, ConfigurationDefaults.SYSTEM_PROPERTY_KEY_FILE);
-            logger.info(LOG_MESSAGE_PROPERTY_FALL_BACK_TO_DEFAULT_VALUE, ConfigurationDefaults.SYSTEM_PROPERTY_KEY_FILE, keyFile);
+            keyFile = ConfigDefaults.DEFAULT_KEY_FILE;
+            logger.info(LOG_MESSAGE_PROPERTY_NOT_SET, ConfigDefaults.SYSTEM_PROPERTY_KEY_FILE);
+            logger.info(LOG_MESSAGE_PROPERTY_FALL_BACK_TO_DEFAULT_VALUE, ConfigDefaults.SYSTEM_PROPERTY_KEY_FILE, keyFile);
         }
     }
 
     private void setConfFileFromEnv() {
-        confFile = System.getProperty(ConfigurationDefaults.SYSTEM_PROPERTY_CONF_FILE);
+        confFile = System.getProperty(ConfigDefaults.SYSTEM_PROPERTY_CONF_FILE);
         if (null != confFile) {
-            logger.info(LOG_MESSAGE_PROPERTY_SET, ConfigurationDefaults.SYSTEM_PROPERTY_CONF_FILE, confFile);
+            logger.info(LOG_MESSAGE_PROPERTY_SET, ConfigDefaults.SYSTEM_PROPERTY_CONF_FILE, confFile);
 
         } else {
-            confFile = ConfigurationDefaults.DEFAULT_CONF_FILE;
-            logger.info(LOG_MESSAGE_PROPERTY_NOT_SET, ConfigurationDefaults.SYSTEM_PROPERTY_CONF_FILE);
-            logger.info(LOG_MESSAGE_PROPERTY_FALL_BACK_TO_DEFAULT_VALUE, ConfigurationDefaults.SYSTEM_PROPERTY_CONF_FILE, confFile);
+            confFile = ConfigDefaults.DEFAULT_CONF_FILE;
+            logger.info(LOG_MESSAGE_PROPERTY_NOT_SET, ConfigDefaults.SYSTEM_PROPERTY_CONF_FILE);
+            logger.info(LOG_MESSAGE_PROPERTY_FALL_BACK_TO_DEFAULT_VALUE, ConfigDefaults.SYSTEM_PROPERTY_CONF_FILE, confFile);
         }
     }
 

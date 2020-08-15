@@ -1,8 +1,8 @@
 package cornerstone.webapp.service.rsa.rotation;
 
 import cornerstone.webapp.common.DefaultLogMessages;
-import cornerstone.webapp.configuration.ConfigLoader;
-import cornerstone.webapp.configuration.enums.APP_ENUM;
+import cornerstone.webapp.config.ConfigLoader;
+import cornerstone.webapp.config.enums.APP_ENUM;
 import cornerstone.webapp.service.rsa.store.db.PublicKeyStore;
 import cornerstone.webapp.service.rsa.store.local.LocalKeyStore;
 import org.slf4j.Logger;

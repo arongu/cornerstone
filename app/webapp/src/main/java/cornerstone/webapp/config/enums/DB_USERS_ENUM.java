@@ -1,4 +1,4 @@
-package cornerstone.webapp.configuration.enums;
+package cornerstone.webapp.config.enums;
 
 public enum DB_USERS_ENUM {
 
