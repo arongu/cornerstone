@@ -1,4 +1,4 @@
-package cornerstone.webapp.service.jwt;
+package cornerstone.webapp.service.jwt.jsonwebtoken;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

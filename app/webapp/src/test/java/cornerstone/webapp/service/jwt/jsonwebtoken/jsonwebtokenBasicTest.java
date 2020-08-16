@@ -1,7 +1,9 @@
-package cornerstone.webapp.service.jwt;
+package cornerstone.webapp.service.jwt.jsonwebtoken;
 
 import cornerstone.webapp.config.ConfigLoader;
 import cornerstone.webapp.config.enums.APP_ENUM;
+import cornerstone.webapp.service.jwt.JWTService;
+import cornerstone.webapp.service.jwt.JWTServiceImpl;
 import cornerstone.webapp.service.rsa.rotation.KeyPairWithUUID;
 import cornerstone.webapp.service.rsa.store.local.LocalKeyStore;
 import cornerstone.webapp.service.rsa.store.local.LocalKeyStoreImpl;
