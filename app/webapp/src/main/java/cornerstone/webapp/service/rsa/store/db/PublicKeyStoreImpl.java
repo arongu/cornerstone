@@ -1,7 +1,7 @@
 package cornerstone.webapp.service.rsa.store.db;
 
 import cornerstone.webapp.common.AlignedLogMessages;
-import cornerstone.webapp.common.DefaultLogMessages;
+import cornerstone.webapp.common.CommonLogMessages;
 import cornerstone.webapp.datasources.WorkDB;
 import cornerstone.webapp.service.rsa.common.PublicKeyData;
 import cornerstone.webapp.service.rsa.store.log.MessageElements;
@@ -37,7 +37,7 @@ public class PublicKeyStoreImpl implements PublicKeyStore {
     @Inject
     public PublicKeyStoreImpl(final WorkDB workDB) {
         this.workDB = workDB;
-        logger.info(String.format(DefaultLogMessages.MESSAGE_CONSTRUCTOR_CALLED, getClass().getName()));
+        logger.info(String.format(CommonLogMessages.MESSAGE_CONSTRUCTOR_CALLED, getClass().getName()));
     }
 
     @Override

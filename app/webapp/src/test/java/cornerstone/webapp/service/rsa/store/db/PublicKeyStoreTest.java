@@ -19,13 +19,13 @@ public class PublicKeyStoreTest {
 
     @BeforeAll
     public static void setup() {
-        final String test_files_dir = "../../_test_config/";
-        final String key_file  = Paths.get(test_files_dir + "key.conf").toAbsolutePath().normalize().toString();
-        final String conf_file = Paths.get(test_files_dir + "app.conf").toAbsolutePath().normalize().toString();
+        final String test_config_dir = "../../_test_config/";
+        final String key_file  = Paths.get(test_config_dir + "key.conf").toAbsolutePath().normalize().toString();
+        final String conf_file = Paths.get(test_config_dir + "app.conf").toAbsolutePath().normalize().toString();
 
         try {
-            ConfigLoader cl = new ConfigLoader(key_file, conf_file);
-            publicKeyStore  = new PublicKeyStoreImpl(new WorkDB(cl));
+            final ConfigLoader configLoader = new ConfigLoader(key_file, conf_file);
+            publicKeyStore  = new PublicKeyStoreImpl(new WorkDB(configLoader));
 
         } catch (final IOException e) {
             e.printStackTrace();
@@ -84,17 +84,17 @@ public class PublicKeyStoreTest {
         uuid_list_live    = publicKeyStore.getLiveKeyUUIDs();
         uuids = uuid_list_expired.size() + uuid_list_live.size();
 
-        for (final UUID uuid : uuid_list_expired){
+        for (final UUID uuid : uuid_list_expired) {
             publicKeyStore.deleteKey(uuid);
             deletes++;
         }
 
-        for (final UUID uuid : uuid_list_live){
+        for (final UUID uuid : uuid_list_live) {
             publicKeyStore.deleteKey(uuid);
             deletes++;
         }
 
-        System.out.println(String.format("uuids, deletes: %d, %d", uuids, deletes));
+        System.out.printf("uuids, deletes: %d, %d\n", uuids, deletes);
         assertEquals(uuids, deletes);
     }
 
@@ -125,7 +125,7 @@ public class PublicKeyStoreTest {
         assertEquals(expired_keys_to_be_created, expired_keys_received_first_time);
         assertEquals(expired_keys_to_be_created, expired_keys_deleted);
         assertEquals(0, expired_keys_received_second_time);
-        System.out.println(String.format("created, deleted: %d, %d", expired_keys_created, expired_keys_deleted));
+        System.out.printf("created, deleted: %d, %d\n", expired_keys_created, expired_keys_deleted);
     }
 
     @Order(3)
@@ -141,8 +141,8 @@ public class PublicKeyStoreTest {
         int verified_pubkey_matches = 0;
 
 
-        Map<UUID, String> keys_to_be_added            = new HashMap<>();
-        Map<UUID, PublicKeyData> received_pubkey_data = new HashMap<>();
+        final Map<UUID, String> keys_to_be_added            = new HashMap<>();
+        final Map<UUID, PublicKeyData> received_pubkey_data = new HashMap<>();
 
         // ADD
         final Base64.Encoder enc = Base64.getEncoder();
@@ -190,6 +190,6 @@ public class PublicKeyStoreTest {
         assertEquals(0, got_after_delete);
         assertEquals(number_of_cruds, verified_pubkey_matches);
 
-        System.out.println(String.format("added, got, deleted, got_after_delete, verified_pubkey_matches: %d, %d, %d, %d, %d", number_of_keys_added, got, number_of_keys_deleted, got_after_delete, verified_pubkey_matches));
+        System.out.printf("added, got, deleted, got_after_delete, verified_pubkey_matches: %d, %d, %d, %d, %d\n", number_of_keys_added, got, number_of_keys_deleted, got_after_delete, verified_pubkey_matches);
     }
 }

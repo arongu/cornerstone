@@ -255,12 +255,12 @@ public class JsonwebtokenSecurityTest {
         // tempered payload
         final String temperedPayload    = payload.replaceFirst(subject, temperedSubject);
         final String b64temperedPayload = new String(Base64.getEncoder().encode(temperedPayload.getBytes()));
-        final String temperedJWS        = header + "." + b64temperedPayload + "." + signature;
+        final String temperedJws        = header + "." + b64temperedPayload + "." + signature;
 
 
         // valid, tempered
         assertEquals(subject, Jwts.parserBuilder().setSigningKey(publicKey).build().parseClaimsJws(jws).getBody().getSubject());
-        assertThrows(SignatureException.class, () -> Jwts.parserBuilder().setSigningKey(publicKey).build().parseClaimsJws(temperedJWS).getBody().getSubject());
+        assertThrows(SignatureException.class, () -> Jwts.parserBuilder().setSigningKey(publicKey).build().parseClaimsJws(temperedJws).getBody().getSubject());
     }
 
     /*                             x

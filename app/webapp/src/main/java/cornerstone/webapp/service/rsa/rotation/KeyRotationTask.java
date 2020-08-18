@@ -1,7 +1,7 @@
 package cornerstone.webapp.service.rsa.rotation;
 
 import cornerstone.webapp.common.AlignedLogMessages;
-import cornerstone.webapp.common.DefaultLogMessages;
+import cornerstone.webapp.common.CommonLogMessages;
 import cornerstone.webapp.service.rsa.store.db.PublicKeyStore;
 import cornerstone.webapp.service.rsa.store.db.PublicKeyStoreException;
 import cornerstone.webapp.service.rsa.store.local.LocalKeyStore;
@@ -31,7 +31,7 @@ public class KeyRotationTask extends TimerTask {
         this.rsaTTL = rsaTTL;
         this.jwtTTL = jwtTTL;
         this.nodeName = nodeName;
-        logger.info(String.format(DefaultLogMessages.MESSAGE_CONSTRUCTOR_CALLED, getClass().getName()));
+        logger.info(String.format(CommonLogMessages.MESSAGE_CONSTRUCTOR_CALLED, getClass().getName()));
     }
 
     // step 1

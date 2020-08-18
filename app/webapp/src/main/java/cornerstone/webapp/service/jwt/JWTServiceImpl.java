@@ -1,6 +1,6 @@
 package cornerstone.webapp.service.jwt;
 
-import cornerstone.webapp.common.DefaultLogMessages;
+import cornerstone.webapp.common.CommonLogMessages;
 import cornerstone.webapp.config.ConfigLoader;
 import cornerstone.webapp.config.enums.APP_ENUM;
 import cornerstone.webapp.service.rsa.store.local.LiveKeys;
@@ -36,7 +36,7 @@ public class JWTServiceImpl implements JWTService {
     public JWTServiceImpl(final ConfigLoader configLoader, final LocalKeyStore localKeyStore) {
         this.configLoader  = configLoader;
         this.localKeyStore = localKeyStore;
-        logger.info(String.format(DefaultLogMessages.MESSAGE_CONSTRUCTOR_CALLED, getClass().getName()));
+        logger.info(String.format(CommonLogMessages.MESSAGE_CONSTRUCTOR_CALLED, getClass().getName()));
     }
 
     @Override

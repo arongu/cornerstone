@@ -105,9 +105,9 @@ public class jsonwebtokenBasicTest {
         m.put("claimThree", 3.2);
 
 
-        final String jws    = jwtService.createJws(email, m);
-        final Claims claims = Jwts.parserBuilder().setSigningKey(publicKey).build().parseClaimsJws(jws).getBody();
-        final String  claimOne  = (String)  claims.get("claimOne");
+        final String jws        = jwtService.createJws(email, m);
+        final Claims claims     = Jwts.parserBuilder().setSigningKey(publicKey).build().parseClaimsJws(jws).getBody();
+        final String claimOne   = (String)  claims.get("claimOne");
         final Integer claimTwo  = (Integer) claims.get("claimTwo");
         final Double claimThree = (Double)  claims.get("claimThree");
 
@@ -127,11 +127,10 @@ public class jsonwebtokenBasicTest {
 
         final String jws           = jwtService.createJws(email);
         final Claims claims        = Jwts.parserBuilder().setSigningKey(publicKey).build().parseClaimsJws(jws).getBody();
-        final Integer issuedEpoch  = (Integer) claims.get("iat");
-        final Integer expiresEpoch = (Integer) claims.get("exp");
+        final Integer iat          = (Integer) claims.get("iat");
+        final Integer exp          = (Integer) claims.get("exp");
 
 
-        assertEquals(jwtTTL, expiresEpoch - issuedEpoch);
+        assertEquals(jwtTTL, exp - iat);
     }
 }
-

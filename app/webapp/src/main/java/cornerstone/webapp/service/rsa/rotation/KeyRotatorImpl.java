@@ -1,6 +1,6 @@
 package cornerstone.webapp.service.rsa.rotation;
 
-import cornerstone.webapp.common.DefaultLogMessages;
+import cornerstone.webapp.common.CommonLogMessages;
 import cornerstone.webapp.config.ConfigLoader;
 import cornerstone.webapp.config.enums.APP_ENUM;
 import cornerstone.webapp.service.rsa.store.db.PublicKeyStore;
@@ -31,7 +31,7 @@ public class KeyRotatorImpl implements KeyRotator {
 
         timer = new Timer(getClass().getName());
         runRotationTask();
-        logger.info(String.format(DefaultLogMessages.MESSAGE_CONSTRUCTOR_CALLED, getClass().getName()));
+        logger.info(String.format(CommonLogMessages.MESSAGE_CONSTRUCTOR_CALLED, getClass().getName()));
     }
 
     @Override

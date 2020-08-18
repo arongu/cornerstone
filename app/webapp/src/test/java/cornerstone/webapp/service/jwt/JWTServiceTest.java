@@ -47,17 +47,17 @@ public class JWTServiceTest {
 
 
         final Base64.Decoder decoder = Base64.getDecoder();
-        final String jwt_string      = jwtService.createJws("almafa@gmail.com", m);
-        final String[] parsed        = jwt_string.split("\\.");
-        final String uuid            = localKeyStore.getLiveKeys().uuid.toString();
-        final String header          = new String(decoder.decode(parsed[0]));
-        final String payload         = new String(decoder.decode(parsed[1]));
+        final String jws             = jwtService.createJws("almafa@gmail.com", m);
+        final String[] parsed        = jws.split("\\.");
+        final String strUuid         = localKeyStore.getLiveKeys().uuid.toString();
+        final String strHeader       = new String(decoder.decode(parsed[0]));
+        final String strPayload      = new String(decoder.decode(parsed[1]));
 
 
-        assertEquals("{\"alg\":\"RS512\"}", header);
-        assertTrue(payload.contains("\"claimOne\":\"one\""));
-        assertTrue(payload.contains("\"claimTwo\":2"));
-        assertTrue(payload.contains("\"claimThree\":3.2"));
-        assertTrue(payload.contains("\"keyId\":\"" + uuid + "\""));
+        assertEquals("{\"alg\":\"RS512\"}", strHeader);
+        assertTrue(strPayload.contains("\"claimOne\":\"one\""));
+        assertTrue(strPayload.contains("\"claimTwo\":2"));
+        assertTrue(strPayload.contains("\"claimThree\":3.2"));
+        assertTrue(strPayload.contains("\"keyId\":\"" + strUuid + "\""));
     }
 }

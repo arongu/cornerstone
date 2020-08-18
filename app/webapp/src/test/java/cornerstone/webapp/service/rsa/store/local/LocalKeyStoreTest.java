@@ -10,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class LocalKeyStoreTest {
     @Test
-    void add_get_delete_get_uuids_CRUD_test() {
+    void crudTest_add_get_delete_get_uuids() {
         final LocalKeyStore localKeyStore = new LocalKeyStoreImpl();
         final KeyPairWithUUID kp = new KeyPairWithUUID();
 
@@ -27,7 +27,7 @@ public class LocalKeyStoreTest {
     }
 
     @Test
-    public void deletePublicKeys_shouldDeleteAllKeys() {
+    public void crudTest_addDeletePublicKeys_shouldDeleteAllKeys() {
         final int to_be_created = 5;
         int no_such_element_throws = 0;
         final LocalKeyStore localKeyStore = new LocalKeyStoreImpl();
@@ -35,10 +35,10 @@ public class LocalKeyStoreTest {
 
 
         // add - get
-        for (int i = 0; i < to_be_created; i++){
-            KeyPairWithUUID kp = new KeyPairWithUUID();
-            UUID uuid = kp.uuid;
-            PublicKey pubKey = kp.keyPair.getPublic();
+        for (int i = 0; i < to_be_created; i++) {
+            final KeyPairWithUUID kp = new KeyPairWithUUID();
+            final UUID uuid = kp.uuid;
+            final PublicKey pubKey = kp.keyPair.getPublic();
 
             localKeyStore.addPublicKey(uuid, pubKey);
             created_uuids.add(uuid);
@@ -48,7 +48,7 @@ public class LocalKeyStoreTest {
 
         // delete
         localKeyStore.deletePublicKeys(new ArrayList<>(created_uuids));
-        for (final UUID uuid : created_uuids){
+        for (final UUID uuid : created_uuids) {
             try {
                 localKeyStore.getPublicKey(uuid);
             } catch (final NoSuchElementException e){
@@ -58,11 +58,11 @@ public class LocalKeyStoreTest {
 
 
         assertEquals(to_be_created, no_such_element_throws);
-        System.out.println(String.format("to_be_created, no_such_element_throws: %d, %d", to_be_created, no_such_element_throws));
+        System.out.printf("to_be_created, no_such_element_throws: %d, %d\n", to_be_created, no_such_element_throws);
     }
 
     @Test
-    public void sync_shouldSyncKeys_shouldKeepToBeeKeptAndDeleteTheRest() {
+    public void sync_shouldKeepToBeeKeptAndDeleteTheRest() {
         final int to_be_created = 5;
         final List<UUID> uuids = new ArrayList<>();
         final Map<UUID,PublicKey> map = new HashMap<>();
@@ -96,7 +96,7 @@ public class LocalKeyStoreTest {
     }
 
     @Test
-    void set_get_drop_PublicAndPrivateKeys(){
+    void setLiveKeys_getLiveKeys_dropEverything() {
         // init
         final KeyPairWithUUID reference_key = new KeyPairWithUUID();
         final LocalKeyStore localKeyStore = new LocalKeyStoreImpl();

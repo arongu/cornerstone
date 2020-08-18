@@ -7,28 +7,28 @@ import java.util.List;
 
 public interface AccountManager {
     // Create
-    int create(final String email, final String password, final boolean locked, final boolean verified) throws SqlException;
-    int create(final List<AccountEmailPassword> list)                                                   throws SqlException, SqlBulkException;
+    int create(final String email, final String password, final boolean locked, final boolean verified) throws AccountManagerSqlException;
+    int create(final List<AccountEmailPassword> list)                                                   throws AccountManagerSqlException, AccountManagerSqlBulkException;
 
     // Read
-    AccountResultSet get(final String email) throws SqlException, AccountDoesNotExistException;
+    AccountResultSet get(final String email) throws AccountManagerSqlException, AccountDoesNotExistException;
 
     // Update
-    int setPassword    (final String email, final String password)        throws SqlException;
-    int setEmail       (final String currentEmail, final String newEmail) throws SqlException;
+    int setPassword    (final String email, final String password)        throws AccountManagerSqlException;
+    int setEmail       (final String currentEmail, final String newEmail) throws AccountManagerSqlException;
 
-    int incrementLoginAttempts(final String email) throws SqlException;
-    int clearLoginAttempts    (final String email) throws SqlException;
+    int incrementLoginAttempts(final String email) throws AccountManagerSqlException;
+    int clearLoginAttempts    (final String email) throws AccountManagerSqlException;
 
-    int lock  (final String email, final String reason) throws SqlException;
-    int unlock(final String email)                      throws SqlException;
+    int lock  (final String email, final String reason) throws AccountManagerSqlException;
+    int unlock(final String email)                      throws AccountManagerSqlException;
 
     // Delete
-    int delete(final String email)        throws SqlException;
-    int delete(final List<String> emails) throws SqlException, SqlBulkException;
+    int delete(final String email)        throws AccountManagerSqlException;
+    int delete(final List<String> emails) throws AccountManagerSqlException, AccountManagerSqlBulkException;
 
     // Login
-    boolean login(final String email, final String password) throws SqlException,
+    boolean login(final String email, final String password) throws AccountManagerSqlException,
             AccountLockedException,
             AccountEmailNotVerifiedException,
             AccountDoesNotExistException;

@@ -1,9 +1,11 @@
 package cornerstone.webapp.rest.endpoint.account;
 
-import cornerstone.webapp.common.DefaultLogMessages;
+import cornerstone.webapp.common.CommonLogMessages;
 import cornerstone.webapp.service.account.administration.AccountManager;
-import cornerstone.webapp.service.account.administration.exceptions.SqlBulkException;
-import cornerstone.webapp.service.account.administration.exceptions.SqlException;
+import cornerstone.webapp.service.account.administration.AccountResultSet;
+import cornerstone.webapp.service.account.administration.exceptions.AccountDoesNotExistException;
+import cornerstone.webapp.service.account.administration.exceptions.AccountManagerSqlBulkException;
+import cornerstone.webapp.service.account.administration.exceptions.AccountManagerSqlException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,8 +18,6 @@ import java.util.List;
 
 @Singleton
 @Path("/account")
-@Consumes(MediaType.APPLICATION_JSON)
-@Produces(MediaType.APPLICATION_JSON)
 public class AccountRestService {
     private static final Logger logger = LoggerFactory.getLogger(AccountRestService.class);
     private final AccountManager accountManager;
@@ -25,56 +25,61 @@ public class AccountRestService {
     @Inject
     public AccountRestService(final AccountManager accountManager) {
         this.accountManager = accountManager;
-        logger.info(String.format(DefaultLogMessages.MESSAGE_CONSTRUCTOR_CALLED, getClass().getName()));
+        logger.info(String.format(CommonLogMessages.MESSAGE_CONSTRUCTOR_CALLED, getClass().getName()));
     }
 
-    @POST
-    public Response create(final AccountEmailPassword accountEmailPassword) throws SqlException, Exception {
-        if (null != accountEmailPassword) {
-            final String email = accountEmailPassword.getEmail();
-            final String password = accountEmailPassword.getPassword();
 
-            accountManager.create(email, password, false, false);
-            return Response.status(Response.Status.CREATED).entity(email).build();
-
-        } else {
-            throw new Exception();
+    @GET
+    @Path("{email}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getAccount(@PathParam("email") final String email) throws AccountManagerSqlException {
+        logger.info(".......................... " + email);
+        try {
+            final AccountResultSet accountResultSet = accountManager.get(email);
+            return Response.status(Response.Status.OK).entity(accountResultSet).build();
+        } catch (final AccountDoesNotExistException e) {
+            return Response.status(Response.Status.NOT_FOUND).entity(email).build();
         }
     }
 
-    @DELETE
-    public Response delete(final String emailAddress) throws SqlException, Exception {
-        if (null != emailAddress) {
-            accountManager.delete(emailAddress);
-            return Response.status(Response.Status.OK).entity(emailAddress).build();
+    @PUT
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response create(AccountEmailPassword accountEmailPassword) throws AccountManagerSqlException {
+        logger.info("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
+        final String email = accountEmailPassword.getEmail();
+        final String password = accountEmailPassword.getPassword();
 
-        } else {
-            throw new Exception();
-        }
+        accountManager.create(email, password, false, false);
+        return Response.status(Response.Status.CREATED).entity(email).build();
     }
 
-    // /mass
-    @POST
-    @Path("/mass")
-    public Response massCreate(final List<AccountEmailPassword> accounts) throws SqlBulkException, Exception {
-        if (accounts != null && !accounts.isEmpty()) {
-            accountManager.create(accounts);
-            return Response.status(Response.Status.CREATED).entity(accounts).build();
-
-        } else {
-            throw new Exception();
-        }
-    }
-
-    @DELETE
-    @Path("/mass")
-    public Response massDelete(final List<String> emailAddresses) throws SqlBulkException, Exception {
-        if (null != emailAddresses) {
-            accountManager.delete(emailAddresses);
-            return Response.status(Response.Status.OK).entity(emailAddresses).build();
-
-        } else {
-            throw new Exception();
-        }
-    }
+//    @DELETE
+//    @Path("{email}")
+//    @Produces(MediaType.APPLICATION_JSON)
+//    public Response delete(@PathParam("email") final String email) throws AccountManagerSqlException {
+//        final int n = accountManager.delete(email);
+//        if (n > 0) {
+//            return Response.status(Response.Status.OK).entity(email).build();
+//        } else {
+//            return Response.status(Response.Status.NOT_FOUND).entity(email).build();
+//        }
+//    }
+//
+//    // /mass
+//    @POST
+//    @Path("/mass")
+//    public Response massCreate(final List<AccountEmailPassword> accounts) throws AccountManagerSqlException, AccountManagerSqlBulkException {
+//        accountManager.create(accounts);
+//        return Response.status(Response.Status.CREATED).entity(accounts).build();
+//    }
+//
+//    @DELETE
+//    @Path("/mass")
+//    @Consumes(MediaType.APPLICATION_JSON)
+//    @Produces(MediaType.APPLICATION_JSON)
+//    public Response massDelete(final List<String> emailAddresses) throws AccountManagerSqlException, AccountManagerSqlBulkException {
+//        accountManager.delete(emailAddresses);
+//        return Response.status(Response.Status.OK).entity(emailAddresses).build();
+//    }
 }
