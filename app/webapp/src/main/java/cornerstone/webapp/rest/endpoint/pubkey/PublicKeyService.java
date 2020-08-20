@@ -1,17 +1,17 @@
 package cornerstone.webapp.rest.endpoint.pubkey;
 
 import cornerstone.webapp.service.rsa.common.PublicKeyData;
-import cornerstone.webapp.service.rsa.store.db.PublicKeyStoreException;
 import cornerstone.webapp.service.rsa.store.db.PublicKeyStore;
+import cornerstone.webapp.service.rsa.store.db.PublicKeyStoreException;
 import cornerstone.webapp.service.rsa.store.local.LocalKeyStore;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
 import java.util.Base64;
 import java.util.List;
 import java.util.NoSuchElementException;

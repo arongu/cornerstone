@@ -1,10 +1,9 @@
 package cornerstone.webapp.jersey;
 
+import jakarta.inject.Inject;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.glassfish.jersey.server.ResourceConfig;
-
-import javax.inject.Inject;
 
 /*
    - entry point -> web.xml

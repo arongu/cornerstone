@@ -6,11 +6,11 @@ import cornerstone.webapp.config.enums.APP_ENUM;
 import cornerstone.webapp.datasources.UsersDB;
 import cornerstone.webapp.rest.endpoint.account.AccountEmailPassword;
 import cornerstone.webapp.service.account.administration.exceptions.*;
+import jakarta.inject.Inject;
 import org.apache.commons.codec.digest.Crypt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.inject.Inject;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;

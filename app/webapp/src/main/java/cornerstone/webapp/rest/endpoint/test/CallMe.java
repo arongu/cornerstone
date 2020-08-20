@@ -1,12 +1,12 @@
 package cornerstone.webapp.rest.endpoint.test;
 
 import cornerstone.webapp.service.rsa.store.local.LocalKeyStore;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.inject.Inject;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
 
 @Path("/test")
 public class CallMe {

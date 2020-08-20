@@ -14,12 +14,12 @@ import cornerstone.webapp.service.rsa.store.db.PublicKeyStore;
 import cornerstone.webapp.service.rsa.store.db.PublicKeyStoreImpl;
 import cornerstone.webapp.service.rsa.store.local.LocalKeyStore;
 import cornerstone.webapp.service.rsa.store.local.LocalKeyStoreImpl;
+import jakarta.inject.Singleton;
 import org.glassfish.hk2.api.Immediate;
 import org.glassfish.jersey.internal.inject.AbstractBinder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.inject.Singleton;
 import java.io.IOException;
 
 public class ApplicationBinder extends AbstractBinder {

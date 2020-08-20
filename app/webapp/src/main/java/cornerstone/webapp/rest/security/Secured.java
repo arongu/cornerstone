@@ -1,6 +1,7 @@
 package cornerstone.webapp.rest.security;
 
-import javax.ws.rs.NameBinding;
+import jakarta.ws.rs.NameBinding;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 

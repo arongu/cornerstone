@@ -5,10 +5,10 @@ import cornerstone.webapp.config.ConfigLoader;
 import cornerstone.webapp.config.enums.APP_ENUM;
 import cornerstone.webapp.service.rsa.store.db.PublicKeyStore;
 import cornerstone.webapp.service.rsa.store.local.LocalKeyStore;
+import jakarta.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.inject.Inject;
 import java.util.Properties;
 import java.util.Timer;
 
