@@ -9,9 +9,8 @@
         <servlet-name>cornerstone</servlet-name>
         <servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>
         <init-param>
-            <!-- This is your bootstrap class -->
-            <param-name>jakarta.ws.rs.core.Application</param-name>
-            <param-value>cornerstone.webapp.jersey.Application</param-value>
+            <param-name>javax.ws.rs.Application</param-name>
+            <param-value>cornerstone.webapp.jersey.Cornerstone</param-value>
         </init-param>
         <load-on-startup>1</load-on-startup>
     </servlet>
@@ -20,9 +19,4 @@
         <servlet-name>cornerstone</servlet-name>
         <url-pattern>/*</url-pattern>
     </servlet-mapping>
-    <!-- tomcat7 plugin sets the application's root url path!
-        url-pattern appends what has been set by tomcat-plugin
-        tomcat-plugin + <url-pattern>
-        e.g.:   /aaa + /bbb => /aaa/bbb
-    -->
 </web-app>

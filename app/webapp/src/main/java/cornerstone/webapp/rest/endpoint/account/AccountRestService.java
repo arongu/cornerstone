@@ -5,13 +5,14 @@ import cornerstone.webapp.service.account.administration.AccountManager;
 import cornerstone.webapp.service.account.administration.AccountResultSet;
 import cornerstone.webapp.service.account.administration.exceptions.AccountDoesNotExistException;
 import cornerstone.webapp.service.account.administration.exceptions.AccountManagerSqlException;
-import jakarta.inject.Inject;
-import jakarta.inject.Singleton;
-import jakarta.ws.rs.*;
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 @Singleton
 @Path("/account")

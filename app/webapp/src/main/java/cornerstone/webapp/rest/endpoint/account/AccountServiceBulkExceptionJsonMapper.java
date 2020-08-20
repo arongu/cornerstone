@@ -1,12 +1,12 @@
 package cornerstone.webapp.rest.endpoint.account;
 
 import cornerstone.webapp.service.account.administration.exceptions.AccountManagerSqlBulkException;
-import jakarta.inject.Singleton;
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
-import jakarta.ws.rs.ext.ExceptionMapper;
-import jakarta.ws.rs.ext.Provider;
 
+import javax.inject.Singleton;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.ext.ExceptionMapper;
+import javax.ws.rs.ext.Provider;
 
 @Singleton
 @Provider

@@ -3,11 +3,11 @@ package cornerstone.webapp.datasources;
 import cornerstone.webapp.common.CommonLogMessages;
 import cornerstone.webapp.config.ConfigLoader;
 import cornerstone.webapp.config.enums.DB_WORK_ENUM;
-import jakarta.inject.Inject;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.inject.Inject;
 import java.util.Properties;
 
 public class WorkDB extends BasicDataSource {

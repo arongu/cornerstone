@@ -1,9 +1,10 @@
 package cornerstone.webapp.jersey;
 
-import jakarta.inject.Inject;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.glassfish.jersey.server.ResourceConfig;
+
+import javax.inject.Inject;
 
 /*
    - entry point -> web.xml
@@ -14,11 +15,11 @@ import org.glassfish.jersey.server.ResourceConfig;
 
    https://stackoverflow.com/questions/18914130/when-to-use-singleton-annotation-of-jersey
    https://stackoverflow.com/questions/45625925/what-exactly-is-the-resourceconfig-class-in-jersey-2
-
 */
-public class Application extends ResourceConfig {
+
+public class Cornerstone extends ResourceConfig {
     @Inject
-    public Application(final ServiceLocator serviceLocator) {
+    public Cornerstone(final ServiceLocator serviceLocator) {
         ServiceLocatorUtilities.enableImmediateScope(serviceLocator);
         packages("cornerstone.webapp");
         register(new ApplicationBinder());
