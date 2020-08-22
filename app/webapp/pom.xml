@@ -46,7 +46,7 @@
         </dependency>
 
         <!-- Webapp -->
-        <!-- Jakarta -->
+        <!-- Jakarta  -->
         <dependency>
             <groupId>jakarta.ws.rs</groupId>
             <artifactId>jakarta.ws.rs-api</artifactId>
@@ -56,12 +56,12 @@
             <groupId>org.glassfish.jersey.containers</groupId>
             <artifactId>jersey-container-servlet</artifactId>
         </dependency>
-        <!-- DI -->
+        <!-- Jersey HK2 (DI)-->
         <dependency>
             <groupId>org.glassfish.jersey.inject</groupId>
             <artifactId>jersey-hk2</artifactId>
         </dependency>
-        <!--  Jackson  -->
+        <!-- Jersey Jackson  -->
         <dependency>
             <groupId>org.glassfish.jersey.media</groupId>
             <artifactId>jersey-media-json-jackson</artifactId>

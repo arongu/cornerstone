@@ -92,20 +92,19 @@
                 <artifactId>jakarta.ws.rs-api</artifactId>
                 <version>${jakarta.version}</version>
             </dependency>
-
             <!-- Jersey -->
             <dependency>
                 <groupId>org.glassfish.jersey.containers</groupId>
                 <artifactId>jersey-container-servlet</artifactId>
                 <version>${jersey.version}</version>
             </dependency>
-            <!-- DI -->
+            <!-- Jersey HK2 (DI)-->
             <dependency>
                 <groupId>org.glassfish.jersey.inject</groupId>
                 <artifactId>jersey-hk2</artifactId>
                 <version>${jersey.version}</version>
             </dependency>
-            <!--  Jackson  -->
+            <!-- Jersey Jackson  -->
             <dependency>
                 <groupId>org.glassfish.jersey.media</groupId>
                 <artifactId>jersey-media-json-jackson</artifactId>

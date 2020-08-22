@@ -62,9 +62,9 @@ public class ApplicationBinder extends AbstractBinder {
         setKeyFileFromEnv();
 
         try {
-            // REGISTER ALL NON @Path ANNOTATED CLASSES HERE !!!
-            // DO NOT RELY ON @Singleton or @Immediate !!!
-            // WORKS ONLY WELL ON @PATH ANNOTATED CLASSES !!!
+            // REGISTER ALL NON   @Path ANNOTATED CLASSES HERE !!!
+            // DO NOT RELY ON     @Singleton or @Immediate !!!
+            // THOSE ONLY WORK WELL ON @PATH ANNOTATED CLASSES !!!
 
             // create an instance and register it as singleton
             bind(new ConfigLoader(keyFile, confFile)).to(ConfigLoader.class).in(Singleton.class);
