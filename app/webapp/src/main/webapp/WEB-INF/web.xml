@@ -7,7 +7,6 @@
     <display-name>Cornerstone</display-name>
     <servlet>
         <servlet-name>cornerstone</servlet-name>
-        <servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>
         <init-param>
             <param-name>javax.ws.rs.Application</param-name>
             <param-value>cornerstone.webapp.jersey.Cornerstone</param-value>

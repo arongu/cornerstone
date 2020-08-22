@@ -85,29 +85,30 @@
                 <version>42.2.10</version>
             </dependency>
 
-            <!-- Webapp/WAR -->
+            <!-- Webapp -->
             <!-- Jakarta  -->
             <dependency>
                 <groupId>jakarta.ws.rs</groupId>
                 <artifactId>jakarta.ws.rs-api</artifactId>
                 <version>${jakarta.version}</version>
             </dependency>
+
             <!-- Jersey -->
             <dependency>
                 <groupId>org.glassfish.jersey.containers</groupId>
-                <artifactId>jersey-container-servlet-core</artifactId>
+                <artifactId>jersey-container-servlet</artifactId>
                 <version>${jersey.version}</version>
             </dependency>
-            <dependency>
-                <groupId>org.glassfish.jersey.core</groupId>
-                <artifactId>jersey-common</artifactId>
-                <version>${jersey.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.glassfish.jersey.core</groupId>
-                <artifactId>jersey-server</artifactId>
-                <version>${jersey.version}</version>
-            </dependency>
+<!--            <dependency>-->
+<!--                <groupId>org.glassfish.jersey.core</groupId>-->
+<!--                <artifactId>jersey-common</artifactId>-->
+<!--                <version>${jersey.version}</version>-->
+<!--            </dependency>-->
+<!--            <dependency>-->
+<!--                <groupId>org.glassfish.jersey.core</groupId>-->
+<!--                <artifactId>jersey-server</artifactId>-->
+<!--                <version>${jersey.version}</version>-->
+<!--            </dependency>-->
             <!-- DI -->
             <dependency>
                 <groupId>org.glassfish.jersey.inject</groupId>
