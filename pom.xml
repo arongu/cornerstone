@@ -99,16 +99,6 @@
                 <artifactId>jersey-container-servlet</artifactId>
                 <version>${jersey.version}</version>
             </dependency>
-<!--            <dependency>-->
-<!--                <groupId>org.glassfish.jersey.core</groupId>-->
-<!--                <artifactId>jersey-common</artifactId>-->
-<!--                <version>${jersey.version}</version>-->
-<!--            </dependency>-->
-<!--            <dependency>-->
-<!--                <groupId>org.glassfish.jersey.core</groupId>-->
-<!--                <artifactId>jersey-server</artifactId>-->
-<!--                <version>${jersey.version}</version>-->
-<!--            </dependency>-->
             <!-- DI -->
             <dependency>
                 <groupId>org.glassfish.jersey.inject</groupId>
