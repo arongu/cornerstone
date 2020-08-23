@@ -7,11 +7,11 @@ import java.util.List;
 
 public interface AccountManager {
     // Create
-    int create(final String email, final String password, final boolean locked, final boolean verified) throws AccountManagerSqlException;
-    int create(final List<AccountEmailPassword> list)                                                   throws AccountManagerSqlException, AccountManagerSqlBulkException;
+    int create(final String email, final String password, final boolean locked, final boolean verified) throws AccountManagerSqlException, AccountCreationException;
+    int create(final List<AccountEmailPassword> list) throws AccountManagerSqlException, AccountManagerBulkException, DBConnectionException;
 
     // Read
-    AccountResultSet get(final String email) throws AccountManagerSqlException, AccountDoesNotExistException;
+    AccountResultSet get(final String email) throws AccountManagerSqlException, AccountDoesNotExistException, AccountReadException;
 
     // Update
     int setPassword    (final String email, final String password)        throws AccountManagerSqlException;
@@ -25,7 +25,7 @@ public interface AccountManager {
 
     // Delete
     int delete(final String email)        throws AccountManagerSqlException;
-    int delete(final List<String> emails) throws AccountManagerSqlException, AccountManagerSqlBulkException;
+    int delete(final List<String> emails) throws AccountManagerSqlException, AccountManagerBulkException;
 
     // Login
     boolean login(final String email, final String password) throws AccountManagerSqlException,

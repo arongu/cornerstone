@@ -13,9 +13,10 @@ import javax.ws.rs.ext.Provider;
 public class AccountServiceExceptionJsonMapper implements ExceptionMapper<AccountManagerSqlException> {
     @Override
     public Response toResponse(final AccountManagerSqlException e) {
-        return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                .entity(e.getMessage())
+        return Response
+                .status(Response.Status.INTERNAL_SERVER_ERROR)
                 .type(MediaType.APPLICATION_JSON)
+                .entity("{\"message\":\"" + e.getMessage() + "\"}")
                 .build();
     }
 }

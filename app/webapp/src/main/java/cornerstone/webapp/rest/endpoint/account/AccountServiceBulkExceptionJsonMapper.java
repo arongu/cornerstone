@@ -1,6 +1,6 @@
 package cornerstone.webapp.rest.endpoint.account;
 
-import cornerstone.webapp.service.account.administration.exceptions.AccountManagerSqlBulkException;
+import cornerstone.webapp.service.account.administration.exceptions.AccountManagerBulkException;
 
 import javax.inject.Singleton;
 import javax.ws.rs.core.MediaType;
@@ -10,11 +10,11 @@ import javax.ws.rs.ext.Provider;
 
 @Singleton
 @Provider
-public class AccountServiceBulkExceptionJsonMapper implements ExceptionMapper<AccountManagerSqlBulkException> {
+public class AccountServiceBulkExceptionJsonMapper implements ExceptionMapper<AccountManagerBulkException> {
     @Override
-    public Response toResponse(final AccountManagerSqlBulkException accountManagerSqlBulkException) {
+    public Response toResponse(final AccountManagerBulkException accountManagerBulkException) {
         return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                .entity(accountManagerSqlBulkException.getExceptionMessages())
+                .entity(accountManagerBulkException.getExceptionMessages())
                 .type(MediaType.APPLICATION_JSON)
                 .build();
     }

@@ -1,11 +1,10 @@
 package cornerstone.webapp.rest.endpoint.account;
 
 import cornerstone.webapp.common.CommonLogMessages;
-import cornerstone.webapp.rest.util.HttpMessage;
 import cornerstone.webapp.service.account.administration.AccountManager;
 import cornerstone.webapp.service.account.administration.AccountResultSet;
 import cornerstone.webapp.service.account.administration.exceptions.AccountDoesNotExistException;
-import cornerstone.webapp.service.account.administration.exceptions.AccountManagerSqlBulkException;
+import cornerstone.webapp.service.account.administration.exceptions.AccountManagerBulkException;
 import cornerstone.webapp.service.account.administration.exceptions.AccountManagerSqlException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,8 +49,7 @@ public class AccountRestService {
         final String password = accountEmailPassword.getPassword();
 
         accountManager.create(email, password, false, false);
-        final HttpMessage body = new HttpMessage(Response.Status.CREATED.toString(), Response.Status.CREATED.getStatusCode());
-        return Response.status(Response.Status.CREATED).entity(body).build();
+        return Response.status(Response.Status.CREATED).entity("todo").build();
     }
 
     @DELETE
@@ -69,7 +67,7 @@ public class AccountRestService {
     @POST
     @Path("bulk")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response massCreate(final List<AccountEmailPassword> accounts) throws AccountManagerSqlException, AccountManagerSqlBulkException {
+    public Response massCreate(final List<AccountEmailPassword> accounts) throws AccountManagerSqlException, AccountManagerBulkException {
         accountManager.create(accounts);
         return Response.status(Response.Status.CREATED).entity(accounts).build();
     }
@@ -78,7 +76,7 @@ public class AccountRestService {
     @Path("bulk")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response massDelete(final List<String> emailAddresses) throws AccountManagerSqlException, AccountManagerSqlBulkException {
+    public Response massDelete(final List<String> emailAddresses) throws AccountManagerSqlException, AccountManagerBulkException {
         accountManager.delete(emailAddresses);
         return Response.status(Response.Status.OK).entity(emailAddresses).build();
     }
