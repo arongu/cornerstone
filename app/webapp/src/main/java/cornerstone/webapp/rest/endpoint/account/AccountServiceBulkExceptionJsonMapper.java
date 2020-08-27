@@ -1,6 +1,6 @@
 package cornerstone.webapp.rest.endpoint.account;
 
-import cornerstone.webapp.service.account.administration.exceptions.AccountBulkCreationException;
+import cornerstone.webapp.service.account.administration.exceptions.bulk.BulkCreationException;
 
 import javax.inject.Singleton;
 import javax.ws.rs.core.MediaType;
@@ -10,11 +10,11 @@ import javax.ws.rs.ext.Provider;
 
 @Singleton
 @Provider
-public class AccountServiceBulkExceptionJsonMapper implements ExceptionMapper<AccountBulkCreationException> {
+public class AccountServiceBulkExceptionJsonMapper implements ExceptionMapper<BulkCreationException> {
     @Override
-    public Response toResponse(final AccountBulkCreationException accountBulkCreationException) {
+    public Response toResponse(final BulkCreationException bulkCreationException) {
         return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                .entity(accountBulkCreationException.getExceptionMessages())
+                .entity(bulkCreationException.getExceptionMessages())
                 .type(MediaType.APPLICATION_JSON)
                 .build();
     }

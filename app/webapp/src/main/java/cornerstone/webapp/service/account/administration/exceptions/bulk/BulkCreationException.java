@@ -1,12 +1,12 @@
-package cornerstone.webapp.service.account.administration.exceptions;
+package cornerstone.webapp.service.account.administration.exceptions.bulk;
 
 import java.util.LinkedList;
 import java.util.List;
 
-public class AccountBulkDeletionException extends Exception {
+public class BulkCreationException extends Exception {
     private final List<String> exceptionMessages;
 
-    public AccountBulkDeletionException() {
+    public BulkCreationException() {
         super();
         exceptionMessages = new LinkedList<>();
     }

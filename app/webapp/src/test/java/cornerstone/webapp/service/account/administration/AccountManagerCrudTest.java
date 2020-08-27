@@ -3,7 +3,7 @@ package cornerstone.webapp.service.account.administration;
 import cornerstone.webapp.config.ConfigLoader;
 import cornerstone.webapp.datasources.UsersDB;
 import cornerstone.webapp.rest.endpoint.account.AccountDeletionException;
-import cornerstone.webapp.service.account.administration.exceptions.*;
+import cornerstone.webapp.service.account.administration.exceptions.single.*;
 import org.apache.commons.codec.digest.Crypt;
 import org.junit.jupiter.api.*;
 
@@ -44,7 +44,7 @@ public class AccountManagerCrudTest {
     @Order(10)
     public void t01a_create_and_get_shouldCreateOneAccount_whenAccountDoesNotExist() throws
             AccountDoesNotExistException, AccountDeletionException,
-            AccountGetException, AccountCreationException {
+            AccountRetrievalException, AccountCreationException {
 
         final String email = "almafa@gmail.com";
         final String password = "password";
@@ -104,7 +104,7 @@ public class AccountManagerCrudTest {
 
     @Test
     @Order(30)
-    public void t03_create_anotherAccountShouldBeCreated() throws AccountDoesNotExistException, AccountCreationException, AccountGetException {
+    public void t03_create_anotherAccountShouldBeCreated() throws AccountDoesNotExistException, AccountCreationException, AccountRetrievalException {
         final String email = "crud_tests@x-mail.com";
         final String password = "password";
         final boolean locked = false;
@@ -126,7 +126,7 @@ public class AccountManagerCrudTest {
 
     @Test
     @Order(40)
-    public void t04_setNewEmailAddress_shouldSetNewEmailForPreviouslyCreatedAccount() throws AccountDoesNotExistException, AccountGetException, AccountUpdateEmailException {
+    public void t04_setNewEmailAddress_shouldSetNewEmailForPreviouslyCreatedAccount() throws AccountDoesNotExistException, AccountRetrievalException, UpdateEmailException {
         final String email = "crud_tests@x-mail.com";
         final String new_email = "my_new_crud_tests_mail@yahoo.com";
 
@@ -148,7 +148,7 @@ public class AccountManagerCrudTest {
 
     @Test
     @Order(50)
-    public void t05_lock_shouldLockAccount() throws AccountDoesNotExistException, AccountGetException, AccountUpdateLockException {
+    public void t05_lock_shouldLockAccount() throws AccountDoesNotExistException, AccountRetrievalException, UpdateLockException {
         final String email_address = "my_new_crud_tests_mail@yahoo.com";
         final String reason = "naughty";
 
@@ -175,7 +175,7 @@ public class AccountManagerCrudTest {
 
     @Test
     @Order(60)
-    public void t06_unlock_shouldUnlockPreviouslyLockedAccount() throws AccountDoesNotExistException, AccountGetException, AccountUpdateLockException {
+    public void t06_unlock_shouldUnlockPreviouslyLockedAccount() throws AccountDoesNotExistException, AccountRetrievalException, UpdateLockException {
         final String email_address = "my_new_crud_tests_mail@yahoo.com";
         final String reason = "naughty";
 
@@ -199,7 +199,7 @@ public class AccountManagerCrudTest {
 
     @Test
     @Order(70)
-    public void t07_changePassword_shouldChangePasswordOfAccount() throws AccountDoesNotExistException, AccountGetException, AccountUpdatePasswordException {
+    public void t07_changePassword_shouldChangePasswordOfAccount() throws AccountDoesNotExistException, AccountRetrievalException, UpdatePasswordException {
         final String email = "my_new_crud_tests_mail@yahoo.com";
         final String password = "password";
         final String newPassword = "almafa1234#";

@@ -4,7 +4,7 @@ import cornerstone.webapp.config.ConfigLoader;
 import cornerstone.webapp.config.enums.APP_ENUM;
 import cornerstone.webapp.datasources.UsersDB;
 import cornerstone.webapp.rest.endpoint.account.AccountDeletionException;
-import cornerstone.webapp.service.account.administration.exceptions.*;
+import cornerstone.webapp.service.account.administration.exceptions.single.*;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -80,7 +80,7 @@ public class AccountManagerCrudAndLoginTest {
 
     @Test
     public void login_shouldThrowException_whenAccountIsNotVerifiedAndNotLocked() throws
-            AccountDoesNotExistException, AccountGetException,
+            AccountDoesNotExistException, AccountRetrievalException,
             AccountCreationException, AccountDeletionException {
 
         final String email = "casper@login.me";
@@ -116,7 +116,7 @@ public class AccountManagerCrudAndLoginTest {
     @Test
     public void login_shouldThrowException_whenAccountIsLocked() throws
             AccountDoesNotExistException, AccountDeletionException,
-            AccountCreationException, AccountGetException {
+            AccountCreationException, AccountRetrievalException {
 
         final String email = "locked@login.me";
         final String password = "locked#";
@@ -152,7 +152,7 @@ public class AccountManagerCrudAndLoginTest {
     public void login_shouldIncrementLoginAttempts_whenLoginFails() throws
             AccountDoesNotExistException, AccountLockedException,
             AccountEmailNotVerifiedException, AccountDeletionException,
-            AccountCreationException, AccountGetException {
+            AccountCreationException, AccountRetrievalException {
 
         final String email = "badtyper@login.me";
         final String password = "secretpasswordd#";
@@ -190,8 +190,8 @@ public class AccountManagerCrudAndLoginTest {
     public void clearLoginAttempts_shouldClearLoginAttempts_whenCalled() throws
             AccountDoesNotExistException, AccountLockedException,
             AccountEmailNotVerifiedException, AccountDeletionException,
-            AccountCreationException, AccountGetException,
-            AccountUpdateLoginAttemptsException {
+            AccountCreationException, AccountRetrievalException,
+            UpdateLoginAttemptsException {
 
         final String email = "badtyper@login.me";
         final String password = "secretpasswordd#";
@@ -237,7 +237,7 @@ public class AccountManagerCrudAndLoginTest {
     public void login_shouldIncrementLoginAttemptsToLessThanMaxLoginAndAccountShouldNotBeLocked_whenFailedToLoginThatManyTimes() throws
             AccountDoesNotExistException, AccountLockedException,
             AccountEmailNotVerifiedException, AccountDeletionException,
-            AccountCreationException, AccountGetException {
+            AccountCreationException, AccountRetrievalException {
 
         final String email = "badtyper180@login.me";
         final String password = "secretpasswordd#";
@@ -275,7 +275,7 @@ public class AccountManagerCrudAndLoginTest {
     @Test
     public void login_shouldLockAccount_whenMaxFailedLoginAttemptsExceeded() throws
             AccountDoesNotExistException, AccountLockedException, AccountEmailNotVerifiedException,
-            AccountDeletionException, AccountCreationException, AccountGetException {
+            AccountDeletionException, AccountCreationException, AccountRetrievalException {
 
         final String email = "autolock180@login.me";
         final String password = "secretpasswordd#";
@@ -324,7 +324,7 @@ public class AccountManagerCrudAndLoginTest {
     public void login_loginAttemptsShouldResetToZero_whenLoginIsSuccess() throws
             AccountDoesNotExistException, AccountLockedException,
             AccountEmailNotVerifiedException, AccountDeletionException,
-            AccountCreationException, AccountGetException {
+            AccountCreationException, AccountRetrievalException {
 
         final String email = "lastnite@aaa.me";
         final String password = "woho#";
