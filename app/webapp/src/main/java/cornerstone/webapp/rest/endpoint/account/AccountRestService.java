@@ -4,7 +4,7 @@ import cornerstone.webapp.common.CommonLogMessages;
 import cornerstone.webapp.service.account.administration.AccountManager;
 import cornerstone.webapp.service.account.administration.AccountResultSet;
 import cornerstone.webapp.service.account.administration.exceptions.AccountDoesNotExistException;
-import cornerstone.webapp.service.account.administration.exceptions.AccountManagerBulkException;
+import cornerstone.webapp.service.account.administration.exceptions.AccountBulkCreationException;
 import cornerstone.webapp.service.account.administration.exceptions.AccountManagerSqlException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -67,7 +67,7 @@ public class AccountRestService {
     @POST
     @Path("bulk")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response massCreate(final List<AccountEmailPassword> accounts) throws AccountManagerSqlException, AccountManagerBulkException {
+    public Response massCreate(final List<AccountEmailPassword> accounts) throws AccountManagerSqlException, AccountBulkCreationException {
         accountManager.create(accounts);
         return Response.status(Response.Status.CREATED).entity(accounts).build();
     }
@@ -76,7 +76,7 @@ public class AccountRestService {
     @Path("bulk")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response massDelete(final List<String> emailAddresses) throws AccountManagerSqlException, AccountManagerBulkException {
+    public Response massDelete(final List<String> emailAddresses) throws AccountManagerSqlException, AccountBulkCreationException {
         accountManager.delete(emailAddresses);
         return Response.status(Response.Status.OK).entity(emailAddresses).build();
     }

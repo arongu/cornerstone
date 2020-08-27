@@ -3,10 +3,10 @@ package cornerstone.webapp.service.account.administration.exceptions;
 import java.util.LinkedList;
 import java.util.List;
 
-public class AccountManagerBulkException extends Exception {
+public class AccountBulkCreationException extends Exception {
     private final List<String> exceptionMessages;
 
-    public AccountManagerBulkException() {
+    public AccountBulkCreationException() {
         super();
         exceptionMessages = new LinkedList<>();
     }
