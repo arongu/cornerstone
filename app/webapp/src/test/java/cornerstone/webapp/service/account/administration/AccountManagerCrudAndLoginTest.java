@@ -3,10 +3,8 @@ package cornerstone.webapp.service.account.administration;
 import cornerstone.webapp.config.ConfigLoader;
 import cornerstone.webapp.config.enums.APP_ENUM;
 import cornerstone.webapp.datasources.UsersDB;
-import cornerstone.webapp.service.account.administration.exceptions.AccountDoesNotExistException;
-import cornerstone.webapp.service.account.administration.exceptions.AccountEmailNotVerifiedException;
-import cornerstone.webapp.service.account.administration.exceptions.AccountLockedException;
-import cornerstone.webapp.service.account.administration.exceptions.AccountManagerSqlException;
+import cornerstone.webapp.rest.endpoint.account.AccountDeletionException;
+import cornerstone.webapp.service.account.administration.exceptions.*;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -41,7 +39,10 @@ public class AccountManagerCrudAndLoginTest {
     }
 
     @Test
-    public void login_shouldReturnTrue_whenAccountExistsNotLockedAndVerified() throws AccountManagerSqlException, AccountDoesNotExistException, AccountLockedException, AccountEmailNotVerifiedException {
+    public void login_shouldReturnTrue_whenAccountExistsNotLockedAndVerified() throws
+            AccountDoesNotExistException, AccountLockedException,
+            AccountEmailNotVerifiedException, AccountCreationException, AccountDeletionException {
+
         final String email = "melchior@login.me";
         final String password = "miciMacko#";
         final boolean locked = false;
@@ -78,7 +79,10 @@ public class AccountManagerCrudAndLoginTest {
     }
 
     @Test
-    public void login_shouldThrowException_whenAccountIsNotVerifiedAndNotLocked() throws AccountManagerSqlException, AccountDoesNotExistException, AccountLockedException, AccountEmailNotVerifiedException {
+    public void login_shouldThrowException_whenAccountIsNotVerifiedAndNotLocked() throws
+            AccountDoesNotExistException, AccountGetException,
+            AccountCreationException, AccountDeletionException {
+
         final String email = "casper@login.me";
         final String password = "casper#";
         final boolean locked = false;
@@ -110,7 +114,10 @@ public class AccountManagerCrudAndLoginTest {
     }
 
     @Test
-    public void login_shouldThrowException_whenAccountIsLocked() throws AccountManagerSqlException, AccountDoesNotExistException, AccountLockedException, AccountEmailNotVerifiedException {
+    public void login_shouldThrowException_whenAccountIsLocked() throws
+            AccountDoesNotExistException, AccountDeletionException,
+            AccountCreationException, AccountGetException {
+
         final String email = "locked@login.me";
         final String password = "locked#";
         final boolean locked = true;
@@ -142,7 +149,11 @@ public class AccountManagerCrudAndLoginTest {
     }
 
     @Test
-    public void login_shouldIncrementLoginAttempts_whenLoginFails() throws AccountManagerSqlException, AccountDoesNotExistException, AccountLockedException, AccountEmailNotVerifiedException {
+    public void login_shouldIncrementLoginAttempts_whenLoginFails() throws
+            AccountDoesNotExistException, AccountLockedException,
+            AccountEmailNotVerifiedException, AccountDeletionException,
+            AccountCreationException, AccountGetException {
+
         final String email = "badtyper@login.me";
         final String password = "secretpasswordd#";
         final String bad_password = "myBadPassword#";
@@ -176,7 +187,12 @@ public class AccountManagerCrudAndLoginTest {
     }
 
     @Test
-    public void clearLoginAttempts_shouldClearLoginAttempts_whenCalled() throws AccountManagerSqlException, AccountDoesNotExistException, AccountLockedException, AccountEmailNotVerifiedException {
+    public void clearLoginAttempts_shouldClearLoginAttempts_whenCalled() throws
+            AccountDoesNotExistException, AccountLockedException,
+            AccountEmailNotVerifiedException, AccountDeletionException,
+            AccountCreationException, AccountGetException,
+            AccountUpdateLoginAttemptsException {
+
         final String email = "badtyper@login.me";
         final String password = "secretpasswordd#";
         final String bad_password = "myBadPassword#";
@@ -218,7 +234,11 @@ public class AccountManagerCrudAndLoginTest {
     }
 
     @Test
-    public void login_shouldIncrementLoginAttemptsToLessThanMaxLoginAndAccountShouldNotBeLocked_whenFailedToLoginThatManyTimes() throws AccountManagerSqlException, AccountDoesNotExistException, AccountLockedException, AccountEmailNotVerifiedException {
+    public void login_shouldIncrementLoginAttemptsToLessThanMaxLoginAndAccountShouldNotBeLocked_whenFailedToLoginThatManyTimes() throws
+            AccountDoesNotExistException, AccountLockedException,
+            AccountEmailNotVerifiedException, AccountDeletionException,
+            AccountCreationException, AccountGetException {
+
         final String email = "badtyper180@login.me";
         final String password = "secretpasswordd#";
         final String bad_password = "alma";
@@ -253,7 +273,10 @@ public class AccountManagerCrudAndLoginTest {
     }
 
     @Test
-    public void login_shouldLockAccount_whenMaxFailedLoginAttemptsExceeded() throws AccountManagerSqlException, AccountDoesNotExistException, AccountLockedException, AccountEmailNotVerifiedException {
+    public void login_shouldLockAccount_whenMaxFailedLoginAttemptsExceeded() throws
+            AccountDoesNotExistException, AccountLockedException, AccountEmailNotVerifiedException,
+            AccountDeletionException, AccountCreationException, AccountGetException {
+
         final String email = "autolock180@login.me";
         final String password = "secretpasswordd#";
         final String bad_password = "alma";
@@ -298,7 +321,11 @@ public class AccountManagerCrudAndLoginTest {
     }
 
     @Test
-    public void login_loginAttemptsShouldResetToZero_whenLoginIsSuccess() throws AccountManagerSqlException, AccountDoesNotExistException, AccountLockedException, AccountEmailNotVerifiedException {
+    public void login_loginAttemptsShouldResetToZero_whenLoginIsSuccess() throws
+            AccountDoesNotExistException, AccountLockedException,
+            AccountEmailNotVerifiedException, AccountDeletionException,
+            AccountCreationException, AccountGetException {
+
         final String email = "lastnite@aaa.me";
         final String password = "woho#";
         final String bad_password = "bbbbb";

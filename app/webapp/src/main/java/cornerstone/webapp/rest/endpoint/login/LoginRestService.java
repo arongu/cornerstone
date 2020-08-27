@@ -5,7 +5,6 @@ import cornerstone.webapp.service.account.administration.AccountManager;
 import cornerstone.webapp.service.account.administration.exceptions.AccountDoesNotExistException;
 import cornerstone.webapp.service.account.administration.exceptions.AccountEmailNotVerifiedException;
 import cornerstone.webapp.service.account.administration.exceptions.AccountLockedException;
-import cornerstone.webapp.service.account.administration.exceptions.AccountManagerSqlException;
 import cornerstone.webapp.service.jwt.JWTService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,8 +38,7 @@ public class LoginRestService {
     public Response authenticateUser(final AccountEmailPassword accountEmailPassword) throws
             AccountEmailNotVerifiedException,
             AccountLockedException,
-            AccountDoesNotExistException,
-            AccountManagerSqlException {
+            AccountDoesNotExistException {
 
         if (null != accountEmailPassword &&
             null != accountEmailPassword.getEmail() &&

@@ -3,9 +3,7 @@ package cornerstone.webapp.rest.endpoint.account;
 import cornerstone.webapp.common.CommonLogMessages;
 import cornerstone.webapp.service.account.administration.AccountManager;
 import cornerstone.webapp.service.account.administration.AccountResultSet;
-import cornerstone.webapp.service.account.administration.exceptions.AccountDoesNotExistException;
-import cornerstone.webapp.service.account.administration.exceptions.AccountBulkCreationException;
-import cornerstone.webapp.service.account.administration.exceptions.AccountManagerSqlException;
+import cornerstone.webapp.service.account.administration.exceptions.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,7 +30,7 @@ public class AccountRestService {
     @GET
     @Path("{email}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getAccount(@PathParam("email") final String email) throws AccountManagerSqlException {
+    public Response getAccount(@PathParam("email") final String email) throws AccountGetException {
         try {
             final AccountResultSet accountResultSet = accountManager.get(email);
             return Response.status(Response.Status.OK).entity(accountResultSet).build();
@@ -44,7 +42,7 @@ public class AccountRestService {
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response create(final AccountEmailPassword accountEmailPassword) throws AccountManagerSqlException {
+    public Response create(final AccountEmailPassword accountEmailPassword) throws AccountCreationException {
         final String email = accountEmailPassword.getEmail();
         final String password = accountEmailPassword.getPassword();
 
@@ -55,7 +53,7 @@ public class AccountRestService {
     @DELETE
     @Path("{email}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response delete(@PathParam("email") final String email) throws AccountManagerSqlException {
+    public Response delete(@PathParam("email") final String email) throws AccountDeletionException {
         final int n = accountManager.delete(email);
         if (n > 0) {
             return Response.status(Response.Status.OK).entity(email).build();
@@ -67,16 +65,16 @@ public class AccountRestService {
     @POST
     @Path("bulk")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response massCreate(final List<AccountEmailPassword> accounts) throws AccountManagerSqlException, AccountBulkCreationException {
-        accountManager.create(accounts);
-        return Response.status(Response.Status.CREATED).entity(accounts).build();
+    public Response massCreate(final List<AccountSetup> accountSetups) throws AccountBulkCreationException, AccountBulkCreationInitalException {
+        accountManager.create(accountSetups);
+        return Response.status(Response.Status.CREATED).entity(accountSetups).build();
     }
 
     @DELETE
     @Path("bulk")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response massDelete(final List<String> emailAddresses) throws AccountManagerSqlException, AccountBulkCreationException {
+    public Response massDelete(final List<String> emailAddresses) throws AccountBulkDeletionException, AccountBulkDeletionInitialException {
         accountManager.delete(emailAddresses);
         return Response.status(Response.Status.OK).entity(emailAddresses).build();
     }
