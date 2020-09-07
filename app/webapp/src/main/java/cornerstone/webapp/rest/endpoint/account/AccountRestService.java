@@ -3,13 +3,13 @@ package cornerstone.webapp.rest.endpoint.account;
 import cornerstone.webapp.common.CommonLogMessages;
 import cornerstone.webapp.service.account.administration.AccountManager;
 import cornerstone.webapp.service.account.administration.AccountResultSet;
+import cornerstone.webapp.service.account.administration.exceptions.bulk.PartialCreationException;
 import cornerstone.webapp.service.account.administration.exceptions.bulk.BulkCreationException;
-import cornerstone.webapp.service.account.administration.exceptions.bulk.BulkCreationInitialException;
-import cornerstone.webapp.service.account.administration.exceptions.bulk.BulkDeletionException;
-import cornerstone.webapp.service.account.administration.exceptions.bulk.BulkDeletionInitialException;
-import cornerstone.webapp.service.account.administration.exceptions.single.AccountCreationException;
-import cornerstone.webapp.service.account.administration.exceptions.single.AccountDoesNotExistException;
-import cornerstone.webapp.service.account.administration.exceptions.single.AccountRetrievalException;
+import cornerstone.webapp.service.account.administration.exceptions.bulk.PartialDeletionException;
+import cornerstone.webapp.service.account.administration.exceptions.bulk.BulkDeleteException;
+import cornerstone.webapp.service.account.administration.exceptions.single.CreationException;
+import cornerstone.webapp.service.account.administration.exceptions.single.NoAccountException;
+import cornerstone.webapp.service.account.administration.exceptions.single.RetrievalException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,11 +36,11 @@ public class AccountRestService {
     @GET
     @Path("{email}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getAccount(@PathParam("email") final String email) throws AccountRetrievalException {
+    public Response getAccount(@PathParam("email") final String email) throws RetrievalException {
         try {
             final AccountResultSet accountResultSet = accountManager.get(email);
             return Response.status(Response.Status.OK).entity(accountResultSet).build();
-        } catch (final AccountDoesNotExistException e) {
+        } catch (final NoAccountException e) {
             return Response.status(Response.Status.NOT_FOUND).entity(email).build();
         }
     }
@@ -48,7 +48,7 @@ public class AccountRestService {
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response create(final AccountEmailPassword accountEmailPassword) throws AccountCreationException {
+    public Response create(final AccountEmailPassword accountEmailPassword) throws CreationException {
         final String email = accountEmailPassword.getEmail();
         final String password = accountEmailPassword.getPassword();
 
@@ -59,7 +59,7 @@ public class AccountRestService {
     @DELETE
     @Path("{email}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response delete(@PathParam("email") final String email) throws AccountDeletionException {
+    public Response delete(@PathParam("email") final String email) throws DeletionException, NoAccountException {
         final int n = accountManager.delete(email);
         if (n > 0) {
             return Response.status(Response.Status.OK).entity(email).build();
@@ -71,7 +71,7 @@ public class AccountRestService {
     @POST
     @Path("bulk")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response massCreate(final List<AccountSetup> accountSetups) throws BulkCreationException, BulkCreationInitialException {
+    public Response massCreate(final List<AccountSetup> accountSetups) throws PartialCreationException, BulkCreationException {
         accountManager.create(accountSetups);
         return Response.status(Response.Status.CREATED).entity(accountSetups).build();
     }
@@ -80,7 +80,7 @@ public class AccountRestService {
     @Path("bulk")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response massDelete(final List<String> emailAddresses) throws BulkDeletionException, BulkDeletionInitialException {
+    public Response massDelete(final List<String> emailAddresses) throws PartialDeletionException, BulkDeleteException {
         accountManager.delete(emailAddresses);
         return Response.status(Response.Status.OK).entity(emailAddresses).build();
     }

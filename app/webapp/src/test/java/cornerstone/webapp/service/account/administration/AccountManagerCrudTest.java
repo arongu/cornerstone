@@ -2,7 +2,7 @@ package cornerstone.webapp.service.account.administration;
 
 import cornerstone.webapp.config.ConfigLoader;
 import cornerstone.webapp.datasources.UsersDB;
-import cornerstone.webapp.rest.endpoint.account.AccountDeletionException;
+import cornerstone.webapp.rest.endpoint.account.DeletionException;
 import cornerstone.webapp.service.account.administration.exceptions.single.*;
 import org.apache.commons.codec.digest.Crypt;
 import org.junit.jupiter.api.*;
@@ -37,14 +37,14 @@ public class AccountManagerCrudTest {
     @Test
     @Order(0)
     public void t00_get_shouldThrowAccountDoesNotExistException_whenAccountDoesNotExist() {
-        assertThrows(AccountDoesNotExistException.class, () -> accountManager.get("thereisnoway@suchemailexist.net"));
+        assertThrows(NoAccountException.class, () -> accountManager.get("thereisnoway@suchemailexist.net"));
     }
 
     @Test
     @Order(10)
     public void t01a_create_and_get_shouldCreateOneAccount_whenAccountDoesNotExist() throws
-            AccountDoesNotExistException, AccountDeletionException,
-            AccountRetrievalException, AccountCreationException {
+            NoAccountException, DeletionException,
+            RetrievalException, CreationException {
 
         final String email = "almafa@gmail.com";
         final String password = "password";
@@ -56,7 +56,7 @@ public class AccountManagerCrudTest {
         final AccountResultSet received_account;
 
 
-        accountManager.delete(email);
+        TestHelper.deleteAccount(accountManager, email);
         number_of_account_created = accountManager.create(email, password, locked, verified);
         received_account = accountManager.get(email);
 
@@ -80,7 +80,7 @@ public class AccountManagerCrudTest {
     @Test
     @Order(11)
     public void t01b_create_shouldThrowAccountCreationException_whenAccountAlreadyExists() {
-        assertThrows(AccountCreationException.class, () -> {
+        assertThrows(CreationException.class, () -> {
             final String email = "almafa@gmail.com";
             final String password = "password";
             final boolean locked = false;
@@ -92,19 +92,19 @@ public class AccountManagerCrudTest {
 
     @Test
     @Order(20)
-    public void t02_delete_previousAccountShouldBeDeleted() throws AccountDeletionException {
+    public void t02_delete_previousAccountShouldBeDeleted() throws DeletionException, NoAccountException {
         final String email = "almafa@gmail.com";
         final int number_of_account_deleted;
 
         number_of_account_deleted = accountManager.delete("almafa@gmail.com");
 
-        assertThrows(AccountDoesNotExistException.class, () -> accountManager.get(email));
+        assertThrows(NoAccountException.class, () -> accountManager.get(email));
         assertEquals(1, number_of_account_deleted);
     }
 
     @Test
     @Order(30)
-    public void t03_create_anotherAccountShouldBeCreated() throws AccountDoesNotExistException, AccountCreationException, AccountRetrievalException {
+    public void t03_create_anotherAccountShouldBeCreated() throws NoAccountException, CreationException, RetrievalException {
         final String email = "crud_tests@x-mail.com";
         final String password = "password";
         final boolean locked = false;
@@ -126,7 +126,7 @@ public class AccountManagerCrudTest {
 
     @Test
     @Order(40)
-    public void t04_setNewEmailAddress_shouldSetNewEmailForPreviouslyCreatedAccount() throws AccountDoesNotExistException, AccountRetrievalException, UpdateEmailException {
+    public void t04_setNewEmailAddress_shouldSetNewEmailForPreviouslyCreatedAccount() throws NoAccountException, RetrievalException, EmailUpdateException {
         final String email = "crud_tests@x-mail.com";
         final String new_email = "my_new_crud_tests_mail@yahoo.com";
 
@@ -141,14 +141,14 @@ public class AccountManagerCrudTest {
 
 
         assertEquals(1, number_of_email_changes);
-        assertThrows(AccountDoesNotExistException.class, () -> accountManager.get(email)); // old email should throw exception
+        assertThrows(NoAccountException.class, () -> accountManager.get(email)); // old email should throw exception
         assertEquals(new_email, afterEmailChange.email_address);                           // get new email account should return account
         assertEquals(beforeEmailChange.account_id, afterEmailChange.account_id);           // account id should be same for the new email
     }
 
     @Test
     @Order(50)
-    public void t05_lock_shouldLockAccount() throws AccountDoesNotExistException, AccountRetrievalException, UpdateLockException {
+    public void t05_lock_shouldLockAccount() throws NoAccountException, RetrievalException, LockUpdateException {
         final String email_address = "my_new_crud_tests_mail@yahoo.com";
         final String reason = "naughty";
 
@@ -175,7 +175,7 @@ public class AccountManagerCrudTest {
 
     @Test
     @Order(60)
-    public void t06_unlock_shouldUnlockPreviouslyLockedAccount() throws AccountDoesNotExistException, AccountRetrievalException, UpdateLockException {
+    public void t06_unlock_shouldUnlockPreviouslyLockedAccount() throws NoAccountException, RetrievalException, LockUpdateException {
         final String email_address = "my_new_crud_tests_mail@yahoo.com";
         final String reason = "naughty";
 
@@ -199,7 +199,7 @@ public class AccountManagerCrudTest {
 
     @Test
     @Order(70)
-    public void t07_changePassword_shouldChangePasswordOfAccount() throws AccountDoesNotExistException, AccountRetrievalException, UpdatePasswordException {
+    public void t07_changePassword_shouldChangePasswordOfAccount() throws NoAccountException, RetrievalException, PasswordUpdateException {
         final String email = "my_new_crud_tests_mail@yahoo.com";
         final String password = "password";
         final String newPassword = "almafa1234#";
@@ -221,7 +221,7 @@ public class AccountManagerCrudTest {
 
     @Test
     @Order(80)
-    public void t08_delete_shouldDeleteAccount() throws AccountDeletionException {
+    public void t08_delete_shouldDeleteAccount() throws DeletionException, NoAccountException {
         final int deletes;
         final String email = "my_new_crud_tests_mail@yahoo.com";
 
@@ -230,6 +230,6 @@ public class AccountManagerCrudTest {
 
 
         assertEquals(1, deletes);
-        assertThrows(AccountDoesNotExistException.class, () -> accountManager.get(email));
+        assertThrows(NoAccountException.class, () -> accountManager.get(email));
     }
 }

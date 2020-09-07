@@ -1,7 +1,7 @@
 package cornerstone.webapp.service.account.administration.exceptions.single;
 
-public class UpdatePasswordException extends Exception {
-    public UpdatePasswordException(String message) {
+public class EmailUpdateException extends Exception {
+    public EmailUpdateException(String message) {
         super(message);
     }
 }

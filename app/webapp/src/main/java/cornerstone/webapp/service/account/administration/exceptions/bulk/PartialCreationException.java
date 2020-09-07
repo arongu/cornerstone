@@ -3,10 +3,10 @@ package cornerstone.webapp.service.account.administration.exceptions.bulk;
 import java.util.LinkedList;
 import java.util.List;
 
-public class BulkDeletionException extends Exception {
+public class PartialCreationException extends Exception {
     private final List<String> exceptionMessages;
 
-    public BulkDeletionException() {
+    public PartialCreationException() {
         super();
         exceptionMessages = new LinkedList<>();
     }

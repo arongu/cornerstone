@@ -1,7 +1,7 @@
 package cornerstone.webapp.service.account.administration.exceptions.single;
 
-public class AccountLockedException extends Exception {
-    public AccountLockedException(String message) {
+public class LockedException extends Exception {
+    public LockedException(String message) {
         super(message);
     }
 }

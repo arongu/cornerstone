@@ -1,4 +1,4 @@
 package cornerstone.webapp.service.account.administration.exceptions.bulk;
 
-public class BulkDeletionInitialException extends Exception {
+public class BulkDeleteException extends Exception {
 }

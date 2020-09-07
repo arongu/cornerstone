@@ -4,12 +4,12 @@ import cornerstone.webapp.common.CommonLogMessages;
 import cornerstone.webapp.config.ConfigLoader;
 import cornerstone.webapp.config.enums.APP_ENUM;
 import cornerstone.webapp.datasources.UsersDB;
-import cornerstone.webapp.rest.endpoint.account.AccountDeletionException;
+import cornerstone.webapp.rest.endpoint.account.DeletionException;
 import cornerstone.webapp.rest.endpoint.account.AccountSetup;
+import cornerstone.webapp.service.account.administration.exceptions.bulk.PartialCreationException;
 import cornerstone.webapp.service.account.administration.exceptions.bulk.BulkCreationException;
-import cornerstone.webapp.service.account.administration.exceptions.bulk.BulkCreationInitialException;
-import cornerstone.webapp.service.account.administration.exceptions.bulk.BulkDeletionException;
-import cornerstone.webapp.service.account.administration.exceptions.bulk.BulkDeletionInitialException;
+import cornerstone.webapp.service.account.administration.exceptions.bulk.PartialDeletionException;
+import cornerstone.webapp.service.account.administration.exceptions.bulk.BulkDeleteException;
 import cornerstone.webapp.service.account.administration.exceptions.single.*;
 import org.apache.commons.codec.digest.Crypt;
 import org.slf4j.Logger;
@@ -46,7 +46,7 @@ public class AccountManagerImpl implements AccountManager {
     private static final String SQL_UPDATE_LOGIN_ATTEMPTS_INCREMENT              = "UPDATE user_data.accounts SET account_login_attempts=account_login_attempts+1 WHERE email_address=(?)";
     private static final String SQL_UPDATE_LOGIN_ATTEMPTS_CLEAR                  = "UPDATE user_data.accounts SET account_login_attempts=0 WHERE email_address=(?)";
 
-    // Log, exception messages.
+    // Log messages
     private static final String ERROR_LOG_ACCOUNT_GET_FAILED                     = "Failed to get '%s', message: '%s', SQL state '%s'";
     private static final String ERROR_LOG_ACCOUNT_CREATION_FAILED                = "Failed to create '%s', message: '%s', SQL state: '%s'";
     private static final String ERROR_LOG_ACCOUNT_DELETION_FAILED                = "Failed to delete '%s', message: '%s', SQL state: '%s'";
@@ -56,6 +56,7 @@ public class AccountManagerImpl implements AccountManager {
     private static final String ERROR_LOG_INCREMENT_LOGIN_ATTEMPTS_FAILED        = "Failed to increment login attempts of '%s', message: '%s', SQL state: '%s'";
     private static final String ERROR_LOG_CLEAR_LOGIN_ATTEMPTS_FAILED            = "Failed to clear login attempts of '%s', message: '%s', SQL state: '%s'";
 
+    // Exception messages
     private static final String EXCEPTION_MESSAGE_ACCOUNT_CREATION_FAILED        = "Failed to create '%s'.";
     private static final String EXCEPTION_MESSAGE_ACCOUNT_DELETION_FAILED        = "Failed to delete '%s'.";
     private static final String EXCEPTION_MESSAGE_ACCOUNT_DOES_NOT_EXIST         = "Account '%s' does not exist.";
@@ -67,9 +68,9 @@ public class AccountManagerImpl implements AccountManager {
 
     private static final Logger logger = LoggerFactory.getLogger(AccountManagerImpl.class);
 
-    private static int executeSqlUpdateOnAccount(final String email,
-                                                 final String sqlStatement,
-                                                 final UsersDB usersDB) throws SQLException {
+    private static int executeSqlUpdate(final String email,
+                                        final String sqlStatement,
+                                        final UsersDB usersDB) throws SQLException {
 
         try (final Connection c = usersDB.getConnection();
              final PreparedStatement ps = c.prepareStatement(sqlStatement)) {
@@ -90,7 +91,7 @@ public class AccountManagerImpl implements AccountManager {
     }
 
     @Override
-    public AccountResultSet get(final String email) throws AccountDoesNotExistException, AccountRetrievalException {
+    public AccountResultSet get(final String email) throws NoAccountException, RetrievalException {
         try (final Connection c = usersDB.getConnection();
              final PreparedStatement ps = c.prepareStatement(SQL_SELECT_ACCOUNT)) {
 
@@ -115,18 +116,18 @@ public class AccountManagerImpl implements AccountManager {
                 );
 
             } else {
-                throw new AccountDoesNotExistException(String.format(EXCEPTION_MESSAGE_ACCOUNT_DOES_NOT_EXIST, email));
+                throw new NoAccountException(String.format(EXCEPTION_MESSAGE_ACCOUNT_DOES_NOT_EXIST, email));
             }
 
         } catch (final SQLException e) {
             logger.error(String.format(ERROR_LOG_ACCOUNT_GET_FAILED, email, e.getMessage(), e.getSQLState()));
-            throw new AccountRetrievalException(String.format(EXCEPTION_MESSAGE_ACCOUNT_GET_FAILED, email));
+            throw new RetrievalException(String.format(EXCEPTION_MESSAGE_ACCOUNT_GET_FAILED, email));
         }
     }
 
     @Override
     public int create(final String email, final String password,
-                      final boolean locked, final boolean verified) throws AccountCreationException {
+                      final boolean locked, final boolean verified) throws CreationException {
 
         try (final Connection c = usersDB.getConnection();
              final PreparedStatement ps = c.prepareStatement(SQL_INSERT_ACCOUNT)) {
@@ -141,14 +142,14 @@ public class AccountManagerImpl implements AccountManager {
 
         } catch (final SQLException e) {
             logger.error(String.format(ERROR_LOG_ACCOUNT_CREATION_FAILED, email, e.getMessage(), e.getSQLState()));
-            throw new AccountCreationException(String.format(EXCEPTION_MESSAGE_ACCOUNT_CREATION_FAILED, email));
+            throw new CreationException(String.format(EXCEPTION_MESSAGE_ACCOUNT_CREATION_FAILED, email));
         }
     }
 
     @Override
-    public int create(final List<AccountSetup> accountSetupList) throws BulkCreationException, BulkCreationInitialException {
+    public int create(final List<AccountSetup> accountSetupList) throws PartialCreationException, BulkCreationException {
         try (final Connection c = usersDB.getConnection(); final PreparedStatement ps = c.prepareStatement(SQL_INSERT_ACCOUNT)) {
-            BulkCreationException bulkCreationException = null;
+            PartialCreationException partialCreationException = null;
             int updatedRows = 0;
 
             for (final AccountSetup accountSetup : accountSetupList) {
@@ -168,51 +169,51 @@ public class AccountManagerImpl implements AccountManager {
                         logger.info(String.format(LOG_FORMAT, CREATED, email));
 
                     } catch (final SQLException e) {
-                        if (null == bulkCreationException) {
-                            bulkCreationException = new BulkCreationException();
+                        if (null == partialCreationException) {
+                            partialCreationException = new PartialCreationException();
                         }
 
-                        bulkCreationException.addExceptionMessage(String.format(EXCEPTION_MESSAGE_ACCOUNT_CREATION_FAILED, email));
+                        partialCreationException.addExceptionMessage(String.format(EXCEPTION_MESSAGE_ACCOUNT_CREATION_FAILED, email));
                         logger.error(String.format(ERROR_LOG_ACCOUNT_CREATION_FAILED, email, e.getMessage(), e.getSQLState()));
                     }
                 }
             }
 
-            if (bulkCreationException != null) {
-                throw bulkCreationException;
+            if (partialCreationException != null) {
+                throw partialCreationException;
             } else {
                 return updatedRows;
             }
 
         } catch (final SQLException e) {
             logger.error(e.getMessage());
-            throw new BulkCreationInitialException();
+            throw new BulkCreationException();
         }
     }
 
     @Override
-    public int delete(final String email) throws AccountDeletionException, AccountDoesNotExistException {
+    public int delete(final String email) throws DeletionException, NoAccountException {
         try {
-            final int deletedRows = executeSqlUpdateOnAccount(email, SQL_DELETE_ACCOUNT, usersDB);
+            final int deletedRows = executeSqlUpdate(email, SQL_DELETE_ACCOUNT, usersDB);
             if (deletedRows > 0) {
                 logger.info(String.format(LOG_FORMAT, DELETED, email));
                 return deletedRows;
             } else {
-                throw new AccountDoesNotExistException(email);
+                throw new NoAccountException(email);
             }
 
         } catch (final SQLException e) {
             logger.error(String.format(ERROR_LOG_ACCOUNT_DELETION_FAILED, email, e.getMessage(), e.getSQLState()));
-            throw new AccountDeletionException(String.format(EXCEPTION_MESSAGE_ACCOUNT_DELETION_FAILED, email));
+            throw new DeletionException(String.format(EXCEPTION_MESSAGE_ACCOUNT_DELETION_FAILED, email));
         }
     }
 
     @Override
-    public int delete(final List<String> emails) throws BulkDeletionException, BulkDeletionInitialException {
+    public int delete(final List<String> emails) throws PartialDeletionException, BulkDeleteException {
         try (final Connection c = usersDB.getConnection();
              final PreparedStatement ps = c.prepareStatement(SQL_DELETE_ACCOUNT) ) {
 
-            BulkDeletionException bulkDeletionException = null;
+            PartialDeletionException partialDeletionException = null;
             int deletedRows = 0;
 
             for (final String email : emails) {
@@ -222,29 +223,29 @@ public class AccountManagerImpl implements AccountManager {
                     logger.info(String.format(LOG_FORMAT, DELETED, email));
 
                 } catch (final SQLException e) {
-                    if (bulkDeletionException == null) {
-                        bulkDeletionException = new BulkDeletionException();
+                    if (partialDeletionException == null) {
+                        partialDeletionException = new PartialDeletionException();
                     }
 
-                    bulkDeletionException.addExceptionMessage(String.format(EXCEPTION_MESSAGE_ACCOUNT_DELETION_FAILED, email));
+                    partialDeletionException.addExceptionMessage(String.format(EXCEPTION_MESSAGE_ACCOUNT_DELETION_FAILED, email));
                     logger.error(String.format(ERROR_LOG_ACCOUNT_DELETION_FAILED, email, e.getMessage(), e.getSQLState()));
                 }
             }
 
-            if (null != bulkDeletionException) {
-                throw bulkDeletionException;
+            if (null != partialDeletionException) {
+                throw partialDeletionException;
             } else {
                 return deletedRows;
             }
 
         } catch (final SQLException e) {
             logger.error(e.getMessage());
-            throw new BulkDeletionInitialException();
+            throw new BulkDeleteException();
         }
     }
 
     @Override
-    public int setPassword(final String email, final String password) throws UpdatePasswordException {
+    public int setPassword(final String email, final String password) throws PasswordUpdateException {
         try (final Connection c = usersDB.getConnection();
              final PreparedStatement ps = c.prepareStatement(SQL_UPDATE_ACCOUNT_PASSWORD)) {
 
@@ -257,30 +258,30 @@ public class AccountManagerImpl implements AccountManager {
 
         } catch (final SQLException e) {
             logger.error(String.format(ERROR_LOG_UPDATE_PASSWORD_FAILED, email, e.getMessage(), e.getSQLState()));
-            throw new UpdatePasswordException(String.format(EXCEPTION_MESSAGE_UPDATE_PASSWORD_FAILED, email));
+            throw new PasswordUpdateException(String.format(EXCEPTION_MESSAGE_UPDATE_PASSWORD_FAILED, email));
         }
     }
 
     @Override
-    public int setEmail(final String currentEmail, final String newEmail) throws UpdateEmailException {
+    public int setEmail(final String currentEmail, final String newEmail) throws EmailUpdateException {
         try (final Connection c = usersDB.getConnection();
              final PreparedStatement ps = c.prepareStatement(SQL_UPDATE_ACCOUNT_EMAIL_ADDRESS)) {
 
             ps.setString(1, newEmail);
             ps.setString(2, currentEmail);
             final int updatedRows = ps.executeUpdate();
-            // Not creating new LOG_FORMAT for this single case
+            // Not creating new LOG_FORMAT for this single log message
             logger.info(String.format("%-35s : %s -> %s", EMAIL_ADDRESS_CHANGED, currentEmail, newEmail));
             return updatedRows;
 
         } catch (final SQLException e) {
             logger.error(String.format(ERROR_LOG_UPDATE_EMAIL_FAILED, currentEmail, newEmail, e.getMessage(), e.getSQLState()));
-            throw new UpdateEmailException(String.format(EXCEPTION_MESSAGE_UPDATE_EMAIL_FAILED, currentEmail, newEmail));
+            throw new EmailUpdateException(String.format(EXCEPTION_MESSAGE_UPDATE_EMAIL_FAILED, currentEmail, newEmail));
         }
     }
 
     @Override
-    public int lock(final String email, final String reason) throws UpdateLockException {
+    public int lock(final String email, final String reason) throws LockUpdateException {
         try (final Connection c = usersDB.getConnection();
              final PreparedStatement ps = c.prepareStatement(SQL_UPDATE_ACCOUNT_LOCKED)) {
 
@@ -294,12 +295,12 @@ public class AccountManagerImpl implements AccountManager {
 
         } catch (final SQLException e) {
             logger.error(String.format(ERROR_LOG_UPDATE_LOCK_FAILED, email, true, reason, e.getMessage(), e.getSQLState()));
-            throw new UpdateLockException(String.format(EXCEPTION_MESSAGE_UPDATE_LOCK_FAILED, email));
+            throw new LockUpdateException(String.format(EXCEPTION_MESSAGE_UPDATE_LOCK_FAILED, email));
         }
     }
 
     @Override
-    public int unlock(final String email) throws UpdateLockException {
+    public int unlock(final String email) throws LockUpdateException {
         try (final Connection c = usersDB.getConnection();
              final PreparedStatement ps = c.prepareStatement(SQL_UPDATE_ACCOUNT_LOCKED)) {
 
@@ -313,39 +314,39 @@ public class AccountManagerImpl implements AccountManager {
 
         } catch (final SQLException e) {
             logger.error(String.format(ERROR_LOG_UPDATE_LOCK_FAILED, email, false, "???", e.getMessage(), e.getSQLState()));
-            throw new UpdateLockException(String.format(EXCEPTION_MESSAGE_UPDATE_LOCK_FAILED, email));
+            throw new LockUpdateException(String.format(EXCEPTION_MESSAGE_UPDATE_LOCK_FAILED, email));
         }
     }
 
     @Override
-    public int incrementLoginAttempts(final String email) throws UpdateLoginAttemptsException {
+    public int incrementLoginAttempts(final String email) throws LoginAttemptsUpdateException {
         try {
             logger.info(String.format(LOG_FORMAT, LOGIN_ATTEMPTS_INCREMENTED, email));
-            return executeSqlUpdateOnAccount(email, SQL_UPDATE_LOGIN_ATTEMPTS_INCREMENT, usersDB);
+            return executeSqlUpdate(email, SQL_UPDATE_LOGIN_ATTEMPTS_INCREMENT, usersDB);
 
         } catch (final SQLException e) {
             logger.error(String.format(ERROR_LOG_INCREMENT_LOGIN_ATTEMPTS_FAILED, email, e.getMessage(), e.getSQLState()));
-            throw new UpdateLoginAttemptsException(String.format(EXCEPTION_MESSAGE_UPDATE_LOGIN_ATTEMPTS_FAILED, email));
+            throw new LoginAttemptsUpdateException(String.format(EXCEPTION_MESSAGE_UPDATE_LOGIN_ATTEMPTS_FAILED, email));
         }
     }
 
     @Override
-    public int clearLoginAttempts(final String email) throws UpdateLoginAttemptsException {
+    public int clearLoginAttempts(final String email) throws LoginAttemptsUpdateException {
         try {
             logger.info(String.format(LOG_FORMAT, LOGIN_ATTEMPTS_CLEARED, email));
-            return executeSqlUpdateOnAccount(email, SQL_UPDATE_LOGIN_ATTEMPTS_CLEAR, usersDB);
+            return executeSqlUpdate(email, SQL_UPDATE_LOGIN_ATTEMPTS_CLEAR, usersDB);
 
         } catch (final SQLException e) {
             logger.error(String.format(ERROR_LOG_CLEAR_LOGIN_ATTEMPTS_FAILED, email, e.getMessage(), e.getSQLState()));
-            throw new UpdateLoginAttemptsException(String.format(EXCEPTION_MESSAGE_UPDATE_LOGIN_ATTEMPTS_FAILED, email));
+            throw new LoginAttemptsUpdateException(String.format(EXCEPTION_MESSAGE_UPDATE_LOGIN_ATTEMPTS_FAILED, email));
         }
     }
 
     @Override
     public boolean login(final String email, final String password) throws
-            AccountDoesNotExistException,
-            AccountLockedException,
-            AccountEmailNotVerifiedException {
+            NoAccountException,
+            LockedException,
+            UnverifiedEmailException {
 
         try (final Connection c = usersDB.getConnection(); final PreparedStatement ps = c.prepareStatement(SQL_SELECT_ACCOUNT_FOR_LOGIN)) {
             ps.setString(1, email.toLowerCase());
@@ -357,17 +358,17 @@ public class AccountManagerImpl implements AccountManager {
                 final String passwordHash = rs.getString ("password_hash");
 
                 if (locked) {
-                    throw new AccountLockedException(email);
+                    throw new LockedException(email);
                 }
 
                 if (! verified) {
-                    throw new AccountEmailNotVerifiedException(email);
+                    throw new UnverifiedEmailException(email);
                 }
 
                 if (passwordHash.equals(Crypt.crypt(password, passwordHash))) {
                     if (loginAttempts > 0) {
                         try { clearLoginAttempts(email); }
-                        catch (final UpdateLoginAttemptsException ignored){}
+                        catch (final LoginAttemptsUpdateException ignored){}
                     }
 
                     logger.info(String.format(LOG_FORMAT, LOGGED_IN, email));
@@ -377,18 +378,18 @@ public class AccountManagerImpl implements AccountManager {
                     logger.info(String.format(LOG_FORMAT, LOGIN_FAILED, email));
                     if (loginAttempts < Integer.parseInt(configLoader.getAppProperties().getProperty(APP_ENUM.APP_MAX_LOGIN_ATTEMPTS.key))) {
                         try { incrementLoginAttempts(email); }
-                        catch (final UpdateLoginAttemptsException ignored) {}
+                        catch (final LoginAttemptsUpdateException ignored) {}
 
                     } else {
                         try { lock(email, "Maximum login attempts reached."); }
-                        catch (final UpdateLockException ignored) {}
+                        catch (final LockUpdateException ignored) {}
                     }
 
                     return false;
                 }
 
             } else {
-                throw new AccountDoesNotExistException(email);
+                throw new NoAccountException(email);
             }
 
         } catch (final SQLException e) {
