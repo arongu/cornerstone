@@ -1,9 +1,9 @@
 package cornerstone.webapp.common;
 
-import cornerstone.webapp.service.rsa.rotation.KeyRotationTask;
-import cornerstone.webapp.service.rsa.rotation.KeyRotatorImpl;
-import cornerstone.webapp.service.rsa.store.db.PublicKeyStoreImpl;
-import cornerstone.webapp.service.rsa.store.local.LocalKeyStoreImpl;
+import cornerstone.webapp.services.rsa.rotation.KeyRotationTask;
+import cornerstone.webapp.services.rsa.rotation.KeyRotatorImpl;
+import cornerstone.webapp.services.rsa.store.db.PublicKeyStoreImpl;
+import cornerstone.webapp.services.rsa.store.local.LocalKeyStoreImpl;
 
 import java.nio.CharBuffer;
 import java.util.HashMap;
