@@ -6,7 +6,7 @@ import cornerstone.webapp.service.account.administration.AccountResultSet;
 import cornerstone.webapp.service.account.administration.exceptions.bulk.PartialCreationException;
 import cornerstone.webapp.service.account.administration.exceptions.bulk.BulkCreationException;
 import cornerstone.webapp.service.account.administration.exceptions.bulk.PartialDeletionException;
-import cornerstone.webapp.service.account.administration.exceptions.bulk.BulkDeleteException;
+import cornerstone.webapp.service.account.administration.exceptions.bulk.BulkDeletionException;
 import cornerstone.webapp.service.account.administration.exceptions.single.CreationException;
 import cornerstone.webapp.service.account.administration.exceptions.single.NoAccountException;
 import cornerstone.webapp.service.account.administration.exceptions.single.RetrievalException;
@@ -80,7 +80,7 @@ public class AccountRestService {
     @Path("bulk")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response massDelete(final List<String> emailAddresses) throws PartialDeletionException, BulkDeleteException {
+    public Response massDelete(final List<String> emailAddresses) throws PartialDeletionException, BulkDeletionException {
         accountManager.delete(emailAddresses);
         return Response.status(Response.Status.OK).entity(emailAddresses).build();
     }

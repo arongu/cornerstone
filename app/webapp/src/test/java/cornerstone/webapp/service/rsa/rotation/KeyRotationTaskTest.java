@@ -20,24 +20,22 @@ import static org.mockito.Mockito.*;
 public class KeyRotationTaskTest {
     @Test
     public void run_shouldGoThrowAllTheSteps_whenCalled() throws PublicKeyStoreException {
-        final int rsaTTL = 1000;
-        final int jwtTTL = 500;
-        final String nodeName = "mockito-node";
-        final UUID uuid_A = UUID.randomUUID();
-        final UUID uuid_B = UUID.randomUUID();
+        final int rsaTTL       = 1000;
+        final int jwtTTL       = 500;
+        final String nodeName  = "mockito-node";
+        final UUID uuid_A      = UUID.randomUUID();
+        final UUID uuid_B      = UUID.randomUUID();
         final List<UUID> uuids = new LinkedList<>();
         uuids.add(uuid_A);
         uuids.add(uuid_B);
-
+        // mocks
         final LocalKeyStore  localKeyStore  = Mockito.mock(LocalKeyStoreImpl.class);
         final PublicKeyStore publicKeyStore = Mockito.mock(PublicKeyStoreImpl.class);
         when(publicKeyStore.getLiveKeyUUIDs()).thenReturn(uuids);
 
 
-
         final KeyRotationTask keyRotationTask = new KeyRotationTask(localKeyStore, publicKeyStore, jwtTTL, rsaTTL, nodeName);
         keyRotationTask.run();
-
 
 
         verify(localKeyStore, times(1)).setLiveKeys(any(UUID.class), any(PrivateKey.class), any(PublicKey.class));
@@ -49,11 +47,10 @@ public class KeyRotationTaskTest {
 
     @Test
     public void run_shouldWriteAnErrorLog_whenAddKeyThrowsAnException() throws PublicKeyStoreException {
-        final int rsaTTL = 1000;
-        final int jwtTTL = 500;
+        final int rsaTTL      = 1000;
+        final int jwtTTL      = 500;
         final String nodeName = "mockito-node";
-
-
+        // mocks
         final LocalKeyStore  localKeyStore  = Mockito.mock(LocalKeyStoreImpl.class);
         final PublicKeyStore publicKeyStore = Mockito.mock(PublicKeyStoreImpl.class);
         when(publicKeyStore.addKey(any(UUID.class), anyString(), anyInt(), anyString())).thenThrow(PublicKeyStoreException.class);
@@ -67,11 +64,10 @@ public class KeyRotationTaskTest {
 
     @Test
     public void run_shouldWriteAnErrorLog_whenGetLiveKeyUUIDsThrowsAnException() throws PublicKeyStoreException {
-        final int rsaTTL = 1000;
-        final int jwtTTL = 500;
+        final int rsaTTL      = 1000;
+        final int jwtTTL      = 500;
         final String nodeName = "mockito-node";
-
-
+        // mocks
         final LocalKeyStore  localKeyStore  = Mockito.mock(LocalKeyStoreImpl.class);
         final PublicKeyStore publicKeyStore = Mockito.mock(PublicKeyStoreImpl.class);
         when(publicKeyStore.getLiveKeyUUIDs()).thenThrow(PublicKeyStoreException.class);

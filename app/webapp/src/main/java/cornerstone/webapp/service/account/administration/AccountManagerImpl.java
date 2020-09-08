@@ -9,7 +9,7 @@ import cornerstone.webapp.rest.endpoint.account.AccountSetup;
 import cornerstone.webapp.service.account.administration.exceptions.bulk.PartialCreationException;
 import cornerstone.webapp.service.account.administration.exceptions.bulk.BulkCreationException;
 import cornerstone.webapp.service.account.administration.exceptions.bulk.PartialDeletionException;
-import cornerstone.webapp.service.account.administration.exceptions.bulk.BulkDeleteException;
+import cornerstone.webapp.service.account.administration.exceptions.bulk.BulkDeletionException;
 import cornerstone.webapp.service.account.administration.exceptions.single.*;
 import org.apache.commons.codec.digest.Crypt;
 import org.slf4j.Logger;
@@ -209,7 +209,7 @@ public class AccountManagerImpl implements AccountManager {
     }
 
     @Override
-    public int delete(final List<String> emails) throws PartialDeletionException, BulkDeleteException {
+    public int delete(final List<String> emails) throws PartialDeletionException, BulkDeletionException {
         try (final Connection c = usersDB.getConnection();
              final PreparedStatement ps = c.prepareStatement(SQL_DELETE_ACCOUNT) ) {
 
@@ -240,7 +240,7 @@ public class AccountManagerImpl implements AccountManager {
 
         } catch (final SQLException e) {
             logger.error(e.getMessage());
-            throw new BulkDeleteException();
+            throw new BulkDeletionException();
         }
     }
 

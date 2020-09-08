@@ -2,8 +2,8 @@ package cornerstone.webapp.service.account.administration;
 
 import cornerstone.webapp.config.ConfigLoader;
 import cornerstone.webapp.datasources.UsersDB;
-import cornerstone.webapp.rest.endpoint.account.DeletionException;
-import cornerstone.webapp.service.account.administration.exceptions.single.*;
+import cornerstone.webapp.service.account.administration.exceptions.single.CreationException;
+import cornerstone.webapp.service.account.administration.exceptions.single.NoAccountException;
 import org.apache.commons.codec.digest.Crypt;
 import org.junit.jupiter.api.*;
 
@@ -20,8 +20,8 @@ public class AccountManagerCrudTest {
     @BeforeAll
     public static void setSystemProperties() {
         final String test_files_dir = "../../_test_config/";
-        final String keyFile  = Paths.get(test_files_dir + "key.conf").toAbsolutePath().normalize().toString();
-        final String confFile = Paths.get(test_files_dir + "app.conf").toAbsolutePath().normalize().toString();
+        final String keyFile        = Paths.get(test_files_dir + "key.conf").toAbsolutePath().normalize().toString();
+        final String confFile       = Paths.get(test_files_dir + "app.conf").toAbsolutePath().normalize().toString();
 
         try {
             final ConfigLoader cr = new ConfigLoader(keyFile, confFile);
@@ -42,33 +42,31 @@ public class AccountManagerCrudTest {
 
     @Test
     @Order(10)
-    public void t01a_create_and_get_shouldCreateOneAccount_whenAccountDoesNotExist() throws
-            NoAccountException, DeletionException,
-            RetrievalException, CreationException {
-
-        final String email = "almafa@gmail.com";
-        final String password = "password";
-        final boolean locked = false;
+    public void t01a_create_and_get_shouldCreateOneAccount_whenAccountDoesNotExist() throws Exception {
+        final String email     = "almafa@gmail.com";
+        final String password  = "password";
+        final boolean locked   = false;
         final boolean verified = true;
-        final Timestamp ts = new Timestamp(System.currentTimeMillis());
-
-        final int number_of_account_created;
+        final Timestamp ts     = new Timestamp(System.currentTimeMillis());
+        // results
+        final int number_of_accounts_created;
         final AccountResultSet received_account;
-
-
+        // delete if exists
         TestHelper.deleteAccount(accountManager, email);
-        number_of_account_created = accountManager.create(email, password, locked, verified);
-        received_account = accountManager.get(email);
+
+
+        number_of_accounts_created = accountManager.create(email, password, locked, verified);
+        received_account           = accountManager.get(email);
 
 
         // Knowable value tests
-        assertEquals(1, number_of_account_created);
+        assertEquals(1, number_of_accounts_created);
         assertEquals(email, received_account.email_address);
         assertEquals(locked, received_account.account_locked);
         assertNull(received_account.account_lock_reason);
         assertEquals(verified, received_account.email_address_verified);
         assertEquals(0, received_account.account_login_attempts);
-
+        // Dynamic value tests
         assertTrue(received_account.account_id > 0);
         assertEquals(received_account.email_address_ts, received_account.account_registration_ts); // happens same time
         assertEquals(received_account.email_address_ts, received_account.password_hash_ts);        // happens same time
@@ -81,9 +79,9 @@ public class AccountManagerCrudTest {
     @Order(11)
     public void t01b_create_shouldThrowAccountCreationException_whenAccountAlreadyExists() {
         assertThrows(CreationException.class, () -> {
-            final String email = "almafa@gmail.com";
-            final String password = "password";
-            final boolean locked = false;
+            final String email     = "almafa@gmail.com";
+            final String password  = "password";
+            final boolean locked   = false;
             final boolean verified = true;
 
             accountManager.create(email, password, locked, verified);
@@ -92,33 +90,33 @@ public class AccountManagerCrudTest {
 
     @Test
     @Order(20)
-    public void t02_delete_previousAccountShouldBeDeleted() throws DeletionException, NoAccountException {
+    public void t02_delete_previousAccountShouldBeDeleted() throws Exception {
         final String email = "almafa@gmail.com";
-        final int number_of_account_deleted;
+        final int number_of_accounts_deleted;
 
-        number_of_account_deleted = accountManager.delete("almafa@gmail.com");
+        number_of_accounts_deleted = accountManager.delete("almafa@gmail.com");
 
         assertThrows(NoAccountException.class, () -> accountManager.get(email));
-        assertEquals(1, number_of_account_deleted);
+        assertEquals(1, number_of_accounts_deleted);
     }
 
     @Test
     @Order(30)
-    public void t03_create_anotherAccountShouldBeCreated() throws NoAccountException, CreationException, RetrievalException {
-        final String email = "crud_tests@x-mail.com";
-        final String password = "password";
-        final boolean locked = false;
+    public void t03_create_anotherAccountShouldBeCreated() throws Exception {
+        final String email     = "crud_tests@x-mail.com";
+        final String password  = "password";
+        final boolean locked   = false;
         final boolean verified = true;
-
-        final int number_of_account_created;
+        // results
+        final int number_of_accounts_created;
         final AccountResultSet received_account;
 
 
-        number_of_account_created = accountManager.create(email, password, locked, verified);
-        received_account = accountManager.get(email);
+        number_of_accounts_created = accountManager.create(email, password, locked, verified);
+        received_account          = accountManager.get(email);
 
 
-        assertEquals(1, number_of_account_created);
+        assertEquals(1, number_of_accounts_created);
         assertEquals(received_account.email_address, email);
         assertEquals(received_account.account_locked, locked);
         assertEquals(received_account.password_hash, Crypt.crypt(password, received_account.password_hash));
@@ -126,18 +124,18 @@ public class AccountManagerCrudTest {
 
     @Test
     @Order(40)
-    public void t04_setNewEmailAddress_shouldSetNewEmailForPreviouslyCreatedAccount() throws NoAccountException, RetrievalException, EmailUpdateException {
-        final String email = "crud_tests@x-mail.com";
+    public void t04_setNewEmailAddress_shouldSetNewEmailForPreviouslyCreatedAccount() throws Exception {
+        final String email     = "crud_tests@x-mail.com";
         final String new_email = "my_new_crud_tests_mail@yahoo.com";
-
+        // results
         final int number_of_email_changes;
         final AccountResultSet beforeEmailChange;
         final AccountResultSet afterEmailChange;
 
 
-        beforeEmailChange = accountManager.get(email);
+        beforeEmailChange       = accountManager.get(email);
         number_of_email_changes = accountManager.setEmail(email, new_email);
-        afterEmailChange = accountManager.get(new_email);
+        afterEmailChange        = accountManager.get(new_email);
 
 
         assertEquals(1, number_of_email_changes);
@@ -148,18 +146,18 @@ public class AccountManagerCrudTest {
 
     @Test
     @Order(50)
-    public void t05_lock_shouldLockAccount() throws NoAccountException, RetrievalException, LockUpdateException {
+    public void t05_lock_shouldLockAccount() throws Exception {
         final String email_address = "my_new_crud_tests_mail@yahoo.com";
-        final String reason = "naughty";
-
+        final String reason        = "naughty";
+        // results
         final int locks;
         final AccountResultSet beforeLock;
         final AccountResultSet afterLock;
 
 
         beforeLock = accountManager.get(email_address);
-        locks = accountManager.lock(email_address, reason);
-        afterLock = accountManager.get(email_address);
+        locks      = accountManager.lock(email_address, reason);
+        afterLock  = accountManager.get(email_address);
 
 
         assertEquals(email_address, beforeLock.email_address);
@@ -175,18 +173,18 @@ public class AccountManagerCrudTest {
 
     @Test
     @Order(60)
-    public void t06_unlock_shouldUnlockPreviouslyLockedAccount() throws NoAccountException, RetrievalException, LockUpdateException {
+    public void t06_unlock_shouldUnlockPreviouslyLockedAccount() throws Exception {
         final String email_address = "my_new_crud_tests_mail@yahoo.com";
-        final String reason = "naughty";
-
+        final String reason        = "naughty";
+        // results
         final int unlocks;
         final AccountResultSet beforeUnlock;
         final AccountResultSet afterUnlock;
 
 
         beforeUnlock = accountManager.get(email_address);
-        unlocks = accountManager.unlock(email_address);
-        afterUnlock = accountManager.get(email_address);
+        unlocks      = accountManager.unlock(email_address);
+        afterUnlock  = accountManager.get(email_address);
 
 
         assertEquals(email_address, beforeUnlock.email_address);
@@ -199,37 +197,37 @@ public class AccountManagerCrudTest {
 
     @Test
     @Order(70)
-    public void t07_changePassword_shouldChangePasswordOfAccount() throws NoAccountException, RetrievalException, PasswordUpdateException {
-        final String email = "my_new_crud_tests_mail@yahoo.com";
-        final String password = "password";
+    public void t07_changePassword_shouldChangePasswordOfAccount() throws Exception {
+        final String email       = "my_new_crud_tests_mail@yahoo.com";
+        final String password    = "password";
         final String newPassword = "almafa1234#";
-
-        final int passwordSets;
+        // results
+        final int number_of_password_sets;
         final AccountResultSet beforePasswordChange;
         final AccountResultSet afterPasswordChange;
 
 
-        beforePasswordChange = accountManager.get(email);
-        passwordSets = accountManager.setPassword(email, newPassword);
-        afterPasswordChange = accountManager.get(email);
+        beforePasswordChange    = accountManager.get(email);
+        number_of_password_sets = accountManager.setPassword(email, newPassword);
+        afterPasswordChange     = accountManager.get(email);
 
 
-        assertEquals(1, passwordSets);
+        assertEquals(1, number_of_password_sets);
         assertEquals(beforePasswordChange.password_hash, Crypt.crypt(password, beforePasswordChange.password_hash));
         assertEquals(afterPasswordChange.password_hash, Crypt.crypt(newPassword, afterPasswordChange.password_hash));
     }
 
     @Test
     @Order(80)
-    public void t08_delete_shouldDeleteAccount() throws DeletionException, NoAccountException {
-        final int deletes;
+    public void t08_delete_shouldDeleteAccount() throws Exception {
         final String email = "my_new_crud_tests_mail@yahoo.com";
+        final int number_of_deletes;
 
 
-        deletes = accountManager.delete(email);
+        number_of_deletes = accountManager.delete(email);
 
 
-        assertEquals(1, deletes);
+        assertEquals(1, number_of_deletes);
         assertThrows(NoAccountException.class, () -> accountManager.get(email));
     }
 }
