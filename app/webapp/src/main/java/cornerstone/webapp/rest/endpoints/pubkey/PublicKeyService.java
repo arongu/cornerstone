@@ -1,6 +1,5 @@
 package cornerstone.webapp.rest.endpoints.pubkey;
 
-import cornerstone.webapp.services.rsa.common.PublicKeyData;
 import cornerstone.webapp.services.rsa.store.db.PublicKeyStore;
 import cornerstone.webapp.services.rsa.store.db.PublicKeyStoreException;
 import cornerstone.webapp.services.rsa.store.local.LocalKeyStore;
@@ -12,6 +11,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import java.security.PublicKey;
 import java.util.Base64;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -31,30 +31,31 @@ public class PublicKeyService {
 
     @GET
     @Produces(MediaType.TEXT_PLAIN)
-    @Path("/uuid/{uuid}")
+    @Path("uuid/{uuid}")
     public String publicKey(@PathParam("uuid") String uuid) throws PublicKeyStoreException, NoSuchElementException {
         try {
-            return Base64.getEncoder().encodeToString(localKeyStore.getPublicKey(UUID.fromString(uuid)).getEncoded());
-        } catch (final NoSuchElementException ignored){
+            final UUID uuid_from_param = UUID.fromString(uuid);
+            final PublicKey publicKey = localKeyStore.getPublicKey(uuid_from_param);
+            final byte[] ba = publicKey.getEncoded();
+            return Base64.getEncoder().encodeToString(ba);
 
-        }
+        } catch (final IllegalArgumentException e) {
+            return null;
 
-        return publicKeyStore.getKey(UUID.fromString(uuid)).getBase64Key();
-    }
-
-    @GET
-    @Path("/live")
-    @Produces(MediaType.APPLICATION_JSON)
-    public List<PublicKeyData> getLivePublicKeys() throws PublicKeyStoreException {
-        try {
-            return publicKeyStore.getLiveKeys();
-        } catch (NoSuchElementException e){
+        } catch (final NoSuchElementException ignored) {
             return null;
         }
     }
 
     @GET
-    @Path("/expired")
+    @Path("uuid/live")
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<UUID> getLivePublicKeys() throws PublicKeyStoreException {
+        return publicKeyStore.getLiveKeyUUIDs();
+    }
+
+    @GET
+    @Path("uuid/expired")
     @Produces(MediaType.APPLICATION_JSON)
     public List<UUID> getExpiredKeys() throws PublicKeyStoreException {
         return publicKeyStore.getExpiredKeyUUIDs();
