@@ -15,7 +15,7 @@ public class KeyPairWithUUID {
         uuid = java.util.UUID.randomUUID();
     }
 
-    public KeyPairWithUUID(final java.security.KeyPair keyPair, final UUID uuid) {
+    public KeyPairWithUUID(final KeyPair keyPair, final UUID uuid) {
         this.keyPair = keyPair;
         this.uuid = uuid;
     }

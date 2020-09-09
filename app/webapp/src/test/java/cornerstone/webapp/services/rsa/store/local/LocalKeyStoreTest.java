@@ -4,6 +4,7 @@ import cornerstone.webapp.services.rsa.rotation.KeyPairWithUUID;
 import org.junit.jupiter.api.Test;
 
 import java.security.PublicKey;
+import java.security.spec.InvalidKeySpecException;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -67,6 +68,45 @@ public class LocalKeyStoreTest {
 
         assertEquals(to_be_created, number_of_throws);
         System.out.printf("to_be_created, no_such_element_throws: %d, %d\n", to_be_created, number_of_throws);
+    }
+
+    @Test
+    void addPublicKey_shouldWorkWithX509EncodedKeySpec_whenAddingKeyFromBase64String() throws Exception {
+        final LocalKeyStore localKeyStore;
+        final KeyPairWithUUID kp              = new KeyPairWithUUID();
+        final UUID uuid                       = kp.uuid;
+        final PublicKey public_key            = kp.keyPair.getPublic();
+        final byte[] ba_public_key            = kp.keyPair.getPublic().getEncoded();
+        final String str_b64_public_key       = Base64.getEncoder().encodeToString(ba_public_key);
+        // public key from base64 String -- using X509EncodedKeySpec
+        final PublicKey retrieved_public_key;
+        final String    retrieved_str_b64_public_key;
+
+
+        localKeyStore                                 = new LocalKeyStoreImpl();
+        localKeyStore.addPublicKey(uuid, str_b64_public_key);
+        retrieved_public_key                     = localKeyStore.getPublicKey(uuid);
+        retrieved_str_b64_public_key        = Base64.getEncoder().encodeToString(retrieved_public_key.getEncoded());
+
+
+        assertEquals(public_key, retrieved_public_key);
+        assertEquals(str_b64_public_key, retrieved_str_b64_public_key);
+    }
+
+    @Test
+    void addPublicKey_shouldThrowException_whenBase64KeyIsMalformed() {
+        assertThrows(InvalidKeySpecException.class, () -> {
+            LocalKeyStore localKeyStore = new LocalKeyStoreImpl();
+            localKeyStore.addPublicKey(UUID.randomUUID(), "ff");
+        });
+    }
+
+    @Test
+    void addPublicKey_shouldThrowException_whenBase64KeyIsMalformedB() {
+        assertThrows(InvalidKeySpecException.class, () -> {
+            LocalKeyStore localKeyStore = new LocalKeyStoreImpl();
+            localKeyStore.addPublicKey(UUID.randomUUID(), "csacsi");
+        });
     }
 
     @Test

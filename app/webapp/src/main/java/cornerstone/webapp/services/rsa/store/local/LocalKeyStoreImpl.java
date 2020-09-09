@@ -5,8 +5,12 @@ import cornerstone.webapp.services.rsa.store.log.MessageElements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.security.KeyFactory;
+import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.X509EncodedKeySpec;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -25,7 +29,6 @@ public class LocalKeyStoreImpl implements LocalKeyStore {
     @Override
     public void addPublicKey(final UUID uuid, final PublicKey publicKey) {
         publicKeys.put(uuid, publicKey);
-
         logger.info(String.format(
                 AlignedLogMessages.FORMAT__OFFSET_30C_30C_S,
                 AlignedLogMessages.OFFSETS_KEYSTORE_CLASSES.get(getClass().getName()),
@@ -33,6 +36,14 @@ public class LocalKeyStoreImpl implements LocalKeyStore {
                 MessageElements.PUBLIC_KEY,
                 uuid)
         );
+    }
+
+    @Override
+    public void addPublicKey(final UUID uuid, final String base64KeyString) throws NoSuchAlgorithmException, InvalidKeySpecException {
+        final byte[] ba                  = Base64.getDecoder().decode(base64KeyString.getBytes());
+        final X509EncodedKeySpec keySpec = new X509EncodedKeySpec(ba);
+        final PublicKey publicKey        = KeyFactory.getInstance("RSA").generatePublic(keySpec);
+        addPublicKey(uuid, publicKey);
     }
 
     @Override
@@ -75,7 +86,7 @@ public class LocalKeyStoreImpl implements LocalKeyStore {
     }
 
     @Override
-    public void sync(final List<UUID> toBeKept){
+    public void sync(final List<UUID> toBeKept) {
         int deleted = 0;
         for (final UUID uuid : publicKeys.keySet()) {
             if (uuid == liveUuid || toBeKept.contains(uuid)){
