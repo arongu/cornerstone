@@ -21,6 +21,10 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
+
+/*
+TODO return response
+ */
 @Singleton
 @Path("/pubkeys")
 public class PublicKeyRestService {
@@ -36,60 +40,56 @@ public class PublicKeyRestService {
     @GET
     @Produces(MediaType.TEXT_PLAIN)
     @Path("uuid/{uuid}")
-    public String publicKey(@PathParam("uuid") String uuidString) {
+    public Response publicKey(@PathParam("uuid") String uuidString) {
         final UUID uuid;
         try {
             uuid = UUID.fromString(uuidString);
-
         } catch (final IllegalArgumentException illegalArgumentException) {
-            return "asd";
+            return Response.status(Response.Status.BAD_REQUEST).entity(uuidString).build();
         }
 
-
-        PublicKey publicKey = null;
         try {
-            publicKey = localKeyStore.getPublicKey(uuid);
+            final PublicKey publicKey = localKeyStore.getPublicKey(uuid);
+            final String b64key = Base64.getEncoder().encodeToString(publicKey.getEncoded());
+            return Response.status(Response.Status.OK).entity(b64key).build();
 
-        } catch (final NoSuchElementException noSuchElementException) {
+        } catch (final NoSuchElementException nse_a) {
             try {
                 final String base64Key = publicKeyStore.getKey(uuid).getBase64Key();
                 localKeyStore.addPublicKey(uuid, base64Key);
+                return Response.status(Response.Status.OK).entity(base64Key).build();
 
-            } catch (final NoSuchElementException noSuchElementException1) {
+            } catch (final NoSuchElementException nse_b) {
+                return Response.status(Response.Status.NOT_FOUND).entity(uuidString).build();
 
-            } catch (final PublicKeyStoreException publicKeyStoreException) {
-                //
-                return null;
-            } catch (final NoSuchAlgorithmException e) {
-                // log ?
-                return null;
-            } catch (final InvalidKeySpecException e) {
-                // e.printStackTrace();
-                return null;
+            } catch (final InvalidKeySpecException | NoSuchAlgorithmException | PublicKeyStoreException e) {
+                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+
             }
-        }
-
-        if (publicKey != null) {
-            final String s = Base64.getEncoder().encodeToString(publicKey.getEncoded());
-            return Response.status(Response.Status.OK)
-                    .entity(s)
-                    .build();
-        } else {
-            return null;
         }
     }
 
     @GET
     @Path("uuid/live")
     @Produces(MediaType.APPLICATION_JSON)
-    public List<UUID> getLivePublicKeys() throws PublicKeyStoreException {
-        return publicKeyStore.getLiveKeyUUIDs();
+    public Response getLivePublicKeys() {
+        try {
+            return Response.status(Response.Status.OK).entity(publicKeyStore.getLiveKeyUUIDs()).build();
+
+        } catch (final PublicKeyStoreException e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     @GET
     @Path("uuid/expired")
     @Produces(MediaType.APPLICATION_JSON)
-    public List<UUID> getExpiredKeys() throws PublicKeyStoreException {
-        return publicKeyStore.getExpiredKeyUUIDs();
+    public Response getExpiredKeys() throws PublicKeyStoreException {
+        try {
+            return Response.status(Response.Status.OK).entity(publicKeyStore.getExpiredKeyUUIDs()).build();
+
+        } catch (final PublicKeyStoreException e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+        }
     }
 }
