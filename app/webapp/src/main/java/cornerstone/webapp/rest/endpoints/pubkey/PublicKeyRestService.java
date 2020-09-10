@@ -3,7 +3,8 @@ package cornerstone.webapp.rest.endpoints.pubkey;
 import cornerstone.webapp.services.rsa.store.db.PublicKeyStore;
 import cornerstone.webapp.services.rsa.store.db.PublicKeyStoreException;
 import cornerstone.webapp.services.rsa.store.local.LocalKeyStore;
-import org.postgresql.shaded.com.ongres.scram.common.bouncycastle.base64.Base64Encoder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -17,17 +18,14 @@ import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.util.Base64;
-import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
-
-/*
-TODO return response
- */
 @Singleton
 @Path("/pubkeys")
 public class PublicKeyRestService {
+    private static final Logger logger = LoggerFactory.getLogger(PublicKeyRestService.class);
+
     private final LocalKeyStore localKeyStore;
     private final PublicKeyStore publicKeyStore;
 
@@ -41,6 +39,7 @@ public class PublicKeyRestService {
     @Produces(MediaType.TEXT_PLAIN)
     @Path("uuid/{uuid}")
     public Response publicKey(@PathParam("uuid") String uuidString) {
+        // Send bad request when uuid is malformed
         final UUID uuid;
         try {
             uuid = UUID.fromString(uuidString);
@@ -48,24 +47,33 @@ public class PublicKeyRestService {
             return Response.status(Response.Status.BAD_REQUEST).entity(uuidString).build();
         }
 
+        // Try to get key from local keystore
+        String base64Key = null;
         try {
             final PublicKey publicKey = localKeyStore.getPublicKey(uuid);
-            final String b64key = Base64.getEncoder().encodeToString(publicKey.getEncoded());
-            return Response.status(Response.Status.OK).entity(b64key).build();
+            base64Key = Base64.getEncoder().encodeToString(publicKey.getEncoded());
 
-        } catch (final NoSuchElementException nse_a) {
+        } catch (final NoSuchElementException ignored) {}
+
+        // Try to get key from database and cache it locally
+        if (base64Key == null) {
             try {
-                final String base64Key = publicKeyStore.getKey(uuid).getBase64Key();
+                base64Key = publicKeyStore.getKey(uuid).getBase64Key();
                 localKeyStore.addPublicKey(uuid, base64Key);
-                return Response.status(Response.Status.OK).entity(base64Key).build();
+            } catch (final NoSuchElementException ignored) {
 
-            } catch (final NoSuchElementException nse_b) {
-                return Response.status(Response.Status.NOT_FOUND).entity(uuidString).build();
-
-            } catch (final InvalidKeySpecException | NoSuchAlgorithmException | PublicKeyStoreException e) {
-                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
-
+            } catch (final PublicKeyStoreException | NoSuchAlgorithmException | InvalidKeySpecException e) {
+                logger.error(String.format("An error occurred during local caching a public key, exception class: '%s', exception message: '%s'",
+                        e.getClass().getCanonicalName(), e.getMessage())
+                );
             }
+        }
+
+        // Send response
+        if (base64Key == null){
+            return Response.status(Response.Status.NOT_FOUND).entity(uuidString).build();
+        } else {
+            return Response.status(Response.Status.OK).entity(base64Key).build();
         }
     }
 
@@ -84,7 +92,7 @@ public class PublicKeyRestService {
     @GET
     @Path("uuid/expired")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getExpiredKeys() throws PublicKeyStoreException {
+    public Response getExpiredKeys() {
         try {
             return Response.status(Response.Status.OK).entity(publicKeyStore.getExpiredKeyUUIDs()).build();
 
