@@ -25,26 +25,27 @@ import java.util.List;
 
 @Singleton
 @Path("/account")
-public class AccountRestService {
-    private static final Logger logger = LoggerFactory.getLogger(AccountRestService.class);
+public class AccountManagerRestService {
+    private static final Logger logger = LoggerFactory.getLogger(AccountManagerRestService.class);
     private final AccountManager accountManager;
 
     @Inject
-    public AccountRestService(final AccountManager accountManager) {
+    public AccountManagerRestService(final AccountManager accountManager) {
         this.accountManager = accountManager;
         logger.info(String.format(CommonLogMessages.MESSAGE_CONSTRUCTOR_CALLED, getClass().getName()));
     }
 
-
     @GET
     @Path("{email}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getAccount(@PathParam("email") final String email) throws RetrievalException {
+    public Response getAccount(@PathParam("email") final String email) {
         try {
             final AccountResultSet accountResultSet = accountManager.get(email);
             return Response.status(Response.Status.OK).entity(accountResultSet).build();
         } catch (final NoAccountException e) {
             return Response.status(Response.Status.NOT_FOUND).entity(email).build();
+        } catch (final RetrievalException r) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(email).build();
         }
     }
 

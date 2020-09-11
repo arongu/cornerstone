@@ -70,7 +70,7 @@ public class PublicKeyRestService {
         }
 
         // Send response
-        if (base64Key == null){
+        if (base64Key == null) {
             return Response.status(Response.Status.NOT_FOUND).entity(uuidString).build();
         } else {
             return Response.status(Response.Status.OK).entity(base64Key).build();

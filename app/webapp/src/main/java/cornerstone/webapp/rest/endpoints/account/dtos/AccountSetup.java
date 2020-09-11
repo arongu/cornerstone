@@ -6,6 +6,9 @@ public class AccountSetup {
     private boolean locked;
     private boolean verified;
 
+    public AccountSetup() {
+    }
+
     public AccountSetup(String email, String password, boolean locked, boolean verified) {
         this.email = email;
         this.password = password;
