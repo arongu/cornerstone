@@ -1,6 +1,6 @@
 package cornerstone.webapp.rest.endpoints.login;
 
-import cornerstone.webapp.rest.endpoints.account.dtos.AccountEmailPassword;
+import cornerstone.webapp.rest.endpoints.accounts.dtos.AccountEmailPassword;
 import cornerstone.webapp.services.account.administration.AccountManager;
 import cornerstone.webapp.services.account.administration.exceptions.single.NoAccountException;
 import cornerstone.webapp.services.account.administration.exceptions.single.UnverifiedEmailException;

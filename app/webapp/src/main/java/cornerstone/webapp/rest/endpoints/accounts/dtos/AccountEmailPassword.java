@@ -1,4 +1,4 @@
-package cornerstone.webapp.rest.endpoints.account.dtos;
+package cornerstone.webapp.rest.endpoints.accounts.dtos;
 
 public class AccountEmailPassword {
     private String email;

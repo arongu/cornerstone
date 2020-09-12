@@ -1,7 +1,7 @@
 package cornerstone.webapp.services.account.administration;
 
 import cornerstone.webapp.services.account.administration.exceptions.single.DeletionException;
-import cornerstone.webapp.rest.endpoints.account.dtos.AccountSetup;
+import cornerstone.webapp.rest.endpoints.accounts.dtos.AccountSetup;
 import cornerstone.webapp.services.account.administration.exceptions.bulk.PartialCreationException;
 import cornerstone.webapp.services.account.administration.exceptions.bulk.BulkCreationException;
 import cornerstone.webapp.services.account.administration.exceptions.bulk.PartialDeletionException;
@@ -15,6 +15,7 @@ public interface AccountManager {
 
     int create(final List<AccountSetup> list) throws PartialCreationException, BulkCreationException;
     AccountResultSet get(final String email) throws RetrievalException, NoAccountException;
+    List<String> searchByEmail(final String email) throws EmailAddressSearchException;
 
     int setPassword(final String email, final String password) throws PasswordUpdateException;
     int setEmail(final String currentEmail, final String newEmail) throws EmailUpdateException;

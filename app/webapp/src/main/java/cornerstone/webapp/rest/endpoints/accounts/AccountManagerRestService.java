@@ -1,18 +1,15 @@
-package cornerstone.webapp.rest.endpoints.account;
+package cornerstone.webapp.rest.endpoints.accounts;
 
 import cornerstone.webapp.common.CommonLogMessages;
-import cornerstone.webapp.rest.endpoints.account.dtos.AccountEmailPassword;
-import cornerstone.webapp.rest.endpoints.account.dtos.AccountSetup;
+import cornerstone.webapp.rest.endpoints.accounts.dtos.AccountEmailPassword;
+import cornerstone.webapp.rest.endpoints.accounts.dtos.AccountSetup;
 import cornerstone.webapp.services.account.administration.AccountManager;
 import cornerstone.webapp.services.account.administration.AccountResultSet;
-import cornerstone.webapp.services.account.administration.exceptions.bulk.PartialCreationException;
 import cornerstone.webapp.services.account.administration.exceptions.bulk.BulkCreationException;
-import cornerstone.webapp.services.account.administration.exceptions.bulk.PartialDeletionException;
 import cornerstone.webapp.services.account.administration.exceptions.bulk.BulkDeletionException;
-import cornerstone.webapp.services.account.administration.exceptions.single.CreationException;
-import cornerstone.webapp.services.account.administration.exceptions.single.DeletionException;
-import cornerstone.webapp.services.account.administration.exceptions.single.NoAccountException;
-import cornerstone.webapp.services.account.administration.exceptions.single.RetrievalException;
+import cornerstone.webapp.services.account.administration.exceptions.bulk.PartialCreationException;
+import cornerstone.webapp.services.account.administration.exceptions.bulk.PartialDeletionException;
+import cornerstone.webapp.services.account.administration.exceptions.single.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,7 +21,7 @@ import javax.ws.rs.core.Response;
 import java.util.List;
 
 @Singleton
-@Path("/account")
+@Path("/accounts")
 public class AccountManagerRestService {
     private static final Logger logger = LoggerFactory.getLogger(AccountManagerRestService.class);
     private final AccountManager accountManager;
@@ -33,6 +30,21 @@ public class AccountManagerRestService {
     public AccountManagerRestService(final AccountManager accountManager) {
         this.accountManager = accountManager;
         logger.info(String.format(CommonLogMessages.MESSAGE_CONSTRUCTOR_CALLED, getClass().getName()));
+    }
+
+    // to use wild cards add key%
+    // or %key
+    // or %key%
+    @GET
+    @Path("search/{email}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response searchAddress(@PathParam("email") final String email) {
+        try {
+            final List<String> results = accountManager.searchByEmail(email);
+            return Response.status(Response.Status.OK).entity(results).build();
+        } catch (final EmailAddressSearchException r) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(email).build();
+        }
     }
 
     @GET

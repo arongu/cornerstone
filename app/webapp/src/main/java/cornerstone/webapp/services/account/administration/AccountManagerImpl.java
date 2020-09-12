@@ -4,12 +4,11 @@ import cornerstone.webapp.common.CommonLogMessages;
 import cornerstone.webapp.config.ConfigLoader;
 import cornerstone.webapp.config.enums.APP_ENUM;
 import cornerstone.webapp.datasources.UsersDB;
-import cornerstone.webapp.services.account.administration.exceptions.single.DeletionException;
-import cornerstone.webapp.rest.endpoints.account.dtos.AccountSetup;
-import cornerstone.webapp.services.account.administration.exceptions.bulk.PartialCreationException;
+import cornerstone.webapp.rest.endpoints.accounts.dtos.AccountSetup;
 import cornerstone.webapp.services.account.administration.exceptions.bulk.BulkCreationException;
-import cornerstone.webapp.services.account.administration.exceptions.bulk.PartialDeletionException;
 import cornerstone.webapp.services.account.administration.exceptions.bulk.BulkDeletionException;
+import cornerstone.webapp.services.account.administration.exceptions.bulk.PartialCreationException;
+import cornerstone.webapp.services.account.administration.exceptions.bulk.PartialDeletionException;
 import cornerstone.webapp.services.account.administration.exceptions.single.*;
 import org.apache.commons.codec.digest.Crypt;
 import org.slf4j.Logger;
@@ -20,6 +19,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.LinkedList;
 import java.util.List;
 
 public class AccountManagerImpl implements AccountManager {
@@ -36,7 +36,9 @@ public class AccountManagerImpl implements AccountManager {
     private static final String RETRIEVED                  = "RETRIEVED";
     private static final String UNLOCKED                   = "UNLOCKED";
 
+    // SQL statements
     private static final String SQL_SELECT_ACCOUNT                               = "SELECT * FROM user_data.accounts WHERE email_address=(?)";
+    private static final String SQL_SELECT_ACCOUNTS_ILIKE                        = "SELECT email_address FROM user_data.accounts WHERE email_address ILIKE (?)";
     private static final String SQL_SELECT_ACCOUNT_FOR_LOGIN                     = "SELECT account_locked, email_address_verified, account_login_attempts, password_hash FROM user_data.accounts WHERE email_address=(?)";
     private static final String SQL_INSERT_ACCOUNT                               = "INSERT INTO user_data.accounts (password_hash, email_address, account_locked, email_address_verified) VALUES(?,?,?,?)";
     private static final String SQL_DELETE_ACCOUNT                               = "DELETE FROM user_data.accounts WHERE email_address=(?)";
@@ -48,6 +50,7 @@ public class AccountManagerImpl implements AccountManager {
 
     // Log messages
     private static final String ERROR_LOG_ACCOUNT_GET_FAILED                     = "Failed to get '%s', message: '%s', SQL state '%s'";
+    private static final String ERROR_LOG_SEARCH_EMAIL_ADDRESSES_FAILED          = "Failed to search through email address with keyword: '%s', message: '%s', SQL state '%s'";
     private static final String ERROR_LOG_ACCOUNT_CREATION_FAILED                = "Failed to create '%s', message: '%s', SQL state: '%s'";
     private static final String ERROR_LOG_ACCOUNT_DELETION_FAILED                = "Failed to delete '%s', message: '%s', SQL state: '%s'";
     private static final String ERROR_LOG_UPDATE_PASSWORD_FAILED                 = "Failed to update password of '%s', message: '%s', SQL state: '%s'";
@@ -61,6 +64,7 @@ public class AccountManagerImpl implements AccountManager {
     private static final String EXCEPTION_MESSAGE_ACCOUNT_DELETION_FAILED        = "Failed to delete '%s'.";
     private static final String EXCEPTION_MESSAGE_ACCOUNT_DOES_NOT_EXIST         = "Account '%s' does not exist.";
     private static final String EXCEPTION_MESSAGE_ACCOUNT_GET_FAILED             = "Failed to get '%s'.";
+    private static final String EXCEPTION_MESSAGE_EMAIL_ADDRESS_SEARCH_FAILED    = "Failed to search email addresses with keyword '%s'.";
     private static final String EXCEPTION_MESSAGE_UPDATE_EMAIL_FAILED            = "Failed to update email for '%s' -> '%s'.";
     private static final String EXCEPTION_MESSAGE_UPDATE_LOCK_FAILED             = "Failed to update lock for '%s'.";
     private static final String EXCEPTION_MESSAGE_UPDATE_LOGIN_ATTEMPTS_FAILED   = "Failed to update login attempts for '%s'.";
@@ -122,6 +126,26 @@ public class AccountManagerImpl implements AccountManager {
         } catch (final SQLException e) {
             logger.error(String.format(ERROR_LOG_ACCOUNT_GET_FAILED, email, e.getMessage(), e.getSQLState()));
             throw new RetrievalException(String.format(EXCEPTION_MESSAGE_ACCOUNT_GET_FAILED, email));
+        }
+    }
+
+    @Override
+    public List<String> searchByEmail(final String email) throws EmailAddressSearchException {
+        try (final Connection c = usersDB.getConnection();
+             final PreparedStatement ps = c.prepareStatement(SQL_SELECT_ACCOUNTS_ILIKE)) {
+
+            final LinkedList<String> results = new LinkedList<>();
+            ps.setString(1,  email);
+            final ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                results.add(rs.getString("email_address"));
+            }
+
+            return results;
+
+        } catch (final SQLException e) {
+            logger.error(String.format(ERROR_LOG_SEARCH_EMAIL_ADDRESSES_FAILED, email, e.getMessage(), e.getSQLState()));
+            throw new EmailAddressSearchException(String.format(EXCEPTION_MESSAGE_EMAIL_ADDRESS_SEARCH_FAILED, email));
         }
     }
 
