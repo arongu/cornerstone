@@ -1,4 +1,4 @@
-package cornerstone.webapp.rest.endpoints.pubkey;
+package cornerstone.webapp.rest.endpoints.pubkeys;
 
 import cornerstone.webapp.services.rsa.store.db.PublicKeyStore;
 import cornerstone.webapp.services.rsa.store.db.PublicKeyStoreException;

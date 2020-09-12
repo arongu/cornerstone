@@ -113,7 +113,7 @@ public class AccountManagerCrudTest {
 
 
         number_of_accounts_created = accountManager.create(email, password, locked, verified);
-        received_account          = accountManager.get(email);
+        received_account           = accountManager.get(email);
 
 
         assertEquals(1, number_of_accounts_created);
