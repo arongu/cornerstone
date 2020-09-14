@@ -130,12 +130,12 @@ public class AccountManagerImpl implements AccountManager {
     }
 
     @Override
-    public List<String> searchByEmail(final String email) throws EmailAddressSearchException {
+    public List<String> searchAccounts(final String searchString) throws EmailAddressSearchException {
         try (final Connection c = usersDB.getConnection();
              final PreparedStatement ps = c.prepareStatement(SQL_SELECT_ACCOUNTS_ILIKE)) {
 
             final LinkedList<String> results = new LinkedList<>();
-            ps.setString(1,  email);
+            ps.setString(1, searchString);
             final ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 results.add(rs.getString("email_address"));
@@ -144,15 +144,13 @@ public class AccountManagerImpl implements AccountManager {
             return results;
 
         } catch (final SQLException e) {
-            logger.error(String.format(ERROR_LOG_SEARCH_EMAIL_ADDRESSES_FAILED, email, e.getMessage(), e.getSQLState()));
-            throw new EmailAddressSearchException(String.format(EXCEPTION_MESSAGE_EMAIL_ADDRESS_SEARCH_FAILED, email));
+            logger.error(String.format(ERROR_LOG_SEARCH_EMAIL_ADDRESSES_FAILED, searchString, e.getMessage(), e.getSQLState()));
+            throw new EmailAddressSearchException(String.format(EXCEPTION_MESSAGE_EMAIL_ADDRESS_SEARCH_FAILED, searchString));
         }
     }
 
     @Override
-    public int create(final String email, final String password,
-                      final boolean locked, final boolean verified) throws CreationException {
-
+    public int create(final String email, final String password, final boolean locked, final boolean verified) throws CreationException {
         try (final Connection c = usersDB.getConnection();
              final PreparedStatement ps = c.prepareStatement(SQL_INSERT_ACCOUNT)) {
 
@@ -160,13 +158,12 @@ public class AccountManagerImpl implements AccountManager {
             ps.setString (2, email.toLowerCase());
             ps.setBoolean(3, locked);
             ps.setBoolean(4, verified);
-
             logger.info(String.format(LOG_FORMAT, CREATED, email));
             return ps.executeUpdate();
 
         } catch (final SQLException e) {
             logger.error(String.format(ERROR_LOG_ACCOUNT_CREATION_FAILED, email, e.getMessage(), e.getSQLState()));
-            throw new CreationException(String.format(EXCEPTION_MESSAGE_ACCOUNT_CREATION_FAILED, email));
+            throw new CreationException(String.format(EXCEPTION_MESSAGE_ACCOUNT_CREATION_FAILED, e.getMessage()));
         }
     }
 

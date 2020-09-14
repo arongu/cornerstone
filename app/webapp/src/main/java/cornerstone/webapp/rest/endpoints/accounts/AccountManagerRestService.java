@@ -2,6 +2,7 @@ package cornerstone.webapp.rest.endpoints.accounts;
 
 import cornerstone.webapp.common.CommonLogMessages;
 import cornerstone.webapp.rest.endpoints.accounts.dtos.AccountEmailPassword;
+import cornerstone.webapp.rest.endpoints.accounts.dtos.AccountSearch;
 import cornerstone.webapp.rest.endpoints.accounts.dtos.AccountSetup;
 import cornerstone.webapp.services.account.administration.AccountManager;
 import cornerstone.webapp.services.account.administration.AccountResultSet;
@@ -35,15 +36,22 @@ public class AccountManagerRestService {
     // to use wild cards add key%
     // or %key
     // or %key%
-    @GET
-    @Path("search/{email}")
+    @Path("search")
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response searchAddress(@PathParam("email") final String email) {
+    public Response searchAddress(final AccountSearch accountSearch) {
+        final String searchString = accountSearch.getSearchString();
         try {
-            final List<String> results = accountManager.searchByEmail(email);
-            return Response.status(Response.Status.OK).entity(results).build();
+            final List<String> results = accountManager.searchAccounts(searchString);
+            if (results.size() > 0) {
+                return Response.status(Response.Status.OK).entity(results).build();
+            } else {
+                return Response.status(Response.Status.NO_CONTENT).entity("[]").build();
+            }
+
         } catch (final EmailAddressSearchException r) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(email).build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(searchString).build();
         }
     }
 
@@ -65,11 +73,15 @@ public class AccountManagerRestService {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response create(final AccountEmailPassword accountEmailPassword) throws CreationException {
-        final String email = accountEmailPassword.getEmail();
-        final String password = accountEmailPassword.getPassword();
+        try {
+            final String email = accountEmailPassword.getEmail();
+            final String password = accountEmailPassword.getPassword();
+            accountManager.create(email, password, false, false);
+            return Response.status(Response.Status.CREATED).entity(accountEmailPassword.getEmail()).build();
 
-        accountManager.create(email, password, false, false);
-        return Response.status(Response.Status.CREATED).entity("todo").build();
+        } catch (final CreationException e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+        }
     }
 
     @DELETE

@@ -12,10 +12,10 @@ import java.util.List;
 
 public interface AccountManager {
     int create(final String email, final String password, final boolean locked, final boolean verified) throws CreationException;
-
     int create(final List<AccountSetup> list) throws PartialCreationException, BulkCreationException;
+
     AccountResultSet get(final String email) throws RetrievalException, NoAccountException;
-    List<String> searchByEmail(final String email) throws EmailAddressSearchException;
+    List<String> searchAccounts(final String str) throws EmailAddressSearchException;
 
     int setPassword(final String email, final String password) throws PasswordUpdateException;
     int setEmail(final String currentEmail, final String newEmail) throws EmailUpdateException;
