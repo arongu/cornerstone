@@ -62,22 +62,24 @@ public class AccountManagerRestService {
         try {
             final AccountResultSet accountResultSet = accountManager.get(email);
             return Response.status(Response.Status.OK).entity(accountResultSet).build();
+
         } catch (final NoAccountException e) {
-            return Response.status(Response.Status.NOT_FOUND).entity(email).build();
+            return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
+
         } catch (final RetrievalException r) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(email).build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(r.getMessage()).build();
         }
     }
 
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response create(final AccountEmailPassword accountEmailPassword) throws CreationException {
+    public Response create(final AccountEmailPassword accountEmailPassword) {
+        final String email = accountEmailPassword.getEmail();
         try {
-            final String email = accountEmailPassword.getEmail();
             final String password = accountEmailPassword.getPassword();
             accountManager.create(email, password, false, false);
-            return Response.status(Response.Status.CREATED).entity(accountEmailPassword.getEmail()).build();
+            return Response.status(Response.Status.CREATED).entity(email).build();
 
         } catch (final CreationException e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
@@ -87,29 +89,49 @@ public class AccountManagerRestService {
     @DELETE
     @Path("{email}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response delete(@PathParam("email") final String email) throws DeletionException, NoAccountException {
-        final int n = accountManager.delete(email);
-        if (n > 0) {
+    public Response delete(@PathParam("email") final String email) {
+        try {
+            accountManager.delete(email);
             return Response.status(Response.Status.OK).entity(email).build();
-        } else {
-            return Response.status(Response.Status.NOT_FOUND).entity(email).build();
+
+        } catch (final NoAccountException e) {
+            return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
+
+        } catch (final DeletionException d) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(d.getMessage()).build();
         }
     }
 
     @POST
     @Path("bulk")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response massCreate(final List<AccountSetup> accountSetups) throws PartialCreationException, BulkCreationException {
-        accountManager.create(accountSetups);
-        return Response.status(Response.Status.CREATED).entity(accountSetups).build();
+    public Response massCreate(final List<AccountSetup> accountSetups) {
+        try {
+            accountManager.create(accountSetups);
+            return Response.status(Response.Status.CREATED).entity(accountSetups).build();
+
+        } catch (final PartialCreationException p) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(p.getExceptionMessages()).build();
+
+        } catch (final BulkCreationException b) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(b.getMessage()).build();
+        }
     }
 
     @DELETE
     @Path("bulk")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response massDelete(final List<String> emailAddresses) throws PartialDeletionException, BulkDeletionException {
-        accountManager.delete(emailAddresses);
-        return Response.status(Response.Status.OK).entity(emailAddresses).build();
+    public Response massDelete(final List<String> emailAddresses) {
+        try {
+            accountManager.delete(emailAddresses);
+            return Response.status(Response.Status.OK).entity(emailAddresses).build();
+
+        } catch (final PartialDeletionException p) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(p.getExceptionMessages()).build();
+
+        } catch (final BulkDeletionException b) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(b.getMessage()).build();
+        }
     }
 }
