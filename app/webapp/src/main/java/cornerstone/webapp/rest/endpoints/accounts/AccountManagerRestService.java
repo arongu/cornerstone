@@ -157,7 +157,7 @@ public class AccountManagerRestService {
         } catch (final BulkCreationException b) {
             final SingleErrorResponse singleErrorResponse = new SingleErrorResponse(
                     Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(),
-                    "Failed to connect to database."
+                    "Database error."
             );
 
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(singleErrorResponse).build();
@@ -185,7 +185,7 @@ public class AccountManagerRestService {
         } catch (final BulkDeletionException b) {
             final SingleErrorResponse singleErrorResponse = new SingleErrorResponse(
                     Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(),
-                    "Failed to connect to database."
+                    "Database error."
             );
 
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(singleErrorResponse).build();

@@ -254,7 +254,7 @@ public class AccountManagerImpl implements AccountManager {
                         partialDeletionException = new PartialDeletionException();
                     }
 
-                    partialDeletionException.addExceptionMessage(String.format(EXCEPTION_MESSAGE_ACCOUNT_DELETION_FAILED, email));
+                    partialDeletionException.addExceptionMessage(String.format(EXCEPTION_MESSAGE_ACCOUNT_DOES_NOT_EXIST, email));
 
                 } catch (final SQLException s) {
                     if (partialDeletionException == null) {
