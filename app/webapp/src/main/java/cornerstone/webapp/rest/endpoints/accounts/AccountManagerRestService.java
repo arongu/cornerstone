@@ -4,6 +4,8 @@ import cornerstone.webapp.common.CommonLogMessages;
 import cornerstone.webapp.rest.endpoints.accounts.dtos.AccountEmailPassword;
 import cornerstone.webapp.rest.endpoints.accounts.dtos.AccountSearch;
 import cornerstone.webapp.rest.endpoints.accounts.dtos.AccountSetup;
+import cornerstone.webapp.rest.general.BulkErrorResponse;
+import cornerstone.webapp.rest.general.SingleErrorResponse;
 import cornerstone.webapp.services.account.administration.AccountManager;
 import cornerstone.webapp.services.account.administration.AccountResultSet;
 import cornerstone.webapp.services.account.administration.exceptions.bulk.BulkCreationException;
@@ -50,8 +52,13 @@ public class AccountManagerRestService {
                 return Response.status(Response.Status.NO_CONTENT).entity("[]").build();
             }
 
-        } catch (final EmailAddressSearchException r) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(searchString).build();
+        } catch (final EmailAddressSearchException e) {
+            final SingleErrorResponse singleErrorResponse = new SingleErrorResponse(
+                    Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(),
+                    e.getMessage()
+            );
+
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(singleErrorResponse).build();
         }
     }
 
@@ -64,10 +71,20 @@ public class AccountManagerRestService {
             return Response.status(Response.Status.OK).entity(accountResultSet).build();
 
         } catch (final NoAccountException e) {
-            return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
+            final SingleErrorResponse singleErrorResponse = new SingleErrorResponse(
+                    Response.Status.NOT_FOUND.getStatusCode(),
+                    e.getMessage()
+            );
+
+            return Response.status(Response.Status.NOT_FOUND).entity(singleErrorResponse).build();
 
         } catch (final RetrievalException r) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(r.getMessage()).build();
+            final SingleErrorResponse singleErrorResponse = new SingleErrorResponse(
+                    Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(),
+                    r.getMessage()
+            );
+
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(singleErrorResponse).build();
         }
     }
 
@@ -75,14 +92,22 @@ public class AccountManagerRestService {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response create(final AccountEmailPassword accountEmailPassword) {
-        final String email = accountEmailPassword.getEmail();
         try {
-            final String password = accountEmailPassword.getPassword();
-            accountManager.create(email, password, false, false);
-            return Response.status(Response.Status.CREATED).entity(email).build();
+            accountManager.create(
+                    accountEmailPassword.getEmail(),
+                    accountEmailPassword.getPassword(),
+                    false, false
+            );
+
+            return Response.status(Response.Status.CREATED).build();
 
         } catch (final CreationException e) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(e.getMessage()).build();
+            final SingleErrorResponse singleErrorResponse = new SingleErrorResponse(
+                    Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(),
+                    e.getMessage()
+            );
+
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(singleErrorResponse).build();
         }
     }
 
@@ -92,13 +117,23 @@ public class AccountManagerRestService {
     public Response delete(@PathParam("email") final String email) {
         try {
             accountManager.delete(email);
-            return Response.status(Response.Status.OK).entity(email).build();
+            return Response.status(Response.Status.OK).build();
 
         } catch (final NoAccountException e) {
-            return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
+            final SingleErrorResponse singleErrorResponse = new SingleErrorResponse(
+                    Response.Status.NOT_FOUND.getStatusCode(),
+                    e.getMessage()
+            );
+
+            return Response.status(Response.Status.NOT_FOUND).entity(singleErrorResponse).build();
 
         } catch (final DeletionException d) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(d.getMessage()).build();
+            final SingleErrorResponse errorResponse = new SingleErrorResponse(
+                    Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(),
+                    d.getMessage()
+            );
+
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(errorResponse).build();
         }
     }
 
@@ -108,13 +143,24 @@ public class AccountManagerRestService {
     public Response massCreate(final List<AccountSetup> accountSetups) {
         try {
             accountManager.create(accountSetups);
-            return Response.status(Response.Status.CREATED).entity(accountSetups).build();
+            return Response.status(Response.Status.CREATED).build();
 
         } catch (final PartialCreationException p) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(p.getExceptionMessages()).build();
+            final BulkErrorResponse bulkErrorResponse = new BulkErrorResponse(
+                    Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(),
+                    BulkErrorResponse.STATUS.INCOMPLETE,
+                    p.getExceptionMessages()
+            );
+
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(bulkErrorResponse).build();
 
         } catch (final BulkCreationException b) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(b.getMessage()).build();
+            final SingleErrorResponse singleErrorResponse = new SingleErrorResponse(
+                    Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(),
+                    "Failed to connect to database."
+            );
+
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(singleErrorResponse).build();
         }
     }
 
@@ -125,13 +171,24 @@ public class AccountManagerRestService {
     public Response massDelete(final List<String> emailAddresses) {
         try {
             accountManager.delete(emailAddresses);
-            return Response.status(Response.Status.OK).entity(emailAddresses).build();
+            return Response.status(Response.Status.OK).build();
 
         } catch (final PartialDeletionException p) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(p.getExceptionMessages()).build();
+            final BulkErrorResponse bulkErrorResponse = new BulkErrorResponse(
+                    Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(),
+                    BulkErrorResponse.STATUS.INCOMPLETE,
+                    p.getExceptionMessages()
+            );
+
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(bulkErrorResponse).build();
 
         } catch (final BulkDeletionException b) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(b.getMessage()).build();
+            final SingleErrorResponse singleErrorResponse = new SingleErrorResponse(
+                    Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(),
+                    "Failed to connect to database."
+            );
+
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(singleErrorResponse).build();
         }
     }
 }
