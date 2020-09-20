@@ -26,6 +26,7 @@ public class AccountManagerImpl implements AccountManager {
     private static final String LOG_FORMAT = "%-35s : %s";
     private static final String CREATED                    = "CREATED";
     private static final String DELETED                    = "DELETED";
+    private static final String DELETE_NO_ACCOUNT          = "NO ACCOUNT TO DELETE";
     private static final String EMAIL_ADDRESS_CHANGED      = "EMAIL ADDRESS CHANGED";
     private static final String LOCKED                     = "LOCKED";
     private static final String LOGGED_IN                  = "LOGGED IN";
@@ -60,15 +61,16 @@ public class AccountManagerImpl implements AccountManager {
     private static final String ERROR_LOG_CLEAR_LOGIN_ATTEMPTS_FAILED            = "Failed to clear login attempts of '%s', message: '%s', SQL state: '%s'";
 
     // Exception messages
-    private static final String EXCEPTION_MESSAGE_ACCOUNT_CREATION_FAILED        = "Failed to create '%s'.";
-    private static final String EXCEPTION_MESSAGE_ACCOUNT_DELETION_FAILED        = "Failed to delete '%s'.";
-    private static final String EXCEPTION_MESSAGE_ACCOUNT_DOES_NOT_EXIST         = "Account '%s' does not exist.";
-    private static final String EXCEPTION_MESSAGE_ACCOUNT_RETRIEVAL_FAILED       = "Failed to retrieve '%s'.";
-    private static final String EXCEPTION_MESSAGE_ACCOUNT_SEARCH_FAILED          = "Failed to run search with keyword '%s'.";
-    private static final String EXCEPTION_MESSAGE_UPDATE_EMAIL_FAILED            = "Failed to update email for '%s' -> '%s'.";
-    private static final String EXCEPTION_MESSAGE_UPDATE_LOCK_FAILED             = "Failed to update lock for '%s'.";
-    private static final String EXCEPTION_MESSAGE_UPDATE_LOGIN_ATTEMPTS_FAILED   = "Failed to update login attempts for '%s'.";
-    private static final String EXCEPTION_MESSAGE_UPDATE_PASSWORD_FAILED         = "Failed to update password for '%s'.";
+    private static final String EXCEPTION_MESSAGE_ACCOUNT_CREATION_ALREADY_EXISTS = "Failed to create '%s' (already exists).";
+    private static final String EXCEPTION_MESSAGE_ACCOUNT_CREATION_FAILED         = "Failed to create '%s'.";
+    private static final String EXCEPTION_MESSAGE_ACCOUNT_DELETION_FAILED         = "Failed to delete '%s'.";
+    private static final String EXCEPTION_MESSAGE_ACCOUNT_DOES_NOT_EXIST          = "Account '%s' does not exist.";
+    private static final String EXCEPTION_MESSAGE_ACCOUNT_RETRIEVAL_FAILED        = "Failed to retrieve '%s'.";
+    private static final String EXCEPTION_MESSAGE_ACCOUNT_SEARCH_FAILED           = "Failed to run search with keyword '%s'.";
+    private static final String EXCEPTION_MESSAGE_UPDATE_EMAIL_FAILED             = "Failed to update email for '%s' -> '%s'.";
+    private static final String EXCEPTION_MESSAGE_UPDATE_LOCK_FAILED              = "Failed to update lock for '%s'.";
+    private static final String EXCEPTION_MESSAGE_UPDATE_LOGIN_ATTEMPTS_FAILED    = "Failed to update login attempts for '%s'.";
+    private static final String EXCEPTION_MESSAGE_UPDATE_PASSWORD_FAILED          = "Failed to update password for '%s'.";
 
     private static final Logger logger = LoggerFactory.getLogger(AccountManagerImpl.class);
 
@@ -164,7 +166,11 @@ public class AccountManagerImpl implements AccountManager {
 
         } catch (final SQLException e) {
             logger.error(String.format(ERROR_LOG_ACCOUNT_CREATION_FAILED, email, e.getMessage(), e.getSQLState()));
-            throw new CreationException(String.format(EXCEPTION_MESSAGE_ACCOUNT_CREATION_FAILED, email));
+            if (e.getSQLState().equals("23505")) {
+                throw new CreationException(String.format(EXCEPTION_MESSAGE_ACCOUNT_CREATION_ALREADY_EXISTS, email));
+            } else {
+                throw new CreationException(String.format(EXCEPTION_MESSAGE_ACCOUNT_CREATION_FAILED, email));
+            }
         }
     }
 
@@ -195,7 +201,12 @@ public class AccountManagerImpl implements AccountManager {
                             partialCreationException = new PartialCreationException();
                         }
 
-                        partialCreationException.addExceptionMessage(String.format(EXCEPTION_MESSAGE_ACCOUNT_CREATION_FAILED, email));
+                        if ( e.getSQLState().equals("23505")) {
+                            partialCreationException.addExceptionMessage(String.format(EXCEPTION_MESSAGE_ACCOUNT_CREATION_ALREADY_EXISTS, email));
+                        } else {
+                            partialCreationException.addExceptionMessage(String.format(EXCEPTION_MESSAGE_ACCOUNT_CREATION_FAILED, email));
+                        }
+
                         logger.error(String.format(ERROR_LOG_ACCOUNT_CREATION_FAILED, email, e.getMessage(), e.getSQLState()));
                     }
                 }
@@ -221,6 +232,7 @@ public class AccountManagerImpl implements AccountManager {
                 logger.info(String.format(LOG_FORMAT, DELETED, email));
                 return deletedRows;
             } else {
+                logger.info(String.format(LOG_FORMAT, DELETE_NO_ACCOUNT, email));
                 throw new NoAccountException(String.format(EXCEPTION_MESSAGE_ACCOUNT_DOES_NOT_EXIST, email));
             }
 
@@ -246,6 +258,7 @@ public class AccountManagerImpl implements AccountManager {
                         deletedRows += n;
                         logger.info(String.format(LOG_FORMAT, DELETED, email));
                     } else {
+                        logger.info(String.format(LOG_FORMAT, DELETE_NO_ACCOUNT, email));
                         throw new NoAccountException(email);
                     }
 

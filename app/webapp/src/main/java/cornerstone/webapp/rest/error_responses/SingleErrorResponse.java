@@ -1,4 +1,4 @@
-package cornerstone.webapp.rest.general;
+package cornerstone.webapp.rest.error_responses;
 /*
     {
         "httpStatusCode": 200/400/500,

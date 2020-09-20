@@ -4,8 +4,8 @@ import cornerstone.webapp.common.CommonLogMessages;
 import cornerstone.webapp.rest.endpoints.accounts.dtos.AccountEmailPassword;
 import cornerstone.webapp.rest.endpoints.accounts.dtos.AccountSearch;
 import cornerstone.webapp.rest.endpoints.accounts.dtos.AccountSetup;
-import cornerstone.webapp.rest.general.BulkErrorResponse;
-import cornerstone.webapp.rest.general.SingleErrorResponse;
+import cornerstone.webapp.rest.error_responses.BulkErrorResponse;
+import cornerstone.webapp.rest.error_responses.SingleErrorResponse;
 import cornerstone.webapp.services.account.administration.AccountManager;
 import cornerstone.webapp.services.account.administration.AccountResultSet;
 import cornerstone.webapp.services.account.administration.exceptions.bulk.BulkCreationException;
@@ -148,7 +148,6 @@ public class AccountManagerRestService {
         } catch (final PartialCreationException p) {
             final BulkErrorResponse bulkErrorResponse = new BulkErrorResponse(
                     Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(),
-                    BulkErrorResponse.STATUS.INCOMPLETE,
                     p.getExceptionMessages()
             );
 
@@ -176,7 +175,6 @@ public class AccountManagerRestService {
         } catch (final PartialDeletionException p) {
             final BulkErrorResponse bulkErrorResponse = new BulkErrorResponse(
                     Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(),
-                    BulkErrorResponse.STATUS.INCOMPLETE,
                     p.getExceptionMessages()
             );
 
