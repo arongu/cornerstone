@@ -49,7 +49,7 @@ public class AccountManagerRestService {
             if (results.size() > 0) {
                 return Response.status(Response.Status.OK).entity(results).build();
             } else {
-                return Response.status(Response.Status.NO_CONTENT).entity("[]").build();
+                return Response.status(Response.Status.OK).entity("[]").build();
             }
 
         } catch (final EmailAddressSearchException e) {

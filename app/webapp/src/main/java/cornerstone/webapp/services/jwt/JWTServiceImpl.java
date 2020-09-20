@@ -41,22 +41,7 @@ public class JWTServiceImpl implements JWTService {
 
     @Override
     public String createJws(final String subject) {
-        final LiveKeys liveKeys     = localKeyStore.getLiveKeys();
-        final Properties properties = configLoader.getAppProperties();
-        final long jwtTTL           = Long.parseLong(properties.getProperty(APP_ENUM.APP_JWT_TTL.key));
-        final long now              = Instant.now().getEpochSecond();
-
-        final Map<String,Object> claimsMap  = new HashMap<>();
-        claimsMap.put("keyId", liveKeys.uuid);
-
-        return Jwts.builder()
-                .setClaims     (claimsMap)
-                .setIssuer     (properties.getProperty(APP_ENUM.APP_NODE_NAME.key))
-                .setSubject    (subject)
-                .setIssuedAt   (Date.from(Instant.ofEpochSecond(now)))
-                .setExpiration (Date.from(Instant.ofEpochSecond(now + jwtTTL)))
-                .signWith      (liveKeys.privateKey)
-                .compact();
+        return createJws(subject, null);
     }
 
     @Override
@@ -66,20 +51,16 @@ public class JWTServiceImpl implements JWTService {
         final long jwtTTL           = Long.parseLong(properties.getProperty(APP_ENUM.APP_JWT_TTL.key));
         final long now              = Instant.now().getEpochSecond();
 
-        if (claimsMap != null) {
-            final Map<String, Object> m = new HashMap<>(claimsMap);
-            m.put("keyId", liveKeys.uuid);
+        final Map<String, Object> m = claimsMap != null ? new HashMap<>(claimsMap) : new HashMap<>();
+        m.put("keyId", liveKeys.uuid);
 
-            return Jwts.builder()
-                    .setClaims     (m)
-                    .setIssuer     (properties.getProperty(APP_ENUM.APP_NODE_NAME.key))
-                    .setSubject    (subject)
-                    .setIssuedAt   (Date.from(Instant.ofEpochSecond(now)))
-                    .setExpiration (Date.from(Instant.ofEpochSecond(now + jwtTTL)))
-                    .signWith      (liveKeys.privateKey)
-                    .compact();
-        } else {
-            throw new NullPointerException("claimsMap must not be null!");
-        }
+        return Jwts.builder()
+                .setClaims     (m)
+                .setIssuer     (properties.getProperty(APP_ENUM.APP_NODE_NAME.key))
+                .setSubject    (subject)
+                .setIssuedAt   (Date.from(Instant.ofEpochSecond(now)))
+                .setExpiration (Date.from(Instant.ofEpochSecond(now + jwtTTL)))
+                .signWith      (liveKeys.privateKey)
+                .compact();
     }
 }
