@@ -1,5 +1,6 @@
 package cornerstone.webapp.rest.endpoints.pubkeys;
 
+import cornerstone.webapp.rest.error_responses.SingleErrorResponse;
 import cornerstone.webapp.services.rsa.store.db.PublicKeyStore;
 import cornerstone.webapp.services.rsa.store.db.PublicKeyStoreException;
 import cornerstone.webapp.services.rsa.store.local.LocalKeyStore;
@@ -36,15 +37,16 @@ public class PublicKeyRestService {
     }
 
     @GET
-    @Produces(MediaType.TEXT_PLAIN)
     @Path("uuid/{uuid}")
+    @Produces(MediaType.APPLICATION_JSON)
     public Response publicKey(@PathParam("uuid") String uuidString) {
         // Send bad request when uuid is malformed
         final UUID uuid;
         try {
             uuid = UUID.fromString(uuidString);
         } catch (final IllegalArgumentException illegalArgumentException) {
-            return Response.status(Response.Status.BAD_REQUEST).entity(uuidString).build();
+            final SingleErrorResponse singleErrorResponse = new SingleErrorResponse(Response.Status.BAD_REQUEST.getStatusCode(), illegalArgumentException.getMessage());
+            return Response.status(Response.Status.BAD_REQUEST).entity(singleErrorResponse).build();
         }
 
         // Try to get key from local keystore
@@ -71,7 +73,9 @@ public class PublicKeyRestService {
 
         // Send response
         if (base64Key == null) {
-            return Response.status(Response.Status.NOT_FOUND).entity(uuidString).build();
+            return Response.status(Response.Status.NOT_FOUND)
+                    .entity(new SingleErrorResponse(Response.Status.NOT_FOUND.getStatusCode(), "No such key."))
+                    .build();
         } else {
             return Response.status(Response.Status.OK).entity(base64Key).build();
         }
