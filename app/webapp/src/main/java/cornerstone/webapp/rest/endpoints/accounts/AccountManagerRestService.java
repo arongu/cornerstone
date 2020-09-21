@@ -49,7 +49,7 @@ public class AccountManagerRestService {
             if (results.size() > 0) {
                 return Response.status(Response.Status.OK).entity(results).build();
             } else {
-                return Response.status(Response.Status.OK).entity("[]").build();
+                return Response.status(Response.Status.NOT_FOUND).entity("[]").build();
             }
 
         } catch (final EmailAddressSearchException e) {
@@ -117,7 +117,7 @@ public class AccountManagerRestService {
     public Response delete(@PathParam("email") final String email) {
         try {
             accountManager.delete(email);
-            return Response.status(Response.Status.OK).build();
+            return Response.status(Response.Status.NO_CONTENT).build();
 
         } catch (final NoAccountException e) {
             final SingleErrorResponse singleErrorResponse = new SingleErrorResponse(
@@ -170,7 +170,7 @@ public class AccountManagerRestService {
     public Response massDelete(final List<String> emailAddresses) {
         try {
             accountManager.delete(emailAddresses);
-            return Response.status(Response.Status.OK).build();
+            return Response.status(Response.Status.NO_CONTENT).build();
 
         } catch (final PartialDeletionException p) {
             final BulkErrorResponse bulkErrorResponse = new BulkErrorResponse(

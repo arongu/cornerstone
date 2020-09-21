@@ -19,6 +19,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.util.Base64;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
@@ -98,7 +99,12 @@ public class PublicKeyRestService {
     @Produces(MediaType.APPLICATION_JSON)
     public Response getExpiredKeys() {
         try {
-            return Response.status(Response.Status.OK).entity(publicKeyStore.getExpiredKeyUUIDs()).build();
+            final List<UUID> uuidList = publicKeyStore.getExpiredKeyUUIDs();
+            if (uuidList.size() > 0) {
+                return Response.status(Response.Status.OK).entity(uuidList).build();
+            } else {
+                return Response.status(Response.Status.NO_CONTENT).build();
+            }
 
         } catch (final PublicKeyStoreException e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();

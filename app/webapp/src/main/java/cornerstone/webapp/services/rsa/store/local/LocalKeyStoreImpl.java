@@ -141,6 +141,7 @@ public class LocalKeyStoreImpl implements LocalKeyStore {
         return publicKeys.keySet();
     }
 
+    // TODO look into this
     @Override
     public LiveKeys getLiveKeys() throws NoSuchElementException {
         if (null != livePrivateKey) {
@@ -153,6 +154,7 @@ public class LocalKeyStoreImpl implements LocalKeyStore {
                     MessageElements.PUBLIC_AND_PRIVATE_KEY)
             );
 
+            // init exception to be honest - thread not started or not updating
             throw new NoSuchElementException();
         }
     }
