@@ -3,8 +3,9 @@ package cornerstone.webapp.services.jwt;
 import cornerstone.webapp.common.CommonLogMessages;
 import cornerstone.webapp.config.ConfigLoader;
 import cornerstone.webapp.config.enums.APP_ENUM;
-import cornerstone.webapp.services.rsa.store.local.LiveKeys;
+import cornerstone.webapp.services.rsa.store.local.SigningKeySetup;
 import cornerstone.webapp.services.rsa.store.local.LocalKeyStore;
+import cornerstone.webapp.services.rsa.store.local.SigningKeySetupException;
 import io.jsonwebtoken.Jwts;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,19 +41,19 @@ public class JWTServiceImpl implements JWTService {
     }
 
     @Override
-    public String createJws(final String subject) {
+    public String createJws(final String subject) throws SigningKeySetupException {
         return createJws(subject, null);
     }
 
     @Override
-    public String createJws(final String subject, final Map<String,Object> claimsMap) {
-        final LiveKeys liveKeys     = localKeyStore.getLiveKeys();
-        final Properties properties = configLoader.getAppProperties();
-        final long jwtTTL           = Long.parseLong(properties.getProperty(APP_ENUM.APP_JWT_TTL.key));
-        final long now              = Instant.now().getEpochSecond();
+    public String createJws(final String subject, final Map<String,Object> claimsMap) throws SigningKeySetupException {
+        final SigningKeySetup signingKeySetup = localKeyStore.getSigningKeySetup();
+        final Properties properties           = configLoader.getAppProperties();
+        final long jwtTTL                     = Long.parseLong(properties.getProperty(APP_ENUM.APP_JWT_TTL.key));
+        final long now                        = Instant.now().getEpochSecond();
 
         final Map<String, Object> m = claimsMap != null ? new HashMap<>(claimsMap) : new HashMap<>();
-        m.put("keyId", liveKeys.uuid);
+        m.put("keyId", signingKeySetup.uuid);
 
         return Jwts.builder()
                 .setClaims     (m)
@@ -60,7 +61,7 @@ public class JWTServiceImpl implements JWTService {
                 .setSubject    (subject)
                 .setIssuedAt   (Date.from(Instant.ofEpochSecond(now)))
                 .setExpiration (Date.from(Instant.ofEpochSecond(now + jwtTTL)))
-                .signWith      (liveKeys.privateKey)
+                .signWith      (signingKeySetup.privateKey)
                 .compact();
     }
 }

@@ -143,26 +143,26 @@ public class LocalKeyStoreTest {
     }
 
     @Test
-    void setLiveKeys_getLiveKeys_dropEverything() {
+    void setLiveKeys_getLiveKeys_dropEverything() throws Exception {
         // init
         final KeyPairWithUUID reference_key = new KeyPairWithUUID();
         final LocalKeyStore localKeyStore = new LocalKeyStoreImpl();
 
 
         // get without data -> should throw
-        assertThrows(NoSuchElementException.class, localKeyStore::getLiveKeys);
-        localKeyStore.setLiveKeys(reference_key.uuid, reference_key.keyPair.getPrivate(), reference_key.keyPair.getPublic());
+        assertThrows(SigningKeySetupException.class, localKeyStore::getSigningKeySetup);
+        localKeyStore.setupSigning(reference_key.uuid, reference_key.keyPair.getPrivate(), reference_key.keyPair.getPublic());
 
 
         // get key after set
-        final LiveKeys stored_key = localKeyStore.getLiveKeys();
+        final SigningKeySetup stored_key = localKeyStore.getSigningKeySetup();
         assertEquals(reference_key.uuid, stored_key.uuid);
         assertEquals(reference_key.keyPair.getPrivate(), stored_key.privateKey);
 
 
         // drop
-        localKeyStore.dropEverything();
-        assertThrows(NoSuchElementException.class, localKeyStore::getLiveKeys);
+        localKeyStore.resetAll();
+        assertThrows(SigningKeySetupException.class, localKeyStore::getSigningKeySetup);
         assertThrows(NoSuchElementException.class, () -> localKeyStore.getPublicKey(reference_key.uuid));
     }
 }

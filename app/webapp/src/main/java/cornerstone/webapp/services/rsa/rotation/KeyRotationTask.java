@@ -39,7 +39,7 @@ public class KeyRotationTask extends TimerTask {
         final KeyPairWithUUID kp = new KeyPairWithUUID();
         final String base64_pub_key = Base64.getEncoder().encodeToString(kp.keyPair.getPublic().getEncoded());
 
-        localKeyStore.setLiveKeys(kp.uuid, kp.keyPair.getPrivate(), kp.keyPair.getPublic());
+        localKeyStore.setupSigning(kp.uuid, kp.keyPair.getPrivate(), kp.keyPair.getPublic());
 
         try {
             // TTL = the last second when the RSA expires + JWT token TTL

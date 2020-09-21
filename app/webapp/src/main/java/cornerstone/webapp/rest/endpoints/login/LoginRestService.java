@@ -6,6 +6,7 @@ import cornerstone.webapp.services.account.administration.exceptions.single.NoAc
 import cornerstone.webapp.services.account.administration.exceptions.single.UnverifiedEmailException;
 import cornerstone.webapp.services.account.administration.exceptions.single.LockedException;
 import cornerstone.webapp.services.jwt.JWTService;
+import cornerstone.webapp.services.rsa.store.local.SigningKeySetupException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,7 +41,7 @@ public class LoginRestService {
     public Response authenticateUser(final AccountEmailPassword accountEmailPassword) throws
             UnverifiedEmailException,
             LockedException,
-            NoAccountException {
+            NoAccountException, SigningKeySetupException {
 
         if (null != accountEmailPassword &&
             null != accountEmailPassword.getEmail() &&

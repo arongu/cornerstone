@@ -121,7 +121,7 @@ public class LocalKeyStoreImpl implements LocalKeyStore {
     }
 
     @Override
-    public void setLiveKeys(final UUID uuid, final PrivateKey privateKey, final PublicKey publicKey){
+    public void setupSigning(final UUID uuid, final PrivateKey privateKey, final PublicKey publicKey){
         this.liveUuid = uuid;
         this.livePrivateKey = privateKey;
         this.livePublicKey = publicKey;
@@ -141,26 +141,25 @@ public class LocalKeyStoreImpl implements LocalKeyStore {
         return publicKeys.keySet();
     }
 
-    // TODO look into this
     @Override
-    public LiveKeys getLiveKeys() throws NoSuchElementException {
-        if (null != livePrivateKey) {
-            return new LiveKeys(liveUuid, livePrivateKey, livePublicKey);
-        } else {
-            logger.info(String.format(
+    public SigningKeySetup getSigningKeySetup() throws SigningKeySetupException {
+        if (null == livePrivateKey) {
+            logger.error(String.format(
                     AlignedLogMessages.FORMAT__OFFSET_30C_30C,
                     AlignedLogMessages.OFFSETS_KEYSTORE_CLASSES.get(getClass().getName()),
                     MessageElements.PREFIX_LOCAL + MessageElements.NOT_SET,
                     MessageElements.PUBLIC_AND_PRIVATE_KEY)
             );
 
-            // init exception to be honest - thread not started or not updating
-            throw new NoSuchElementException();
+            throw new SigningKeySetupException("Signing keys are not initialized!");
+
+        } else {
+            return new SigningKeySetup(liveUuid, livePrivateKey, livePublicKey);
         }
     }
 
     @Override
-    public void dropEverything() {
+    public void resetAll() {
         publicKeys = new HashMap<>();
         liveUuid = null;
         livePrivateKey = null;

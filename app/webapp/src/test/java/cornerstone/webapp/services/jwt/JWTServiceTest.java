@@ -30,7 +30,7 @@ public class JWTServiceTest {
             configLoader             = new ConfigLoader(keyFile, confFile);
             localKeyStore            = new LocalKeyStoreImpl();
             final KeyPairWithUUID kp = new KeyPairWithUUID();
-            localKeyStore.setLiveKeys(kp.uuid, kp.keyPair.getPrivate(), kp.keyPair.getPublic());
+            localKeyStore.setupSigning(kp.uuid, kp.keyPair.getPrivate(), kp.keyPair.getPublic());
 
         } catch (final IOException e) {
             e.printStackTrace();
@@ -38,7 +38,7 @@ public class JWTServiceTest {
     }
 
     @Test
-    public void createJWT_shouldAddTheContentsOfTheMapAsClaims() {
+    public void createJWT_shouldAddTheContentsOfTheMapAsClaims() throws Exception {
         final JWTService jwtService = new JWTServiceImpl(configLoader, localKeyStore);
         final Map<String,Object> m  = new HashMap<>();
         m.put("claimOne", "one");
@@ -49,7 +49,7 @@ public class JWTServiceTest {
         final Base64.Decoder decoder = Base64.getDecoder();
         final String jws             = jwtService.createJws("almafa@gmail.com", m);
         final String[] parsed        = jws.split("\\.");
-        final String strUuid         = localKeyStore.getLiveKeys().uuid.toString();
+        final String strUuid         = localKeyStore.getSigningKeySetup().uuid.toString();
         final String strHeader       = new String(decoder.decode(parsed[0]));
         final String strPayload      = new String(decoder.decode(parsed[1]));
 

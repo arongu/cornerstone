@@ -19,7 +19,7 @@ public interface LocalKeyStore {
     void deletePublicKeys(final List<UUID> uuidsToBeRemoved);
     void sync(final List<UUID> toBeKept);
 
-    void setLiveKeys(final UUID uuid, final PrivateKey privateKey, final PublicKey publicKey);
-    LiveKeys getLiveKeys() throws NoSuchElementException;
-    void dropEverything();
+    void setupSigning(final UUID uuid, final PrivateKey privateKey, final PublicKey publicKey);
+    SigningKeySetup getSigningKeySetup() throws SigningKeySetupException;
+    void resetAll();
 }

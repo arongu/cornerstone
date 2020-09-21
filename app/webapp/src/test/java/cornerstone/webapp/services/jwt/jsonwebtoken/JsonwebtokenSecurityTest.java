@@ -41,7 +41,7 @@ public class JsonwebtokenSecurityTest {
             configLoader                          = new ConfigLoader(key_file, conf_file);
             localKeyStore                         = new LocalKeyStoreImpl();
             final KeyPairWithUUID keyPairWithUUID = new KeyPairWithUUID();
-            localKeyStore.setLiveKeys(keyPairWithUUID.uuid, keyPairWithUUID.keyPair.getPrivate(), keyPairWithUUID.keyPair.getPublic());
+            localKeyStore.setupSigning(keyPairWithUUID.uuid, keyPairWithUUID.keyPair.getPrivate(), keyPairWithUUID.keyPair.getPublic());
 
         } catch (final IOException e) {
             e.printStackTrace();
@@ -52,10 +52,10 @@ public class JsonwebtokenSecurityTest {
         algo key issuer subject claims iat exp
     */
     @Test
-    public void parseClaims_shouldThrowException_whenAlgIsMismatched() {
+    public void parseClaims_shouldThrowException_whenAlgIsMismatched() throws Exception {
         final String subject        = "hellomoto@xmal.com";
         final JWTService jwtService = new JWTServiceImpl(configLoader, localKeyStore);
-        final Key publicKey         = localKeyStore.getLiveKeys().publicKey;
+        final Key publicKey         = localKeyStore.getSigningKeySetup().publicKey;
         final String jws            = jwtService.createJws(subject);
         final String[] parsed       = jws.split("\\.");
         final String payload        = parsed[1];
@@ -181,11 +181,11 @@ public class JsonwebtokenSecurityTest {
         forging a jws with own key
     */
     @Test
-    public void parseClaims_shouldThrowSignatureException_whenKeyIsTempered() {
+    public void parseClaims_shouldThrowSignatureException_whenKeyIsTempered() throws Exception {
         final String subject        = "hellomoto@mail.com";
         final JWTService jwtService = new JWTServiceImpl(configLoader, localKeyStore);
-        final Key privateKey        = localKeyStore.getLiveKeys().privateKey;
-        final Key publicKey         = localKeyStore.getLiveKeys().publicKey;
+        final Key privateKey        = localKeyStore.getSigningKeySetup().privateKey;
+        final Key publicKey         = localKeyStore.getSigningKeySetup().publicKey;
         final String jws            = jwtService.createJws(subject);
         final Claims extractClaims  = jsonwebtokenTestHelper.extractClaims(jws, privateKey);
         final UUID uuid             = UUID.fromString((String) extractClaims.get("keyId"));
@@ -194,7 +194,7 @@ public class JsonwebtokenSecurityTest {
         // forging jws
         final KeyPair forgedKeyPair                = new KeyPairWithUUID().keyPair;
         final LocalKeyStore forgedLocalKeyStore    = new LocalKeyStoreImpl();
-        forgedLocalKeyStore.setLiveKeys(uuid, forgedKeyPair.getPrivate(), forgedKeyPair.getPublic());
+        forgedLocalKeyStore.setupSigning(uuid, forgedKeyPair.getPrivate(), forgedKeyPair.getPublic());
         // sign with the new forged key, using the original data, and uuid
         final JWTService forgedJwtService          = new JWTServiceImpl(configLoader, forgedLocalKeyStore);
         final String forgedJws                     = forgedJwtService.createJws(subject);
@@ -208,10 +208,10 @@ public class JsonwebtokenSecurityTest {
         algo key issuer subject claims iat exp
     */
     @Test
-    public void parseClaims_shouldThrowSignatureException_whenIssuerIsTempered() {
+    public void parseClaims_shouldThrowSignatureException_whenIssuerIsTempered() throws Exception {
         final String subject        = "hellomoto@xmal.com";
         final JWTService jwtService = new JWTServiceImpl(configLoader, localKeyStore);
-        final PublicKey publicKey   = localKeyStore.getLiveKeys().publicKey;
+        final PublicKey publicKey   = localKeyStore.getSigningKeySetup().publicKey;
         final String jws            = jwtService.createJws(subject);
         final String issuer         = configLoader.getAppProperties().getProperty(APP_ENUM.APP_NODE_NAME.key);
 
@@ -238,11 +238,11 @@ public class JsonwebtokenSecurityTest {
         algo key issuer subject claims iat exp
      */
     @Test
-    public void parseClaims_shouldThrowSignatureException_whenSubjectIsTempered() {
+    public void parseClaims_shouldThrowSignatureException_whenSubjectIsTempered() throws Exception {
         final String subject         = "hellomoto@xmal.com";
         final String temperedSubject = "haxor@mail.com";
         final JWTService jwtService  = new JWTServiceImpl(configLoader, localKeyStore);
-        final PublicKey publicKey    = localKeyStore.getLiveKeys().publicKey;
+        final PublicKey publicKey    = localKeyStore.getSigningKeySetup().publicKey;
         final String jws             = jwtService.createJws(subject);
 
 
@@ -267,10 +267,10 @@ public class JsonwebtokenSecurityTest {
         algo key issuer subject claims iat exp
     */
     @Test
-    public void parseClaims_shouldThrowSignatureException_whenClaimIsTempered() {
+    public void parseClaims_shouldThrowSignatureException_whenClaimIsTempered() throws Exception {
         final String subject         = "hellomoto@xmal.com";
         final JWTService jwtService  = new JWTServiceImpl(configLoader, localKeyStore);
-        final PublicKey publicKey    = localKeyStore.getLiveKeys().publicKey;
+        final PublicKey publicKey    = localKeyStore.getSigningKeySetup().publicKey;
         final Map<String, Object> m  = new HashMap<>();
         m.put("myClaim", "Rome");
         final String jws             = jwtService.createJws(subject, m);
@@ -297,10 +297,10 @@ public class JsonwebtokenSecurityTest {
         algo key issuer subject claims iat exp
     */
     @Test
-    public void parseClaims_shouldThrowSignatureException_whenIatIsTempered() {
+    public void parseClaims_shouldThrowSignatureException_whenIatIsTempered() throws Exception {
         final String subject         = "hellomoto@xmal.com";
         final JWTService jwtService  = new JWTServiceImpl(configLoader, localKeyStore);
-        final PublicKey publicKey    = localKeyStore.getLiveKeys().publicKey;
+        final PublicKey publicKey    = localKeyStore.getSigningKeySetup().publicKey;
         final String jws             = jwtService.createJws(subject);
 
 
@@ -329,10 +329,10 @@ public class JsonwebtokenSecurityTest {
         algo key issuer subject claims iat exp
     */
     @Test
-    public void parseClaims_shouldThrowSignatureException_whenExpIsTempered() {
+    public void parseClaims_shouldThrowSignatureException_whenExpIsTempered() throws Exception {
         final String subject         = "hellomoto@xmal.com";
         final JWTService jwtService  = new JWTServiceImpl(configLoader, localKeyStore);
-        final PublicKey publicKey    = localKeyStore.getLiveKeys().publicKey;
+        final PublicKey publicKey    = localKeyStore.getSigningKeySetup().publicKey;
         final String jws             = jwtService.createJws(subject);
 
 
