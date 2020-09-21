@@ -1,5 +1,7 @@
 package cornerstone.webapp.common;
 
+import cornerstone.webapp.rest.endpoints.login.LoginRestService;
+import cornerstone.webapp.services.account.administration.AccountManagerImpl;
 import cornerstone.webapp.services.rsa.rotation.KeyRotationTask;
 import cornerstone.webapp.services.rsa.rotation.KeyRotatorImpl;
 import cornerstone.webapp.services.rsa.store.db.PublicKeyStoreImpl;
@@ -33,7 +35,7 @@ public final class AlignedLogMessages {
     public static final String FORMAT__OFFSET_30C_30C_S         = "%s%-30s %-30s : %s";
     public static final String FORMAT__OFFSET_30C_30C_S_S       = "%s%-30s %-30s : %s, %s";
 
-    public static final HashMap<String, String> OFFSETS_KEYSTORE_CLASSES;
+    public static final HashMap<String, String> OFFSETS_ALIGNED_CLASSES;
     static {
         // Step 1 - CREATE a String array for classes you want to be aligned together when logging
         // Step 2 - CREATE an empty public Map for each group of classes to store the generated spaces for each group member
@@ -42,13 +44,17 @@ public final class AlignedLogMessages {
         // Step 4 - create a public map so it can be accessed outside
 
         // Offset alignment group for Key Store related classes:
-        String[] KEYSTORE_CLASSES = {
+        String[] ALIGNED_CLASSES = {
+                // KeyStoreClasses
                 LocalKeyStoreImpl.class.getName(),
                 PublicKeyStoreImpl.class.getName(),
                 KeyRotatorImpl.class.getName(),
-                KeyRotationTask.class.getName()
+                KeyRotationTask.class.getName(),
+                // Login
+                AccountManagerImpl.class.getName(),
+                LoginRestService.class.getName()
         };
-        OFFSETS_KEYSTORE_CLASSES = new HashMap<>();
-        generateOffsetSpaces(KEYSTORE_CLASSES, OFFSETS_KEYSTORE_CLASSES);
+        OFFSETS_ALIGNED_CLASSES = new HashMap<>();
+        generateOffsetSpaces(ALIGNED_CLASSES, OFFSETS_ALIGNED_CLASSES);
     };
 }

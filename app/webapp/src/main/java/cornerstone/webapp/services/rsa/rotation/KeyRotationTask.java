@@ -50,7 +50,7 @@ public class KeyRotationTask extends TimerTask {
 
         } catch (final PublicKeyStoreException e) {
             logger.error(String.format(AlignedLogMessages.FORMAT__OFFSET_S_S,
-                    AlignedLogMessages.OFFSETS_KEYSTORE_CLASSES.get(getClass().getName()),
+                    AlignedLogMessages.OFFSETS_ALIGNED_CLASSES.get(getClass().getName()),
                     "FAILED TO STORE PUBLIC KEY IN DB",
                     kp.uuid)
             );
@@ -64,7 +64,7 @@ public class KeyRotationTask extends TimerTask {
 
         } catch (final PublicKeyStoreException e) {
             logger.error(String.format(AlignedLogMessages.FORMAT__OFFSET_S,
-                    AlignedLogMessages.OFFSETS_KEYSTORE_CLASSES.get(getClass().getName()),
+                    AlignedLogMessages.OFFSETS_ALIGNED_CLASSES.get(getClass().getName()),
                     "FAILED TO SYNC LOCAL <- DB (KEEPING EVERYTHING IN LOCAL STORE)")
             );
         }
@@ -77,7 +77,7 @@ public class KeyRotationTask extends TimerTask {
 
         } catch (final PublicKeyStoreException e) {
             logger.error(String.format(AlignedLogMessages.FORMAT__OFFSET_S,
-                    AlignedLogMessages.OFFSETS_KEYSTORE_CLASSES.get(getClass().getName()),
+                    AlignedLogMessages.OFFSETS_ALIGNED_CLASSES.get(getClass().getName()),
                     "FAILED TO DELETE EXPIRED KEYS FROM DB")
             );
         }
@@ -86,7 +86,7 @@ public class KeyRotationTask extends TimerTask {
     @Override
     public void run() {
         logger.info(String.format(AlignedLogMessages.FORMAT__OFFSET_S,
-                AlignedLogMessages.OFFSETS_KEYSTORE_CLASSES.get(getClass().getName()),
+                AlignedLogMessages.OFFSETS_ALIGNED_CLASSES.get(getClass().getName()),
                 "(STARTED)  ------------------------------------------------------------------------------------------")
         );
 
@@ -95,7 +95,7 @@ public class KeyRotationTask extends TimerTask {
         cleanUpDbRemoveExpiredPublicKeys();
 
         logger.info(String.format(AlignedLogMessages.FORMAT__OFFSET_S,
-                AlignedLogMessages.OFFSETS_KEYSTORE_CLASSES.get(getClass().getName()),
+                AlignedLogMessages.OFFSETS_ALIGNED_CLASSES.get(getClass().getName()),
                 "------------------------------------------------------------------------------------------ (FINISHED)")
         );
     }

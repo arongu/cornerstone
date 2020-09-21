@@ -1,10 +1,11 @@
 package cornerstone.webapp.rest.endpoints.login;
 
+import cornerstone.webapp.common.AlignedLogMessages;
 import cornerstone.webapp.rest.endpoints.accounts.dtos.AccountEmailPassword;
 import cornerstone.webapp.services.account.administration.AccountManager;
+import cornerstone.webapp.services.account.administration.exceptions.single.LockedException;
 import cornerstone.webapp.services.account.administration.exceptions.single.NoAccountException;
 import cornerstone.webapp.services.account.administration.exceptions.single.UnverifiedEmailException;
-import cornerstone.webapp.services.account.administration.exceptions.single.LockedException;
 import cornerstone.webapp.services.jwt.JWTService;
 import cornerstone.webapp.services.rsa.store.local.SigningKeySetupException;
 import org.slf4j.Logger;
@@ -18,8 +19,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.HashMap;
-import java.util.Map;
 
 @Singleton
 @Path("/login")
@@ -52,8 +51,18 @@ public class LoginRestService {
             authenticated = accountAdmin.login(accountEmailPassword.getEmail(), accountEmailPassword.getPassword());
             if ( authenticated ) {
                 final String jwt = JWTService.createJws(accountEmailPassword.getPassword(), null);
-                logger.info("[ ACCESS TOKEN ][ GRANTED ] -- '{}'", accountEmailPassword.getEmail());
+                logger.info(
+                        String.format(
+                                AlignedLogMessages.FORMAT__OFFSET_30C_30C_S,
+                                AlignedLogMessages.OFFSETS_ALIGNED_CLASSES.get(getClass().getName()),
+                                "[ ACCESS TOKEN ]",
+                                "[ GRANTED ]",
+                                accountEmailPassword.getEmail()
+                        )
+                );
+
                 return Response.status(Response.Status.ACCEPTED).entity(jwt).build();
+
             } else {
                 logger.info("[ ACCESS TOKEN ][ DENIED ] -- '{}'", accountEmailPassword.getEmail());
             }
