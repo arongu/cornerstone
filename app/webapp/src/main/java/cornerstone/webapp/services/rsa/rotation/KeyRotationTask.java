@@ -49,7 +49,7 @@ public class KeyRotationTask extends TimerTask {
             publicKeyStore.addKey(kp.uuid, nodeName, rsaTTL + jwtTTL, base64_pub_key);
 
         } catch (final PublicKeyStoreException e) {
-            logger.error(String.format(AlignedLogMessages.FORMAT__OFFSET_S_S,
+            logger.error(String.format(AlignedLogMessages.FORMAT__OFFSET_STR_STR,
                     AlignedLogMessages.OFFSETS_ALIGNED_CLASSES.get(getClass().getName()),
                     "FAILED TO STORE PUBLIC KEY IN DB",
                     kp.uuid)
@@ -63,7 +63,7 @@ public class KeyRotationTask extends TimerTask {
             localKeyStore.sync(publicKeyStore.getLiveKeyUUIDs());
 
         } catch (final PublicKeyStoreException e) {
-            logger.error(String.format(AlignedLogMessages.FORMAT__OFFSET_S,
+            logger.error(String.format(AlignedLogMessages.FORMAT__OFFSET_STR,
                     AlignedLogMessages.OFFSETS_ALIGNED_CLASSES.get(getClass().getName()),
                     "FAILED TO SYNC LOCAL <- DB (KEEPING EVERYTHING IN LOCAL STORE)")
             );
@@ -76,7 +76,7 @@ public class KeyRotationTask extends TimerTask {
             publicKeyStore.deleteExpiredKeys();
 
         } catch (final PublicKeyStoreException e) {
-            logger.error(String.format(AlignedLogMessages.FORMAT__OFFSET_S,
+            logger.error(String.format(AlignedLogMessages.FORMAT__OFFSET_STR,
                     AlignedLogMessages.OFFSETS_ALIGNED_CLASSES.get(getClass().getName()),
                     "FAILED TO DELETE EXPIRED KEYS FROM DB")
             );
@@ -85,7 +85,7 @@ public class KeyRotationTask extends TimerTask {
 
     @Override
     public void run() {
-        logger.info(String.format(AlignedLogMessages.FORMAT__OFFSET_S,
+        logger.info(String.format(AlignedLogMessages.FORMAT__OFFSET_STR,
                 AlignedLogMessages.OFFSETS_ALIGNED_CLASSES.get(getClass().getName()),
                 "(STARTED)  ------------------------------------------------------------------------------------------")
         );
@@ -94,7 +94,7 @@ public class KeyRotationTask extends TimerTask {
         cleanUpLocalPublicKeysKeepOnlyActiveKeysFromDb();
         cleanUpDbRemoveExpiredPublicKeys();
 
-        logger.info(String.format(AlignedLogMessages.FORMAT__OFFSET_S,
+        logger.info(String.format(AlignedLogMessages.FORMAT__OFFSET_STR,
                 AlignedLogMessages.OFFSETS_ALIGNED_CLASSES.get(getClass().getName()),
                 "------------------------------------------------------------------------------------------ (FINISHED)")
         );

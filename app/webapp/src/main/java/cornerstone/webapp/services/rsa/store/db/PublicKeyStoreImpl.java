@@ -49,7 +49,7 @@ public class PublicKeyStoreImpl implements PublicKeyStore {
             ps.setString(4, base64_key);
 
             logger.info(String.format(
-                    AlignedLogMessages.FORMAT__OFFSET_30C_30C_S,
+                    AlignedLogMessages.FORMAT__OFFSET_35C_35C_C_STR,
                     AlignedLogMessages.OFFSETS_ALIGNED_CLASSES.get(getClass().getName()),
                     MessageElements.PREFIX_DB + MessageElements.ADDED,
                     MessageElements.PUBLIC_KEY,
@@ -75,7 +75,7 @@ public class PublicKeyStoreImpl implements PublicKeyStore {
         try (final Connection c = workDB.getConnection(); final PreparedStatement ps = c.prepareStatement(SQL_DELETE_PUBLIC_KEY)) {
             ps.setObject(1, uuid);
             logger.info(String.format(
-                    AlignedLogMessages.FORMAT__OFFSET_30C_30C_S,
+                    AlignedLogMessages.FORMAT__OFFSET_35C_35C_C_STR,
                     AlignedLogMessages.OFFSETS_ALIGNED_CLASSES.get(getClass().getName()),
                     MessageElements.PREFIX_DB + MessageElements.DELETED,
                     MessageElements.PUBLIC_KEY, uuid)
@@ -112,7 +112,7 @@ public class PublicKeyStoreImpl implements PublicKeyStore {
                 );
 
                 logger.info(String.format(
-                        AlignedLogMessages.FORMAT__OFFSET_30C_30C_S,
+                        AlignedLogMessages.FORMAT__OFFSET_35C_35C_C_STR,
                         AlignedLogMessages.OFFSETS_ALIGNED_CLASSES.get(getClass().getName()),
                         MessageElements.PREFIX_DB + MessageElements.FETCHED,
                         MessageElements.PUBLIC_KEY, keyData)
@@ -122,7 +122,7 @@ public class PublicKeyStoreImpl implements PublicKeyStore {
 
             } else {
                 logger.info(String.format(
-                        AlignedLogMessages.FORMAT__OFFSET_30C_30C_S,
+                        AlignedLogMessages.FORMAT__OFFSET_35C_35C_C_STR,
                         AlignedLogMessages.OFFSETS_ALIGNED_CLASSES.get(getClass().getName()),
                         MessageElements.PREFIX_DB + MessageElements.NO_SUCH,
                         MessageElements.PUBLIC_KEY, uuid)
@@ -163,7 +163,7 @@ public class PublicKeyStoreImpl implements PublicKeyStore {
             }
 
             logger.info(String.format(
-                    AlignedLogMessages.FORMAT__OFFSET_30C_30C_S,
+                    AlignedLogMessages.FORMAT__OFFSET_35C_35C_C_STR,
                     AlignedLogMessages.OFFSETS_ALIGNED_CLASSES.get(getClass().getName()),
                     MessageElements.PREFIX_DB + MessageElements.NUMBER_OF_FETCHED,
                     MessageElements.PUBLIC_KEYS + MessageElements.POSTFIX_LIVE,
@@ -171,7 +171,7 @@ public class PublicKeyStoreImpl implements PublicKeyStore {
             );
 
             logger.info(String.format(
-                    AlignedLogMessages.FORMAT__OFFSET_30C_30C_S,
+                    AlignedLogMessages.FORMAT__OFFSET_35C_35C_C_STR,
                     AlignedLogMessages.OFFSETS_ALIGNED_CLASSES.get(getClass().getName()),
                     MessageElements.PREFIX_DB + MessageElements.FETCHED,
                     MessageElements.PUBLIC_KEYS + MessageElements.POSTFIX_LIVE,
@@ -205,7 +205,7 @@ public class PublicKeyStoreImpl implements PublicKeyStore {
             }
 
             logger.info(String.format(
-                    AlignedLogMessages.FORMAT__OFFSET_30C_30C_S,
+                    AlignedLogMessages.FORMAT__OFFSET_35C_35C_C_STR,
                     AlignedLogMessages.OFFSETS_ALIGNED_CLASSES.get(getClass().getName()),
                     MessageElements.PREFIX_DB + MessageElements.NUMBER_OF_FETCHED,
                     MessageElements.PUBLIC_KEY_UUIDS + MessageElements.POSTFIX_LIVE,
@@ -213,7 +213,7 @@ public class PublicKeyStoreImpl implements PublicKeyStore {
             );
 
             logger.info(String.format(
-                    AlignedLogMessages.FORMAT__OFFSET_30C_30C_S,
+                    AlignedLogMessages.FORMAT__OFFSET_35C_35C_C_STR,
                     AlignedLogMessages.OFFSETS_ALIGNED_CLASSES.get(getClass().getName()),
                     MessageElements.PREFIX_DB + MessageElements.FETCHED,
                     MessageElements.PUBLIC_KEY_UUIDS + MessageElements.POSTFIX_LIVE,
@@ -247,7 +247,7 @@ public class PublicKeyStoreImpl implements PublicKeyStore {
             }
 
             logger.info(String.format(
-                    AlignedLogMessages.FORMAT__OFFSET_30C_30C_S,
+                    AlignedLogMessages.FORMAT__OFFSET_35C_35C_C_STR,
                     AlignedLogMessages.OFFSETS_ALIGNED_CLASSES.get(getClass().getName()),
                     MessageElements.PREFIX_DB + MessageElements.NUMBER_OF_FETCHED,
                     MessageElements.PUBLIC_KEY_UUIDS + MessageElements.POSTFIX_EXPIRED,
@@ -255,7 +255,7 @@ public class PublicKeyStoreImpl implements PublicKeyStore {
             );
 
             logger.info(String.format(
-                    AlignedLogMessages.FORMAT__OFFSET_30C_30C_S,
+                    AlignedLogMessages.FORMAT__OFFSET_35C_35C_C_STR,
                     AlignedLogMessages.OFFSETS_ALIGNED_CLASSES.get(getClass().getName()),
                     MessageElements.PREFIX_DB + MessageElements.FETCHED,
                     MessageElements.PUBLIC_KEY_UUIDS + MessageElements.POSTFIX_EXPIRED,
@@ -281,7 +281,7 @@ public class PublicKeyStoreImpl implements PublicKeyStore {
         try (final Connection c = workDB.getConnection(); final PreparedStatement ps = c.prepareStatement(SQL_DELETE_EXPIRED_PUBLIC_KEYS)) {
             final int deletes = ps.executeUpdate();
             logger.info(String.format(
-                    AlignedLogMessages.FORMAT__OFFSET_30C_30C_S,
+                    AlignedLogMessages.FORMAT__OFFSET_35C_35C_C_STR,
                     AlignedLogMessages.OFFSETS_ALIGNED_CLASSES.get(getClass().getName()),
                     MessageElements.PREFIX_DB + MessageElements.DELETED,
                     MessageElements.PUBLIC_KEYS + MessageElements.POSTFIX_EXPIRED, deletes)

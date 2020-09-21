@@ -2,6 +2,7 @@ package cornerstone.webapp.rest.endpoints.login;
 
 import cornerstone.webapp.common.AlignedLogMessages;
 import cornerstone.webapp.rest.endpoints.accounts.dtos.AccountEmailPassword;
+import cornerstone.webapp.rest.error_responses.SingleErrorResponse;
 import cornerstone.webapp.services.account.administration.AccountManager;
 import cornerstone.webapp.services.account.administration.exceptions.single.LockedException;
 import cornerstone.webapp.services.account.administration.exceptions.single.NoAccountException;
@@ -47,27 +48,27 @@ public class LoginRestService {
             null != accountEmailPassword.getPassword()) {
 
             final boolean authenticated;
-
             authenticated = accountAdmin.login(accountEmailPassword.getEmail(), accountEmailPassword.getPassword());
+
             if ( authenticated ) {
                 final String jwt = JWTService.createJws(accountEmailPassword.getPassword(), null);
-                logger.info(
-                        String.format(
-                                AlignedLogMessages.FORMAT__OFFSET_30C_30C_S,
-                                AlignedLogMessages.OFFSETS_ALIGNED_CLASSES.get(getClass().getName()),
-                                "[ ACCESS TOKEN ]",
-                                "[ GRANTED ]",
-                                accountEmailPassword.getEmail()
-                        )
+                logger.info(String.format(
+                        AlignedLogMessages.FORMAT__OFFSET_35C_C_STR,
+                        AlignedLogMessages.OFFSETS_ALIGNED_CLASSES.get(getClass().getName()),
+                        "TOKEN GRANTED", accountEmailPassword.getEmail())
                 );
 
                 return Response.status(Response.Status.ACCEPTED).entity(jwt).build();
 
             } else {
-                logger.info("[ ACCESS TOKEN ][ DENIED ] -- '{}'", accountEmailPassword.getEmail());
+                logger.info(String.format(
+                        AlignedLogMessages.FORMAT__OFFSET_35C_C_STR,
+                        AlignedLogMessages.OFFSETS_ALIGNED_CLASSES.get(getClass().getName()),
+                        "TOKEN DENIED", accountEmailPassword.getEmail())
+                );
             }
         }
 
-        return Response.status(Response.Status.FORBIDDEN).entity("Access denied").build();
+        return Response.status(Response.Status.FORBIDDEN).entity(new SingleErrorResponse(Response.Status.FORBIDDEN.getStatusCode(), "Access denied.")).build();
     }
 }

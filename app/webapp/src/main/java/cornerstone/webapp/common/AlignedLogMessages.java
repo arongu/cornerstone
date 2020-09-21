@@ -29,11 +29,12 @@ public final class AlignedLogMessages {
     }
 
     // Log message lines
-    public static final String FORMAT__OFFSET_S                 = "%s%s";
-    public static final String FORMAT__OFFSET_S_S               = "%s%s %s";
-    public static final String FORMAT__OFFSET_30C_30C           = "%s%-30s %-30s";
-    public static final String FORMAT__OFFSET_30C_30C_S         = "%s%-30s %-30s : %s";
-    public static final String FORMAT__OFFSET_30C_30C_S_S       = "%s%-30s %-30s : %s, %s";
+    public static final String FORMAT__OFFSET_STR             = "%s%s";
+    public static final String FORMAT__OFFSET_STR_STR         = "%s%s %s";
+    public static final String FORMAT__OFFSET_35C_C_STR       = "%s%-35s : %s";
+    public static final String FORMAT__OFFSET_35C_35C         = "%s%-35s %-35s";
+    public static final String FORMAT__OFFSET_35C_35C_C_STR   = "%s%-35s %-35s : %s";
+    public static final String FORMAT__OFFSET_35C_35C_STR_STR = "%s%-35s %-35s : %s, %s";
 
     public static final HashMap<String, String> OFFSETS_ALIGNED_CLASSES;
     static {
