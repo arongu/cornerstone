@@ -1,4 +1,4 @@
-package cornerstone.webapp.rest.endpoints;
+package cornerstone.webapp.rest.exception_mappers;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
