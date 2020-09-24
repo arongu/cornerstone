@@ -58,7 +58,9 @@ public class LoginRestService {
                         "TOKEN GRANTED", accountEmailPassword.getEmail())
                 );
 
-                return Response.status(Response.Status.ACCEPTED).entity(jwt).build();
+                return Response.status(Response.Status.OK)
+                        .entity(new TokenDTO(jwt))
+                        .build();
 
             } else {
                 logger.info(String.format(
@@ -69,6 +71,8 @@ public class LoginRestService {
             }
         }
 
-        return Response.status(Response.Status.FORBIDDEN).entity(new SingleErrorResponse(Response.Status.FORBIDDEN.getStatusCode(), "Access denied.")).build();
+        return Response.status(Response.Status.UNAUTHORIZED)
+                .entity(new SingleErrorResponse(Response.Status.UNAUTHORIZED.getStatusCode(), "Access denied."))
+                .build();
     }
 }
