@@ -83,9 +83,9 @@ public class LocalKeyStoreTest {
         final String    retrieved_str_b64_public_key;
 
 
-        localKeyStore                                 = new LocalKeyStoreImpl();
+        localKeyStore                       = new LocalKeyStoreImpl();
         localKeyStore.addPublicKey(uuid, str_b64_public_key);
-        retrieved_public_key                     = localKeyStore.getPublicKey(uuid);
+        retrieved_public_key                = localKeyStore.getPublicKey(uuid);
         retrieved_str_b64_public_key        = Base64.getEncoder().encodeToString(retrieved_public_key.getEncoded());
 
 

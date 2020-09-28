@@ -40,7 +40,7 @@ public class PublicKeyRestService {
     @GET
     @Path("uuid/{uuid}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response publicKey(@PathParam("uuid") String uuidString) {
+    public Response getPublicKey(@PathParam("uuid") String uuidString) {
         // Send bad request when uuid is malformed
         final UUID uuid;
         try {
