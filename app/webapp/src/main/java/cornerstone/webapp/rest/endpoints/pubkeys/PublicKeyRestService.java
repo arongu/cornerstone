@@ -85,9 +85,14 @@ public class PublicKeyRestService {
     @GET
     @Path("uuid/live")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getLivePublicKeys() {
+    public Response getLiveKeyUUIDs() {
         try {
-            return Response.status(Response.Status.OK).entity(publicKeyStore.getLiveKeyUUIDs()).build();
+            final List<UUID> uuidList = publicKeyStore.getLiveKeyUUIDs();
+            if (uuidList.size() > 0) {
+                return Response.status(Response.Status.OK).entity(uuidList).build();
+            } else {
+                return Response.status(Response.Status.NO_CONTENT).build();
+            }
 
         } catch (final PublicKeyStoreException e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
@@ -97,7 +102,7 @@ public class PublicKeyRestService {
     @GET
     @Path("uuid/expired")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getExpiredKeys() {
+    public Response getExpiredKeyUUIDs() {
         try {
             final List<UUID> uuidList = publicKeyStore.getExpiredKeyUUIDs();
             if (uuidList.size() > 0) {
