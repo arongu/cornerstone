@@ -22,8 +22,6 @@ public class AccountManagerSearchEmailTest {
 
         try {
             final ConfigLoader configLoader = new ConfigLoader(keyFile, confFile);
-            configLoader.loadAndDecryptConfig();
-
             final UsersDB usersDB               = new UsersDB(configLoader);
             accountManager                      = new AccountManagerImpl(usersDB, configLoader);
 

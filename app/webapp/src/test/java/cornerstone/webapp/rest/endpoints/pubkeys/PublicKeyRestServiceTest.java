@@ -2,6 +2,7 @@ package cornerstone.webapp.rest.endpoints.pubkeys;
 
 import cornerstone.webapp.config.ConfigLoader;
 import cornerstone.webapp.datasources.WorkDB;
+import cornerstone.webapp.rest.error_responses.SingleErrorResponse;
 import cornerstone.webapp.services.rsa.rotation.KeyPairWithUUID;
 import cornerstone.webapp.services.rsa.store.db.PublicKeyStore;
 import cornerstone.webapp.services.rsa.store.db.PublicKeyStoreImpl;
@@ -10,34 +11,18 @@ import cornerstone.webapp.services.rsa.store.local.LocalKeyStoreImpl;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.security.PublicKey;
 import java.util.Base64;
-import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class PublicKeyRestServiceTest {
-    private static LocalKeyStore localKeyStore;
-    private static PublicKeyStore publicKeyStore;
-
-    // prepared uuids
-    private static final UUID uuid_only_local  = UUID.fromString("00000000-0000-0000-0000-000000000000");
-    private static final UUID uuid_only_public = UUID.fromString("00000000-0000-0000-0000-000000000001");
-    private static final UUID uuid_both        = UUID.fromString("00000000-0000-0000-0000-000000000002");
-    private static final UUID uuid_none        = UUID.fromString("00000000-0000-0000-0000-000000000003");
-    private static final UUID uuid_expired     = UUID.fromString("00000000-0000-0000-0000-000000000003");
-    // public keys
-    private static final PublicKey pubkey_local   = new KeyPairWithUUID().keyPair.getPublic();
-    private static final PublicKey pubkey_public  = new KeyPairWithUUID().keyPair.getPublic();
-    private static final PublicKey pubkey_expired = new KeyPairWithUUID().keyPair.getPublic();
-
+    private static ConfigLoader configLoader;
+    private static WorkDB workDB;
 
     @BeforeAll
     public static void setSystemProperties() {
@@ -46,11 +31,8 @@ public class PublicKeyRestServiceTest {
         final String confFile       = Paths.get(test_files_dir + "app.conf").toAbsolutePath().normalize().toString();
 
         try {
-            final ConfigLoader configLoader = new ConfigLoader(keyFile, confFile);
-            configLoader.loadAndDecryptConfig();
-
-            localKeyStore   = new LocalKeyStoreImpl();
-            publicKeyStore  = new PublicKeyStoreImpl(new WorkDB(configLoader));
+            configLoader = new ConfigLoader(keyFile, confFile);
+            workDB       = new WorkDB(configLoader);
 
         } catch (final IOException e) {
             e.printStackTrace();
@@ -59,17 +41,34 @@ public class PublicKeyRestServiceTest {
 
     @Test
     public void getPublicKey_shouldReturnKey_whenKeyExists() {
-        final PublicKeyRestService publicKeyRestService = new PublicKeyRestService(localKeyStore, publicKeyStore);
-        localKeyStore.addPublicKey(uuid_only_local, pubkey_local);
+        final String uuidStr                            = "00000000-0000-0000-0000-000000000000";
+        final LocalKeyStore localKeyStore               = new LocalKeyStoreImpl();
+        final PublicKeyRestService publicKeyRestService = new PublicKeyRestService(localKeyStore, null);
+        final PublicKey pubkey                          = new KeyPairWithUUID().keyPair.getPublic();
+        localKeyStore.addPublicKey(UUID.fromString(uuidStr), pubkey);
 
 
-        final Response response           = publicKeyRestService.getPublicKey("00000000-0000-0000-0000-000000000000");
-        final Base64.Encoder encoder      = Base64.getEncoder();
-        final String str_pubkey_local     = encoder.encodeToString(pubkey_local.getEncoded());
+        final Response response           = publicKeyRestService.getPublicKey(uuidStr);
+        final String str_pubkey_local     = Base64.getEncoder().encodeToString(pubkey.getEncoded());
         final String str_pubkey_retrieved = response.getEntity().toString();
 
 
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
         assertEquals(str_pubkey_local, str_pubkey_retrieved );
+    }
+
+    @Test
+    public void getPublicKey_shouldReturnSingleErrorResponseWithNotFound_whenKeyDoesNotExist() {
+        final LocalKeyStore localKeyStore               = new LocalKeyStoreImpl();
+        final PublicKeyStore publicKeyStore             = new PublicKeyStoreImpl(workDB);
+        final PublicKeyRestService publicKeyRestService = new PublicKeyRestService(localKeyStore, publicKeyStore);
+
+
+        final Response response = publicKeyRestService.getPublicKey("00000000-0000-0000-0000-000000000111");
+        final SingleErrorResponse singleErrorResponse = (SingleErrorResponse)response.getEntity();
+
+
+        assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatus());
+        assertEquals("No such key.", singleErrorResponse.getError());
     }
 }
