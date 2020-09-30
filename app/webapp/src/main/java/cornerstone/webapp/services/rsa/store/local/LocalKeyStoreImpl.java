@@ -19,8 +19,8 @@ public class LocalKeyStoreImpl implements LocalKeyStore {
 
     private Map<UUID, PublicKey> publicKeys;
     private PrivateKey livePrivateKey = null;
-    private PublicKey livePublicKey = null;
-    private UUID liveUuid = null;
+    private PublicKey  livePublicKey = null;
+    private UUID       liveUuid = null;
 
     public LocalKeyStoreImpl() {
         publicKeys = new ConcurrentHashMap<>();
@@ -29,13 +29,13 @@ public class LocalKeyStoreImpl implements LocalKeyStore {
     @Override
     public void addPublicKey(final UUID uuid, final PublicKey publicKey) {
         publicKeys.put(uuid, publicKey);
-        logger.info(String.format(
+        final String logMsg = String.format(
                 AlignedLogMessages.FORMAT__OFFSET_35C_35C_C_STR,
                 AlignedLogMessages.OFFSETS_ALIGNED_CLASSES.get(getClass().getName()),
-                MessageElements.PREFIX_LOCAL + MessageElements.ADDED,
-                MessageElements.PUBLIC_KEY,
-                uuid)
+                MessageElements.PREFIX_LOCAL + MessageElements.ADDED, MessageElements.PUBLIC_KEY, uuid
         );
+
+        logger.info(logMsg);
     }
 
     @Override
@@ -49,29 +49,28 @@ public class LocalKeyStoreImpl implements LocalKeyStore {
     @Override
     public void deletePublicKey(final UUID uuid) {
         publicKeys.remove(uuid);
-        logger.info(String.format(
+        final String logMsg = String.format(
                 AlignedLogMessages.FORMAT__OFFSET_35C_35C_C_STR,
                 AlignedLogMessages.OFFSETS_ALIGNED_CLASSES.get(getClass().getName()),
-                MessageElements.PREFIX_LOCAL + MessageElements.DELETED,
-                MessageElements.PUBLIC_KEY,
-                uuid)
+                MessageElements.PREFIX_LOCAL + MessageElements.DELETED, MessageElements.PUBLIC_KEY, uuid
         );
+
+        logger.info(logMsg);
     }
 
     @Override
     public PublicKey getPublicKey(final UUID uuid) throws NoSuchElementException {
         final PublicKey keyData = publicKeys.get(uuid);
-        if (null != keyData){
+        if ( null != keyData) {
             return keyData;
         } else {
-            logger.info(String.format(
+            final String logMsg = String.format(
                     AlignedLogMessages.FORMAT__OFFSET_35C_35C_C_STR,
                     AlignedLogMessages.OFFSETS_ALIGNED_CLASSES.get(getClass().getName()),
-                    MessageElements.PREFIX_LOCAL + MessageElements.NO_SUCH,
-                    MessageElements.PUBLIC_KEY,
-                    uuid)
+                    MessageElements.PREFIX_LOCAL + MessageElements.NO_SUCH, MessageElements.PUBLIC_KEY, uuid
             );
 
+            logger.info(logMsg);
             throw new NoSuchElementException();
         }
     }
@@ -79,7 +78,7 @@ public class LocalKeyStoreImpl implements LocalKeyStore {
     @Override
     public void deletePublicKeys(final List<UUID> uuidsToBeRemoved) {
         publicKeys.keySet().forEach(uuid -> {
-            if (uuidsToBeRemoved.contains(uuid)){
+            if ( uuidsToBeRemoved.contains(uuid)){
                 deletePublicKey(uuid);
             }
         });
@@ -88,52 +87,53 @@ public class LocalKeyStoreImpl implements LocalKeyStore {
     @Override
     public void sync(final List<UUID> toBeKept) {
         int deleted = 0;
-        for (final UUID uuid : publicKeys.keySet()) {
-            if (uuid == liveUuid || toBeKept.contains(uuid)){
-                logger.info(String.format(
+        for ( final UUID uuid : publicKeys.keySet()) {
+            if ( uuid == liveUuid || toBeKept.contains(uuid)) {
+                final String logMsg = String.format(
                         AlignedLogMessages.FORMAT__OFFSET_35C_35C_C_STR,
                         AlignedLogMessages.OFFSETS_ALIGNED_CLASSES.get(getClass().getName()),
-                        MessageElements.PREFIX_LOCAL + MessageElements.SYNC,
-                        MessageElements.PUBLIC_KEY + " " + MessageElements.KEPT,
-                        uuid)
+                        MessageElements.PREFIX_LOCAL + MessageElements.SYNC, MessageElements.PUBLIC_KEY + " " + MessageElements.KEPT, uuid
                 );
+
+                logger.info(logMsg);
 
             } else {
                 publicKeys.remove(uuid);
                 deleted++;
 
-                logger.info(String.format(
+                final String logMsg = String.format(
                         AlignedLogMessages.FORMAT__OFFSET_35C_35C_C_STR,
                         AlignedLogMessages.OFFSETS_ALIGNED_CLASSES.get(getClass().getName()),
-                        MessageElements.PREFIX_LOCAL + MessageElements.SYNC, MessageElements.PUBLIC_KEY + " " + MessageElements.DELETED,
-                        uuid)
+                        MessageElements.PREFIX_LOCAL + MessageElements.SYNC, MessageElements.PUBLIC_KEY + " " + MessageElements.DELETED, uuid
                 );
+
+                logger.info(logMsg);
             }
         }
 
-        logger.info(String.format(
+        final String logMsg = String.format(
                 AlignedLogMessages.FORMAT__OFFSET_35C_35C_STR_STR,
                 AlignedLogMessages.OFFSETS_ALIGNED_CLASSES.get(getClass().getName()),
-                MessageElements.PREFIX_LOCAL + MessageElements.SYNC,
-                MessageElements.PUBLIC_KEY + " " + MessageElements.KEPT + ", " + MessageElements.DELETED,
-                toBeKept.size(), deleted)
+                MessageElements.PREFIX_LOCAL + MessageElements.SYNC, MessageElements.PUBLIC_KEY + " " + MessageElements.KEPT + ", " + MessageElements.DELETED, toBeKept.size(), deleted
         );
+
+        logger.info(logMsg);
     }
 
     @Override
     public void setupSigning(final UUID uuid, final PrivateKey privateKey, final PublicKey publicKey){
-        this.liveUuid = uuid;
+        this.liveUuid       = uuid;
         this.livePrivateKey = privateKey;
-        this.livePublicKey = publicKey;
+        this.livePublicKey  = publicKey;
         publicKeys.put(uuid, publicKey);
 
-        logger.info(String.format(
+        final String logMsg = String.format(
                 AlignedLogMessages.FORMAT__OFFSET_35C_35C_C_STR,
                 AlignedLogMessages.OFFSETS_ALIGNED_CLASSES.get(getClass().getName()),
-                MessageElements.PREFIX_LOCAL + MessageElements.SET,
-                MessageElements.PUBLIC_AND_PRIVATE_KEY,
-                uuid)
+                MessageElements.PREFIX_LOCAL + MessageElements.SET, MessageElements.PUBLIC_AND_PRIVATE_KEY, uuid
         );
+
+        logger.info(logMsg);
     }
 
     @Override
@@ -143,14 +143,14 @@ public class LocalKeyStoreImpl implements LocalKeyStore {
 
     @Override
     public SigningKeySetup getSigningKeySetup() throws SigningKeySetupException {
-        if (null == livePrivateKey) {
-            logger.error(String.format(
+        if ( null == livePrivateKey) {
+            final String errorLog = String.format(
                     AlignedLogMessages.FORMAT__OFFSET_35C_35C,
                     AlignedLogMessages.OFFSETS_ALIGNED_CLASSES.get(getClass().getName()),
-                    MessageElements.PREFIX_LOCAL + MessageElements.NOT_SET,
-                    MessageElements.PUBLIC_AND_PRIVATE_KEY)
+                    MessageElements.PREFIX_LOCAL + MessageElements.NOT_SET, MessageElements.PUBLIC_AND_PRIVATE_KEY
             );
 
+            logger.error(errorLog);
             throw new SigningKeySetupException("Signing keys are not initialized!");
 
         } else {
@@ -160,14 +160,16 @@ public class LocalKeyStoreImpl implements LocalKeyStore {
 
     @Override
     public void resetAll() {
-        publicKeys = new HashMap<>();
-        liveUuid = null;
+        publicKeys     = new HashMap<>();
+        liveUuid       = null;
         livePrivateKey = null;
-        logger.info(String.format(
+
+        final String logMsg = String.format(
                 AlignedLogMessages.FORMAT__OFFSET_35C_35C,
                 AlignedLogMessages.OFFSETS_ALIGNED_CLASSES.get(getClass().getName()),
-                MessageElements.PREFIX_LOCAL + "DROPPED ALL",
-                MessageElements.PUBLIC_AND_PRIVATE_KEY)
+                MessageElements.PREFIX_LOCAL + "DROPPED ALL", MessageElements.PUBLIC_AND_PRIVATE_KEY
         );
+
+        logger.info(logMsg);
     }
 }
