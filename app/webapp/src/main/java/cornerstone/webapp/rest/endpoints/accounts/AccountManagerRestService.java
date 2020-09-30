@@ -4,14 +4,14 @@ import cornerstone.webapp.common.CommonLogMessages;
 import cornerstone.webapp.rest.endpoints.accounts.dtos.AccountEmailPassword;
 import cornerstone.webapp.rest.endpoints.accounts.dtos.AccountSearch;
 import cornerstone.webapp.rest.endpoints.accounts.dtos.AccountSetup;
-import cornerstone.webapp.rest.error_responses.MultiErrorResponse;
 import cornerstone.webapp.rest.error_responses.ErrorResponse;
+import cornerstone.webapp.rest.error_responses.MultiErrorResponse;
 import cornerstone.webapp.services.account.administration.AccountManager;
 import cornerstone.webapp.services.account.administration.AccountResultSet;
-import cornerstone.webapp.services.account.administration.exceptions.multi.MultiCreationInitialException;
-import cornerstone.webapp.services.account.administration.exceptions.multi.MultiDeletionInitialException;
 import cornerstone.webapp.services.account.administration.exceptions.multi.MultiCreationException;
+import cornerstone.webapp.services.account.administration.exceptions.multi.MultiCreationInitialException;
 import cornerstone.webapp.services.account.administration.exceptions.multi.MultiDeletionException;
+import cornerstone.webapp.services.account.administration.exceptions.multi.MultiDeletionInitialException;
 import cornerstone.webapp.services.account.administration.exceptions.single.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -123,10 +123,10 @@ public class AccountManagerRestService {
 
             return Response.status(Response.Status.NOT_FOUND).entity(errorResponse).build();
 
-        } catch (final DeletionException d) {
+        } catch (final DeletionException e2) {
             final ErrorResponse errorResponse = new ErrorResponse(
                     Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(),
-                    d.getMessage()
+                    e2.getMessage()
             );
 
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(errorResponse).build();
@@ -141,15 +141,15 @@ public class AccountManagerRestService {
             accountManager.create(accountSetups);
             return Response.status(Response.Status.CREATED).build();
 
-        } catch (final MultiCreationException p) {
+        } catch (final MultiCreationException e) {
             final MultiErrorResponse multiErrorResponse = new MultiErrorResponse(
                     Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(),
-                    p.getExceptionMessages()
+                    e.getExceptionMessages()
             );
 
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(multiErrorResponse).build();
 
-        } catch (final MultiCreationInitialException b) {
+        } catch (final MultiCreationInitialException e2) {
             final ErrorResponse errorResponse = new ErrorResponse(
                     Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(),
                     "Database error."
@@ -168,15 +168,15 @@ public class AccountManagerRestService {
             accountManager.delete(emailAddresses);
             return Response.status(Response.Status.NO_CONTENT).build();
 
-        } catch (final MultiDeletionException p) {
+        } catch (final MultiDeletionException e) {
             final MultiErrorResponse multiErrorResponse = new MultiErrorResponse(
                     Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(),
-                    p.getExceptionMessages()
+                    e.getExceptionMessages()
             );
 
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(multiErrorResponse).build();
 
-        } catch (final MultiDeletionInitialException b) {
+        } catch (final MultiDeletionInitialException e2) {
             final ErrorResponse errorResponse = new ErrorResponse(
                     Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(),
                     "Database error."
