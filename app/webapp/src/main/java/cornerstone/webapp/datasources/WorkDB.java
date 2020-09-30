@@ -18,10 +18,10 @@ public class WorkDB extends BasicDataSource {
         super();
         final Properties p = configLoader.getWorkDbProperties();
         
-        setDriverClassName                          (p.getProperty(DB_WORK_ENUM.DB_DRIVER.key));
-        setUrl                                      (p.getProperty(DB_WORK_ENUM.DB_URL.key));
-        setUsername                                 (p.getProperty(DB_WORK_ENUM.DB_USERNAME.key));
-        setPassword                                 (p.getProperty(DB_WORK_ENUM.DB_PASSWORD.key));
+        setDriverClassName                           (p.getProperty(DB_WORK_ENUM.DB_DRIVER.key));
+        setUrl                                       (p.getProperty(DB_WORK_ENUM.DB_URL.key));
+        setUsername                                  (p.getProperty(DB_WORK_ENUM.DB_USERNAME.key));
+        setPassword                                  (p.getProperty(DB_WORK_ENUM.DB_PASSWORD.key));
 
         setMinIdle                  (Integer.parseInt(p.getProperty(DB_WORK_ENUM.DB_MIN_IDLE.key)));
         setMaxIdle                  (Integer.parseInt(p.getProperty(DB_WORK_ENUM.DB_MAX_IDLE.key)));
