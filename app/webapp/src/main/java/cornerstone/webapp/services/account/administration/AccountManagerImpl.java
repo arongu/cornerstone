@@ -6,12 +6,11 @@ import cornerstone.webapp.config.ConfigLoader;
 import cornerstone.webapp.config.enums.APP_ENUM;
 import cornerstone.webapp.datasources.UsersDB;
 import cornerstone.webapp.rest.endpoints.accounts.dtos.AccountSetup;
-import cornerstone.webapp.services.account.administration.exceptions.multi.MultiCreationInitialException;
-import cornerstone.webapp.services.account.administration.exceptions.multi.MultiDeletionInitialException;
 import cornerstone.webapp.services.account.administration.exceptions.multi.MultiCreationException;
+import cornerstone.webapp.services.account.administration.exceptions.multi.MultiCreationInitialException;
 import cornerstone.webapp.services.account.administration.exceptions.multi.MultiDeletionException;
+import cornerstone.webapp.services.account.administration.exceptions.multi.MultiDeletionInitialException;
 import cornerstone.webapp.services.account.administration.exceptions.single.*;
-import jdk.jshell.Snippet;
 import org.apache.commons.codec.digest.Crypt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -182,7 +181,7 @@ public class AccountManagerImpl implements AccountManager {
             final String errorLog = String.format(ERROR_LOG_ACCOUNT_CREATION_FAILED, email, e.getMessage(), e.getSQLState());
             logger.error(errorLog);
 
-            if (e.getSQLState().equals("23505")) {
+            if ( e.getSQLState().equals("23505")) {
                 final String exceptionMsg = String.format(EXCEPTION_MESSAGE_ACCOUNT_CREATION_ALREADY_EXISTS, email);
                 throw new CreationException(exceptionMsg);
             } else {
@@ -319,14 +318,14 @@ public class AccountManagerImpl implements AccountManager {
                     }
 
                 } catch (final NoAccountException n) {
-                    if (multiDeletionException == null) {
+                    if ( multiDeletionException == null) {
                         multiDeletionException = new MultiDeletionException();
                     }
 
                     multiDeletionException.addExceptionMessage(String.format(EXCEPTION_MESSAGE_ACCOUNT_DOES_NOT_EXIST, email));
 
                 } catch (final SQLException s) {
-                    if (multiDeletionException == null) {
+                    if ( multiDeletionException == null) {
                         multiDeletionException = new MultiDeletionException();
                     }
 
@@ -338,7 +337,7 @@ public class AccountManagerImpl implements AccountManager {
                 }
             }
 
-            if (null != multiDeletionException) {
+            if ( null != multiDeletionException) {
                 throw multiDeletionException;
             } else {
                 return deletedRows;
