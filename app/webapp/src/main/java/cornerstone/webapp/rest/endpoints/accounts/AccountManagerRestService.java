@@ -38,19 +38,15 @@ public class AccountManagerRestService {
     // to use wild cards add key%
     // or %key
     // or %key%
-    @Path("search")
     @POST
+    @Path("search")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response searchAddress(final AccountSearch accountSearch) {
         final String searchString = accountSearch.getSearchString();
         try {
             final List<String> results = accountManager.searchAccounts(searchString);
-            if (results.size() > 0) {
-                return Response.status(Response.Status.OK).entity(results).build();
-            } else {
-                return Response.status(Response.Status.OK).entity("[]").build();
-            }
+            return Response.status(Response.Status.OK).entity(results).build();
 
         } catch (final EmailAddressSearchException e) {
             final ErrorResponse errorResponse = new ErrorResponse(
@@ -88,7 +84,7 @@ public class AccountManagerRestService {
         }
     }
 
-    @PUT
+    @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response create(final AccountEmailPassword accountEmailPassword) {
@@ -138,7 +134,7 @@ public class AccountManagerRestService {
     }
 
     @POST
-    @Path("bulk")
+    @Path("multi")
     @Produces(MediaType.APPLICATION_JSON)
     public Response massCreate(final List<AccountSetup> accountSetups) {
         try {
@@ -164,7 +160,7 @@ public class AccountManagerRestService {
     }
 
     @DELETE
-    @Path("bulk")
+    @Path("multi")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response massDelete(final List<String> emailAddresses) {
