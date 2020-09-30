@@ -1,12 +1,12 @@
-package cornerstone.webapp.services.account.administration.exceptions.bulk;
+package cornerstone.webapp.services.account.administration.exceptions.multi;
 
 import java.util.LinkedList;
 import java.util.List;
 
-public class PartialDeletionException extends Exception {
+public class MultiCreationException extends Exception {
     private final List<String> exceptionMessages;
 
-    public PartialDeletionException() {
+    public MultiCreationException() {
         super();
         exceptionMessages = new LinkedList<>();
     }

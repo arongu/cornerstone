@@ -4,14 +4,14 @@ import cornerstone.webapp.common.CommonLogMessages;
 import cornerstone.webapp.rest.endpoints.accounts.dtos.AccountEmailPassword;
 import cornerstone.webapp.rest.endpoints.accounts.dtos.AccountSearch;
 import cornerstone.webapp.rest.endpoints.accounts.dtos.AccountSetup;
-import cornerstone.webapp.rest.error_responses.BulkErrorResponse;
-import cornerstone.webapp.rest.error_responses.SingleErrorResponse;
+import cornerstone.webapp.rest.error_responses.MultiErrorResponse;
+import cornerstone.webapp.rest.error_responses.ErrorResponse;
 import cornerstone.webapp.services.account.administration.AccountManager;
 import cornerstone.webapp.services.account.administration.AccountResultSet;
-import cornerstone.webapp.services.account.administration.exceptions.bulk.BulkCreationException;
-import cornerstone.webapp.services.account.administration.exceptions.bulk.BulkDeletionException;
-import cornerstone.webapp.services.account.administration.exceptions.bulk.PartialCreationException;
-import cornerstone.webapp.services.account.administration.exceptions.bulk.PartialDeletionException;
+import cornerstone.webapp.services.account.administration.exceptions.multi.MultiCreationInitialException;
+import cornerstone.webapp.services.account.administration.exceptions.multi.MultiDeletionInitialException;
+import cornerstone.webapp.services.account.administration.exceptions.multi.MultiCreationException;
+import cornerstone.webapp.services.account.administration.exceptions.multi.MultiDeletionException;
 import cornerstone.webapp.services.account.administration.exceptions.single.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,16 +49,16 @@ public class AccountManagerRestService {
             if (results.size() > 0) {
                 return Response.status(Response.Status.OK).entity(results).build();
             } else {
-                return Response.status(Response.Status.NOT_FOUND).entity("[]").build();
+                return Response.status(Response.Status.OK).entity("[]").build();
             }
 
         } catch (final EmailAddressSearchException e) {
-            final SingleErrorResponse singleErrorResponse = new SingleErrorResponse(
+            final ErrorResponse errorResponse = new ErrorResponse(
                     Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(),
                     e.getMessage()
             );
 
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(singleErrorResponse).build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(errorResponse).build();
         }
     }
 
@@ -71,20 +71,20 @@ public class AccountManagerRestService {
             return Response.status(Response.Status.OK).entity(accountResultSet).build();
 
         } catch (final NoAccountException e) {
-            final SingleErrorResponse singleErrorResponse = new SingleErrorResponse(
+            final ErrorResponse errorResponse = new ErrorResponse(
                     Response.Status.NOT_FOUND.getStatusCode(),
                     e.getMessage()
             );
 
-            return Response.status(Response.Status.NOT_FOUND).entity(singleErrorResponse).build();
+            return Response.status(Response.Status.NOT_FOUND).entity(errorResponse).build();
 
         } catch (final RetrievalException r) {
-            final SingleErrorResponse singleErrorResponse = new SingleErrorResponse(
+            final ErrorResponse errorResponse = new ErrorResponse(
                     Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(),
                     r.getMessage()
             );
 
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(singleErrorResponse).build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(errorResponse).build();
         }
     }
 
@@ -102,12 +102,12 @@ public class AccountManagerRestService {
             return Response.status(Response.Status.CREATED).build();
 
         } catch (final CreationException e) {
-            final SingleErrorResponse singleErrorResponse = new SingleErrorResponse(
+            final ErrorResponse errorResponse = new ErrorResponse(
                     Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(),
                     e.getMessage()
             );
 
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(singleErrorResponse).build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(errorResponse).build();
         }
     }
 
@@ -120,15 +120,15 @@ public class AccountManagerRestService {
             return Response.status(Response.Status.NO_CONTENT).build();
 
         } catch (final NoAccountException e) {
-            final SingleErrorResponse singleErrorResponse = new SingleErrorResponse(
+            final ErrorResponse errorResponse = new ErrorResponse(
                     Response.Status.NOT_FOUND.getStatusCode(),
                     e.getMessage()
             );
 
-            return Response.status(Response.Status.NOT_FOUND).entity(singleErrorResponse).build();
+            return Response.status(Response.Status.NOT_FOUND).entity(errorResponse).build();
 
         } catch (final DeletionException d) {
-            final SingleErrorResponse errorResponse = new SingleErrorResponse(
+            final ErrorResponse errorResponse = new ErrorResponse(
                     Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(),
                     d.getMessage()
             );
@@ -145,21 +145,21 @@ public class AccountManagerRestService {
             accountManager.create(accountSetups);
             return Response.status(Response.Status.CREATED).build();
 
-        } catch (final PartialCreationException p) {
-            final BulkErrorResponse bulkErrorResponse = new BulkErrorResponse(
+        } catch (final MultiCreationException p) {
+            final MultiErrorResponse multiErrorResponse = new MultiErrorResponse(
                     Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(),
                     p.getExceptionMessages()
             );
 
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(bulkErrorResponse).build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(multiErrorResponse).build();
 
-        } catch (final BulkCreationException b) {
-            final SingleErrorResponse singleErrorResponse = new SingleErrorResponse(
+        } catch (final MultiCreationInitialException b) {
+            final ErrorResponse errorResponse = new ErrorResponse(
                     Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(),
                     "Database error."
             );
 
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(singleErrorResponse).build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(errorResponse).build();
         }
     }
 
@@ -172,21 +172,21 @@ public class AccountManagerRestService {
             accountManager.delete(emailAddresses);
             return Response.status(Response.Status.NO_CONTENT).build();
 
-        } catch (final PartialDeletionException p) {
-            final BulkErrorResponse bulkErrorResponse = new BulkErrorResponse(
+        } catch (final MultiDeletionException p) {
+            final MultiErrorResponse multiErrorResponse = new MultiErrorResponse(
                     Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(),
                     p.getExceptionMessages()
             );
 
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(bulkErrorResponse).build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(multiErrorResponse).build();
 
-        } catch (final BulkDeletionException b) {
-            final SingleErrorResponse singleErrorResponse = new SingleErrorResponse(
+        } catch (final MultiDeletionInitialException b) {
+            final ErrorResponse errorResponse = new ErrorResponse(
                     Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(),
                     "Database error."
             );
 
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(singleErrorResponse).build();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(errorResponse).build();
         }
     }
 }

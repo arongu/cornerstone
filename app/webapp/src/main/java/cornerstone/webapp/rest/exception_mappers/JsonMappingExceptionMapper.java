@@ -1,7 +1,7 @@
 package cornerstone.webapp.rest.exception_mappers;
 
 import com.fasterxml.jackson.databind.JsonMappingException;
-import cornerstone.webapp.rest.error_responses.SingleErrorResponse;
+import cornerstone.webapp.rest.error_responses.ErrorResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,13 +21,13 @@ public class JsonMappingExceptionMapper implements ExceptionMapper<JsonMappingEx
 
     @Override
     public Response toResponse(final JsonMappingException e) {
-        final SingleErrorResponse singleErrorResponse = new SingleErrorResponse(
+        final ErrorResponse errorResponse = new ErrorResponse(
                 Response.Status.BAD_REQUEST.getStatusCode(), "Malformed JSON message."
         );
 
         logger.info(String.format(message, e.getClass().getCanonicalName(), e.getMessage()));
         return Response.status(Response.Status.BAD_REQUEST)
-                .entity(singleErrorResponse)
+                .entity(errorResponse)
                 .type(MediaType.APPLICATION_JSON)
                 .build();
     }

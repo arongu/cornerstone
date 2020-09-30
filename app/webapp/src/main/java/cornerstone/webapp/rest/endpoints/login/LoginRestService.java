@@ -2,7 +2,7 @@ package cornerstone.webapp.rest.endpoints.login;
 
 import cornerstone.webapp.common.AlignedLogMessages;
 import cornerstone.webapp.rest.endpoints.accounts.dtos.AccountEmailPassword;
-import cornerstone.webapp.rest.error_responses.SingleErrorResponse;
+import cornerstone.webapp.rest.error_responses.ErrorResponse;
 import cornerstone.webapp.services.account.administration.AccountManager;
 import cornerstone.webapp.services.account.administration.exceptions.single.LockedException;
 import cornerstone.webapp.services.account.administration.exceptions.single.NoAccountException;
@@ -72,7 +72,7 @@ public class LoginRestService {
         }
 
         return Response.status(Response.Status.UNAUTHORIZED)
-                .entity(new SingleErrorResponse(Response.Status.UNAUTHORIZED.getStatusCode(), "Access denied."))
+                .entity(new ErrorResponse(Response.Status.UNAUTHORIZED.getStatusCode(), "Access denied."))
                 .build();
     }
 }

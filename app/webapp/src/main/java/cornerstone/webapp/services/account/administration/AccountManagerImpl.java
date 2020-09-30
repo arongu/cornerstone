@@ -6,10 +6,10 @@ import cornerstone.webapp.config.ConfigLoader;
 import cornerstone.webapp.config.enums.APP_ENUM;
 import cornerstone.webapp.datasources.UsersDB;
 import cornerstone.webapp.rest.endpoints.accounts.dtos.AccountSetup;
-import cornerstone.webapp.services.account.administration.exceptions.bulk.BulkCreationException;
-import cornerstone.webapp.services.account.administration.exceptions.bulk.BulkDeletionException;
-import cornerstone.webapp.services.account.administration.exceptions.bulk.PartialCreationException;
-import cornerstone.webapp.services.account.administration.exceptions.bulk.PartialDeletionException;
+import cornerstone.webapp.services.account.administration.exceptions.multi.MultiCreationInitialException;
+import cornerstone.webapp.services.account.administration.exceptions.multi.MultiDeletionInitialException;
+import cornerstone.webapp.services.account.administration.exceptions.multi.MultiCreationException;
+import cornerstone.webapp.services.account.administration.exceptions.multi.MultiDeletionException;
 import cornerstone.webapp.services.account.administration.exceptions.single.*;
 import org.apache.commons.codec.digest.Crypt;
 import org.slf4j.Logger;
@@ -186,9 +186,9 @@ public class AccountManagerImpl implements AccountManager {
     }
 
     @Override
-    public int create(final List<AccountSetup> accountSetupList) throws PartialCreationException, BulkCreationException {
+    public int create(final List<AccountSetup> accountSetupList) throws MultiCreationException, MultiCreationInitialException {
         try (final Connection c = usersDB.getConnection(); final PreparedStatement ps = c.prepareStatement(SQL_INSERT_ACCOUNT)) {
-            PartialCreationException partialCreationException = null;
+            MultiCreationException multiCreationException = null;
             int updatedRows = 0;
 
             for (final AccountSetup accountSetup : accountSetupList) {
@@ -212,14 +212,14 @@ public class AccountManagerImpl implements AccountManager {
                         );
 
                     } catch (final SQLException e) {
-                        if (null == partialCreationException) {
-                            partialCreationException = new PartialCreationException();
+                        if (null == multiCreationException) {
+                            multiCreationException = new MultiCreationException();
                         }
 
                         if ( e.getSQLState().equals("23505")) {
-                            partialCreationException.addExceptionMessage(String.format(EXCEPTION_MESSAGE_ACCOUNT_CREATION_ALREADY_EXISTS, email));
+                            multiCreationException.addExceptionMessage(String.format(EXCEPTION_MESSAGE_ACCOUNT_CREATION_ALREADY_EXISTS, email));
                         } else {
-                            partialCreationException.addExceptionMessage(String.format(EXCEPTION_MESSAGE_ACCOUNT_CREATION_FAILED, email));
+                            multiCreationException.addExceptionMessage(String.format(EXCEPTION_MESSAGE_ACCOUNT_CREATION_FAILED, email));
                         }
 
                         logger.error(String.format(ERROR_LOG_ACCOUNT_CREATION_FAILED, email, e.getMessage(), e.getSQLState()));
@@ -227,15 +227,15 @@ public class AccountManagerImpl implements AccountManager {
                 }
             }
 
-            if (partialCreationException != null) {
-                throw partialCreationException;
+            if (multiCreationException != null) {
+                throw multiCreationException;
             } else {
                 return updatedRows;
             }
 
         } catch (final SQLException e) {
             logger.error(e.getMessage());
-            throw new BulkCreationException();
+            throw new MultiCreationInitialException();
         }
     }
 
@@ -269,11 +269,11 @@ public class AccountManagerImpl implements AccountManager {
     }
 
     @Override
-    public int delete(final List<String> emails) throws PartialDeletionException, BulkDeletionException {
+    public int delete(final List<String> emails) throws MultiDeletionException, MultiDeletionInitialException {
         try (final Connection c = usersDB.getConnection();
              final PreparedStatement ps = c.prepareStatement(SQL_DELETE_ACCOUNT)) {
 
-            PartialDeletionException partialDeletionException = null;
+            MultiDeletionException multiDeletionException = null;
             int deletedRows = 0;
 
             for (final String email : emails) {
@@ -299,31 +299,31 @@ public class AccountManagerImpl implements AccountManager {
                     }
 
                 } catch (final NoAccountException n) {
-                    if (partialDeletionException == null) {
-                        partialDeletionException = new PartialDeletionException();
+                    if (multiDeletionException == null) {
+                        multiDeletionException = new MultiDeletionException();
                     }
 
-                    partialDeletionException.addExceptionMessage(String.format(EXCEPTION_MESSAGE_ACCOUNT_DOES_NOT_EXIST, email));
+                    multiDeletionException.addExceptionMessage(String.format(EXCEPTION_MESSAGE_ACCOUNT_DOES_NOT_EXIST, email));
 
                 } catch (final SQLException s) {
-                    if (partialDeletionException == null) {
-                        partialDeletionException = new PartialDeletionException();
+                    if (multiDeletionException == null) {
+                        multiDeletionException = new MultiDeletionException();
                     }
 
-                    partialDeletionException.addExceptionMessage(String.format(EXCEPTION_MESSAGE_ACCOUNT_DELETION_FAILED, email));
+                    multiDeletionException.addExceptionMessage(String.format(EXCEPTION_MESSAGE_ACCOUNT_DELETION_FAILED, email));
                     logger.error(String.format(ERROR_LOG_ACCOUNT_DELETION_FAILED, email, s.getMessage(), s.getSQLState()));
                 }
             }
 
-            if (null != partialDeletionException) {
-                throw partialDeletionException;
+            if (null != multiDeletionException) {
+                throw multiDeletionException;
             } else {
                 return deletedRows;
             }
 
         } catch (final SQLException e) {
             logger.error(e.getMessage());
-            throw new BulkDeletionException();
+            throw new MultiDeletionInitialException();
         }
     }
 

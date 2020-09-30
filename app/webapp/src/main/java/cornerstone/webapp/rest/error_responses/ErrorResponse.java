@@ -6,14 +6,14 @@ package cornerstone.webapp.rest.error_responses;
     }
 */
 
-public class SingleErrorResponse extends TemplateErrorResponse {
+public class ErrorResponse extends TemplateErrorResponse {
     private String error;
 
-    public SingleErrorResponse() {
+    public ErrorResponse() {
         super();
     }
 
-    public SingleErrorResponse(final int httpStatusCode, final String error) {
+    public ErrorResponse(final int httpStatusCode, final String error) {
         super(httpStatusCode);
         this.error = error;
     }

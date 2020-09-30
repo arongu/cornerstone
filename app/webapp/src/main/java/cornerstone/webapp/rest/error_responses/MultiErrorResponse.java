@@ -9,14 +9,14 @@ package cornerstone.webapp.rest.error_responses;
 
 import java.util.List;
 
-public class BulkErrorResponse extends TemplateErrorResponse {
+public class MultiErrorResponse extends TemplateErrorResponse {
     private List<String> errors;
 
-    public BulkErrorResponse() {
+    public MultiErrorResponse() {
         super();
     }
 
-    public BulkErrorResponse(final int httpStatusCode, final List<String> errors) {
+    public MultiErrorResponse(final int httpStatusCode, final List<String> errors) {
         super(httpStatusCode);
         this.errors = errors;
     }

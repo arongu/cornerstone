@@ -1,6 +1,6 @@
 package cornerstone.webapp.rest.endpoints.pubkeys;
 
-import cornerstone.webapp.rest.error_responses.SingleErrorResponse;
+import cornerstone.webapp.rest.error_responses.ErrorResponse;
 import cornerstone.webapp.services.rsa.store.db.PublicKeyStore;
 import cornerstone.webapp.services.rsa.store.db.PublicKeyStoreException;
 import cornerstone.webapp.services.rsa.store.local.LocalKeyStore;
@@ -45,9 +45,10 @@ public class PublicKeyRestService {
         final UUID uuid;
         try {
             uuid = UUID.fromString(uuidString);
+
         } catch (final IllegalArgumentException illegalArgumentException) {
-            final SingleErrorResponse singleErrorResponse = new SingleErrorResponse(Response.Status.BAD_REQUEST.getStatusCode(), illegalArgumentException.getMessage());
-            return Response.status(Response.Status.BAD_REQUEST).entity(singleErrorResponse).build();
+            final ErrorResponse er = new ErrorResponse(Response.Status.BAD_REQUEST.getStatusCode(), illegalArgumentException.getMessage());
+            return Response.status(Response.Status.BAD_REQUEST).entity(er).build();
         }
 
         // Try to get key from local keystore
@@ -63,22 +64,22 @@ public class PublicKeyRestService {
             try {
                 base64Key = publicKeyStore.getKey(uuid).getBase64Key();
                 localKeyStore.addPublicKey(uuid, base64Key);
+
             } catch (final NoSuchElementException ignored) {
 
             } catch (final PublicKeyStoreException | NoSuchAlgorithmException | InvalidKeySpecException e) {
-                logger.error(String.format("An error occurred during local caching a public key, exception class: '%s', exception message: '%s'",
-                        e.getClass().getCanonicalName(), e.getMessage())
-                );
+                logger.error(String.format("An error occurred during public key retrieval/local caching, exception class: '%s', exception message: '%s'", e.getClass().getCanonicalName(), e.getMessage()));
+                final ErrorResponse er = new ErrorResponse(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), "An error occurred during public key retrieval/local caching.");
+                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(er).build();
             }
         }
 
         // Send response
-        if (base64Key == null) {
-            return Response.status(Response.Status.NOT_FOUND)
-                    .entity(new SingleErrorResponse(Response.Status.NOT_FOUND.getStatusCode(), "No such key."))
-                    .build();
-        } else {
+        if (base64Key != null) {
             return Response.status(Response.Status.OK).entity(base64Key).build();
+        } else {
+            final ErrorResponse errorResponse = new ErrorResponse(Response.Status.NOT_FOUND.getStatusCode(), "No such key.");
+            return Response.status(Response.Status.NOT_FOUND).entity(errorResponse).build();
         }
     }
 
@@ -88,14 +89,11 @@ public class PublicKeyRestService {
     public Response getLiveKeyUUIDs() {
         try {
             final List<UUID> uuidList = publicKeyStore.getLiveKeyUUIDs();
-            if (uuidList.size() > 0) {
-                return Response.status(Response.Status.OK).entity(uuidList).build();
-            } else {
-                return Response.status(Response.Status.NO_CONTENT).build();
-            }
+            return Response.status(Response.Status.OK).entity(uuidList).build();
 
         } catch (final PublicKeyStoreException e) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+            final ErrorResponse er = new ErrorResponse(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), "An error occurred during live key retrieval.");
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(er).build();
         }
     }
 
@@ -105,14 +103,11 @@ public class PublicKeyRestService {
     public Response getExpiredKeyUUIDs() {
         try {
             final List<UUID> uuidList = publicKeyStore.getExpiredKeyUUIDs();
-            if (uuidList.size() > 0) {
-                return Response.status(Response.Status.OK).entity(uuidList).build();
-            } else {
-                return Response.status(Response.Status.NO_CONTENT).build();
-            }
+            return Response.status(Response.Status.OK).entity(uuidList).build();
 
         } catch (final PublicKeyStoreException e) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).build();
+            final ErrorResponse er = new ErrorResponse(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), "An error occurred during expired key retrieval.");
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(er).build();
         }
     }
 }
