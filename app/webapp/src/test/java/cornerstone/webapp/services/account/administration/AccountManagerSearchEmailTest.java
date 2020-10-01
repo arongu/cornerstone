@@ -22,8 +22,8 @@ public class AccountManagerSearchEmailTest {
 
         try {
             final ConfigLoader configLoader = new ConfigLoader(keyFile, confFile);
-            final UsersDB usersDB               = new UsersDB(configLoader);
-            accountManager                      = new AccountManagerImpl(usersDB, configLoader);
+            final UsersDB usersDB           = new UsersDB(configLoader);
+            accountManager                  = new AccountManagerImpl(usersDB, configLoader);
 
         } catch (final IOException e) {
             e.printStackTrace();

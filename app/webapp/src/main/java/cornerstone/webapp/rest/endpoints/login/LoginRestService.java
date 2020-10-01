@@ -28,12 +28,12 @@ import javax.ws.rs.core.Response;
 public class LoginRestService {
     private static final Logger logger = LoggerFactory.getLogger(LoginRestService.class);
 
-    private final AccountManager accountAdmin;
+    private final AccountManager accountManager;
     private final JWTService JWTService;
 
     @Inject
-    public LoginRestService(final AccountManager accountAdmin, final JWTService JWTService) {
-        this.accountAdmin = accountAdmin;
+    public LoginRestService(final AccountManager accountManager, final JWTService JWTService) {
+        this.accountManager = accountManager;
         this.JWTService = JWTService;
     }
 
@@ -48,7 +48,7 @@ public class LoginRestService {
             null != accountEmailPassword.getPassword()) {
 
             final boolean authenticated;
-            authenticated = accountAdmin.login(accountEmailPassword.getEmail(), accountEmailPassword.getPassword());
+            authenticated = accountManager.login(accountEmailPassword.getEmail(), accountEmailPassword.getPassword());
 
             if ( authenticated ) {
                 final String jwt = JWTService.createJws(accountEmailPassword.getPassword(), null);
@@ -72,7 +72,7 @@ public class LoginRestService {
         }
 
         return Response.status(Response.Status.UNAUTHORIZED)
-                .entity(new ErrorResponse(Response.Status.UNAUTHORIZED.getStatusCode(), "Access denied."))
+                .entity(new ErrorResponse(Response.Status.UNAUTHORIZED.getStatusCode(), "Unauthorized."))
                 .build();
     }
 }

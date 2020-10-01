@@ -25,8 +25,8 @@ public class AccountManagerCrudTest {
 
         try {
             final ConfigLoader cr = new ConfigLoader(keyFile, confFile);
-            final UsersDB ds = new UsersDB(cr);
-            accountManager = new AccountManagerImpl(ds, cr);
+            final UsersDB ds      = new UsersDB(cr);
+            accountManager        = new AccountManagerImpl(ds, cr);
 
         } catch (final IOException e) {
             e.printStackTrace();

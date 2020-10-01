@@ -27,10 +27,9 @@ public class AccountManagerCrudAndLoginTest {
         final String confFile       = Paths.get(test_files_dir + "app.conf").toAbsolutePath().normalize().toString();
 
         try {
-            final ConfigLoader configLoader = new ConfigLoader(keyFile, confFile);
-
-            final UsersDB usersDB = new UsersDB(configLoader);
-            accountManager = new AccountManagerImpl(usersDB, configLoader);
+            final ConfigLoader configLoader     = new ConfigLoader(keyFile, confFile);
+            final UsersDB usersDB               = new UsersDB(configLoader);
+            accountManager                      = new AccountManagerImpl(usersDB, configLoader);
             MAX_LOGIN_ATTEMPTS_FROM_TEST_CONFIG = Integer.parseInt(configLoader.getAppProperties().getProperty(APP_ENUM.APP_MAX_LOGIN_ATTEMPTS.key));
 
         } catch (final IOException e) {
