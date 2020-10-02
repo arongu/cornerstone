@@ -1,12 +1,12 @@
-package cornerstone.webapp.services.account.administration;
+package cornerstone.webapp.services.account.management;
 
-import cornerstone.webapp.services.account.administration.exceptions.single.DeletionException;
+import cornerstone.webapp.services.account.management.exceptions.single.DeletionException;
 import cornerstone.webapp.rest.endpoints.accounts.dtos.AccountSetup;
-import cornerstone.webapp.services.account.administration.exceptions.multi.MultiCreationException;
-import cornerstone.webapp.services.account.administration.exceptions.multi.MultiCreationInitialException;
-import cornerstone.webapp.services.account.administration.exceptions.multi.MultiDeletionException;
-import cornerstone.webapp.services.account.administration.exceptions.multi.MultiDeletionInitialException;
-import cornerstone.webapp.services.account.administration.exceptions.single.*;
+import cornerstone.webapp.services.account.management.exceptions.multi.MultiCreationException;
+import cornerstone.webapp.services.account.management.exceptions.multi.MultiCreationInitialException;
+import cornerstone.webapp.services.account.management.exceptions.multi.MultiDeletionException;
+import cornerstone.webapp.services.account.management.exceptions.multi.MultiDeletionInitialException;
+import cornerstone.webapp.services.account.management.exceptions.single.*;
 
 import java.util.List;
 

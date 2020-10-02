@@ -1,4 +1,4 @@
-package cornerstone.webapp.services.account.administration;
+package cornerstone.webapp.services.account.management;
 
 import cornerstone.webapp.common.AlignedLogMessages;
 import cornerstone.webapp.common.CommonLogMessages;
@@ -6,11 +6,11 @@ import cornerstone.webapp.config.ConfigLoader;
 import cornerstone.webapp.config.enums.APP_ENUM;
 import cornerstone.webapp.datasources.UsersDB;
 import cornerstone.webapp.rest.endpoints.accounts.dtos.AccountSetup;
-import cornerstone.webapp.services.account.administration.exceptions.multi.MultiCreationException;
-import cornerstone.webapp.services.account.administration.exceptions.multi.MultiCreationInitialException;
-import cornerstone.webapp.services.account.administration.exceptions.multi.MultiDeletionException;
-import cornerstone.webapp.services.account.administration.exceptions.multi.MultiDeletionInitialException;
-import cornerstone.webapp.services.account.administration.exceptions.single.*;
+import cornerstone.webapp.services.account.management.exceptions.multi.MultiCreationException;
+import cornerstone.webapp.services.account.management.exceptions.multi.MultiCreationInitialException;
+import cornerstone.webapp.services.account.management.exceptions.multi.MultiDeletionException;
+import cornerstone.webapp.services.account.management.exceptions.multi.MultiDeletionInitialException;
+import cornerstone.webapp.services.account.management.exceptions.single.*;
 import org.apache.commons.codec.digest.Crypt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

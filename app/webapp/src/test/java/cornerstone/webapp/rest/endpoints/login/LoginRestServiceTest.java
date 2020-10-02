@@ -3,8 +3,8 @@ package cornerstone.webapp.rest.endpoints.login;
 import cornerstone.webapp.config.ConfigLoader;
 import cornerstone.webapp.rest.endpoints.accounts.dtos.AccountEmailPassword;
 import cornerstone.webapp.rest.error_responses.ErrorResponse;
-import cornerstone.webapp.services.account.administration.AccountManager;
-import cornerstone.webapp.services.account.administration.AccountManagerImpl;
+import cornerstone.webapp.services.account.management.AccountManager;
+import cornerstone.webapp.services.account.management.AccountManagerImpl;
 import cornerstone.webapp.services.jwt.JWTService;
 import cornerstone.webapp.services.jwt.JWTServiceImpl;
 import cornerstone.webapp.services.rsa.rotation.KeyPairWithUUID;
@@ -79,10 +79,9 @@ public class LoginRestServiceTest {
 
     @Test
     public void authenticateUser_shouldReturnJWS_whenAccountManagerReturnsTrue() throws Exception {
-        final String test_files_dir = "../../_test_config/";
-        final String keyFile        = Paths.get(test_files_dir + "key.conf").toAbsolutePath().normalize().toString();
-        final String confFile       = Paths.get(test_files_dir + "app.conf").toAbsolutePath().normalize().toString();
-
+        final String test_files_dir                     = "../../_test_config/";
+        final String keyFile                            = Paths.get(test_files_dir + "key.conf").toAbsolutePath().normalize().toString();
+        final String confFile                           = Paths.get(test_files_dir + "app.conf").toAbsolutePath().normalize().toString();
         final ConfigLoader configLoader                 = new ConfigLoader(keyFile, confFile);
         final LocalKeyStore localKeyStore               = new LocalKeyStoreImpl();
         final KeyPairWithUUID keyPairWithUUID           = new KeyPairWithUUID();

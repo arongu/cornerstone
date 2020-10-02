@@ -1,9 +1,9 @@
-package cornerstone.webapp.services.account.administration;
+package cornerstone.webapp.services.account.management;
 
 import cornerstone.webapp.config.ConfigLoader;
 import cornerstone.webapp.datasources.UsersDB;
-import cornerstone.webapp.services.account.administration.exceptions.single.CreationException;
-import cornerstone.webapp.services.account.administration.exceptions.single.NoAccountException;
+import cornerstone.webapp.services.account.management.exceptions.single.CreationException;
+import cornerstone.webapp.services.account.management.exceptions.single.NoAccountException;
 import org.apache.commons.codec.digest.Crypt;
 import org.junit.jupiter.api.*;
 

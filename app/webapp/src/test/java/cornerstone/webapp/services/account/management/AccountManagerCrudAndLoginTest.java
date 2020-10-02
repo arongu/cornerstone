@@ -1,11 +1,11 @@
-package cornerstone.webapp.services.account.administration;
+package cornerstone.webapp.services.account.management;
 
 import cornerstone.webapp.config.ConfigLoader;
 import cornerstone.webapp.config.enums.APP_ENUM;
 import cornerstone.webapp.datasources.UsersDB;
-import cornerstone.webapp.services.account.administration.exceptions.single.LockedException;
-import cornerstone.webapp.services.account.administration.exceptions.single.NoAccountException;
-import cornerstone.webapp.services.account.administration.exceptions.single.UnverifiedEmailException;
+import cornerstone.webapp.services.account.management.exceptions.single.LockedException;
+import cornerstone.webapp.services.account.management.exceptions.single.NoAccountException;
+import cornerstone.webapp.services.account.management.exceptions.single.UnverifiedEmailException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 

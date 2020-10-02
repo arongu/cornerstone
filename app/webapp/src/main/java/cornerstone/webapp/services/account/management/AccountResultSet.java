@@ -1,4 +1,4 @@
-package cornerstone.webapp.services.account.administration;
+package cornerstone.webapp.services.account.management;
 
 import java.sql.Timestamp;
 

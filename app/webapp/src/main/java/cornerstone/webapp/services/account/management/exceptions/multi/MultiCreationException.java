@@ -1,12 +1,12 @@
-package cornerstone.webapp.services.account.administration.exceptions.multi;
+package cornerstone.webapp.services.account.management.exceptions.multi;
 
 import java.util.LinkedList;
 import java.util.List;
 
-public class MultiDeletionException extends Exception {
+public class MultiCreationException extends Exception {
     private final List<String> exceptionMessages;
 
-    public MultiDeletionException() {
+    public MultiCreationException() {
         super();
         exceptionMessages = new LinkedList<>();
     }

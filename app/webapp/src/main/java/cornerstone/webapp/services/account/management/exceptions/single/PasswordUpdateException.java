@@ -1,4 +1,4 @@
-package cornerstone.webapp.services.account.administration.exceptions.single;
+package cornerstone.webapp.services.account.management.exceptions.single;
 
 public class PasswordUpdateException extends Exception {
     public PasswordUpdateException(String message) {

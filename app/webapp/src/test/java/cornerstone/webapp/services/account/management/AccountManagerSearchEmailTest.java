@@ -1,4 +1,4 @@
-package cornerstone.webapp.services.account.administration;
+package cornerstone.webapp.services.account.management;
 
 import cornerstone.webapp.config.ConfigLoader;
 import cornerstone.webapp.datasources.UsersDB;
@@ -43,6 +43,7 @@ public class AccountManagerSearchEmailTest {
         final List<String> wildcard_result3;
         final List<String> exact_result4;
         final List<String> exact_result5;
+        final List<String> null_result;
         // prepare
         TestHelper.deleteAccount(accountManager, normal_zmail);
         TestHelper.deleteAccount(accountManager, norman_zmail);
@@ -57,6 +58,7 @@ public class AccountManagerSearchEmailTest {
         wildcard_result3 = accountManager.searchAccounts("%man.com");
         exact_result4    = accountManager.searchAccounts("normal@zmail.com");
         exact_result5    = accountManager.searchAccounts("xxx@bmail.com");
+        null_result      = accountManager.searchAccounts(null);
 
 
         // wildcard nor%
@@ -75,6 +77,8 @@ public class AccountManagerSearchEmailTest {
         assertTrue  (exact_result4.contains(normal_zmail));
         // "xxx@bmail.com"
         assertEquals(0, exact_result5.size());
+        // null result
+        assertEquals(0, null_result.size());
         // cleanup, delete
         accountManager.delete(normal_zmail);
         accountManager.delete(norman_zmail);

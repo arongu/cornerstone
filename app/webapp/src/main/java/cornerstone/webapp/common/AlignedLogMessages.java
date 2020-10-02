@@ -1,7 +1,7 @@
 package cornerstone.webapp.common;
 
 import cornerstone.webapp.rest.endpoints.login.LoginRestService;
-import cornerstone.webapp.services.account.administration.AccountManagerImpl;
+import cornerstone.webapp.services.account.management.AccountManagerImpl;
 import cornerstone.webapp.services.rsa.rotation.KeyRotationTask;
 import cornerstone.webapp.services.rsa.rotation.KeyRotatorImpl;
 import cornerstone.webapp.services.rsa.store.db.PublicKeyStoreImpl;
