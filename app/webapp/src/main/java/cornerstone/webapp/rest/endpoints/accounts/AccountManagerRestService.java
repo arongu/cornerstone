@@ -141,14 +141,6 @@ public class AccountManagerRestService {
             accountManager.create(accountSetups);
             return Response.status(Response.Status.CREATED).build();
 
-        } catch (final MultiCreationException e) {
-            final MultiErrorResponse multiErrorResponse = new MultiErrorResponse(
-                    Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(),
-                    e.getExceptionMessages()
-            );
-
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(multiErrorResponse).build();
-
         } catch (final MultiCreationInitialException e2) {
             final ErrorResponse errorResponse = new ErrorResponse(
                     Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(),
@@ -156,6 +148,14 @@ public class AccountManagerRestService {
             );
 
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(errorResponse).build();
+
+        } catch (final MultiCreationException e) {
+            final MultiErrorResponse multiErrorResponse = new MultiErrorResponse(
+                    Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(),
+                    e.getExceptionMessages()
+            );
+
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(multiErrorResponse).build();
         }
     }
 
@@ -168,14 +168,6 @@ public class AccountManagerRestService {
             accountManager.delete(emailAddresses);
             return Response.status(Response.Status.NO_CONTENT).build();
 
-        } catch (final MultiDeletionException e) {
-            final MultiErrorResponse multiErrorResponse = new MultiErrorResponse(
-                    Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(),
-                    e.getExceptionMessages()
-            );
-
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(multiErrorResponse).build();
-
         } catch (final MultiDeletionInitialException e2) {
             final ErrorResponse errorResponse = new ErrorResponse(
                     Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(),
@@ -183,6 +175,14 @@ public class AccountManagerRestService {
             );
 
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(errorResponse).build();
+
+        } catch (final MultiDeletionException e) {
+            final MultiErrorResponse multiErrorResponse = new MultiErrorResponse(
+                    Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(),
+                    e.getExceptionMessages()
+            );
+
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(multiErrorResponse).build();
         }
     }
 }

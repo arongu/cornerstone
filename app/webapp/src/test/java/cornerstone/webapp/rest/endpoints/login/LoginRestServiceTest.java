@@ -5,6 +5,9 @@ import cornerstone.webapp.rest.endpoints.accounts.dtos.AccountEmailPassword;
 import cornerstone.webapp.rest.error_responses.ErrorResponse;
 import cornerstone.webapp.services.account.management.AccountManager;
 import cornerstone.webapp.services.account.management.AccountManagerImpl;
+import cornerstone.webapp.services.account.management.exceptions.single.LockedException;
+import cornerstone.webapp.services.account.management.exceptions.single.NoAccountException;
+import cornerstone.webapp.services.account.management.exceptions.single.UnverifiedEmailException;
 import cornerstone.webapp.services.jwt.JWTService;
 import cornerstone.webapp.services.jwt.JWTServiceImpl;
 import cornerstone.webapp.services.rsa.rotation.KeyPairWithUUID;
@@ -17,7 +20,12 @@ import javax.ws.rs.core.Response;
 import java.nio.file.Paths;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+/*
+    accountEmailPassword          - null [ OK ]
+    accountEmailPassword.email    - null [ OK ]
+    accountEmailPassword.password - null [ OK ]
 
+ */
 public class LoginRestServiceTest {
     @Test
     public void authenticateUser_shouldReturnUnauthorized_whenAccountEmailPasswordIsNull() throws Exception {
@@ -66,6 +74,63 @@ public class LoginRestServiceTest {
         final LoginRestService loginRestService         = new LoginRestService(accountManager, null);
         final AccountEmailPassword accountEmailPassword = new AccountEmailPassword("email", "password");
         Mockito.when(accountManager.login(Mockito.anyString(), Mockito.anyString())).thenReturn(false);
+
+
+        final Response response           = loginRestService.authenticateUser(accountEmailPassword);
+        final ErrorResponse errorResponse = (ErrorResponse) response.getEntity();
+
+
+        assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(), response.getStatus());
+        assertEquals("Unauthorized.", errorResponse.getError());
+        Mockito.verify(accountManager, Mockito.times(1)).login(Mockito.anyString(), Mockito.anyString());
+    }
+
+    @Test
+    public void authenticateUser_shouldReturnUnauthorized_whenAccountManager_throwsLockedException() throws Exception {
+        final String email                              = "mymail@zzz.com";
+        final AccountManager accountManager             = Mockito.mock(AccountManagerImpl.class);
+        final LoginRestService loginRestService         = new LoginRestService(accountManager, null);
+        final AccountEmailPassword accountEmailPassword = new AccountEmailPassword(email, "password");
+        final LockedException lockedException           = new LockedException(email);
+        Mockito.when(accountManager.login(Mockito.anyString(), Mockito.anyString())).thenThrow(lockedException);
+
+
+        final Response response           = loginRestService.authenticateUser(accountEmailPassword);
+        final ErrorResponse errorResponse = (ErrorResponse) response.getEntity();
+
+
+        assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(), response.getStatus());
+        assertEquals("Unauthorized.", errorResponse.getError());
+        Mockito.verify(accountManager, Mockito.times(1)).login(Mockito.anyString(), Mockito.anyString());
+    }
+
+    @Test
+    public void authenticateUser_shouldReturnUnauthorized_whenAccountManager_throwsUnverifiedEmailExceptionException() throws Exception {
+        final String email                                      = "unvf_mymail@zzz.com";
+        final AccountManager accountManager                     = Mockito.mock(AccountManagerImpl.class);
+        final LoginRestService loginRestService                 = new LoginRestService(accountManager, null);
+        final AccountEmailPassword accountEmailPassword         = new AccountEmailPassword(email, "password");
+        final UnverifiedEmailException unverifiedEmailException = new UnverifiedEmailException(email);
+        Mockito.when(accountManager.login(Mockito.anyString(), Mockito.anyString())).thenThrow(unverifiedEmailException);
+
+
+        final Response response           = loginRestService.authenticateUser(accountEmailPassword);
+        final ErrorResponse errorResponse = (ErrorResponse) response.getEntity();
+
+
+        assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(), response.getStatus());
+        assertEquals("Unauthorized.", errorResponse.getError());
+        Mockito.verify(accountManager, Mockito.times(1)).login(Mockito.anyString(), Mockito.anyString());
+    }
+
+    @Test
+    public void authenticateUser_shouldReturnUnauthorized_whenAccountManager_throwsNoAccountException() throws Exception {
+        final String email                              = "bbbb_mymail@zzz.com";
+        final AccountManager accountManager             = Mockito.mock(AccountManagerImpl.class);
+        final LoginRestService loginRestService         = new LoginRestService(accountManager, null);
+        final AccountEmailPassword accountEmailPassword = new AccountEmailPassword(email, "password");
+        final NoAccountException noAccountException     = new NoAccountException(email);
+        Mockito.when(accountManager.login(Mockito.anyString(), Mockito.anyString())).thenThrow(noAccountException);
 
 
         final Response response           = loginRestService.authenticateUser(accountEmailPassword);

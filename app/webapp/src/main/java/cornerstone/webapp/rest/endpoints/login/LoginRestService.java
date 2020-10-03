@@ -38,36 +38,48 @@ public class LoginRestService {
     }
 
     @POST
-    public Response authenticateUser(final AccountEmailPassword accountEmailPassword) throws
-            UnverifiedEmailException,
-            LockedException,
-            NoAccountException, SigningKeySetupException {
+    public Response authenticateUser(final AccountEmailPassword accountEmailPassword) throws SigningKeySetupException {
 
         if (null != accountEmailPassword &&
             null != accountEmailPassword.getEmail() &&
             null != accountEmailPassword.getPassword()) {
 
             final boolean authenticated;
-            authenticated = accountManager.login(accountEmailPassword.getEmail(), accountEmailPassword.getPassword());
+
+            try {
+                authenticated = accountManager.login(accountEmailPassword.getEmail(), accountEmailPassword.getPassword());
+
+            } catch (final LockedException | UnverifiedEmailException | NoAccountException e) {
+                final String logMsg = String.format(
+                        AlignedLogMessages.FORMAT__OFFSET_35C_C_STR,
+                        AlignedLogMessages.OFFSETS_ALIGNED_CLASSES.get(getClass().getName()),
+                        e.getMessage(), accountEmailPassword.getEmail()
+                );
+
+                logger.info(logMsg);
+                return Response.status(Response.Status.UNAUTHORIZED)
+                        .entity(new ErrorResponse(Response.Status.UNAUTHORIZED.getStatusCode(), "Unauthorized."))
+                        .build();
+            }
 
             if ( authenticated ) {
                 final String jwt = JWTService.createJws(accountEmailPassword.getPassword(), null);
-                logger.info(String.format(
+                final String logMsg = String.format(
                         AlignedLogMessages.FORMAT__OFFSET_35C_C_STR,
                         AlignedLogMessages.OFFSETS_ALIGNED_CLASSES.get(getClass().getName()),
-                        "TOKEN GRANTED", accountEmailPassword.getEmail())
+                        "TOKEN GRANTED", accountEmailPassword.getEmail()
                 );
 
-                return Response.status(Response.Status.OK)
-                        .entity(new TokenDTO(jwt))
-                        .build();
+                logger.info(logMsg);
+                return Response.status(Response.Status.OK).entity(new TokenDTO(jwt)).build();
 
             } else {
-                logger.info(String.format(
+                final String logMsg = String.format(
                         AlignedLogMessages.FORMAT__OFFSET_35C_C_STR,
                         AlignedLogMessages.OFFSETS_ALIGNED_CLASSES.get(getClass().getName()),
-                        "TOKEN DENIED", accountEmailPassword.getEmail())
+                        "TOKEN DENIED", accountEmailPassword.getEmail()
                 );
+                logger.info(logMsg);
             }
         }
 

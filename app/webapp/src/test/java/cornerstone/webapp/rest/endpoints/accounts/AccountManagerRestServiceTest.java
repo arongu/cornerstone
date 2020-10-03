@@ -2,10 +2,16 @@ package cornerstone.webapp.rest.endpoints.accounts;
 
 import cornerstone.webapp.rest.endpoints.accounts.dtos.AccountEmailPassword;
 import cornerstone.webapp.rest.endpoints.accounts.dtos.AccountSearch;
+import cornerstone.webapp.rest.endpoints.accounts.dtos.AccountSetup;
 import cornerstone.webapp.rest.error_responses.ErrorResponse;
+import cornerstone.webapp.rest.error_responses.MultiErrorResponse;
 import cornerstone.webapp.services.account.management.AccountManager;
 import cornerstone.webapp.services.account.management.AccountManagerImpl;
 import cornerstone.webapp.services.account.management.AccountResultSet;
+import cornerstone.webapp.services.account.management.exceptions.multi.MultiCreationException;
+import cornerstone.webapp.services.account.management.exceptions.multi.MultiCreationInitialException;
+import cornerstone.webapp.services.account.management.exceptions.multi.MultiDeletionException;
+import cornerstone.webapp.services.account.management.exceptions.multi.MultiDeletionInitialException;
 import cornerstone.webapp.services.account.management.exceptions.single.*;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -225,5 +231,104 @@ public class AccountManagerRestServiceTest {
     }
 
     // massCreate
+    @Test
+    public void massCreate_shouldReturn201Created_whenMassAccountCreationIsSuccessful() throws MultiCreationInitialException, MultiCreationException {
+        final AccountManager accountManager                       = Mockito.mock(AccountManagerImpl.class);
+        final AccountManagerRestService accountManagerRestService = new AccountManagerRestService(accountManager);
+        Mockito.when(accountManager.create(Mockito.anyList())).thenReturn(15);
+
+
+        final Response response = accountManagerRestService.massCreate(new LinkedList<AccountSetup>());
+
+
+        assertEquals(Response.Status.CREATED.getStatusCode(), response.getStatus());
+    }
+
+    @Test
+    public void massCreate_shouldRespondWithErrorResponse503InternalServerError_whenMultiCreationInitialExceptionIsThrown() throws MultiCreationInitialException, MultiCreationException {
+        final AccountManager accountManager                       = Mockito.mock(AccountManagerImpl.class);
+        final AccountManagerRestService accountManagerRestService = new AccountManagerRestService(accountManager);
+        Mockito.when(accountManager.create(Mockito.anyList())).thenThrow(MultiCreationInitialException.class);
+
+
+        final Response response = accountManagerRestService.massCreate(new LinkedList<AccountSetup>());
+        final ErrorResponse er  = (ErrorResponse) response.getEntity();
+
+
+        assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), response.getStatus());
+        assertEquals("Database error.", er.getError());
+    }
+
+    @Test
+    public void massCreate_shouldRespondWithMultiErrorResponse503InternalServerError_whenMultiCreationExceptionIsThrown() throws MultiCreationInitialException, MultiCreationException {
+        final AccountManager accountManager                       = Mockito.mock(AccountManagerImpl.class);
+        final AccountManagerRestService accountManagerRestService = new AccountManagerRestService(accountManager);
+        final String exceptionMessage1                            = String.format(CreationException.EXCEPTION_MESSAGE_ACCOUNT_CREATION_FAILED, "failed_a@mail.com");
+        final String exceptionMessage2                            = String.format(CreationException.EXCEPTION_MESSAGE_ACCOUNT_CREATION_FAILED, "boci@mail.com");
+        final String exceptionMessage3                            = String.format(CreationException.EXCEPTION_MESSAGE_ACCOUNT_CREATION_FAILED, "lamp@mail.com");
+        final MultiCreationException multiCreationException       = new MultiCreationException();
+        multiCreationException.addExceptionMessage(exceptionMessage1);
+        multiCreationException.addExceptionMessage(exceptionMessage2);
+        multiCreationException.addExceptionMessage(exceptionMessage3);
+        Mockito.when(accountManager.create(Mockito.anyList())).thenThrow(multiCreationException);
+
+
+        final Response response     = accountManagerRestService.massCreate(new LinkedList<AccountSetup>());
+        final MultiErrorResponse er = (MultiErrorResponse) response.getEntity();
+
+
+        assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), response.getStatus());
+        assertEquals(multiCreationException.getExceptionMessages(), er.getErrors());
+    }
+
     // massDelete
+    @Test
+    public void massDelete_shouldReturn204NoContent_whenMassAccountDeletionIsSuccessful() throws MultiDeletionInitialException, MultiDeletionException {
+        final AccountManager accountManager                       = Mockito.mock(AccountManagerImpl.class);
+        final AccountManagerRestService accountManagerRestService = new AccountManagerRestService(accountManager);
+        Mockito.when(accountManager.delete(Mockito.anyList())).thenReturn(15);
+
+
+        final Response response = accountManagerRestService.massDelete(new LinkedList<String>());
+
+
+        assertEquals(Response.Status.NO_CONTENT.getStatusCode(), response.getStatus());
+    }
+
+    @Test
+    public void massDelete_shouldRespondWithErrorResponse503InternalServerError_whenMultiDeletionInitialExceptionIsThrown() throws MultiDeletionInitialException, MultiDeletionException {
+        final AccountManager accountManager                       = Mockito.mock(AccountManagerImpl.class);
+        final AccountManagerRestService accountManagerRestService = new AccountManagerRestService(accountManager);
+        Mockito.when(accountManager.delete(Mockito.anyList())).thenThrow(MultiDeletionInitialException.class);
+
+
+        final Response response = accountManagerRestService.massDelete(new LinkedList<String>());
+        final ErrorResponse er  = (ErrorResponse) response.getEntity();
+
+
+        assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), response.getStatus());
+        assertEquals("Database error.", er.getError());
+    }
+
+    @Test
+    public void massDelete_shouldRespondWithErrorResponse503InternalServerError_whenMultiDeletionExceptionIsThrown() throws MultiDeletionInitialException, MultiDeletionException {
+        final AccountManager accountManager                       = Mockito.mock(AccountManagerImpl.class);
+        final AccountManagerRestService accountManagerRestService = new AccountManagerRestService(accountManager);
+        final String exceptionMessage1                            = String.format(DeletionException.EXCEPTION_MESSAGE_ACCOUNT_DELETION_FAILED, "failed_a@mail.com");
+        final String exceptionMessage2                            = String.format(DeletionException.EXCEPTION_MESSAGE_ACCOUNT_DELETION_FAILED, "boci@mail.com");
+        final String exceptionMessage3                            = String.format(DeletionException.EXCEPTION_MESSAGE_ACCOUNT_DELETION_FAILED, "lamp@mail.com");
+        final MultiDeletionException multiDeletionException       = new MultiDeletionException();
+        multiDeletionException.addExceptionMessage(exceptionMessage1);
+        multiDeletionException.addExceptionMessage(exceptionMessage2);
+        multiDeletionException.addExceptionMessage(exceptionMessage3);
+        Mockito.when(accountManager.delete(Mockito.anyList())).thenThrow(multiDeletionException);
+
+
+        final Response response     = accountManagerRestService.massDelete(new LinkedList<String>());
+        final MultiErrorResponse er = (MultiErrorResponse) response.getEntity();
+
+
+        assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), response.getStatus());
+        assertEquals(multiDeletionException.getExceptionMessages(), er.getErrors());
+    }
 }

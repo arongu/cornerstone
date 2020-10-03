@@ -25,7 +25,7 @@ public class JsonParseExceptionMapper implements ExceptionMapper<JsonParseExcept
                 Response.Status.BAD_REQUEST.getStatusCode(),"Malformed JSON message."
         );
 
-        logger.info(String.format(message, e.getClass().getCanonicalName(), e.getMessage()));
+        logger.info(String.format(message, e.getClass().getName(), e.getMessage()));
         return Response.status(Response.Status.BAD_REQUEST)
                 .entity(errorResponse)
                 .type(MediaType.APPLICATION_JSON)

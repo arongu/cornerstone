@@ -20,7 +20,7 @@ public class GeneralExceptionMapper implements ExceptionMapper<Exception> {
 
     @Override
     public Response toResponse(final Exception e) {
-        logger.error(String.format(message, e.getClass().getCanonicalName(), e.getMessage()));
+        logger.error(String.format(message, e.getClass().getName(), e.getMessage()));
 
         return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                 .entity(new ErrorResponse(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), ":("))
