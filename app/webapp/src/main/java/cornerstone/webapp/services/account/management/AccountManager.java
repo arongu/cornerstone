@@ -11,11 +11,11 @@ import cornerstone.webapp.services.account.management.exceptions.single.*;
 import java.util.List;
 
 public interface AccountManager {
-    int create(final String email, final String password, final boolean locked, final boolean verified) throws CreationException;
+    int create(final String email, final String password, final boolean locked, final boolean verified) throws CreationException, CreationDuplicateException;
     int create(final List<AccountSetup> list) throws MultiCreationException, MultiCreationInitialException;
 
     AccountResultSet get(final String email) throws RetrievalException, NoAccountException;
-    List<String> searchAccounts(final String str) throws EmailAddressSearchException;
+    List<String> searchAccounts(final String keyword) throws AccountSearchException;
 
     int setPassword(final String email, final String password) throws PasswordUpdateException;
     int setEmail(final String currentEmail, final String newEmail) throws EmailUpdateException;

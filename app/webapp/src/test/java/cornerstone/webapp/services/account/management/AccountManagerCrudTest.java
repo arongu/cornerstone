@@ -2,7 +2,7 @@ package cornerstone.webapp.services.account.management;
 
 import cornerstone.webapp.config.ConfigLoader;
 import cornerstone.webapp.datasources.UsersDB;
-import cornerstone.webapp.services.account.management.exceptions.single.CreationException;
+import cornerstone.webapp.services.account.management.exceptions.single.CreationDuplicateException;
 import cornerstone.webapp.services.account.management.exceptions.single.NoAccountException;
 import org.apache.commons.codec.digest.Crypt;
 import org.junit.jupiter.api.*;
@@ -37,7 +37,8 @@ public class AccountManagerCrudTest {
     @Test
     @Order(0)
     public void t00_get_shouldThrowAccountDoesNotExistException_whenAccountDoesNotExist() {
-        assertThrows(NoAccountException.class, () -> accountManager.get("thereisnoway@suchemailexist.net"));
+        final NoAccountException e = assertThrows(NoAccountException.class, () -> accountManager.get("thereisnoway@suchemailexist.net"));
+        assertEquals("Account 'thereisnoway@suchemailexist.net' does not exist.", e.getMessage());
     }
 
     @Test
@@ -77,8 +78,8 @@ public class AccountManagerCrudTest {
 
     @Test
     @Order(11)
-    public void t01b_create_shouldThrowAccountCreationException_whenAccountAlreadyExists() {
-        assertThrows(CreationException.class, () -> {
+    public void t01b_create_shouldThrowAccountCreationDuplicateException_whenAccountAlreadyExists() {
+        final CreationDuplicateException e = assertThrows(CreationDuplicateException.class, () -> {
             final String email     = "almafa@gmail.com";
             final String password  = "password";
             final boolean locked   = false;
@@ -86,6 +87,7 @@ public class AccountManagerCrudTest {
 
             accountManager.create(email, password, locked, verified);
         });
+        assertEquals("Failed to create 'almafa@gmail.com' (already exists).", e.getMessage());
     }
 
     @Test
@@ -94,10 +96,13 @@ public class AccountManagerCrudTest {
         final String email = "almafa@gmail.com";
         final int number_of_accounts_deleted;
 
+
         number_of_accounts_deleted = accountManager.delete("almafa@gmail.com");
 
-        assertThrows(NoAccountException.class, () -> accountManager.get(email));
+
+        final NoAccountException e = assertThrows(NoAccountException.class, () -> accountManager.get(email));
         assertEquals(1, number_of_accounts_deleted);
+        assertEquals("Account 'almafa@gmail.com' does not exist." , e.getMessage());
     }
 
     @Test
@@ -228,6 +233,7 @@ public class AccountManagerCrudTest {
 
 
         assertEquals(1, number_of_deletes);
-        assertThrows(NoAccountException.class, () -> accountManager.get(email));
+        final NoAccountException e = assertThrows(NoAccountException.class, () -> accountManager.get(email));
+        assertEquals("Account 'my_new_crud_tests_mail@yahoo.com' does not exist.", e.getMessage());
     }
 }

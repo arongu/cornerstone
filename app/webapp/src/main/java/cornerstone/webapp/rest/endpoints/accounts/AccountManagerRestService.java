@@ -48,7 +48,7 @@ public class AccountManagerRestService {
             final List<String> results = accountManager.searchAccounts(searchString);
             return Response.status(Response.Status.OK).entity(results).build();
 
-        } catch (final EmailAddressSearchException e) {
+        } catch (final AccountSearchException e) {
             final ErrorResponse errorResponse = new ErrorResponse(
                     Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(),
                     e.getMessage()
@@ -95,9 +95,9 @@ public class AccountManagerRestService {
                     false, false
             );
 
-            return Response.status(Response.Status.CREATED).build();
+            return Response.status(Response.Status.CREATED).header("Location", "/accounts/" + accountEmailPassword.getEmail()).build();
 
-        } catch (final CreationException e) {
+        } catch (final CreationException | CreationDuplicateException e) {
             final ErrorResponse errorResponse = new ErrorResponse(
                     Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(),
                     e.getMessage()

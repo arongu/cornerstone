@@ -1,7 +1,9 @@
 package cornerstone.webapp.services.account.management.exceptions.single;
 
 public class CreationException extends Exception {
-    public CreationException(String message) {
-        super(message);
+    public static final String EXCEPTION_MESSAGE_ACCOUNT_CREATION_FAILED = "Failed to create '%s'.";
+
+    public CreationException(final String email) {
+        super(String.format(EXCEPTION_MESSAGE_ACCOUNT_CREATION_FAILED, email));
     }
 }

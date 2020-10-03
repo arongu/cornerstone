@@ -56,7 +56,8 @@ public class AccountManagerCrudAndLoginTest {
         number_of_accounts_deleted = accountManager.delete(email);
 
 
-        assertThrows(NoAccountException.class, () -> accountManager.get(email));
+        final NoAccountException noAccountException = assertThrows(NoAccountException.class, () -> accountManager.get(email));
+        assertEquals("Account 'melchior@login.me' does not exist.", noAccountException.getMessage());
         assertEquals(1, number_of_accounts_created);
         assertTrue(login_result);
         assertEquals(1, number_of_accounts_deleted);
@@ -68,7 +69,7 @@ public class AccountManagerCrudAndLoginTest {
         final String password = "wow";
 
         final NoAccountException e = assertThrows(NoAccountException.class, () -> accountManager.login(email, password));
-        assertTrue(e.getMessage().contains(email));
+        assertEquals("Account 'xxxxx@doesnotexist.xu' does not exist.", e.getMessage());
     }
 
     @Test
@@ -90,7 +91,7 @@ public class AccountManagerCrudAndLoginTest {
         final UnverifiedEmailException e = assertThrows(UnverifiedEmailException.class, () -> accountManager.login(email, password));
 
 
-        assertTrue(e.getMessage().contains(email));
+        assertEquals("Account is not verified 'casper@login.me'.", e.getMessage());
         assertEquals(1, number_of_accounts_created);
         assertEquals(email, created_account.email_address);
         assertFalse(created_account.account_locked);
@@ -120,7 +121,7 @@ public class AccountManagerCrudAndLoginTest {
         final LockedException e    = assertThrows(LockedException.class, () -> accountManager.login(email, password));
 
 
-        assertTrue(e.getMessage().contains(email));
+        assertEquals("Account is locked 'locked@login.me'.", e.getMessage());
         assertEquals(1, number_of_accounts_created);
         assertTrue(created_account.account_locked);
         // cleanup && tiny delete test
@@ -200,7 +201,8 @@ public class AccountManagerCrudAndLoginTest {
         assertEquals(1, number_of_accounts_cleared);
         assertEquals(0, account_after_clear.account_login_attempts);
         assertEquals(1, number_of_accounts_deleted);
-        assertThrows(NoAccountException.class, () -> accountManager.get(email)); // verify last delete
+        final NoAccountException e = assertThrows(NoAccountException.class, () -> accountManager.get(email)); // verify last delete
+        assertEquals("Account 'badtyper@login.me' does not exist.", e.getMessage());
     }
 
     @Test
@@ -238,7 +240,8 @@ public class AccountManagerCrudAndLoginTest {
         // cleanup && tiny delete test
         number_of_accounts_deleted = accountManager.delete(email);
         assertEquals(1, number_of_accounts_deleted);
-        assertThrows(NoAccountException.class, () -> accountManager.get(email));
+        final NoAccountException e = assertThrows(NoAccountException.class, () -> accountManager.get(email));
+        assertEquals("Account 'badtyper180@login.me' does not exist.", e.getMessage());
     }
 
     @Test
@@ -258,17 +261,17 @@ public class AccountManagerCrudAndLoginTest {
         TestHelper.deleteAccount(accountManager, email);
 
 
-        number_of_accounts_created  = accountManager.create(email, password, locked, verified);
-        first_login_good_password   = accountManager.login(email, password);
-        account_without_bad_logins  = accountManager.get(email);
-        final LockedException e     = assertThrows(LockedException.class, () -> {
+        number_of_accounts_created = accountManager.create(email, password, locked, verified);
+        first_login_good_password  = accountManager.login(email, password);
+        account_without_bad_logins = accountManager.get(email);
+        final LockedException e    = assertThrows(LockedException.class, () -> {
             for (int i = 0; i < MAX_LOGIN_ATTEMPTS_FROM_TEST_CONFIG + 20; i++) {
                 accountManager.login(email, bad_password);
             }
         });
-        assertTrue(e.getMessage().contains(email));
+        assertEquals("Account is locked 'autolock180@login.me'.", e.getMessage());
         final LockedException e2 = assertThrows(LockedException.class, () -> accountManager.login(email, password));
-        assertTrue(e2.getMessage().contains(email));
+        assertEquals("Account is locked 'autolock180@login.me'." , e.getMessage());
         account_after_lock = accountManager.get(email);
 
 
@@ -280,8 +283,9 @@ public class AccountManagerCrudAndLoginTest {
         assertEquals(MAX_LOGIN_ATTEMPTS_FROM_TEST_CONFIG, account_after_lock.account_login_attempts);
         // cleanup && tiny delete test
         number_of_accounts_deleted = accountManager.delete(email);
-        assertThrows(NoAccountException.class, () -> accountManager.get(email));
+        final NoAccountException noAccountException = assertThrows(NoAccountException.class, () -> accountManager.get(email));
         assertEquals(1, number_of_accounts_deleted);
+        assertEquals("Account 'autolock180@login.me' does not exist.", noAccountException.getMessage());
     }
 
     @Test
@@ -323,6 +327,7 @@ public class AccountManagerCrudAndLoginTest {
         // cleanup && tiny delete test
         number_of_accounts_deleted = accountManager.delete(email);
         assertEquals(1, number_of_accounts_deleted);
-        assertThrows(NoAccountException.class, () -> accountManager.get(email)); // verify last delete
+        final NoAccountException e = assertThrows(NoAccountException.class, () -> accountManager.get(email)); // verify last delete
+        assertEquals("Account 'lastnite@aaa.me' does not exist.", e.getMessage());
     }
 }
