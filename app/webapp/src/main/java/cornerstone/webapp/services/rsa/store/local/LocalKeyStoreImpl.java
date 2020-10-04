@@ -19,8 +19,8 @@ public class LocalKeyStoreImpl implements LocalKeyStore {
 
     private Map<UUID, PublicKey> publicKeys;
     private PrivateKey livePrivateKey = null;
-    private PublicKey  livePublicKey = null;
-    private UUID       liveUuid = null;
+    private PublicKey  livePublicKey  = null;
+    private UUID       live_uuid      = null;
 
     public LocalKeyStoreImpl() {
         publicKeys = new ConcurrentHashMap<>();
@@ -88,7 +88,7 @@ public class LocalKeyStoreImpl implements LocalKeyStore {
     public void sync(final List<UUID> toBeKept) {
         int deleted = 0;
         for ( final UUID uuid : publicKeys.keySet()) {
-            if ( uuid == liveUuid || toBeKept.contains(uuid)) {
+            if ( uuid.equals(live_uuid) || toBeKept.contains(uuid)) {
                 final String logMsg = String.format(
                         AlignedLogMessages.FORMAT__OFFSET_35C_35C_C_STR,
                         AlignedLogMessages.OFFSETS_ALIGNED_CLASSES.get(getClass().getName()),
@@ -122,7 +122,7 @@ public class LocalKeyStoreImpl implements LocalKeyStore {
 
     @Override
     public void setupSigning(final UUID uuid, final PrivateKey privateKey, final PublicKey publicKey){
-        this.liveUuid       = uuid;
+        this.live_uuid = uuid;
         this.livePrivateKey = privateKey;
         this.livePublicKey  = publicKey;
         publicKeys.put(uuid, publicKey);
@@ -154,14 +154,14 @@ public class LocalKeyStoreImpl implements LocalKeyStore {
             throw new SigningKeySetupException("Signing keys are not initialized!");
 
         } else {
-            return new SigningKeySetup(liveUuid, livePrivateKey, livePublicKey);
+            return new SigningKeySetup(live_uuid, livePrivateKey, livePublicKey);
         }
     }
 
     @Override
     public void resetAll() {
-        publicKeys     = new HashMap<>();
-        liveUuid       = null;
+        publicKeys = new HashMap<>();
+        live_uuid = null;
         livePrivateKey = null;
 
         final String logMsg = String.format(
