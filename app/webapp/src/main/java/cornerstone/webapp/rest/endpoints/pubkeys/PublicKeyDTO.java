@@ -1,0 +1,20 @@
+package cornerstone.webapp.rest.endpoints.pubkeys;
+
+public class PublicKeyDTO {
+    private String pubkey;
+
+    public PublicKeyDTO() {
+    }
+
+    public PublicKeyDTO(final String pubkey) {
+        this.pubkey = pubkey;
+    }
+
+    public String getPubkey() {
+        return pubkey;
+    }
+
+    public void setPubkey(final String pubkey) {
+        this.pubkey = pubkey;
+    }
+}

@@ -13,7 +13,9 @@
     <properties>
         <java.version>11</java.version>
         <jakarta.version>2.1.6</jakarta.version>
-        <jersey.version>2.31</jersey.version>
+        <jersey.version>2.32</jersey.version>
+        <jupiter.version>5.7.0</jupiter.version>
+        <jjwt.version>0.11.2</jjwt.version>
 
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
@@ -43,19 +45,19 @@
             <dependency>
                 <groupId>org.junit.jupiter</groupId>
                 <artifactId>junit-jupiter-api</artifactId>
-                <version>5.5.2</version>
+                <version>${jupiter.version}</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>org.junit.jupiter</groupId>
                 <artifactId>junit-jupiter-params</artifactId>
-                <version>5.5.2</version>
+                <version>${jupiter.version}</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>org.junit.jupiter</groupId>
                 <artifactId>junit-jupiter-engine</artifactId>
-                <version>5.5.2</version>
+                <version>${jupiter.version}</version>
                 <scope>test</scope>
             </dependency>
 
@@ -63,26 +65,26 @@
             <dependency>
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-dbcp2</artifactId>
-                <version>2.7.0</version>
+                <version>2.8.0</version>
             </dependency>
             <!-- lib -->
             <dependency>
                 <groupId>commons-codec</groupId>
                 <artifactId>commons-codec</artifactId>
-                <version>1.13</version>
+                <version>1.15</version>
             </dependency>
             <!-- uuid -->
             <dependency>
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-lang3</artifactId>
-                <version>3.10</version>
+                <version>3.11</version>
             </dependency>
 
             <!-- jdbc -->
             <dependency>
                 <groupId>org.postgresql</groupId>
                 <artifactId>postgresql</artifactId>
-                <version>42.2.10</version>
+                <version>42.2.16</version>
             </dependency>
 
             <!-- Webapp -->
@@ -120,25 +122,25 @@
             <dependency>
                 <groupId>io.jsonwebtoken</groupId>
                 <artifactId>jjwt-api</artifactId>
-                <version>0.11.2</version>
+                <version>${jjwt.version}</version>
             </dependency>
             <dependency>
                 <groupId>io.jsonwebtoken</groupId>
                 <artifactId>jjwt-impl</artifactId>
-                <version>0.11.2</version>
+                <version>${jjwt.version}</version>
                 <scope>runtime</scope>
             </dependency>
             <dependency>
                 <groupId>io.jsonwebtoken</groupId>
                 <artifactId>jjwt-jackson</artifactId>
-                <version>0.11.2</version>
+                <version>${jjwt.version}</version>
                 <scope>runtime</scope>
             </dependency>
             <!-- mockito -->
             <dependency>
                 <groupId>org.mockito</groupId>
                 <artifactId>mockito-core</artifactId>
-                <version>3.4.6</version>
+                <version>3.5.13</version>
                 <scope>test</scope>
             </dependency>
         </dependencies>
@@ -188,7 +190,8 @@
                 <plugin>
                     <groupId>org.flywaydb</groupId>
                     <artifactId>flyway-maven-plugin</artifactId>
-                    <version>6.2.4</version>
+                    <version>6.5.7</version>
+                    <!-- TODO check version 7 -->
                 </plugin>
                 <!-- PLUGINS -->
             </plugins>

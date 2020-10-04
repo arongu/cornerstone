@@ -31,7 +31,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
     getLiveKeyUUIDs - 500 error       DONE
  */
 
-public class PublicKeyRestServiceTest {
+public class PublicKeyDTORestServiceTest {
     // getPublicKey - 200
     @Test
     public void getPublicKey__shouldReturnKeyWith_200_OK__whenKeyExists() {
@@ -44,7 +44,8 @@ public class PublicKeyRestServiceTest {
 
         final Response response           = publicKeyRestService.getPublicKey(uuidStr);
         final String str_pubkey_local     = Base64.getEncoder().encodeToString(pubkey.getEncoded());
-        final String str_pubkey_retrieved = response.getEntity().toString();
+        final PublicKeyDTO publicKeyDTO   = (PublicKeyDTO) response.getEntity();
+        final String str_pubkey_retrieved = publicKeyDTO.getPubkey();
 
 
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());

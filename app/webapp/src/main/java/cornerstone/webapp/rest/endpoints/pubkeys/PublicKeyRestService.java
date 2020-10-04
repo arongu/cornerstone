@@ -76,7 +76,7 @@ public class PublicKeyRestService {
 
         // Send response
         if (base64Key != null) {
-            return Response.status(Response.Status.OK).entity(base64Key).build();
+            return Response.status(Response.Status.OK).entity(new PublicKeyDTO(base64Key)).build();
         } else {
             final ErrorResponse errorResponse = new ErrorResponse(Response.Status.NOT_FOUND.getStatusCode(), "No such key.");
             return Response.status(Response.Status.NOT_FOUND).entity(errorResponse).build();
