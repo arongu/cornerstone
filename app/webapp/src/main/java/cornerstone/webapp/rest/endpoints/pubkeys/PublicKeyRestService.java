@@ -7,6 +7,8 @@ import cornerstone.webapp.services.rsa.store.local.LocalKeyStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.security.PermitAll;
+import javax.annotation.security.RolesAllowed;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.ws.rs.GET;
@@ -25,6 +27,7 @@ import java.util.UUID;
 
 @Singleton
 @Path("/pubkeys")
+@PermitAll
 public class PublicKeyRestService {
     private static final Logger logger = LoggerFactory.getLogger(PublicKeyRestService.class);
 

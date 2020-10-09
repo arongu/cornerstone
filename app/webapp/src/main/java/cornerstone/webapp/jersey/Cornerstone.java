@@ -3,6 +3,7 @@ package cornerstone.webapp.jersey;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.glassfish.jersey.server.ResourceConfig;
+import org.glassfish.jersey.server.filter.RolesAllowedDynamicFeature;
 
 import javax.inject.Inject;
 
@@ -22,6 +23,7 @@ public class Cornerstone extends ResourceConfig {
     public Cornerstone(final ServiceLocator serviceLocator) {
         ServiceLocatorUtilities.enableImmediateScope(serviceLocator);
         packages("cornerstone.webapp");
+        register(RolesAllowedDynamicFeature.class);
         register(new ApplicationBinder());
     }
 }

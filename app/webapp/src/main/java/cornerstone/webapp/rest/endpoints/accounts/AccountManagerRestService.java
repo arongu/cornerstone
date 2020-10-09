@@ -16,6 +16,7 @@ import cornerstone.webapp.services.account.management.exceptions.single.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.security.RolesAllowed;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.ws.rs.*;
@@ -25,6 +26,7 @@ import java.util.List;
 
 @Singleton
 @Path("/accounts")
+@RolesAllowed("admin")
 public class AccountManagerRestService {
     private static final Logger logger = LoggerFactory.getLogger(AccountManagerRestService.class);
     private final AccountManager accountManager;
