@@ -3,7 +3,6 @@
 ----------------------------------------------------------------------------
 -- Table user_data.accounts
 ----------------------------------------------------------------------------
-
 CREATE SEQUENCE IF NOT EXISTS user_data.account_id_seq;
 CREATE TABLE IF NOT EXISTS user_data.accounts(
     account_id integer NOT NULL DEFAULT nextval('account_id_seq'::regclass),

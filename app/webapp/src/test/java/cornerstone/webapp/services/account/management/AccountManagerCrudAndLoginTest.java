@@ -39,10 +39,11 @@ public class AccountManagerCrudAndLoginTest {
 
     @Test
     public void login_shouldReturnTrue_whenAccountExistsNotLockedAndVerified() throws Exception {
-        final String email     = "melchior@login.me";
-        final String password  = "miciMacko#";
-        final boolean locked   = false;
-        final boolean verified = true;
+        final String email           = "melchior@login.me";
+        final String password        = "miciMacko#";
+        final boolean locked         = false;
+        final boolean verified       = true;
+        final AccountRole accountRole = AccountRole.USER;
         // results
         final boolean login_result;
         final int number_of_accounts_created;
@@ -51,7 +52,7 @@ public class AccountManagerCrudAndLoginTest {
         TestHelper.deleteAccount(accountManager, email);
 
 
-        number_of_accounts_created = accountManager.create(email, password, locked, verified);
+        number_of_accounts_created = accountManager.create(email, password, locked, verified, accountRole);
         login_result               = accountManager.login(email, password);
         number_of_accounts_deleted = accountManager.delete(email);
 
@@ -74,10 +75,11 @@ public class AccountManagerCrudAndLoginTest {
 
     @Test
     public void login_shouldThrowException_whenAccountIsNotVerifiedAndNotLocked() throws Exception{
-        final String email     = "casper@login.me";
-        final String password  = "casper#";
-        final boolean locked   = false;
-        final boolean verified = false;
+        final String email            = "casper@login.me";
+        final String password         = "casper#";
+        final boolean locked          = false;
+        final boolean verified        = false;
+        final AccountRole accountRole = AccountRole.ADMIN;
         // results
         final int number_of_accounts_created;
         final int number_of_accounts_deleted;
@@ -86,7 +88,7 @@ public class AccountManagerCrudAndLoginTest {
         TestHelper.deleteAccount(accountManager, email);
 
 
-        number_of_accounts_created       = accountManager.create(email, password, locked, verified);
+        number_of_accounts_created       = accountManager.create(email, password, locked, verified, accountRole);
         created_account                  = accountManager.get(email);
         final UnverifiedEmailException e = assertThrows(UnverifiedEmailException.class, () -> accountManager.login(email, password));
 
@@ -116,7 +118,7 @@ public class AccountManagerCrudAndLoginTest {
         TestHelper.deleteAccount(accountManager, email);
 
 
-        number_of_accounts_created = accountManager.create(email, password, locked, verified);
+        number_of_accounts_created = accountManager.create(email, password, locked, verified, AccountRole.NO_ROLE);
         created_account            = accountManager.get(email);
         final LockedException e    = assertThrows(LockedException.class, () -> accountManager.login(email, password));
 
@@ -146,7 +148,7 @@ public class AccountManagerCrudAndLoginTest {
         TestHelper.deleteAccount(accountManager, email);
 
 
-        number_of_accounts_created = accountManager.create(email, password, locked, verified);
+        number_of_accounts_created = accountManager.create(email, password, locked, verified, AccountRole.USER);
         logins[0]                  = accountManager.login(email, bad_password);
         logins[1]                  = accountManager.login(email, bad_password);
         logins[2]                  = accountManager.login(email, bad_password);
@@ -183,7 +185,7 @@ public class AccountManagerCrudAndLoginTest {
         TestHelper.deleteAccount(accountManager, email);
 
 
-        number_of_accounts_created = accountManager.create(email, password, locked, verified);
+        number_of_accounts_created = accountManager.create(email, password, locked, verified, AccountRole.USER);
         first__login_good_password = accountManager.login(email, password);
         second_login_bad_password  = accountManager.login(email, bad_password);
         third__login_bad_password  = accountManager.login(email, bad_password);
@@ -222,7 +224,7 @@ public class AccountManagerCrudAndLoginTest {
         TestHelper.deleteAccount(accountManager, email);
 
 
-        number_of_accounts_created = accountManager.create(email, password, locked, verified);
+        number_of_accounts_created = accountManager.create(email, password, locked, verified, AccountRole.USER);
         for (int i = 0; i < MAX_LOGIN_ATTEMPTS_FROM_TEST_CONFIG; i++) {
             logins[i] = accountManager.login(email, bad_password);
         }
@@ -261,7 +263,7 @@ public class AccountManagerCrudAndLoginTest {
         TestHelper.deleteAccount(accountManager, email);
 
 
-        number_of_accounts_created = accountManager.create(email, password, locked, verified);
+        number_of_accounts_created = accountManager.create(email, password, locked, verified, AccountRole.USER);
         first_login_good_password  = accountManager.login(email, password);
         account_without_bad_logins = accountManager.get(email);
         final LockedException e    = assertThrows(LockedException.class, () -> {
@@ -308,7 +310,7 @@ public class AccountManagerCrudAndLoginTest {
         TestHelper.deleteAccount(accountManager, email);
 
 
-        number_of_accounts_created               = accountManager.create(email, password, locked, verified);
+        number_of_accounts_created               = accountManager.create(email, password, locked, verified, AccountRole.USER);
         first__login_bad_password                = accountManager.login(email, bad_password);
         second_login_bad_password                = accountManager.login(email, bad_password);
         third__login_bad_password                = accountManager.login(email, bad_password);

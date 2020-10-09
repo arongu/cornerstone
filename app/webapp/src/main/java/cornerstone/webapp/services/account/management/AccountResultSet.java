@@ -15,6 +15,7 @@ public class AccountResultSet {
     public final Timestamp email_address_verified_ts;
     public final String    password_hash;
     public final Timestamp password_hash_ts;
+    public final int       role_id;
 
     public AccountResultSet(final int       account_id,
                             final Timestamp account_registration_ts,
@@ -27,7 +28,8 @@ public class AccountResultSet {
                             final boolean   email_address_verified,
                             final Timestamp email_address_verified_ts,
                             final String    password_hash,
-                            final Timestamp password_hash_ts) {
+                            final Timestamp password_hash_ts,
+                            final int       role_id) {
 
         this.account_id              = account_id;
         this.account_registration_ts = account_registration_ts;
@@ -45,5 +47,6 @@ public class AccountResultSet {
 
         this.password_hash    = password_hash;
         this.password_hash_ts = password_hash_ts;
+        this.role_id          = role_id;
     }
 }

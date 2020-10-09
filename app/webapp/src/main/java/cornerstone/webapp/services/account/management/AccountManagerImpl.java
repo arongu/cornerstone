@@ -41,7 +41,7 @@ public class AccountManagerImpl implements AccountManager {
     private static final String SQL_SELECT_ACCOUNT                                = "SELECT * FROM user_data.accounts WHERE email_address=(?)";
     private static final String SQL_SELECT_ACCOUNTS_ILIKE                         = "SELECT email_address FROM user_data.accounts WHERE email_address ILIKE (?)";
     private static final String SQL_SELECT_ACCOUNT_FOR_LOGIN                      = "SELECT account_locked, email_address_verified, account_login_attempts, password_hash FROM user_data.accounts WHERE email_address=(?)";
-    private static final String SQL_INSERT_ACCOUNT                                = "INSERT INTO user_data.accounts (password_hash, email_address, account_locked, email_address_verified) VALUES(?,?,?,?)";
+    private static final String SQL_INSERT_ACCOUNT                                = "INSERT INTO user_data.accounts (password_hash, email_address, account_locked, email_address_verified, role_id) VALUES(?,?,?,?,?)";
     private static final String SQL_DELETE_ACCOUNT                                = "DELETE FROM user_data.accounts WHERE email_address=(?)";
     private static final String SQL_UPDATE_ACCOUNT_PASSWORD                       = "UPDATE user_data.accounts SET password_hash=(?) WHERE email_address=(?)";
     private static final String SQL_UPDATE_ACCOUNT_EMAIL_ADDRESS                  = "UPDATE user_data.accounts SET email_address=(?) WHERE email_address=(?)";
@@ -110,7 +110,8 @@ public class AccountManagerImpl implements AccountManager {
                         rs.getBoolean  ("email_address_verified"),
                         rs.getTimestamp("email_address_verified_ts"),
                         rs.getString   ("password_hash"),
-                        rs.getTimestamp("password_hash_ts")
+                        rs.getTimestamp("password_hash_ts"),
+                        rs.getInt      ("role_id")
                 );
 
             } else {
@@ -145,12 +146,16 @@ public class AccountManagerImpl implements AccountManager {
     }
 
     @Override
-    public int create(final String email, final String password, final boolean locked, final boolean verified) throws CreationException, CreationDuplicateException {
+    public int create(final String email, final String password,
+                      final boolean locked, final boolean verified,
+                      final AccountRole accountRole) throws CreationException, CreationDuplicateException {
+
         try (final Connection conn = usersDB.getConnection(); final PreparedStatement ps = conn.prepareStatement(SQL_INSERT_ACCOUNT)) {
             ps.setString (1, Crypt.crypt(password));
             ps.setString (2, email.toLowerCase());
             ps.setBoolean(3, locked);
             ps.setBoolean(4, verified);
+            ps.setInt(5, accountRole.getId());
 
             final int updates = ps.executeUpdate();
             final String logMsg = String.format(
@@ -185,12 +190,14 @@ public class AccountManagerImpl implements AccountManager {
                     final String password  = accountSetup.getPassword();
                     final boolean locked   = accountSetup.isLocked();
                     final boolean verified = accountSetup.isVerified();
+                    final int role_id      = accountSetup.getAccountRole().getId();
 
                     try {
                         ps.setString (1, Crypt.crypt(password));
                         ps.setString (2, email.toLowerCase());
                         ps.setBoolean(3, locked);
                         ps.setBoolean(4, verified);
+                        ps.setInt(5, role_id);
 
                         updatedRows += ps.executeUpdate();
                         final String logMsg = String.format(

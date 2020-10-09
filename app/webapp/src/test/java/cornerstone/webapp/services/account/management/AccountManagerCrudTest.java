@@ -56,7 +56,7 @@ public class AccountManagerCrudTest {
         TestHelper.deleteAccount(accountManager, email);
 
 
-        number_of_accounts_created = accountManager.create(email, password, locked, verified);
+        number_of_accounts_created = accountManager.create(email, password, locked, verified, AccountRole.USER);
         received_account           = accountManager.get(email);
 
 
@@ -67,6 +67,7 @@ public class AccountManagerCrudTest {
         assertNull(received_account.account_lock_reason);
         assertEquals(verified, received_account.email_address_verified);
         assertEquals(0, received_account.account_login_attempts);
+        assertEquals(AccountRole.USER.getId(), received_account.role_id);
         // Dynamic value tests
         assertTrue(received_account.account_id > 0);
         assertEquals(received_account.email_address_ts, received_account.account_registration_ts); // happens same time
@@ -80,12 +81,13 @@ public class AccountManagerCrudTest {
     @Order(11)
     public void t01b_create_shouldThrowAccountCreationDuplicateException_whenAccountAlreadyExists() {
         final CreationDuplicateException e = assertThrows(CreationDuplicateException.class, () -> {
-            final String email     = "almafa@gmail.com";
-            final String password  = "password";
-            final boolean locked   = false;
-            final boolean verified = true;
+            final String email            = "almafa@gmail.com";
+            final String password         = "password";
+            final boolean locked          = false;
+            final boolean verified        = true;
+            final AccountRole accountRole = AccountRole.USER;
 
-            accountManager.create(email, password, locked, verified);
+            accountManager.create(email, password, locked, verified, accountRole);
         });
         assertEquals("Failed to create 'almafa@gmail.com' (already exists).", e.getMessage());
     }
@@ -108,22 +110,25 @@ public class AccountManagerCrudTest {
     @Test
     @Order(30)
     public void t03_create_anotherAccountShouldBeCreated() throws Exception {
-        final String email     = "crud_tests@x-mail.com";
-        final String password  = "password";
-        final boolean locked   = false;
-        final boolean verified = true;
+        final String email            = "crud_tests@x-mail.com";
+        final String password         = "password";
+        final boolean locked          = false;
+        final boolean verified        = true;
+        final AccountRole accountRole = AccountRole.USER;
         // results
         final int number_of_accounts_created;
         final AccountResultSet received_account;
 
 
-        number_of_accounts_created = accountManager.create(email, password, locked, verified);
+        number_of_accounts_created = accountManager.create(email, password, locked, verified, accountRole);
         received_account           = accountManager.get(email);
 
 
         assertEquals(1, number_of_accounts_created);
-        assertEquals(received_account.email_address, email);
-        assertEquals(received_account.account_locked, locked);
+        assertEquals(email, received_account.email_address);
+        assertEquals(locked, received_account.account_locked);
+        assertEquals(accountRole.getId(), received_account.role_id);
+        assertEquals(verified, received_account.email_address_verified);
         assertEquals(received_account.password_hash, Crypt.crypt(password, received_account.password_hash));
     }
 

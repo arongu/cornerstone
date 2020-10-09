@@ -48,9 +48,9 @@ public class AccountManagerSearchEmailTest {
         TestHelper.deleteAccount(accountManager, normal_zmail);
         TestHelper.deleteAccount(accountManager, norman_zmail);
         TestHelper.deleteAccount(accountManager, aabbb_man_com);
-        accountManager.create(normal_zmail, password, locked, verified);
-        accountManager.create(norman_zmail, password, locked, verified);
-        accountManager.create(aabbb_man_com, password, locked, verified);
+        accountManager.create(normal_zmail, password, locked, verified, AccountRole.NO_ROLE);
+        accountManager.create(norman_zmail, password, locked, verified, AccountRole.SUPER);
+        accountManager.create(aabbb_man_com, password, locked, verified, AccountRole.USER);
 
 
         wildcard_result1 = accountManager.searchAccounts("nor%");
