@@ -27,7 +27,7 @@ import java.util.List;
 
 @Singleton
 @Path("/accounts")
-@RolesAllowed("admin")
+//@RolesAllowed("admin")
 public class AccountManagerRestService {
     private static final Logger logger = LoggerFactory.getLogger(AccountManagerRestService.class);
     private final AccountManager accountManager;
@@ -108,6 +108,14 @@ public class AccountManagerRestService {
             );
 
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(errorResponse).build();
+
+        } catch (final CreationNullException e) {
+            final ErrorResponse errorResponse = new ErrorResponse(
+                    Response.Status.BAD_REQUEST.getStatusCode(),
+                    e.getMessage()
+            );
+
+            return Response.status(Response.Status.BAD_REQUEST).entity(errorResponse).build();
         }
     }
 

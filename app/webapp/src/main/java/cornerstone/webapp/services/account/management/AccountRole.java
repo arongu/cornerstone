@@ -15,7 +15,7 @@ public enum AccountRole {
         return id;
     }
 
-    public void setId(final short id) {
+    public void setId(final int id) {
         this.id = id;
     }
 }

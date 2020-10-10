@@ -1,7 +1,11 @@
 package cornerstone.webapp.rest.endpoints.accounts.dtos;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class AccountEmailPassword {
+    @JsonProperty(required = true)
     private String email;
+    @JsonProperty(required = true)
     private String password;
 
     public AccountEmailPassword() {

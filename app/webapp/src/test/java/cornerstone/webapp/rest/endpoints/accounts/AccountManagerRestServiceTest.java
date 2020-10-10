@@ -153,7 +153,7 @@ public class AccountManagerRestServiceTest {
     }
 
     @Test
-    public void createShouldRespondWith201CreatedAndLocationHeader_whenAccountCreationIsSuccessful() throws CreationException, CreationDuplicateException {
+    public void createShouldRespondWith201CreatedAndLocationHeader_whenAccountCreationIsSuccessful() throws CreationException, CreationDuplicateException, CreationNullException {
         final AccountManager accountManager                       = Mockito.mock(AccountManagerImpl.class);
         final AccountManagerRestService accountManagerRestService = new AccountManagerRestService(accountManager);
         final AccountEmailPassword accountEmailPassword           = new AccountEmailPassword("user@gmail.com", "password");
@@ -168,7 +168,7 @@ public class AccountManagerRestServiceTest {
     }
 
     @Test
-    public void createShouldRespondWithErrorResponseWith503InternalServerError_whenCreationExceptionIsThrown() throws CreationException, CreationDuplicateException {
+    public void createShouldRespondWithErrorResponseWith503InternalServerError_whenCreationExceptionIsThrown() throws CreationException, CreationDuplicateException, CreationNullException {
         final String mail                   = "user@gmail.com";
         final String password               = "password";
         final AccountManager accountManager = Mockito.mock(AccountManagerImpl.class);

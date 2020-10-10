@@ -1,6 +1,9 @@
 package cornerstone.webapp.rest.endpoints.accounts.dtos;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class AccountSearch {
+    @JsonProperty(required = true)
     private String searchString;
 
     public AccountSearch() {

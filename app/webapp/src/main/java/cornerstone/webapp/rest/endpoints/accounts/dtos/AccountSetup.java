@@ -1,26 +1,24 @@
 package cornerstone.webapp.rest.endpoints.accounts.dtos;
 
-import cornerstone.webapp.services.account.management.AccountRole;
-
 public class AccountSetup {
-    private String email;
-    private String password;
+    private String  email;
+    private String  password;
+    private String  role;
     private boolean locked;
     private boolean verified;
-    private AccountRole accountRole;
 
     public AccountSetup() {
     }
 
     public AccountSetup(final String email, final String password,
                         final boolean locked, final boolean verified,
-                        final AccountRole accountRole) {
+                        final String role) {
 
-        this.email = email;
+        this.email    = email;
         this.password = password;
-        this.locked = locked;
+        this.locked   = locked;
         this.verified = verified;
-        this.accountRole = accountRole;
+        this.role     = role;
     }
 
     public String getEmail() {
@@ -55,11 +53,11 @@ public class AccountSetup {
         this.verified = verified;
     }
 
-    public AccountRole getAccountRole() {
-        return accountRole;
+    public String getRole() {
+        return role;
     }
 
-    public void setAccountRole(final AccountRole accountRole) {
-        this.accountRole = accountRole;
+    public void setRole(final String role) {
+        this.role = role;
     }
 }

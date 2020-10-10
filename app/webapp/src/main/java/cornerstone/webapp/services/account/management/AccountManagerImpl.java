@@ -146,9 +146,12 @@ public class AccountManagerImpl implements AccountManager {
     }
 
     @Override
-    public int create(final String email, final String password,
-                      final boolean locked, final boolean verified,
-                      final AccountRole accountRole) throws CreationException, CreationDuplicateException {
+    public int create(final String email, final String password, final boolean locked, final boolean verified, final AccountRole accountRole)
+            throws CreationException, CreationDuplicateException, CreationNullException {
+
+        if (email == null || password == null || accountRole == null) {
+            throw new CreationNullException();
+        }
 
         try (final Connection conn = usersDB.getConnection(); final PreparedStatement ps = conn.prepareStatement(SQL_INSERT_ACCOUNT)) {
             ps.setString (1, Crypt.crypt(password));
@@ -185,45 +188,65 @@ public class AccountManagerImpl implements AccountManager {
             int updatedRows = 0;
 
             for (final AccountSetup accountSetup : accountSetupList) {
-                if ( accountSetup != null) {
+                try {
+                    if ( accountSetup == null) {
+                        throw new CreationNullException();
+                    }
+
+                    if ( accountSetup.getRole() == null || accountSetup.getEmail() == null || accountSetup.getPassword() == null) {
+                        throw new CreationNullException();
+                    }
+
                     final String email     = accountSetup.getEmail();
                     final String password  = accountSetup.getPassword();
+                    final String role      = accountSetup.getRole();
                     final boolean locked   = accountSetup.isLocked();
                     final boolean verified = accountSetup.isVerified();
-                    final int role_id      = accountSetup.getAccountRole().getId();
+                    int role_id;
 
                     try {
-                        ps.setString (1, Crypt.crypt(password));
-                        ps.setString (2, email.toLowerCase());
-                        ps.setBoolean(3, locked);
-                        ps.setBoolean(4, verified);
-                        ps.setInt(5, role_id);
+                        role_id = AccountRole.valueOf(role).getId();
 
-                        updatedRows += ps.executeUpdate();
-                        final String logMsg = String.format(
-                                AlignedLogMessages.FORMAT__OFFSET_35C_C_STR,
-                                AlignedLogMessages.OFFSETS_ALIGNED_CLASSES.get(getClass().getName()),
-                                CREATED, email
-                        );
-                        logger.info(logMsg);
-
-                    } catch (final SQLException e) {
-                        if ( null == multiCreationException) {
-                            multiCreationException = new MultiCreationException();
-                        }
-
-                        if ( e.getSQLState().equals("23505")) {
-                            final String message = String.format(CreationDuplicateException.EXCEPTION_MESSAGE_ACCOUNT_CREATION_ALREADY_EXISTS, email);
-                            multiCreationException.addExceptionMessage(message);
-
-                        } else {
-                            final String message = String.format(CreationException.EXCEPTION_MESSAGE_ACCOUNT_CREATION_FAILED, email);
-                            multiCreationException.addExceptionMessage(message);
-                        }
-
-                        final String errorLog = String.format(ERROR_LOG_ACCOUNT_CREATION_FAILED, email, e.getMessage(), e.getSQLState());
-                        logger.error(errorLog);
+                    } catch (final IllegalArgumentException e) {
+                        role_id = AccountRole.NO_ROLE.getId();
                     }
+
+                    ps.setString (1, Crypt.crypt(password));
+                    ps.setString (2, email.toLowerCase());
+                    ps.setBoolean(3, locked);
+                    ps.setBoolean(4, verified);
+                    ps.setInt(5, role_id);
+
+                    updatedRows += ps.executeUpdate();
+                    final String logMsg = String.format(
+                            AlignedLogMessages.FORMAT__OFFSET_35C_C_STR,
+                            AlignedLogMessages.OFFSETS_ALIGNED_CLASSES.get(getClass().getName()),
+                            CREATED, email
+                    );
+                    logger.info(logMsg);
+
+                } catch (final CreationNullException e) {
+                    if ( multiCreationException == null) {
+                        multiCreationException = new MultiCreationException();
+                    }
+
+                    multiCreationException.addExceptionMessage(e.getMessage());
+
+                } catch (final SQLException e) {
+                    if ( multiCreationException == null) {
+                        multiCreationException = new MultiCreationException();
+                    }
+
+                    final String exceptionMsg;
+                    if ( e.getSQLState().equals("23505")) {
+                        exceptionMsg = String.format(CreationDuplicateException.EXCEPTION_MESSAGE_ACCOUNT_CREATION_ALREADY_EXISTS, accountSetup.getEmail());
+                    } else {
+                        exceptionMsg = String.format(CreationException.EXCEPTION_MESSAGE_ACCOUNT_CREATION_FAILED, accountSetup.getEmail());
+                    }
+
+                    multiCreationException.addExceptionMessage(exceptionMsg);
+                    final String errorLog = String.format(ERROR_LOG_ACCOUNT_CREATION_FAILED, accountSetup.getEmail(), e.getMessage(), e.getSQLState());
+                    logger.error(errorLog);
                 }
             }
 
@@ -308,7 +331,7 @@ public class AccountManagerImpl implements AccountManager {
                         multiDeletionException = new MultiDeletionException();
                     }
 
-                    multiDeletionException.addExceptionMessage(email);
+                    multiDeletionException.addExceptionMessage(n.getMessage());
 
                 } catch (final SQLException s) {
                     if ( multiDeletionException == null) {
