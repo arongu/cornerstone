@@ -1,7 +1,23 @@
 ----------------------------------------------------------------------------
--- Schema user_data
+-- SCHEMA user_data
 ----------------------------------------------------------------------------
--- Table user_data.accounts
+-- CREATION OF TABLE user_data.roles
+----------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS user_data.roles(
+    role_id integer PRIMARY KEY,
+    role_name varchar(20),
+    -- constraints
+    UNIQUE (role_name)
+);
+
+INSERT INTO user_data.roles VALUES (0, 'NO_ROLE');
+INSERT INTO user_data.roles VALUES (1, 'USER');
+INSERT INTO user_data.roles VALUES (5, 'SUPER');
+INSERT INTO user_data.roles VALUES (7, 'ADMIN');
+----------------------------------------------------------------------------
+-- END OF CREATION OF TABLE user_data.roles
+----------------------------------------------------------------------------
+-- CREATION OF TABLE user_data.accounts
 ----------------------------------------------------------------------------
 CREATE SEQUENCE IF NOT EXISTS user_data.account_id_seq;
 CREATE TABLE IF NOT EXISTS user_data.accounts(
@@ -21,9 +37,11 @@ CREATE TABLE IF NOT EXISTS user_data.accounts(
     -- password change
     password_hash character varying(128) NOT NULL UNIQUE,
     password_hash_ts timestamptz NOT NULL DEFAULT NOW(),
+    --
+    role_id integer REFERENCES user_data.roles(role_id),
     -- constraints
-    CONSTRAINT pkey_account_id PRIMARY KEY (account_id),
-    CONSTRAINT uniq_email_address UNIQUE (email_address)
+    PRIMARY KEY (account_id),
+    UNIQUE (email_address)
 );
 
 -- indices
@@ -86,29 +104,34 @@ CREATE TRIGGER trigger_email_address_verified
     FOR EACH ROW
     EXECUTE PROCEDURE user_data.update_email_address_verified_ts();
 -- end of email_address_verified
+----------------------------------------------------------------------------
+-- END OF CREATION OF TABLE user_data.accounts
+----------------------------------------------------------------------------
 
 ----------------------------------------------------------------------------
--- End of table user_data.accounts
+-- CREATE ROLES/USERS
 ----------------------------------------------------------------------------
--- Permissions of schema user_data
-----------------------------------------------------------------------------
--- create roles/users
 DROP ROLE IF EXISTS ${db.user};
 CREATE USER ${db.user} WITH ENCRYPTED PASSWORD '${db_password}';
+----------------------------------------------------------------------------
 
+----------------------------------------------------------------------------
+-- PERMISSIONS OF SCHEMA user_data
+----------------------------------------------------------------------------
 GRANT USAGE ON SCHEMA ${schema_user_data} TO ${db.user};
 -- sequences, functions (usage is required to call nextval function)
 GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA ${schema_user_data} TO ${db.user};
 GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA ${schema_user_data} TO ${db.user};
-GRANT SELECT, INSERT, UPDATE, DELETE, TRIGGER ON ALL TABLES IN SCHEMA ${schema_user_data} TO ${db.user};
---
-GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA ${schema_user_data} TO ${db.user};
-GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA ${schema_user_data} TO ${db.user};
-GRANT SELECT, INSERT, UPDATE, DELETE, TRUNCATE, REFERENCES, TRIGGER ON ALL TABLES IN SCHEMA ${schema_user_data} TO ${db.user};
-GRANT CREATE ON SCHEMA ${schema_user_data} TO ${db.user};
+GRANT REFERENCES ON ALL TABLES IN SCHEMA ${schema_user_data} TO ${db.user};
 
 ----------------------------------------------------------------------------
--- End of permissions schema user_data
+-- PERMISSIONS OF TABLE accounts
 ----------------------------------------------------------------------------
--- End of schema user_data
+GRANT SELECT, INSERT, UPDATE, DELETE, TRIGGER, REFERENCES ON TABLE ${schema_user_data}.accounts TO ${db.user};
+----------------------------------------------------------------------------
+-- PERMISSIONS OF TABLE roles
+----------------------------------------------------------------------------
+GRANT SELECT ON TABLE ${schema_user_data}.roles TO ${db.user};
+----------------------------------------------------------------------------
+-- END OF SCHEMA user_data
 ----------------------------------------------------------------------------

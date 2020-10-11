@@ -105,7 +105,8 @@ public class AccountManagerRestServiceTest {
                                                                                          email_address, email_address_ts,
                                                                                          email_address_verified, email_address_verified_ts,
                                                                                          password_hash, password_hash_ts,
-                                                                                         accountRole.getId());
+                                                                                         accountRole.getId(),
+                                                                                         accountRole.name());
 
         Mockito.when(accountManager.get(Mockito.anyString())).thenReturn(accountResultSet);
 

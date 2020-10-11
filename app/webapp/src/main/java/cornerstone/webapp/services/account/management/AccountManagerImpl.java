@@ -38,9 +38,9 @@ public class AccountManagerImpl implements AccountManager {
     private static final String UNLOCKED                   = "UNLOCKED";
 
     // SQL statements
-    private static final String SQL_SELECT_ACCOUNT                                = "SELECT * FROM user_data.accounts WHERE email_address=(?)";
+    private static final String SQL_SELECT_ACCOUNT                                = "SELECT accounts.*, roles.role_name FROM user_data.accounts JOIN user_data.roles ON (accounts.role_id = roles.role_id) WHERE email_address=(?)";
     private static final String SQL_SELECT_ACCOUNTS_ILIKE                         = "SELECT email_address FROM user_data.accounts WHERE email_address ILIKE (?)";
-    private static final String SQL_SELECT_ACCOUNT_FOR_LOGIN                      = "SELECT account_locked, email_address_verified, account_login_attempts, password_hash FROM user_data.accounts WHERE email_address=(?)";
+    private static final String SQL_SELECT_ACCOUNT_FOR_LOGIN                      = "SELECT email_address, email_address_verified, account_locked, account_login_attempts, password_hash, accounts.role_id, role_name FROM user_data.accounts JOIN user_data.roles ON (accounts.role_id = roles.role_id) WHERE email_address=(?)";
     private static final String SQL_INSERT_ACCOUNT                                = "INSERT INTO user_data.accounts (password_hash, email_address, account_locked, email_address_verified, role_id) VALUES(?,?,?,?,?)";
     private static final String SQL_DELETE_ACCOUNT                                = "DELETE FROM user_data.accounts WHERE email_address=(?)";
     private static final String SQL_UPDATE_ACCOUNT_PASSWORD                       = "UPDATE user_data.accounts SET password_hash=(?) WHERE email_address=(?)";
@@ -111,7 +111,8 @@ public class AccountManagerImpl implements AccountManager {
                         rs.getTimestamp("email_address_verified_ts"),
                         rs.getString   ("password_hash"),
                         rs.getTimestamp("password_hash_ts"),
-                        rs.getInt      ("role_id")
+                        rs.getInt      ("role_id"),
+                        rs.getString   ("role_name")
                 );
 
             } else {
