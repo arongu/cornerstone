@@ -6,16 +6,12 @@ public enum AccountRole {
     SUPER(5),
     ADMIN(7);
 
-    private int id;
+    private final int id;
     AccountRole(final int id) {
         this.id = id;
     }
 
     public int getId() {
         return id;
-    }
-
-    public void setId(final int id) {
-        this.id = id;
     }
 }

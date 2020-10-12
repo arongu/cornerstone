@@ -291,7 +291,7 @@ public class AccountManagerCrudAndLoginTest {
     }
 
     @Test
-    public void login_loginAttemptsShouldResetToZero_whenLoginIsSuccess() throws Exception {
+    public void login_loginAttemptsShouldResetToZero_whenLoginIsSuccessful() throws Exception {
         final String email        = "lastnite@aaa.me";
         final String password     = "woho#";
         final String bad_password = "bbbbb";

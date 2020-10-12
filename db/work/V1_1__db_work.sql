@@ -13,7 +13,6 @@ CREATE TABLE IF NOT EXISTS secure.public_keys(
     -- constraints
     CONSTRAINT pkey_uuid PRIMARY KEY (uuid)
 );
-
 -- indices
 CREATE INDEX IF NOT EXISTS index_uuid ON secure.public_keys(uuid);
 

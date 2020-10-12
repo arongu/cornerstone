@@ -4,10 +4,11 @@
 -- CREATION OF TABLE user_data.roles
 ----------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS user_data.roles(
-    role_id integer PRIMARY KEY,
-    role_name varchar(20),
+    role_id integer,
+    role_name varchar(20) NOT NULL,
     -- constraints
-    UNIQUE (role_name)
+    CONSTRAINT pkey_role_id PRIMARY KEY (role_id),
+    CONSTRAINT uniq_role_name UNIQUE (role_name)
 );
 
 INSERT INTO user_data.roles VALUES (0, 'NO_ROLE');
@@ -38,10 +39,11 @@ CREATE TABLE IF NOT EXISTS user_data.accounts(
     password_hash character varying(128) NOT NULL UNIQUE,
     password_hash_ts timestamptz NOT NULL DEFAULT NOW(),
     --
-    role_id integer REFERENCES user_data.roles(role_id),
+    role_id integer NOT NULL DEFAULT 0,
     -- constraints
-    PRIMARY KEY (account_id),
-    UNIQUE (email_address)
+    CONSTRAINT pkey_account_id PRIMARY KEY (account_id),
+    CONSTRAINT uniq_email_address UNIQUE (email_address),
+    CONSTRAINT fg_key_role_id FOREIGN KEY(role_id) REFERENCES user_data.roles(role_id)
 );
 
 -- indices

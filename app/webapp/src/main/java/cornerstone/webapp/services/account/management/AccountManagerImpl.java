@@ -35,6 +35,7 @@ public class AccountManagerImpl implements AccountManager {
     private static final String LOGIN_FAILED               = "LOGIN FAILED";
     private static final String PASSWORD_CHANGED           = "PASSWORD CHANGED";
     private static final String RETRIEVED                  = "RETRIEVED";
+    private static final String ROLE_CHANGED               = "ROLE CHANGED";
     private static final String UNLOCKED                   = "UNLOCKED";
 
     // SQL statements
@@ -46,6 +47,7 @@ public class AccountManagerImpl implements AccountManager {
     private static final String SQL_UPDATE_ACCOUNT_PASSWORD                       = "UPDATE user_data.accounts SET password_hash=(?) WHERE email_address=(?)";
     private static final String SQL_UPDATE_ACCOUNT_EMAIL_ADDRESS                  = "UPDATE user_data.accounts SET email_address=(?) WHERE email_address=(?)";
     private static final String SQL_UPDATE_ACCOUNT_LOCKED                         = "UPDATE user_data.accounts SET account_locked=(?), account_lock_reason=(?) WHERE email_address=(?)";
+    private static final String SQL_UPDATE_ACCOUNT_ROLE                           = "UPDATE user_data.accounts SET role_id=(?) WHERE email_address=(?)";
     private static final String SQL_UPDATE_LOGIN_ATTEMPTS_INCREMENT               = "UPDATE user_data.accounts SET account_login_attempts=account_login_attempts+1 WHERE email_address=(?)";
     private static final String SQL_UPDATE_LOGIN_ATTEMPTS_CLEAR                   = "UPDATE user_data.accounts SET account_login_attempts=0 WHERE email_address=(?)";
 
@@ -57,6 +59,7 @@ public class AccountManagerImpl implements AccountManager {
     private static final String ERROR_LOG_UPDATE_PASSWORD_FAILED                  = "Failed to update password of '%s', message: '%s', SQL state: '%s'";
     private static final String ERROR_LOG_UPDATE_EMAIL_FAILED                     = "Failed to update email addr. of '%s' -> '%s', message: '%s', SQL state: '%s'";
     private static final String ERROR_LOG_UPDATE_LOCK_FAILED                      = "Failed to update lock of '%s', locked: '%s', account_lock_reason: '%s', message: '%s', SQL state: '%s'";
+    private static final String ERROR_LOG_UPDATE_ROLE_FAILED                      = "Failed to update account role of '%s' to '%s', message: '%s', SQL state: '%s'";
     private static final String ERROR_LOG_INCREMENT_LOGIN_ATTEMPTS_FAILED         = "Failed to increment login attempts of '%s', message: '%s', SQL state: '%s'";
     private static final String ERROR_LOG_CLEAR_LOGIN_ATTEMPTS_FAILED             = "Failed to clear login attempts of '%s', message: '%s', SQL state: '%s'";
 
@@ -399,9 +402,32 @@ public class AccountManagerImpl implements AccountManager {
             return updatedRows;
 
         } catch (final SQLException e) {
-            final String errorLog     = String.format(ERROR_LOG_UPDATE_EMAIL_FAILED, currentEmail, newEmail, e.getMessage(), e.getSQLState());
+            final String errorLog = String.format(ERROR_LOG_UPDATE_EMAIL_FAILED, currentEmail, newEmail, e.getMessage(), e.getSQLState());
             logger.error(errorLog);
             throw new EmailUpdateException(currentEmail, newEmail);
+        }
+    }
+
+    @Override
+    public int setRole(final String email, final AccountRole accountRole) throws RoleUpdateException {
+        try (final Connection conn = usersDB.getConnection(); final PreparedStatement ps = conn.prepareStatement(SQL_UPDATE_ACCOUNT_ROLE)) {
+            ps.setInt(1, accountRole.getId());
+            ps.setString(2, email);
+            final int updatedRows = ps.executeUpdate();
+
+            final String logMsg = String.format(
+                    AlignedLogMessages.FORMAT__OFFSET_35C_C_STR,
+                    AlignedLogMessages.OFFSETS_ALIGNED_CLASSES.get(getClass().getName()),
+                    ROLE_CHANGED, email
+            );
+
+            logger.info(logMsg);
+            return updatedRows;
+
+        } catch (final SQLException e) {
+            final String errorLog = String.format(ERROR_LOG_UPDATE_ROLE_FAILED, email, accountRole.name(), e.getMessage(), e.getSQLState());
+            logger.error(errorLog);
+            throw new RoleUpdateException(email, accountRole.name());
         }
     }
 

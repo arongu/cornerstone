@@ -49,6 +49,7 @@ public class AccountManagerCrudTest {
         final boolean locked   = false;
         final boolean verified = true;
         final Timestamp ts     = new Timestamp(System.currentTimeMillis());
+        final AccountRole role = AccountRole.USER;
         // results
         final int number_of_accounts_created;
         final AccountResultSet received_account;
@@ -56,7 +57,7 @@ public class AccountManagerCrudTest {
         TestHelper.deleteAccount(accountManager, email);
 
 
-        number_of_accounts_created = accountManager.create(email, password, locked, verified, AccountRole.USER);
+        number_of_accounts_created = accountManager.create(email, password, locked, verified, role);
         received_account           = accountManager.get(email);
 
 
@@ -67,7 +68,7 @@ public class AccountManagerCrudTest {
         assertNull(received_account.account_lock_reason);
         assertEquals(verified, received_account.email_address_verified);
         assertEquals(0, received_account.account_login_attempts);
-        assertEquals(AccountRole.USER.getId(), received_account.role_id);
+        assertEquals(role.getId(), received_account.role_id);
         // Dynamic value tests
         assertTrue(received_account.account_id > 0);
         assertEquals(received_account.email_address_ts, received_account.account_registration_ts); // happens same time
@@ -114,7 +115,7 @@ public class AccountManagerCrudTest {
         final String password         = "password";
         final boolean locked          = false;
         final boolean verified        = true;
-        final AccountRole accountRole = AccountRole.USER;
+        final AccountRole accountRole = AccountRole.SUPER;
         // results
         final int number_of_accounts_created;
         final AccountResultSet received_account;
@@ -229,7 +230,39 @@ public class AccountManagerCrudTest {
 
     @Test
     @Order(80)
-    public void t08_delete_shouldDeleteAccount() throws Exception {
+    public void t08_setRole_shouldUpdateRole() throws Exception {
+        final String email = "my_new_crud_tests_mail@yahoo.com";
+        // results
+        int number_of_updates = 0;
+        final AccountResultSet beforeUpdate;
+        final AccountResultSet afterUpdate1;
+        final AccountResultSet afterUpdate2;
+        final AccountResultSet afterUpdate3;
+        final AccountResultSet afterUpdate4;
+
+
+        beforeUpdate       = accountManager.get(email);
+        number_of_updates += accountManager.setRole(email, AccountRole.NO_ROLE);
+        afterUpdate1       = accountManager.get(email);
+        number_of_updates += accountManager.setRole(email, AccountRole.USER);
+        afterUpdate2       = accountManager.get(email);
+        number_of_updates += accountManager.setRole(email, AccountRole.SUPER);
+        afterUpdate3       = accountManager.get(email);
+        number_of_updates += accountManager.setRole(email, AccountRole.ADMIN);
+        afterUpdate4       = accountManager.get(email);
+
+
+        assertEquals(4, number_of_updates);
+        assertEquals(AccountRole.SUPER.getId(), beforeUpdate.role_id);
+        assertEquals(AccountRole.NO_ROLE.getId(), afterUpdate1.role_id);
+        assertEquals(AccountRole.USER.getId(), afterUpdate2.role_id);
+        assertEquals(AccountRole.SUPER.getId(), afterUpdate3.role_id);
+        assertEquals(AccountRole.ADMIN.getId(), afterUpdate4.role_id);
+    }
+
+    @Test
+    @Order(90)
+    public void t09_delete_shouldDeleteAccount() throws Exception {
         final String email = "my_new_crud_tests_mail@yahoo.com";
         final int number_of_deletes;
 

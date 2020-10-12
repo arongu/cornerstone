@@ -11,7 +11,10 @@ import cornerstone.webapp.services.account.management.exceptions.single.*;
 import java.util.List;
 
 public interface AccountManager {
-    int create(final String email, final String password, final boolean locked, final boolean verified, final AccountRole accountRole) throws CreationException, CreationDuplicateException, CreationNullException;
+    int create(final String email, final String password,
+               final boolean locked, final boolean verified,
+               final AccountRole accountRole) throws CreationException, CreationDuplicateException, CreationNullException;
+
     int create(final List<AccountSetup> list) throws MultiCreationException, MultiCreationInitialException;
 
     AccountResultSet get(final String email) throws RetrievalException, NoAccountException;
@@ -19,6 +22,7 @@ public interface AccountManager {
 
     int setPassword(final String email, final String password) throws PasswordUpdateException;
     int setEmail(final String currentEmail, final String newEmail) throws EmailUpdateException;
+    int setRole(final String email, final AccountRole accountRole) throws RoleUpdateException;
 
     int incrementLoginAttempts(final String email) throws LoginAttemptsUpdateException;
     int clearLoginAttempts(final String email) throws LoginAttemptsUpdateException;
