@@ -3,6 +3,7 @@ package cornerstone.webapp.services.account.management;
 import cornerstone.webapp.config.ConfigLoader;
 import cornerstone.webapp.datasources.UsersDB;
 import cornerstone.webapp.services.account.management.exceptions.single.CreationDuplicateException;
+import cornerstone.webapp.services.account.management.exceptions.single.CreationNullException;
 import cornerstone.webapp.services.account.management.exceptions.single.NoAccountException;
 import org.apache.commons.codec.digest.Crypt;
 import org.junit.jupiter.api.*;
@@ -273,5 +274,23 @@ public class AccountManagerCrudTest {
         assertEquals(1, number_of_deletes);
         final NoAccountException e = assertThrows(NoAccountException.class, () -> accountManager.get(email));
         assertEquals("Account 'my_new_crud_tests_mail@yahoo.com' does not exist.", e.getMessage());
+    }
+
+    @Test
+    @Order(100)
+    public void t10_create_shouldThrowNoAccountException_whenCreateHasNullAsValue() throws Exception {
+        final String email = "blabla@xxx.com";
+        final int number_of_creates = 0;
+
+
+        assertThrows(CreationNullException.class, () -> accountManager.create(email, null, false, true, AccountRole.USER));
+        assertThrows(CreationNullException.class, () -> accountManager.create(null, "password", false, true, AccountRole.USER));
+        assertThrows(CreationNullException.class, () -> accountManager.create(email, "password", false, true, null));
+        assertThrows(CreationNullException.class, () -> accountManager.create(null, null, false, true, AccountRole.SUPER));
+        assertThrows(CreationNullException.class, () -> accountManager.create(null, null, false, true, null));
+
+
+        final NoAccountException e = assertThrows(NoAccountException.class, () -> accountManager.get(email));
+        assertEquals("Account 'blabla@xxx.com' does not exist.", e.getMessage());
     }
 }
