@@ -518,63 +518,49 @@ public class AccountManagerImpl implements AccountManager {
     }
 
     @Override
-    public boolean login(final String email, final String password) throws
+    public AccountResultSet login(final String email, final String password) throws
+            RetrievalException,
             NoAccountException,
             LockedException,
-            UnverifiedEmailException {
+            UnverifiedEmailException,
+            BadPasswordException {
 
-        try (final Connection conn = usersDB.getConnection(); final PreparedStatement ps = conn.prepareStatement(SQL_SELECT_ACCOUNT_FOR_LOGIN)) {
-            ps.setString(1, email.toLowerCase());
-            final ResultSet rs = ps.executeQuery();
-            if ( rs.next() ) {
-                final boolean locked      = rs.getBoolean("account_locked");
-                final boolean verified    = rs.getBoolean("email_address_verified");
-                final int loginAttempts   = rs.getInt    ("account_login_attempts");
-                final String passwordHash = rs.getString ("password_hash");
+        final AccountResultSet accountResultSet = get(email);
 
-                if ( locked ) {
-                    throw new LockedException(email);
-                }
+        if ( accountResultSet.account_locked ) {
+            throw new LockedException(email);
+        }
 
-                if ( !verified ) {
-                    throw new UnverifiedEmailException(email);
-                }
+        if ( !accountResultSet.email_address_verified ) {
+            throw new UnverifiedEmailException(email);
+        }
 
-                if ( passwordHash.equals(Crypt.crypt(password, passwordHash))) {
-                    // clear login attempts on login if needed
-                    if ( loginAttempts > 0) {
-                        try { clearLoginAttempts(email); }
-                        catch (final LoginAttemptsUpdateException ignored) {}
-                    }
-
-                    final String logMsg = String.format(AlignedLogMessages.FORMAT__OFFSET_35C_C_STR, AlignedLogMessages.OFFSETS_ALIGNED_CLASSES.get(getClass().getName()), LOGGED_IN, email);
-                    logger.info(logMsg);
-                    return true;
-
-                } else {
-                    final String logMsg = String.format(AlignedLogMessages.FORMAT__OFFSET_35C_C_STR, AlignedLogMessages.OFFSETS_ALIGNED_CLASSES.get(getClass().getName()), LOGIN_FAILED, email);
-                    logger.info(logMsg);
-
-                    final int maxLoginAttempts = Integer.parseInt(configLoader.getAppProperties().getProperty(APP_ENUM.APP_MAX_LOGIN_ATTEMPTS.key));
-                    if ( loginAttempts < maxLoginAttempts ) {
-                        try { incrementLoginAttempts(email); }
-                        catch (final LoginAttemptsUpdateException ignored) {}
-
-                    } else {
-                        try { lock(email, "Maximum login attempts reached."); }
-                        catch (final LockUpdateException ignored) {}
-                    }
-
-                    return false;
-                }
-
-            } else {
-                throw new NoAccountException(email);
+        if ( accountResultSet.password_hash.equals(Crypt.crypt(password, accountResultSet.password_hash))) {
+            // clear login attempts on login if needed
+            if ( accountResultSet.account_login_attempts > 0) {
+                try { clearLoginAttempts(email); }
+                catch (final LoginAttemptsUpdateException ignored) {}
             }
 
-        } catch (final SQLException e) {
-            logger.error(String.format(ERROR_LOG_ACCOUNT_GET_FAILED, email, e.getMessage(), e.getSQLState()));
-            return false;
+            final String logMsg = String.format(AlignedLogMessages.FORMAT__OFFSET_35C_C_STR, AlignedLogMessages.OFFSETS_ALIGNED_CLASSES.get(getClass().getName()), LOGGED_IN, email);
+            logger.info(logMsg);
+            return accountResultSet;
+
+        } else {
+            final String logMsg = String.format(AlignedLogMessages.FORMAT__OFFSET_35C_C_STR, AlignedLogMessages.OFFSETS_ALIGNED_CLASSES.get(getClass().getName()), LOGIN_FAILED, email);
+            logger.info(logMsg);
+
+            final int maxLoginAttempts = Integer.parseInt(configLoader.getAppProperties().getProperty(APP_ENUM.APP_MAX_LOGIN_ATTEMPTS.key));
+            if ( accountResultSet.account_login_attempts < maxLoginAttempts ) {
+                try { incrementLoginAttempts(email); }
+                catch (final LoginAttemptsUpdateException ignored) {}
+
+            } else {
+                try { lock(email, "Maximum login attempts reached."); }
+                catch (final LockUpdateException ignored) {}
+            }
+
+            throw new BadPasswordException(email);
         }
     }
 }

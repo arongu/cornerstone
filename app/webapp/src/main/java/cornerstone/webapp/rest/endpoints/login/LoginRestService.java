@@ -4,9 +4,8 @@ import cornerstone.webapp.common.AlignedLogMessages;
 import cornerstone.webapp.rest.endpoints.accounts.dtos.AccountEmailPassword;
 import cornerstone.webapp.rest.error_responses.ErrorResponse;
 import cornerstone.webapp.services.account.management.AccountManager;
-import cornerstone.webapp.services.account.management.exceptions.single.LockedException;
-import cornerstone.webapp.services.account.management.exceptions.single.NoAccountException;
-import cornerstone.webapp.services.account.management.exceptions.single.UnverifiedEmailException;
+import cornerstone.webapp.services.account.management.AccountResultSet;
+import cornerstone.webapp.services.account.management.exceptions.single.*;
 import cornerstone.webapp.services.jwt.JWTService;
 import cornerstone.webapp.services.rsa.store.local.SigningKeySetupException;
 import org.slf4j.Logger;
@@ -21,6 +20,8 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.HashMap;
+import java.util.Map;
 
 @Singleton
 @PermitAll
@@ -41,52 +42,52 @@ public class LoginRestService {
 
     @POST
     public Response authenticateUser(final AccountEmailPassword accountEmailPassword) throws SigningKeySetupException {
-
-        if (null != accountEmailPassword &&
-            null != accountEmailPassword.getEmail() &&
-            null != accountEmailPassword.getPassword()) {
-
-            final boolean authenticated;
-
-            try {
-                authenticated = accountManager.login(accountEmailPassword.getEmail(), accountEmailPassword.getPassword());
-
-            } catch (final LockedException | UnverifiedEmailException | NoAccountException e) {
-                final String logMsg = String.format(
-                        AlignedLogMessages.FORMAT__OFFSET_35C_C_STR,
-                        AlignedLogMessages.OFFSETS_ALIGNED_CLASSES.get(getClass().getName()),
-                        e.getMessage(), accountEmailPassword.getEmail()
-                );
-
-                logger.info(logMsg);
-                return Response.status(Response.Status.UNAUTHORIZED)
-                        .entity(new ErrorResponse(Response.Status.UNAUTHORIZED.getStatusCode(), "Unauthorized."))
-                        .build();
-            }
-
-            if ( authenticated ) {
-                final String jwt = JWTService.createJws(accountEmailPassword.getPassword(), null);
-                final String logMsg = String.format(
-                        AlignedLogMessages.FORMAT__OFFSET_35C_C_STR,
-                        AlignedLogMessages.OFFSETS_ALIGNED_CLASSES.get(getClass().getName()),
-                        "TOKEN GRANTED", accountEmailPassword.getEmail()
-                );
-
-                logger.info(logMsg);
-                return Response.status(Response.Status.OK).entity(new TokenDTO(jwt)).build();
-
-            } else {
-                final String logMsg = String.format(
-                        AlignedLogMessages.FORMAT__OFFSET_35C_C_STR,
-                        AlignedLogMessages.OFFSETS_ALIGNED_CLASSES.get(getClass().getName()),
-                        "TOKEN DENIED", accountEmailPassword.getEmail()
-                );
-                logger.info(logMsg);
-            }
+        if ( accountEmailPassword == null || accountEmailPassword.getEmail() == null || accountEmailPassword.getPassword() == null ) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity(new ErrorResponse(Response.Status.BAD_REQUEST.getStatusCode(), "Email/password is null."))
+                    .build();
         }
 
-        return Response.status(Response.Status.UNAUTHORIZED)
-                .entity(new ErrorResponse(Response.Status.UNAUTHORIZED.getStatusCode(), "Unauthorized."))
-                .build();
+        final AccountResultSet accountResultSet;
+        try {
+             accountResultSet = accountManager.login(accountEmailPassword.getEmail(), accountEmailPassword.getPassword());
+
+        } catch (final LockedException | UnverifiedEmailException | NoAccountException | BadPasswordException | RetrievalException e) {
+            final ErrorResponse errorResponse;
+            final Response.Status responseStatus;
+            final String logMsg;
+
+            logMsg = String.format(
+                    AlignedLogMessages.FORMAT__OFFSET_35C_C_STR,
+                    AlignedLogMessages.OFFSETS_ALIGNED_CLASSES.get(getClass().getName()),
+                    e.getMessage(), accountEmailPassword.getEmail()
+            );
+
+            if ( e instanceof RetrievalException ) {
+                responseStatus = Response.Status.INTERNAL_SERVER_ERROR;
+                errorResponse = new ErrorResponse(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), e.getMessage());
+
+            } else {
+                responseStatus = Response.Status.UNAUTHORIZED;
+                errorResponse = new ErrorResponse(Response.Status.UNAUTHORIZED.getStatusCode(), "Unauthorized.");
+            }
+
+            logger.info(logMsg);
+            return Response.status(responseStatus.getStatusCode()).entity(errorResponse).build();
+        }
+
+
+        final Map<String, Object> claims = new HashMap<>();
+        claims.put("role", accountResultSet.role_name);
+
+        final String jwt = JWTService.createJws(accountEmailPassword.getPassword(), claims);
+        final String logMsg = String.format(
+                AlignedLogMessages.FORMAT__OFFSET_35C_C_STR,
+                AlignedLogMessages.OFFSETS_ALIGNED_CLASSES.get(getClass().getName()),
+                "TOKEN GRANTED", accountEmailPassword.getEmail()
+        );
+
+        logger.info(logMsg);
+        return Response.status(Response.Status.OK).entity(new TokenDTO(jwt)).build();
     }
 }

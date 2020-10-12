@@ -33,5 +33,5 @@ public interface AccountManager {
     int delete(final String email) throws DeletionException, NoAccountException;
     int delete(final List<String> emails) throws MultiDeletionException, MultiDeletionInitialException;
 
-    boolean login(final String email, final String password) throws LockedException, UnverifiedEmailException, NoAccountException;
+    AccountResultSet login(final String email, final String password) throws LockedException, UnverifiedEmailException, NoAccountException, RetrievalException, BadPasswordException;
 }
