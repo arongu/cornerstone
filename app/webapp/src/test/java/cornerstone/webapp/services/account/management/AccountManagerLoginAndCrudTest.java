@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 // THIS IS MORE THAN JUST A SINGLE LOGIN TEST, IT HEAVILY RELIES ON CRUD METHODS
 // ALL TCS CLEANUP AFTER THEMSELVES FOR DATABASE CONSISTENCY!
-public class AccountManagerCrudAndLoginTest {
+public class AccountManagerLoginAndCrudTest {
     private static AccountManager accountManager;
     private static int MAX_LOGIN_ATTEMPTS_FROM_TEST_CONFIG;
 
@@ -39,14 +39,14 @@ public class AccountManagerCrudAndLoginTest {
     }
 
     @Test
-    public void login_shouldReturnTrue_whenAccountExistsNotLockedAndVerified() throws Exception {
+    public void login_shouldReturnAccountResultSet_whenAccountExistsNotLockedAndVerified() throws Exception {
         final String email           = "melchior@login.me";
         final String password        = "miciMacko#";
         final boolean locked         = false;
         final boolean verified       = true;
         final AccountRole accountRole = AccountRole.USER;
         // results
-        final AccountResultSet login_result;
+        final AccountResultSet accountResultSet;
         final int number_of_accounts_created;
         final int number_of_accounts_deleted;
         // remove if exists
@@ -54,19 +54,19 @@ public class AccountManagerCrudAndLoginTest {
 
 
         number_of_accounts_created = accountManager.create(email, password, locked, verified, accountRole);
-        login_result               = accountManager.login(email, password);
+        accountResultSet           = accountManager.login(email, password);
         number_of_accounts_deleted = accountManager.delete(email);
 
 
         final NoAccountException noAccountException = assertThrows(NoAccountException.class, () -> accountManager.get(email));
         assertEquals("Account 'melchior@login.me' does not exist.", noAccountException.getMessage());
         assertEquals(1, number_of_accounts_created);
-        assertEquals(email, login_result.email_address);
+        assertEquals(email, accountResultSet.email_address);
         assertEquals(1, number_of_accounts_deleted);
     }
 
     @Test
-    public void login_shouldThrowException_whenAccountDoesNotExist() {
+    public void login_shouldThrowNoAccountException_whenAccountDoesNotExist() {
         final String email    = "xxxxx@doesnotexist.xu";
         final String password = "wow";
 
@@ -75,7 +75,7 @@ public class AccountManagerCrudAndLoginTest {
     }
 
     @Test
-    public void login_shouldThrowException_whenAccountIsNotVerifiedAndNotLocked() throws Exception{
+    public void login_shouldThrowUnverifiedEmailException_whenAccountIsNotVerifiedAndNotLocked() throws Exception {
         final String email            = "casper@login.me";
         final String password         = "casper#";
         final boolean locked          = false;
@@ -84,21 +84,21 @@ public class AccountManagerCrudAndLoginTest {
         // results
         final int number_of_accounts_created;
         final int number_of_accounts_deleted;
-        final AccountResultSet created_account;
+        final AccountResultSet accountResultSet;
         // remove if exists
         TestHelper.deleteAccount(accountManager, email);
 
 
         number_of_accounts_created       = accountManager.create(email, password, locked, verified, accountRole);
-        created_account                  = accountManager.get(email);
+        accountResultSet                 = accountManager.get(email);
         final UnverifiedEmailException e = assertThrows(UnverifiedEmailException.class, () -> accountManager.login(email, password));
 
 
         assertEquals("Account is not verified 'casper@login.me'.", e.getMessage());
         assertEquals(1, number_of_accounts_created);
-        assertEquals(email, created_account.email_address);
-        assertFalse(created_account.account_locked);
-        assertFalse(created_account.email_address_verified);
+        assertEquals(email, accountResultSet.email_address);
+        assertFalse(accountResultSet.account_locked);
+        assertFalse(accountResultSet.email_address_verified);
         // cleanup && tiny delete test
         number_of_accounts_deleted = accountManager.delete(email);
         assertEquals(1, number_of_accounts_deleted);
@@ -106,7 +106,7 @@ public class AccountManagerCrudAndLoginTest {
     }
 
     @Test
-    public void login_shouldThrowException_whenAccountIsLocked() throws Exception {
+    public void login_shouldThrowLockedException_whenAccountIsLocked() throws Exception {
         final String email     = "locked@login.me";
         final String password  = "locked#";
         final boolean locked   = true;
@@ -114,19 +114,19 @@ public class AccountManagerCrudAndLoginTest {
         // results
         final int number_of_accounts_created;
         final int number_of_accounts_deleted;
-        final AccountResultSet created_account;
+        final AccountResultSet accountResultSet;
         // remove if exists
         TestHelper.deleteAccount(accountManager, email);
 
 
         number_of_accounts_created = accountManager.create(email, password, locked, verified, AccountRole.NO_ROLE);
-        created_account            = accountManager.get(email);
+        accountResultSet           = accountManager.get(email);
         final LockedException e    = assertThrows(LockedException.class, () -> accountManager.login(email, password));
 
 
         assertEquals("Account is locked 'locked@login.me'.", e.getMessage());
         assertEquals(1, number_of_accounts_created);
-        assertTrue(created_account.account_locked);
+        assertTrue(accountResultSet.account_locked);
         // cleanup && tiny delete test
         number_of_accounts_deleted = accountManager.delete(email);
         assertEquals(1, number_of_accounts_deleted);
@@ -151,11 +151,12 @@ public class AccountManagerCrudAndLoginTest {
         number_of_accounts_created = accountManager.create(email, password, locked, verified, AccountRole.USER);
         assertThrows(BadPasswordException.class, () -> accountManager.login(email, bad_password));
         assertThrows(BadPasswordException.class, () -> accountManager.login(email, bad_password));
-        assertThrows(BadPasswordException.class, () -> accountManager.login(email, bad_password));
+        final BadPasswordException e = assertThrows(BadPasswordException.class, () -> accountManager.login(email, bad_password));
         account_after_bad_logins   = accountManager.get(email);
         number_of_accounts_deleted = accountManager.delete(email);
 
 
+        assertEquals("Bad password provided for 'badtyper@login.me'.", e.getMessage());
         assertEquals(1, number_of_accounts_created);
         assertEquals(3, account_after_bad_logins.account_login_attempts);
         assertEquals(1, number_of_accounts_deleted);
@@ -173,7 +174,7 @@ public class AccountManagerCrudAndLoginTest {
         final int number_of_accounts_created;
         final int number_of_accounts_cleared;
         final int number_of_accounts_deleted;
-        AccountResultSet first__login_result_good_password;
+        final AccountResultSet account_frist_login;
         final AccountResultSet account_before_clear;
         final AccountResultSet account_after_clear;
         // delete if exists
@@ -181,7 +182,7 @@ public class AccountManagerCrudAndLoginTest {
 
 
         number_of_accounts_created        = accountManager.create(email, password, locked, verified, AccountRole.USER);
-        first__login_result_good_password = accountManager.login(email, password);
+        account_frist_login               = accountManager.login(email, password);
         assertThrows(BadPasswordException.class, () -> accountManager.login(email, bad_password));
         assertThrows(BadPasswordException.class, () -> accountManager.login(email, bad_password));
         account_before_clear              = accountManager.get(email);
@@ -191,7 +192,7 @@ public class AccountManagerCrudAndLoginTest {
 
 
         assertEquals(1, number_of_accounts_created);
-        assertEquals(0, first__login_result_good_password.account_login_attempts);
+        assertEquals(0, account_frist_login.account_login_attempts);
         assertEquals(2, account_before_clear.account_login_attempts);
         assertEquals(1, number_of_accounts_cleared);
         assertEquals(0, account_after_clear.account_login_attempts);
@@ -245,30 +246,30 @@ public class AccountManagerCrudAndLoginTest {
         // results
         final int number_of_accounts_created;
         final int number_of_accounts_deleted;
-        final AccountResultSet first_login_result_good_password;
-        final AccountResultSet account_after_lock;
+        final AccountResultSet result_first_login_good_password;
+        final AccountResultSet result_after_lock;
         // delete if exists
         TestHelper.deleteAccount(accountManager, email);
 
 
         number_of_accounts_created        = accountManager.create(email, password, locked, verified, AccountRole.USER);
-        first_login_result_good_password  = accountManager.login(email, password);
-        final BadPasswordException e      = assertThrows(BadPasswordException.class, () -> {
-            for (int i = 0; i < MAX_LOGIN_ATTEMPTS_FROM_TEST_CONFIG + 20; i++) {
-                accountManager.login(email, bad_password);
-            }
-        });
-        assertEquals("Bad password provided for 'autolock180@login.me'.", e.getMessage());
-        final LockedException e2 = assertThrows(LockedException.class, () -> accountManager.login(email, bad_password));
-        assertEquals("Account is locked 'autolock180@login.me'." , e2.getMessage());
-        account_after_lock = accountManager.get(email);
+        result_first_login_good_password  = accountManager.login(email, password);
+        for (int i = 0; i <= MAX_LOGIN_ATTEMPTS_FROM_TEST_CONFIG; i++) {
+            final BadPasswordException e = assertThrows(BadPasswordException.class, () -> accountManager.login(email, bad_password));
+            assertEquals("Bad password provided for 'autolock180@login.me'.", e.getMessage());
+        }
+        for (int i = 0; i < 20; i++) {
+            final LockedException e = assertThrows(LockedException.class, () -> accountManager.login(email, bad_password));
+            assertEquals("Account is locked 'autolock180@login.me'." , e.getMessage());
+        }
+        result_after_lock = accountManager.get(email);
 
 
         assertEquals(1, number_of_accounts_created);
-        assertEquals(email, first_login_result_good_password.email_address);
-        assertEquals(0, first_login_result_good_password.account_login_attempts);
-        assertTrue(account_after_lock.account_locked);
-        assertEquals(MAX_LOGIN_ATTEMPTS_FROM_TEST_CONFIG, account_after_lock.account_login_attempts);
+        assertEquals(email, result_first_login_good_password.email_address);
+        assertEquals(0, result_first_login_good_password.account_login_attempts);
+        assertTrue(result_after_lock.account_locked);
+        assertEquals(MAX_LOGIN_ATTEMPTS_FROM_TEST_CONFIG, result_after_lock.account_login_attempts);
         // cleanup && tiny delete test
         number_of_accounts_deleted = accountManager.delete(email);
         final NoAccountException noAccountException = assertThrows(NoAccountException.class, () -> accountManager.get(email));
@@ -276,46 +277,41 @@ public class AccountManagerCrudAndLoginTest {
         assertEquals("Account 'autolock180@login.me' does not exist.", noAccountException.getMessage());
     }
 
-//    @Test
-//    public void login_loginAttemptsShouldResetToZero_whenLoginIsSuccessful() throws Exception {
-//        final String email        = "lastnite@aaa.me";
-//        final String password     = "woho#";
-//        final String bad_password = "bbbbb";
-//        final boolean locked      = false;
-//        final boolean verified    = true;
-//        // results
-//        final int number_of_accounts_created;
-//        final int number_of_accounts_deleted;
-//        final boolean first__login_bad_password;
-//        final boolean second_login_bad_password;
-//        final boolean third__login_bad_password;
-//        final boolean fourth_login_good_password;
-//        final AccountResultSet account_after_three_bad_logins;
-//        final AccountResultSet account_after_good_login_should_be_reset;
-//        // delete if exists
-//        TestHelper.deleteAccount(accountManager, email);
-//
-//
-//        number_of_accounts_created               = accountManager.create(email, password, locked, verified, AccountRole.USER);
-//        first__login_bad_password                = accountManager.login(email, bad_password);
-//        second_login_bad_password                = accountManager.login(email, bad_password);
-//        third__login_bad_password                = accountManager.login(email, bad_password);
-//        account_after_three_bad_logins           = accountManager.get(email);
-//        fourth_login_good_password               = accountManager.login(email, password);
-//        account_after_good_login_should_be_reset = accountManager.get(email);
-//
-//
-//        assertEquals(1, number_of_accounts_created);
-//        assertFalse(first__login_bad_password);
-//        assertFalse(second_login_bad_password);
-//        assertFalse(third__login_bad_password);
-//        assertEquals(3, account_after_three_bad_logins.account_login_attempts);
-//        assertTrue(fourth_login_good_password);
-//        assertEquals(0, account_after_good_login_should_be_reset.account_login_attempts);
-//        // cleanup && tiny delete test
-//        number_of_accounts_deleted = accountManager.delete(email);
-//        assertEquals(1, number_of_accounts_deleted);
-//        final NoAccountException e = assertThrows(NoAccountException.class, () -> accountManager.get(email)); // verify last delete
-//        assertEquals("Account 'lastnite@aaa.me' does not exist.", e.getMessage());
-//    }
+    @Test
+    public void login_loginAttemptsShouldResetToZero_whenLoginIsSuccessful() throws Exception {
+        final String email        = "lastnite@aaa.me";
+        final String password     = "woho#";
+        final String bad_password = "bbbbb";
+        final boolean locked      = false;
+        final boolean verified    = true;
+        // results
+        final int number_of_accounts_created;
+        final int number_of_accounts_deleted;
+        final AccountResultSet account_after_three_bad_logins;
+        final AccountResultSet account_after_fourth_login_good_password;
+        final AccountResultSet account_after_fourth_login_and_clear;
+        // delete if exists
+        TestHelper.deleteAccount(accountManager, email);
+
+
+        number_of_accounts_created               = accountManager.create(email, password, locked, verified, AccountRole.USER);
+        assertThrows(BadPasswordException.class, () -> accountManager.login(email, bad_password));
+        assertThrows(BadPasswordException.class, () -> accountManager.login(email, bad_password));
+        assertThrows(BadPasswordException.class, () -> accountManager.login(email, bad_password));
+        account_after_three_bad_logins           = accountManager.get(email);
+        account_after_fourth_login_good_password = accountManager.login(email, password);
+        account_after_fourth_login_and_clear     = accountManager.get(email);
+
+
+        assertEquals(1, number_of_accounts_created);
+        assertEquals(3, account_after_three_bad_logins.account_login_attempts);
+        assertEquals(email, account_after_fourth_login_good_password.email_address);
+        assertEquals(3, account_after_fourth_login_good_password.account_login_attempts);
+        assertEquals(0, account_after_fourth_login_and_clear.account_login_attempts);
+        // cleanup && tiny delete test
+        number_of_accounts_deleted = accountManager.delete(email);
+        assertEquals(1, number_of_accounts_deleted);
+        final NoAccountException e = assertThrows(NoAccountException.class, () -> accountManager.get(email)); // verify last delete
+        assertEquals("Account 'lastnite@aaa.me' does not exist.", e.getMessage());
+    }
 }

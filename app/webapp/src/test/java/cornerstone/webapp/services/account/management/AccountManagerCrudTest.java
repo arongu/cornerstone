@@ -280,7 +280,6 @@ public class AccountManagerCrudTest {
     @Order(100)
     public void t10_create_shouldThrowNoAccountException_whenCreateHasNullAsValue() throws Exception {
         final String email = "blabla@xxx.com";
-        final int number_of_creates = 0;
 
 
         assertThrows(CreationNullException.class, () -> accountManager.create(email, null, false, true, AccountRole.USER));
