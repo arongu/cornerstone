@@ -158,7 +158,7 @@ public class AccountManagerImpl implements AccountManager {
 
         try (final Connection conn = usersDB.getConnection(); final PreparedStatement ps = conn.prepareStatement(SQL_INSERT_ACCOUNT)) {
             ps.setString (1, Crypt.crypt(password));
-            ps.setString (2, email.toLowerCase());
+            ps.setString (2, email);
             ps.setBoolean(3, locked);
             ps.setBoolean(4, verified);
             ps.setInt(5, accountRole.getId());
@@ -491,7 +491,7 @@ public class AccountManagerImpl implements AccountManager {
             return executeSqlUpdate(email, SQL_UPDATE_LOGIN_ATTEMPTS_INCREMENT, usersDB);
 
         } catch (final SQLException e) {
-            final String errorLog     = String.format(ERROR_LOG_INCREMENT_LOGIN_ATTEMPTS_FAILED, email, e.getMessage(), e.getSQLState());
+            final String errorLog = String.format(ERROR_LOG_INCREMENT_LOGIN_ATTEMPTS_FAILED, email, e.getMessage(), e.getSQLState());
             logger.error(errorLog);
             throw new LoginAttemptsUpdateException(email);
         }

@@ -44,7 +44,7 @@ public class LoginRestService {
     public Response authenticateUser(final AccountEmailPassword accountEmailPassword) throws SigningKeySetupException {
         if ( accountEmailPassword == null || accountEmailPassword.getEmail() == null || accountEmailPassword.getPassword() == null ) {
             return Response.status(Response.Status.BAD_REQUEST)
-                    .entity(new ErrorResponse(Response.Status.BAD_REQUEST.getStatusCode(), "Email/password is null."))
+                    .entity(new ErrorResponse(Response.Status.BAD_REQUEST.getStatusCode(), "Null value provided for email/password."))
                     .build();
         }
 
@@ -58,21 +58,23 @@ public class LoginRestService {
             final String logMsg;
 
             logMsg = String.format(
-                    AlignedLogMessages.FORMAT__OFFSET_35C_C_STR,
+                    AlignedLogMessages.FORMAT__OFFSET_35C_35C_C_STR,
                     AlignedLogMessages.OFFSETS_ALIGNED_CLASSES.get(getClass().getName()),
-                    e.getMessage(), accountEmailPassword.getEmail()
+                    "TOKEN DENIED", accountEmailPassword.getEmail(), e.getMessage()
             );
 
+
             if ( e instanceof RetrievalException ) {
+                logger.error(logMsg);
                 responseStatus = Response.Status.INTERNAL_SERVER_ERROR;
                 errorResponse = new ErrorResponse(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), e.getMessage());
 
             } else {
+                logger.info(logMsg);
                 responseStatus = Response.Status.UNAUTHORIZED;
                 errorResponse = new ErrorResponse(Response.Status.UNAUTHORIZED.getStatusCode(), "Unauthorized.");
             }
 
-            logger.info(logMsg);
             return Response.status(responseStatus.getStatusCode()).entity(errorResponse).build();
         }
 
@@ -82,9 +84,9 @@ public class LoginRestService {
 
         final String jwt = JWTService.createJws(accountEmailPassword.getPassword(), claims);
         final String logMsg = String.format(
-                AlignedLogMessages.FORMAT__OFFSET_35C_C_STR,
+                AlignedLogMessages.FORMAT__OFFSET_35C_35C_C_STR,
                 AlignedLogMessages.OFFSETS_ALIGNED_CLASSES.get(getClass().getName()),
-                "TOKEN GRANTED", accountEmailPassword.getEmail()
+                "TOKEN GRANTED", accountEmailPassword.getEmail(), claims
         );
 
         logger.info(logMsg);

@@ -93,8 +93,8 @@ public class AccountManagerRestService {
     public Response create(final AccountEmailPassword accountEmailPassword) {
         try {
             accountManager.create(
-                    accountEmailPassword.getEmail(),
-                    accountEmailPassword.getPassword(),
+                    accountEmailPassword.getEmail().toLowerCase().trim(),
+                    accountEmailPassword.getPassword().trim(),
                     false, false,
                     AccountRole.USER
             );

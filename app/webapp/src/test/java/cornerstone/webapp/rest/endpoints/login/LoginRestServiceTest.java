@@ -39,7 +39,7 @@ public class LoginRestServiceTest {
 
 
         assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
-        assertEquals("Email/password is null.", errorResponse.getError());
+        assertEquals("Null value provided for email/password.", errorResponse.getError());
     }
 
     @Test
@@ -53,7 +53,7 @@ public class LoginRestServiceTest {
 
 
         assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
-        assertEquals("Email/password is null.", errorResponse.getError());
+        assertEquals("Null value provided for email/password.", errorResponse.getError());
     }
 
     @Test
@@ -67,7 +67,7 @@ public class LoginRestServiceTest {
 
 
         assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
-        assertEquals("Email/password is null.", errorResponse.getError());
+        assertEquals("Null value provided for email/password.", errorResponse.getError());
     }
 
     @Test
@@ -158,7 +158,7 @@ public class LoginRestServiceTest {
         final AccountManager accountManager             = Mockito.mock(AccountManagerImpl.class);
         final JWTService jwtService                     = new JWTServiceImpl(configLoader, localKeyStore);
         final LoginRestService loginRestService         = new LoginRestService(accountManager, jwtService);
-        final AccountEmailPassword accountEmailPassword = new AccountEmailPassword("email", "password");
+        final AccountEmailPassword accountEmailPassword = new AccountEmailPassword("cookiemonster@gmail.com", "password");
         final AccountResultSet accountResultSet         = new AccountResultSet(
                 1,
                 null,
@@ -180,7 +180,6 @@ public class LoginRestServiceTest {
 
         final Response response = loginRestService.authenticateUser(accountEmailPassword);
         final TokenDTO tokenDTO = (TokenDTO) response.getEntity();
-        System.out.println("token: " + tokenDTO.getToken());
 
 
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
