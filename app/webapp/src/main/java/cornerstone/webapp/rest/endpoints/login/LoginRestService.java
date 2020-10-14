@@ -58,7 +58,7 @@ public class LoginRestService {
             final String logMsg;
 
             logMsg = String.format(
-                    AlignedLogMessages.FORMAT__OFFSET_35C_35C_C_STR,
+                    AlignedLogMessages.FORMAT__OFFSET_35C_C_35C_C_STR,
                     AlignedLogMessages.OFFSETS_ALIGNED_CLASSES.get(getClass().getName()),
                     "TOKEN DENIED", accountEmailPassword.getEmail(), e.getMessage()
             );
@@ -84,7 +84,7 @@ public class LoginRestService {
 
         final String jwt = JWTService.createJws(accountEmailPassword.getPassword(), claims);
         final String logMsg = String.format(
-                AlignedLogMessages.FORMAT__OFFSET_35C_35C_C_STR,
+                AlignedLogMessages.FORMAT__OFFSET_35C_C_35C_C_STR,
                 AlignedLogMessages.OFFSETS_ALIGNED_CLASSES.get(getClass().getName()),
                 "TOKEN GRANTED", accountEmailPassword.getEmail(), claims
         );

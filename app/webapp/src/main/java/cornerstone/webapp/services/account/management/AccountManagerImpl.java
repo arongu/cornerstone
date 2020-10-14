@@ -34,6 +34,7 @@ public class AccountManagerImpl implements AccountManager {
     private static final String LOGIN_ATTEMPTS_INCREMENTED = "LOGIN ATTEMPTS INCREMENTED";
     private static final String LOGIN_FAILED               = "LOGIN FAILED";
     private static final String PASSWORD_CHANGED           = "PASSWORD CHANGED";
+    private static final String RETRIEVE_NO_ACCOUNT        = "NO ACCOUNT TO RETRIEVE";
     private static final String RETRIEVED                  = "RETRIEVED";
     private static final String ROLE_CHANGED               = "ROLE CHANGED";
     private static final String UNLOCKED                   = "UNLOCKED";
@@ -92,11 +93,12 @@ public class AccountManagerImpl implements AccountManager {
             ps.setString(1, email.toLowerCase());
             final ResultSet rs = ps.executeQuery();
 
+            final String logMsg;
             if ( rs.next()) {
-                final String logMsg = String.format(
-                        AlignedLogMessages.FORMAT__OFFSET_35C_C_STR,
-                        AlignedLogMessages.OFFSETS_ALIGNED_CLASSES.get(getClass().getName()),
-                        RETRIEVED, email
+                 logMsg = String.format(
+                         AlignedLogMessages.FORMAT__OFFSET_35C_C_STR,
+                         AlignedLogMessages.OFFSETS_ALIGNED_CLASSES.get(getClass().getName()),
+                         RETRIEVED, email
                 );
 
                 logger.info(logMsg);
@@ -118,6 +120,13 @@ public class AccountManagerImpl implements AccountManager {
                 );
 
             } else {
+                logMsg = String.format(
+                        AlignedLogMessages.FORMAT__OFFSET_35C_C_STR,
+                        AlignedLogMessages.OFFSETS_ALIGNED_CLASSES.get(getClass().getName()),
+                        RETRIEVE_NO_ACCOUNT, email
+                );
+
+                logger.info(logMsg);
                 throw new NoAccountException(email);
             }
 
