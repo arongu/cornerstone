@@ -9,7 +9,21 @@ import java.security.spec.KeySpec;
 import java.util.Base64;
 import java.util.Base64.Encoder;
 
+/**
+ * Class to generate secret keys for encryption using password, salt and iteration count.
+ * Similar to what is inside AESEncryptDecrypt class.
+ */
 public class KeyGenerator {
+    /**
+     * Generates a new secret key.
+     * @param password Password.
+     * @param salt Salt for password.
+     * @param iterationCount Number of iterations to be used.
+     * @param keyLength Length of the key.
+     * @return Key to be used for encryption
+     * @throws NoSuchAlgorithmException
+     * @throws InvalidKeySpecException
+     */
     public static Key generateKey(final String password,
                                   final String salt,
                                   final int iterationCount,

@@ -29,6 +29,7 @@ public final class AESEncryptDecrypt {
         }
     }
 
+    // NOTE if the iterationCount is changed, all the files need to be re-encrypted with a new key.
     /**
      * From a password, salt string derives a key using PBKDF2WithHmacSHA256 hash algorithm.
      * @param password Password string.
@@ -64,7 +65,7 @@ public final class AESEncryptDecrypt {
      * @param key Secret key to be used for encryption.
      * @param ba Byte array to be encrypted.
      * @return The AES256 encrypted byte array.
-     * @throws Thrown when an error occurs during the encryption.
+     * @throws AESToolException Thrown when an error occurs during the encryption.
      */
     public static byte[] encryptByteArrayWithKey(final SecretKey key, final byte[] ba) throws AESToolException {
         try {
@@ -281,7 +282,7 @@ public final class AESEncryptDecrypt {
     /**
      * Decrypts a base64 encodes AES256 cipher text into a string.
      * @param keyAsBase64 Secret key in a base64 string format used for decryption.
-     * @param cipherText AES256 encrypted base64 encoded cipher text.
+     * @param base64CipherText AES256 encrypted base64 encoded cipher text.
      * @return Decrypted string.
      * @throws AESToolException Thrown when an error occurs during the decryption.
      */
