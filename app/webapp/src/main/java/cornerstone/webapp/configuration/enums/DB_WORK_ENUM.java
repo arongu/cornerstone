@@ -1,5 +1,8 @@
 package cornerstone.webapp.configuration.enums;
 
+/**
+ * Fields from configFile used only for configuring the work DB.
+ */
 public enum DB_WORK_ENUM {
     DB_DRIVER("db_work_driver"),
     DB_URL("db_work_url"),

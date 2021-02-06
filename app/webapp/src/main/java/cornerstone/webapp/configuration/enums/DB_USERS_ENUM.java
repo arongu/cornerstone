@@ -1,5 +1,8 @@
 package cornerstone.webapp.configuration.enums;
 
+/**
+ * Fields from configFile used only for configuring the users DB.
+ */
 public enum DB_USERS_ENUM {
 
     DB_DRIVER("db_users_driver"),

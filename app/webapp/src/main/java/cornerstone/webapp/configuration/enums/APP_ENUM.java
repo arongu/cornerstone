@@ -1,5 +1,8 @@
 package cornerstone.webapp.configuration.enums;
 
+/**
+ * Fields from configFile used only for configuring the application.
+ */
 public enum APP_ENUM {
     APP_NODE_NAME("app_node_name"),
     APP_RSA_TTL("app_rsa_ttl"),

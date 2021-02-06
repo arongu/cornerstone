@@ -24,9 +24,9 @@ import java.io.IOException;
 
 /**
  * ApplicationBinder is an extension of AbstractBinder.
- * Responsible of bootstrapping the web application:
+ * Responsible for bootstrapping the web application:
  *  - loads the configuration
- *  - creates all the singleton services used by the application
+ *  - creates all the singleton classes aka services used by the application
  */
 public class ApplicationBinder extends AbstractBinder {
     private static final Logger logger = LoggerFactory.getLogger(ConfigLoader.class);
@@ -39,7 +39,8 @@ public class ApplicationBinder extends AbstractBinder {
     private String confFile;
 
     /**
-     * If KEY_FILE environment variable is set, try to load the key file from there.
+     * Sets the keyFile path from the KEY_FILE environment variable if possible,
+     * otherwise falls back to the default.
      */
     private void setKeyFileFromEnv() {
         keyFile = System.getProperty(ConfigDefaults.SYSTEM_PROPERTY_KEY_FILE);
@@ -54,7 +55,8 @@ public class ApplicationBinder extends AbstractBinder {
     }
 
     /**
-     * If CONF_FILE environment variable is set, try to load the conf file from there.
+     * Sets the confFile path from the CONF_FILE environment variable if possible,
+     * otherwise falls back to the default.
      */
     private void setConfFileFromEnv() {
         confFile = System.getProperty(ConfigDefaults.SYSTEM_PROPERTY_CONF_FILE);
@@ -68,6 +70,9 @@ public class ApplicationBinder extends AbstractBinder {
         }
     }
 
+    /**
+     * This where the components of the application gets created and registered.
+     */
     @Override
     protected void configure() {
         setConfFileFromEnv();

@@ -17,7 +17,6 @@ import javax.inject.Inject;
  * https://stackoverflow.com/questions/18914130/when-to-use-singleton-annotation-of-jersey
  * https://stackoverflow.com/questions/45625925/what-exactly-is-the-resourceconfig-class-in-jersey-2
 */
-
 public class Cornerstone extends ResourceConfig {
     @Inject
     public Cornerstone(final ServiceLocator serviceLocator) {

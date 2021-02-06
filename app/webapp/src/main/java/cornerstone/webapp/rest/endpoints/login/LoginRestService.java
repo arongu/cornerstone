@@ -24,9 +24,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
+ * Does not require authentication.
  * Creates a signed JWT token and sends it back to the user.
  */
-
 @Singleton
 @PermitAll
 @Path("/login")

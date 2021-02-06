@@ -28,7 +28,6 @@ import java.util.UUID;
  * Provides public keys based on UUID (first checks the local cache, then tries to retrieve it from the DB)
  * Provides list of live and expired public key UUIDs as well.
  */
-
 @Singleton
 @Path("/pubkeys")
 @PermitAll

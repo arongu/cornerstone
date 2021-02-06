@@ -33,10 +33,10 @@ public class ConfigSorter {
      * Adds key-value pairs to a Properties instance and the meantime it logs it.
      * Values of keys which contains 'password' in their name will not be shown in the logs!
      * e.g.: work_db_password = *****
-     * @param key this key will be added to the props
-     * @param value value of the key
-     * @param props the Properties object which the key/value will be added
-     * @param logPrefix prefix to make the logs easier to read e.g.: "db_work" or "db_user" or "app",
+     * @param key This key will be added to the props.
+     * @param value Value of the key
+     * @param props The Properties object which the key/value will be added.
+     * @param logPrefix Prefix used to make the logs easier to read e.g.: "db_work" or "db_user" or "app".
      */
     private static void addKeyValueAndLogIt(final Properties props, final String key, final String value, final String logPrefix) {
         if ( key != null && ! key.isEmpty() && value != null && ! value.isEmpty()) {
@@ -106,18 +106,31 @@ public class ConfigSorter {
         }
     }
 
+    /**
+     * @return Properties of application. (Fields in APP_ENUM)
+     */
     public Properties getPropertiesForApp() {
         return properties_app;
     }
 
+    /**
+     * @return Properties of work DB. (Fields in DB_WORK_ENUM)
+     */
     public Properties getPropertiesForWorkDB() {
         return properties_db_work;
     }
 
+    /**
+     * @return Properties of users DB. (Fields in DB_USERS_ENUM)
+     */
     public Properties getPropertiesForUsersDB() {
         return properties_db_users;
     }
 
+    /**
+     * Sets the common/raw Properties object.
+     * @param  properties The new common/raw Properties to work with it.
+     */
     public void setProperties(final Properties properties) {
         rawProperties = properties;
     }
