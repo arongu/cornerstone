@@ -154,6 +154,12 @@ public class LocalKeyStoreImpl implements LocalKeyStore {
         logger.info(logMsg);
     }
 
+    /**
+     * Sets the keys used for JWT/JWS signing.
+     * @param uuid The UUID of the key.
+     * @param privateKey Private key.
+     * @param publicKey Public key.
+     */
     @Override
     public void setSigningKeys(final UUID uuid, final PrivateKey privateKey, final PublicKey publicKey){
         this.live_uuid = uuid;

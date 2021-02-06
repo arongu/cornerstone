@@ -113,7 +113,7 @@ public class PublicKeyStoreImpl implements PublicKeyStore {
     /**
      * Fetches the database for a public key.
      * @param uuid The UUID of the desired public key.
-     * @return Returns the key in base64 and all the relevant data with it: node_name, ttl, creation_ts, expire_ts, base64_key.
+     * @return Matching public key with UUID as a compound object. (node_name, ttl, creation_ts, expire_ts, base64_key)
      * @throws PublicKeyStoreException When SQL exception occurs.
      * @throws NoSuchElementException When the key does not exist.
      */
@@ -166,8 +166,8 @@ public class PublicKeyStoreImpl implements PublicKeyStore {
     }
 
     /**
-     * Fetches the database for the active/live keys public counterpart.
-     * @return List of the active/live public keys.
+     * Fetches the database for the live public keys.
+     * @return Live public keys as a list.
      * @throws PublicKeyStoreException When SQL exception occurs.
      */
     @Override
@@ -221,8 +221,8 @@ public class PublicKeyStoreImpl implements PublicKeyStore {
     }
 
     /**
-     * Fetches the database for the active/live keys by looking up their public key UUIDs.
-     * @return List<UUID> List of the active/live key UUIDs.
+     * Fetches the database for the live public key UUIDs.
+     * @return List<UUID> Live key UUIDs as a list.
      * @throws PublicKeyStoreException When SQL exception occurs.
      */
     @Override
@@ -269,7 +269,7 @@ public class PublicKeyStoreImpl implements PublicKeyStore {
     }
 
     /**
-     * Fetches the database for the expired keys by looking up their public key UUIDs.
+     * Fetches the database for the expired keys UUIDs.
      * @return List<UUID> List of the expired key UUIDs.
      * @throws PublicKeyStoreException When SQL exception occurs.
      */
@@ -317,7 +317,7 @@ public class PublicKeyStoreImpl implements PublicKeyStore {
     }
 
     /**
-     * Runs a simple SQL query to get rid off the expired keys: expired_ts < NOW() (NOW() is at postgres, not calculated here)
+     * Executes an SQL query to remove all the expired key. (expired_ts < NOW() (NOW() is at postgres, not calculated here)
      * @return The number of deleted expired keys.
      * @throws PublicKeyStoreException When SQL exception occurs.
      */

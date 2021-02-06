@@ -45,7 +45,8 @@ public class JWTServiceImpl implements JWTService {
     }
 
     /**
-     * @param subject create JWS for subject
+     * Creates JWS for the subject.
+     * @param subject Subject of the JWS.
      */
     @Override
     public String createJws(final String subject) throws SigningKeysException {
@@ -53,10 +54,11 @@ public class JWTServiceImpl implements JWTService {
     }
 
     /**
+     * Creates JWS for the subject with the given Map as claims.
      * @param subject Subject of the JWS.
-     * @param claimsMap Map<String,Object> list of claims incorporated into the JWT.
-     * @return JWS as a string.
-     * @throws SigningKeysException if JWT cannot be signed.
+     * @param claimsMap A map which will be added to the JWS as claims.
+     * @return JWS as a bas64 string.
+     * @throws SigningKeysException Throws it if the JWT cannot be signed, with the private key.
      */
     @Override
     public String createJws(final String subject, final Map<String,Object> claimsMap) throws SigningKeysException {
