@@ -18,6 +18,9 @@ import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * Class to encrypt/decrypt configuration files.
+ */
 public final class ConfigEncryptDecrypt {
     private static final String aesPrefix = "AES_";
     private static final String encPrefix = "ENC_";

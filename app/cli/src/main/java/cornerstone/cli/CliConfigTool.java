@@ -31,7 +31,10 @@ public class CliConfigTool {
     private String keyFile, configFile, saveTo;
     private String command, password, salt;
 
-    // Reads arguments passed from the command line.
+    /**
+     * Reads arguments passed from the command line.
+     * @param args Arguments passed from the command line.
+     */
     public void readArguments(final String[] args) {
         if ( args == null || args.length != 7) {
             System.err.println("Not enough arguments!\n");

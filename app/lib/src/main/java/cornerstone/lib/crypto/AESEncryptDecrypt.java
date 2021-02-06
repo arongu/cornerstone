@@ -17,6 +17,9 @@ import java.util.Base64;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * Class for AES256 encryption/decryption and key generation.
+ */
 public final class AESEncryptDecrypt {
     private static final Logger logger = LoggerFactory.getLogger(AESEncryptDecrypt.class);
 
@@ -26,6 +29,13 @@ public final class AESEncryptDecrypt {
         }
     }
 
+    /**
+     * From a password, salt string derives a key using PBKDF2WithHmacSHA256 hash algorithm.
+     * @param password Password string.
+     * @param salt Salt string.
+     * @return SecretKeySpec that can be used for encryption/decryption.
+     * @throws AESToolException Thrown when the password, hash is not sufficient to create the key.
+     */
     public static SecretKeySpec derive256BitAESKeyWithHmacSHA256(final String password, final String salt) throws AESToolException {
         if ( null == password ||
              null == salt ||
@@ -49,6 +59,13 @@ public final class AESEncryptDecrypt {
         }
     }
 
+    /**
+     * AES256 encrypts a byte array with the given secret key.
+     * @param key Secret key to be used for encryption.
+     * @param ba Byte array to be encrypted.
+     * @return The AES256 encrypted byte array.
+     * @throws Thrown when an error occurs during the encryption.
+     */
     public static byte[] encryptByteArrayWithKey(final SecretKey key, final byte[] ba) throws AESToolException {
         try {
             final Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING");
@@ -71,6 +88,14 @@ public final class AESEncryptDecrypt {
         }
     }
 
+
+    /**
+     * Decrypts an AES256 encrypted byte array with the given secret key.
+     * @param key Secret key to be used for encryption.
+     * @param cipherArray Cipher bytes used for encryption.
+     * @return Decrypted byte array.
+     * @throws AESToolException Thrown when an error occurs during the encryption.
+     */
     public static byte[] decryptCipherArrayWithKey(final SecretKey key, final byte[] cipherArray) throws AESToolException {
         try {
             final byte[] iv = new byte[16];
@@ -90,6 +115,13 @@ public final class AESEncryptDecrypt {
         }
     }
 
+    /**
+     * AES256 encrypts a list of byte arrays with the given secret key.
+     * @param key Secret key to be used for encryption.
+     * @param byteArrays List of byte arrays to be encrypted.
+     * @return Encrypted byte arrays in a list.
+     * @throws AESToolException Thrown when an error occurs during the encryption.
+     */
     public static List<byte[]> encryptByteArraysWithKey(final SecretKey key, final List<byte[]> byteArrays) throws AESToolException {
         final Cipher cipher;
         try {
@@ -125,6 +157,13 @@ public final class AESEncryptDecrypt {
         return cipherArrayList;
     }
 
+    /**
+     * Decrypts a list of AES256 encrypted byte arrays with the given secret key.
+     * @param key Secret key to be used for decryption
+     * @param cipherArrays List of ciphered bytes to be decrypted.
+     * @return The decrypted byte array in a list.
+     * @throws AESToolException Thrown when an error occurs during the decryption.
+     */
     public static List<byte[]> decryptCipherArraysWithKey(final SecretKey key, final List<byte[]> cipherArrays) throws AESToolException {
         final Cipher cipher;
         try {
@@ -160,6 +199,13 @@ public final class AESEncryptDecrypt {
         return decryptedList;
     }
 
+    /**
+     * AES256 encrypts a list of byte arrays with the given secret key to base64 strings.
+     * @param key Secret key to be used for encryption.
+     * @param byteArrays List of byte arrays to be encrypted.
+     * @return Encrypted byte arrays in a list.
+     * @throws AESToolException Thrown when an error occurs during the encryption.
+     */
     public static List<String> encryptByteArraysWithKeyToBase64CipherTexts(final SecretKey key, final List<byte[]> byteArrays) throws AESToolException {
         final List<byte[]> cipherArrayList = encryptByteArraysWithKey(key, byteArrays);
         final List<String> base64cipherTexts = new LinkedList<>();
@@ -173,6 +219,13 @@ public final class AESEncryptDecrypt {
         return base64cipherTexts;
     }
 
+    /**
+     * Decrypts a list of AES256 encrypted base64 cipher string with the given secret key to list of byte arrays.
+     * @param key Secret key to be used for decryption.
+     * @param base64CipherTexts List of AES256 encrypted texts in base64 format.
+     * @return Decrypted byte arrays in a list.
+     * @throws AESToolException Thrown when an error occurs during the decryption.
+     */
     public static List<byte[]> decryptBase64CipherTextsWithKeyToByteArrays(final SecretKey key, final List<String> base64CipherTexts) throws AESToolException {
         final List<byte[]> cipherArrayList = new LinkedList<>();
 
@@ -185,11 +238,25 @@ public final class AESEncryptDecrypt {
         return decryptCipherArraysWithKey(key, cipherArrayList);
     }
 
+    /**
+     * AES256 encrypts a string into a base64 cipher text.
+     * @param key Secret key to be used for encryption.
+     * @param text String to be encrypted.
+     * @return AES256 encrypted base64 encoded cipher text.
+     * @throws AESToolException Thrown when an error occurs during the encryption.
+     */
     public static String encryptStringWithKeyToBase64CipherText(final SecretKey key, final String text) throws AESToolException {
         final byte[] encryptedBa = encryptByteArrayWithKey(key, text.getBytes());
         return Base64.getEncoder().encodeToString(encryptedBa);
     }
 
+    /**
+     * Decrypts a base64 encoded AES256 cipher text into a string.
+     * @param key Secret key to be used for decryption.
+     * @param cipherText AES256 encrypted base64 encoded cipher text.
+     * @return Decrypted string.
+     * @throws AESToolException Thrown when an error occurs during the decryption.
+     */
     public static String decryptBase64CipherTextWithKeyToString(final SecretKey key, final String cipherText) throws AESToolException {
         final byte[] cipherArray = Base64.getDecoder().decode(cipherText);
         final byte[] decrypted = decryptCipherArrayWithKey(key, cipherArray);
@@ -197,6 +264,13 @@ public final class AESEncryptDecrypt {
         return new String(decrypted);
     }
 
+    /**
+     * AES256 encrypts a string into a base64 cipher text.
+     * @param keyAsBase64 Secret key in a base64 string format used for encryption.
+     * @param text String to be encrypted.
+     * @return AES256 encrypted base64 encoded cipher text.
+     * @throws AESToolException Thrown when an error occurs during the encryption.
+     */
     public static String encryptStringWithBase64KeyToBase64CipherText(final String keyAsBase64, final String text) throws AESToolException {
         final byte[] keyBa = Base64.getDecoder().decode(keyAsBase64);
         final SecretKeySpec key = new SecretKeySpec(keyBa, "AES");
@@ -204,6 +278,13 @@ public final class AESEncryptDecrypt {
         return encryptStringWithKeyToBase64CipherText(key, text);
     }
 
+    /**
+     * Decrypts a base64 encodes AES256 cipher text into a string.
+     * @param keyAsBase64 Secret key in a base64 string format used for decryption.
+     * @param cipherText AES256 encrypted base64 encoded cipher text.
+     * @return Decrypted string.
+     * @throws AESToolException Thrown when an error occurs during the decryption.
+     */
     public static String decryptBase64CipherTextWithBase64KeyToString(final String keyAsBase64, final String base64CipherText) throws AESToolException {
         final byte[] keyBa = Base64.getDecoder().decode(keyAsBase64);
         final SecretKeySpec key = new SecretKeySpec(keyBa, "AES");
@@ -211,6 +292,13 @@ public final class AESEncryptDecrypt {
         return decryptBase64CipherTextWithKeyToString(key, base64CipherText);
     }
 
+    /**
+     * AES256 encrypts a list of strings into a base64 cipher texts.
+     * @param keyAsBase64 Secret key in a base64 string format used for encryption.
+     * @param strings List of strings to be encrypted.
+     * @return List of AES256 encrypted base64 encoded cipher strings.
+     * @throws AESToolException Thrown when an error occurs during the encryption.
+     */
     public static List<String> encryptStringsWithBase64KeyToBase64CipherTexts(final String keyAsBase64, final List<String> strings) throws AESToolException {
         final byte[] keyBa = Base64.getDecoder().decode(keyAsBase64);
         final SecretKeySpec key = new SecretKeySpec(keyBa, "AES");
@@ -223,6 +311,13 @@ public final class AESEncryptDecrypt {
         return encryptByteArraysWithKeyToBase64CipherTexts(key, byteArrays);
     }
 
+    /**
+     * Decrypts a list of AES256 encrypted base64 encoded cipher strings.
+     * @param keyAsBase64 Secret key in a base64 string format used for decryption.
+     * @param base64CipherTexts List of AES256 base64 encoded cipher strings to be decrypted.
+     * @return List of decrypted strings.
+     * @throws AESToolException Thrown when an error occurs during the decryption.
+     */
     public static List<String> decryptBase64CipherTextsWithBase64KeyToStrings(final String keyAsBase64, final List<String> base64CipherTexts) throws AESToolException {
         final byte [] keyBa = Base64.getDecoder().decode(keyAsBase64);
         final SecretKeySpec key = new SecretKeySpec(keyBa, "AES");
