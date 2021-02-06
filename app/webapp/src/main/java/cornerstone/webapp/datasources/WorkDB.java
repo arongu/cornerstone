@@ -1,8 +1,8 @@
 package cornerstone.webapp.datasources;
 
-import cornerstone.webapp.common.CommonLogMessages;
-import cornerstone.webapp.config.ConfigLoader;
-import cornerstone.webapp.config.enums.DB_WORK_ENUM;
+import cornerstone.webapp.logmsg.CommonLogMessages;
+import cornerstone.webapp.configuration.ConfigLoader;
+import cornerstone.webapp.configuration.enums.DB_WORK_ENUM;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

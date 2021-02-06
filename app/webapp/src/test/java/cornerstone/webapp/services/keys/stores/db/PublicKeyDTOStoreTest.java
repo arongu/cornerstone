@@ -1,6 +1,6 @@
 package cornerstone.webapp.services.keys.stores.db;
 
-import cornerstone.webapp.config.ConfigLoader;
+import cornerstone.webapp.configuration.ConfigLoader;
 import cornerstone.webapp.datasources.WorkDB;
 import cornerstone.webapp.services.keys.common.PublicKeyData;
 import cornerstone.webapp.services.keys.rotation.KeyPairWithUUID;

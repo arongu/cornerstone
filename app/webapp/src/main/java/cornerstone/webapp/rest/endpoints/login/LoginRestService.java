@@ -1,13 +1,13 @@
 package cornerstone.webapp.rest.endpoints.login;
 
-import cornerstone.webapp.common.AlignedLogMessages;
+import cornerstone.webapp.logmsg.AlignedLogMessages;
 import cornerstone.webapp.rest.endpoints.accounts.dtos.AccountEmailPassword;
 import cornerstone.webapp.rest.error_responses.ErrorResponse;
-import cornerstone.webapp.services.account.management.AccountManager;
-import cornerstone.webapp.services.account.management.AccountResultSet;
-import cornerstone.webapp.services.account.management.exceptions.single.*;
+import cornerstone.webapp.services.accounts.management.AccountManager;
+import cornerstone.webapp.services.accounts.management.AccountResultSet;
+import cornerstone.webapp.services.accounts.management.exceptions.single.*;
 import cornerstone.webapp.services.jwt.JWTService;
-import cornerstone.webapp.services.keys.stores.local.SigningKeySetupException;
+import cornerstone.webapp.services.keys.stores.local.SigningKeysException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,6 +22,10 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.HashMap;
 import java.util.Map;
+
+/**
+ * Creates a signed JWT token and sends it back to the user.
+ */
 
 @Singleton
 @PermitAll
@@ -41,7 +45,7 @@ public class LoginRestService {
     }
 
     @POST
-    public Response authenticateUser(final AccountEmailPassword accountEmailPassword) throws SigningKeySetupException {
+    public Response login(final AccountEmailPassword accountEmailPassword) throws SigningKeysException {
         if ( accountEmailPassword == null || accountEmailPassword.getEmail() == null || accountEmailPassword.getPassword() == null ) {
             return Response.status(Response.Status.BAD_REQUEST)
                     .entity(new ErrorResponse(Response.Status.BAD_REQUEST.getStatusCode(), "Null value provided for email/password."))

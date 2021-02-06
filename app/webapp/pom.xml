@@ -126,6 +126,9 @@
                         </goals>
                         <configuration>
                             <tasks>
+                                <echo>!! Maven profile selection only really matters for deployment, tests usually use their hard coded config !!</echo>
+                                <echo>!! e.g.: ConfigLoaderTest has its own ConfigurationLoader instance with the following parameter:</echo>
+                                <echo>!! TEST_CONFIG_DIR = "../../_test_config/"</echo>
                                 <echo>-------------------------------------------------------------------------------------------------</echo>
                                 <echo>m2.tomcat.server_id                          = ${m2.tomcat.server_id}</echo>
                                 <echo>m2.tomcat.manager_url                        = ${m2.tomcat.manager_url}</echo>
@@ -145,6 +148,8 @@
                                 <echo>m2.db.work.db_user                           = ${m2.db.work.db_user}</echo>
                                 <echo>m2.db.work.db_password                       = ${m2.db.work.db_password}</echo>
                                 <echo>-------------------------------------------------------------------------------------------------</echo>
+                                <echo>If you see ${key} on the right as values it means maven profile is not selected. (Maven could not resolve/substitute the value.)</echo>
+                                <echo>Use a profile instead: maven test -Pdev</echo>
                             </tasks>
                         </configuration>
                     </execution>

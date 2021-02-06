@@ -38,10 +38,10 @@ public class KeyRotationTaskTest {
         keyRotationTask.run();
 
 
-        verify(localKeyStore, times(1)).setupSigning(any(UUID.class), any(PrivateKey.class), any(PublicKey.class));
+        verify(localKeyStore, times(1)).setSigningKeys(any(UUID.class), any(PrivateKey.class), any(PublicKey.class));
         verify(publicKeyStore, times(1)).addKey(any(UUID.class), eq(nodeName), eq(rsaTTL + jwtTTL), anyString());
         verify(publicKeyStore, times(1)).getLiveKeyUUIDs();
-        verify(localKeyStore, times(1)).sync(eq(uuids));
+        verify(localKeyStore, times(1)).keepOnly(eq(uuids));
         verify(publicKeyStore, times(1)).deleteExpiredKeys();
     }
 

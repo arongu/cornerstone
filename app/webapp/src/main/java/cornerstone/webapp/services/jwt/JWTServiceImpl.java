@@ -1,11 +1,11 @@
 package cornerstone.webapp.services.jwt;
 
-import cornerstone.webapp.common.CommonLogMessages;
-import cornerstone.webapp.config.ConfigLoader;
-import cornerstone.webapp.config.enums.APP_ENUM;
-import cornerstone.webapp.services.keys.stores.local.SigningKeySetup;
+import cornerstone.webapp.logmsg.CommonLogMessages;
+import cornerstone.webapp.configuration.ConfigLoader;
+import cornerstone.webapp.configuration.enums.APP_ENUM;
+import cornerstone.webapp.services.keys.stores.local.SigningKeys;
 import cornerstone.webapp.services.keys.stores.local.LocalKeyStore;
-import cornerstone.webapp.services.keys.stores.local.SigningKeySetupException;
+import cornerstone.webapp.services.keys.stores.local.SigningKeysException;
 import io.jsonwebtoken.Jwts;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,6 +27,10 @@ import java.util.Properties;
     I'm going to close this issue as the library is working as intended.
 */
 
+/**
+ * Provides JWS(signed jwt tokens).
+ */
+
 public class JWTServiceImpl implements JWTService {
     private static final Logger logger = LoggerFactory.getLogger(JWTServiceImpl.class);
 
@@ -40,14 +44,23 @@ public class JWTServiceImpl implements JWTService {
         logger.info(String.format(CommonLogMessages.MESSAGE_CONSTRUCTOR_CALLED, getClass().getName()));
     }
 
+    /**
+     * @param subject create JWS for subject
+     */
     @Override
-    public String createJws(final String subject) throws SigningKeySetupException {
+    public String createJws(final String subject) throws SigningKeysException {
         return createJws(subject, null);
     }
 
+    /**
+     * @param subject Subject of the JWS.
+     * @param claimsMap Map<String,Object> list of claims incorporated into the JWT.
+     * @return JWS as a string.
+     * @throws SigningKeysException if JWT cannot be signed.
+     */
     @Override
-    public String createJws(final String subject, final Map<String,Object> claimsMap) throws SigningKeySetupException {
-        final SigningKeySetup signingKeySetup = localKeyStore.getSigningKeySetup();
+    public String createJws(final String subject, final Map<String,Object> claimsMap) throws SigningKeysException {
+        final SigningKeys signingKeySetup = localKeyStore.getSigningKeys();
         final Properties properties           = configLoader.getAppProperties();
         final long jwtTTL                     = Long.parseLong(properties.getProperty(APP_ENUM.APP_JWT_TTL.key));
         final long now                        = Instant.now().getEpochSecond();

@@ -1,11 +1,11 @@
 package cornerstone.webapp.jersey;
 
-import cornerstone.webapp.config.ConfigDefaults;
-import cornerstone.webapp.config.ConfigLoader;
+import cornerstone.webapp.configuration.ConfigDefaults;
+import cornerstone.webapp.configuration.ConfigLoader;
 import cornerstone.webapp.datasources.UsersDB;
 import cornerstone.webapp.datasources.WorkDB;
-import cornerstone.webapp.services.account.management.AccountManager;
-import cornerstone.webapp.services.account.management.AccountManagerImpl;
+import cornerstone.webapp.services.accounts.management.AccountManager;
+import cornerstone.webapp.services.accounts.management.AccountManagerImpl;
 import cornerstone.webapp.services.jwt.JWTService;
 import cornerstone.webapp.services.jwt.JWTServiceImpl;
 import cornerstone.webapp.services.keys.rotation.KeyRotator;

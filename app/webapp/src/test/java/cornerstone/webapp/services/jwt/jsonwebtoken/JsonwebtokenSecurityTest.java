@@ -1,7 +1,7 @@
 package cornerstone.webapp.services.jwt.jsonwebtoken;
 
-import cornerstone.webapp.config.ConfigLoader;
-import cornerstone.webapp.config.enums.APP_ENUM;
+import cornerstone.webapp.configuration.ConfigLoader;
+import cornerstone.webapp.configuration.enums.APP_ENUM;
 import cornerstone.webapp.services.jwt.JWTService;
 import cornerstone.webapp.services.jwt.JWTServiceImpl;
 import cornerstone.webapp.services.keys.rotation.KeyPairWithUUID;
@@ -41,7 +41,7 @@ public class JsonwebtokenSecurityTest {
             configLoader                          = new ConfigLoader(key_file, conf_file);
             localKeyStore                         = new LocalKeyStoreImpl();
             final KeyPairWithUUID keyPairWithUUID = new KeyPairWithUUID();
-            localKeyStore.setupSigning(keyPairWithUUID.uuid, keyPairWithUUID.keyPair.getPrivate(), keyPairWithUUID.keyPair.getPublic());
+            localKeyStore.setSigningKeys(keyPairWithUUID.uuid, keyPairWithUUID.keyPair.getPrivate(), keyPairWithUUID.keyPair.getPublic());
 
         } catch (final IOException e) {
             e.printStackTrace();
@@ -55,7 +55,7 @@ public class JsonwebtokenSecurityTest {
     public void parseClaims_shouldThrowException_whenAlgIsMismatched() throws Exception {
         final String subject        = "hellomoto@xmal.com";
         final JWTService jwtService = new JWTServiceImpl(configLoader, localKeyStore);
-        final Key publicKey         = localKeyStore.getSigningKeySetup().publicKey;
+        final Key publicKey         = localKeyStore.getSigningKeys().publicKey;
         final String jws            = jwtService.createJws(subject);
         final String[] parsed       = jws.split("\\.");
         final String payload        = parsed[1];
@@ -184,8 +184,8 @@ public class JsonwebtokenSecurityTest {
     public void parseClaims_shouldThrowSignatureException_whenKeyIsTempered() throws Exception {
         final String subject        = "hellomoto@mail.com";
         final JWTService jwtService = new JWTServiceImpl(configLoader, localKeyStore);
-        final Key privateKey        = localKeyStore.getSigningKeySetup().privateKey;
-        final Key publicKey         = localKeyStore.getSigningKeySetup().publicKey;
+        final Key privateKey        = localKeyStore.getSigningKeys().privateKey;
+        final Key publicKey         = localKeyStore.getSigningKeys().publicKey;
         final String jws            = jwtService.createJws(subject);
         final Claims extractClaims  = jsonwebtokenTestHelper.extractClaims(jws, privateKey);
         final UUID uuid             = UUID.fromString((String) extractClaims.get("keyId"));
@@ -194,7 +194,7 @@ public class JsonwebtokenSecurityTest {
         // forging jws
         final KeyPair forgedKeyPair                = new KeyPairWithUUID().keyPair;
         final LocalKeyStore forgedLocalKeyStore    = new LocalKeyStoreImpl();
-        forgedLocalKeyStore.setupSigning(uuid, forgedKeyPair.getPrivate(), forgedKeyPair.getPublic());
+        forgedLocalKeyStore.setSigningKeys(uuid, forgedKeyPair.getPrivate(), forgedKeyPair.getPublic());
         // sign with the new forged key, using the original data, and uuid
         final JWTService forgedJwtService          = new JWTServiceImpl(configLoader, forgedLocalKeyStore);
         final String forgedJws                     = forgedJwtService.createJws(subject);
@@ -211,7 +211,7 @@ public class JsonwebtokenSecurityTest {
     public void parseClaims_shouldThrowSignatureException_whenIssuerIsTempered() throws Exception {
         final String subject        = "hellomoto@xmal.com";
         final JWTService jwtService = new JWTServiceImpl(configLoader, localKeyStore);
-        final PublicKey publicKey   = localKeyStore.getSigningKeySetup().publicKey;
+        final PublicKey publicKey   = localKeyStore.getSigningKeys().publicKey;
         final String jws            = jwtService.createJws(subject);
         final String issuer         = configLoader.getAppProperties().getProperty(APP_ENUM.APP_NODE_NAME.key);
 
@@ -242,7 +242,7 @@ public class JsonwebtokenSecurityTest {
         final String subject         = "hellomoto@xmal.com";
         final String temperedSubject = "haxor@mail.com";
         final JWTService jwtService  = new JWTServiceImpl(configLoader, localKeyStore);
-        final PublicKey publicKey    = localKeyStore.getSigningKeySetup().publicKey;
+        final PublicKey publicKey    = localKeyStore.getSigningKeys().publicKey;
         final String jws             = jwtService.createJws(subject);
 
 
@@ -270,7 +270,7 @@ public class JsonwebtokenSecurityTest {
     public void parseClaims_shouldThrowSignatureException_whenClaimIsTempered() throws Exception {
         final String subject         = "hellomoto@xmal.com";
         final JWTService jwtService  = new JWTServiceImpl(configLoader, localKeyStore);
-        final PublicKey publicKey    = localKeyStore.getSigningKeySetup().publicKey;
+        final PublicKey publicKey    = localKeyStore.getSigningKeys().publicKey;
         final Map<String, Object> m  = new HashMap<>();
         m.put("myClaim", "Rome");
         final String jws             = jwtService.createJws(subject, m);
@@ -300,7 +300,7 @@ public class JsonwebtokenSecurityTest {
     public void parseClaims_shouldThrowSignatureException_whenIatIsTempered() throws Exception {
         final String subject         = "hellomoto@xmal.com";
         final JWTService jwtService  = new JWTServiceImpl(configLoader, localKeyStore);
-        final PublicKey publicKey    = localKeyStore.getSigningKeySetup().publicKey;
+        final PublicKey publicKey    = localKeyStore.getSigningKeys().publicKey;
         final String jws             = jwtService.createJws(subject);
 
 
@@ -332,7 +332,7 @@ public class JsonwebtokenSecurityTest {
     public void parseClaims_shouldThrowSignatureException_whenExpIsTempered() throws Exception {
         final String subject         = "hellomoto@xmal.com";
         final JWTService jwtService  = new JWTServiceImpl(configLoader, localKeyStore);
-        final PublicKey publicKey    = localKeyStore.getSigningKeySetup().publicKey;
+        final PublicKey publicKey    = localKeyStore.getSigningKeys().publicKey;
         final String jws             = jwtService.createJws(subject);
 
 

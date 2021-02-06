@@ -17,9 +17,9 @@ public interface LocalKeyStore {
     void addPublicKey(final UUID uuid, final String base64KeyString) throws NoSuchAlgorithmException, InvalidKeySpecException;
     void deletePublicKey(final UUID uuid);
     void deletePublicKeys(final List<UUID> uuidsToBeRemoved);
-    void sync(final List<UUID> toBeKept);
+    void keepOnly(final List<UUID> toBeKept);
 
-    void setupSigning(final UUID uuid, final PrivateKey privateKey, final PublicKey publicKey);
-    SigningKeySetup getSigningKeySetup() throws SigningKeySetupException;
+    void setSigningKeys(final UUID uuid, final PrivateKey privateKey, final PublicKey publicKey);
+    SigningKeys getSigningKeys() throws SigningKeysException;
     void resetAll();
 }

@@ -1,7 +1,7 @@
 package cornerstone.webapp.services.jwt.jsonwebtoken;
 
-import cornerstone.webapp.config.ConfigLoader;
-import cornerstone.webapp.config.enums.APP_ENUM;
+import cornerstone.webapp.configuration.ConfigLoader;
+import cornerstone.webapp.configuration.enums.APP_ENUM;
 import cornerstone.webapp.services.jwt.JWTService;
 import cornerstone.webapp.services.jwt.JWTServiceImpl;
 import cornerstone.webapp.services.keys.rotation.KeyPairWithUUID;
@@ -37,7 +37,7 @@ public class jsonwebtokenBasicTest {
             configLoader                          = new ConfigLoader(key_file, conf_file);
             localKeyStore                         = new LocalKeyStoreImpl();
             final KeyPairWithUUID keyPairWithUUID = new KeyPairWithUUID();
-            localKeyStore.setupSigning(keyPairWithUUID.uuid, keyPairWithUUID.keyPair.getPrivate(), keyPairWithUUID.keyPair.getPublic());
+            localKeyStore.setSigningKeys(keyPairWithUUID.uuid, keyPairWithUUID.keyPair.getPrivate(), keyPairWithUUID.keyPair.getPublic());
 
         } catch (final IOException e) {
             e.printStackTrace();
@@ -49,7 +49,7 @@ public class jsonwebtokenBasicTest {
         final JWTService jwtService = new JWTServiceImpl(configLoader, localKeyStore);
         final String email          = "hellomoto@xmal.com";
         final String jws            = jwtService.createJws(email); // a signed jwt token is called 'jws'
-        final Key publicKey         = localKeyStore.getSigningKeySetup().publicKey;
+        final Key publicKey         = localKeyStore.getSigningKeys().publicKey;
 
         assertEquals(email, Jwts.parserBuilder().setSigningKey(publicKey).build().parseClaimsJws(jws).getBody().getSubject());
     }
@@ -59,7 +59,7 @@ public class jsonwebtokenBasicTest {
         final JWTService jwtService = new JWTServiceImpl(configLoader, localKeyStore);
         final String email          = "hellomoto@xmal.com";
         final String jws            = jwtService.createJws(email);
-        final Key publicKey         = localKeyStore.getSigningKeySetup().publicKey;
+        final Key publicKey         = localKeyStore.getSigningKeys().publicKey;
 
         assertDoesNotThrow(() -> Jwts.parserBuilder().setSigningKey(publicKey).requireSubject(email).build().parseClaimsJws(jws));
     }
@@ -79,7 +79,7 @@ public class jsonwebtokenBasicTest {
         final JWTService jwtService = new JWTServiceImpl(configLoader, localKeyStore);
         final String email          = "hellomoto@xmal.com";
         final String jws            = jwtService.createJws(email);
-        final Key publicKey         = localKeyStore.getSigningKeySetup().publicKey;
+        final Key publicKey         = localKeyStore.getSigningKeys().publicKey;
 
         assertThrows(IncorrectClaimException.class, () -> Jwts.parserBuilder().setSigningKey(publicKey).requireSubject("moooooooooooo").build().parseClaimsJws(jws));
     }
@@ -89,7 +89,7 @@ public class jsonwebtokenBasicTest {
         final JWTService jwtService = new JWTServiceImpl(configLoader, localKeyStore);
         final String email          = "hellomoto@xmal.com";
         final String jws            = jwtService.createJws(email); // a signed jwt token is called 'jws'
-        final Key publicKey         = localKeyStore.getSigningKeySetup().publicKey;
+        final Key publicKey         = localKeyStore.getSigningKeys().publicKey;
 
         assertEquals(email, Jwts.parserBuilder().setSigningKey(publicKey).build().parseClaimsJws(jws).getBody().getSubject());
     }
@@ -97,7 +97,7 @@ public class jsonwebtokenBasicTest {
     @Test
     public void createJwsWithParseClaims_shouldReturnClaimsFromMap() throws Exception {
         final JWTService jwtService = new JWTServiceImpl(configLoader, localKeyStore);
-        final Key publicKey         = localKeyStore.getSigningKeySetup().publicKey;
+        final Key publicKey         = localKeyStore.getSigningKeys().publicKey;
         final String email          = "hellomoto@xmal.com";
         final Map<String,Object> m  = new HashMap<>();
         m.put("claimOne", "one");
@@ -120,7 +120,7 @@ public class jsonwebtokenBasicTest {
     @Test
     public void expMinusIatShouldBeEqualToJwtTTL() throws Exception {
         final JWTService jwtService = new JWTServiceImpl(configLoader, localKeyStore);
-        final PublicKey publicKey   = localKeyStore.getSigningKeySetup().publicKey;
+        final PublicKey publicKey   = localKeyStore.getSigningKeys().publicKey;
         final Integer jwtTTL        = Integer.valueOf((String) configLoader.getAppProperties().get(APP_ENUM.APP_JWT_TTL.key));
         final String email          = "hellomoto@xmal.com";
 

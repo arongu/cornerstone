@@ -131,7 +131,7 @@ public class LocalKeyStoreTest {
         uuids_to_be_kept.add(uuids.get(0));
         uuids_to_be_kept.add(uuids.get(2));
         uuids_to_be_kept.add(uuids.get(4));
-        localKeyStore.sync(uuids_to_be_kept);
+        localKeyStore.keepOnly(uuids_to_be_kept);
 
 
         assertEquals(3, localKeyStore.getPublicKeyUUIDs().size());
@@ -150,19 +150,19 @@ public class LocalKeyStoreTest {
 
 
         // get without data -> should throw
-        assertThrows(SigningKeySetupException.class, localKeyStore::getSigningKeySetup);
-        localKeyStore.setupSigning(reference_key.uuid, reference_key.keyPair.getPrivate(), reference_key.keyPair.getPublic());
+        assertThrows(SigningKeysException.class, localKeyStore::getSigningKeys);
+        localKeyStore.setSigningKeys(reference_key.uuid, reference_key.keyPair.getPrivate(), reference_key.keyPair.getPublic());
 
 
         // get key after set
-        final SigningKeySetup stored_key = localKeyStore.getSigningKeySetup();
+        final SigningKeys stored_key = localKeyStore.getSigningKeys();
         assertEquals(reference_key.uuid, stored_key.uuid);
         assertEquals(reference_key.keyPair.getPrivate(), stored_key.privateKey);
 
 
         // drop
         localKeyStore.resetAll();
-        assertThrows(SigningKeySetupException.class, localKeyStore::getSigningKeySetup);
+        assertThrows(SigningKeysException.class, localKeyStore::getSigningKeys);
         assertThrows(NoSuchElementException.class, () -> localKeyStore.getPublicKey(reference_key.uuid));
     }
 }

@@ -1,8 +1,8 @@
 package cornerstone.webapp.services.keys.rotation;
 
-import cornerstone.webapp.common.CommonLogMessages;
-import cornerstone.webapp.config.ConfigLoader;
-import cornerstone.webapp.config.enums.APP_ENUM;
+import cornerstone.webapp.logmsg.CommonLogMessages;
+import cornerstone.webapp.configuration.ConfigLoader;
+import cornerstone.webapp.configuration.enums.APP_ENUM;
 import cornerstone.webapp.services.keys.stores.db.PublicKeyStore;
 import cornerstone.webapp.services.keys.stores.local.LocalKeyStore;
 import org.slf4j.Logger;
@@ -40,7 +40,7 @@ public class KeyRotatorImpl implements KeyRotator {
         final String nodeName          = appProperties.getProperty(APP_ENUM.APP_NODE_NAME.key);
         final int rsaTTL               = Integer.parseInt(appProperties.getProperty(APP_ENUM.APP_RSA_TTL.key));
         final int jwtTTL               = Integer.parseInt(appProperties.getProperty(APP_ENUM.APP_JWT_TTL.key));
-        final long period              = rsaTTL * 1000;
+        final long period              = rsaTTL * 1000L;
         timer.schedule(new KeyRotationTask(localKeyStore, databasePublicKeyStore, rsaTTL, jwtTTL, nodeName), 0, period);
     }
 }

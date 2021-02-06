@@ -1,23 +1,22 @@
 package cornerstone.webapp.rest.endpoints.accounts;
 
-import cornerstone.webapp.common.CommonLogMessages;
+import cornerstone.webapp.logmsg.CommonLogMessages;
 import cornerstone.webapp.rest.endpoints.accounts.dtos.AccountEmailPassword;
 import cornerstone.webapp.rest.endpoints.accounts.dtos.AccountSearch;
 import cornerstone.webapp.rest.endpoints.accounts.dtos.AccountSetup;
 import cornerstone.webapp.rest.error_responses.ErrorResponse;
 import cornerstone.webapp.rest.error_responses.MultiErrorResponse;
-import cornerstone.webapp.services.account.management.AccountManager;
-import cornerstone.webapp.services.account.management.AccountResultSet;
-import cornerstone.webapp.services.account.management.AccountRole;
-import cornerstone.webapp.services.account.management.exceptions.multi.MultiCreationException;
-import cornerstone.webapp.services.account.management.exceptions.multi.MultiCreationInitialException;
-import cornerstone.webapp.services.account.management.exceptions.multi.MultiDeletionException;
-import cornerstone.webapp.services.account.management.exceptions.multi.MultiDeletionInitialException;
-import cornerstone.webapp.services.account.management.exceptions.single.*;
+import cornerstone.webapp.services.accounts.management.AccountManager;
+import cornerstone.webapp.services.accounts.management.AccountResultSet;
+import cornerstone.webapp.services.accounts.management.AccountRole;
+import cornerstone.webapp.services.accounts.management.exceptions.multi.MultiCreationException;
+import cornerstone.webapp.services.accounts.management.exceptions.multi.MultiCreationInitialException;
+import cornerstone.webapp.services.accounts.management.exceptions.multi.MultiDeletionException;
+import cornerstone.webapp.services.accounts.management.exceptions.multi.MultiDeletionInitialException;
+import cornerstone.webapp.services.accounts.management.exceptions.single.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.security.RolesAllowed;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.ws.rs.*;
