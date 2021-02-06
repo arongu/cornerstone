@@ -6,6 +6,7 @@ import cornerstone.webapp.configuration.enums.APP_ENUM;
 import cornerstone.webapp.services.keys.stores.local.SigningKeys;
 import cornerstone.webapp.services.keys.stores.local.LocalKeyStore;
 import cornerstone.webapp.services.keys.stores.local.SigningKeysException;
+import io.jsonwebtoken.Header;
 import io.jsonwebtoken.Jwts;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,23 +58,22 @@ public class JWTServiceImpl implements JWTService {
      * Creates JWS for the subject with the given Map as claims.
      * @param subject Subject of the JWS.
      * @param claimsMap A map which will be added to the JWS as claims.
-     * @return JWS as a bas64 string.
+     * @return JWS as string.
      * @throws SigningKeysException Throws it if the JWT cannot be signed, with the private key.
      */
     @Override
     public String createJws(final String subject, final Map<String,Object> claimsMap) throws SigningKeysException {
-        final SigningKeys signingKeySetup = localKeyStore.getSigningKeys();
+        final SigningKeys signingKeySetup     = localKeyStore.getSigningKeys();
         final Properties properties           = configLoader.getAppProperties();
         final long jwtTTL                     = Long.parseLong(properties.getProperty(APP_ENUM.APP_JWT_TTL.key));
         final long now                        = Instant.now().getEpochSecond();
 
-//        final Map<String, Object> headers = new HashMap<>();
-//        headers.put("typ", "JWS");
+
         final Map<String, Object> claims = claimsMap != null ? new HashMap<>(claimsMap) : new HashMap<>();
         claims.put("keyId", signingKeySetup.uuid);
 
         return Jwts.builder()
-                //.setHeader     (headers)
+                .setHeaderParam(Header.TYPE, Header.JWT_TYPE)
                 .setClaims     (claims)
                 .setIssuer     (properties.getProperty(APP_ENUM.APP_NODE_NAME.key))
                 .setSubject    (subject)

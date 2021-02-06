@@ -45,7 +45,6 @@ public class JWTServiceTest {
         m.put("claimTwo", 2);
         m.put("claimThree", 3.2);
 
-
         final Base64.Decoder decoder = Base64.getDecoder();
         final String jws             = jwtService.createJws("almafa@gmail.com", m);
         final String[] parsed        = jws.split("\\.");
@@ -54,7 +53,7 @@ public class JWTServiceTest {
         final String strPayload      = new String(decoder.decode(parsed[1]));
 
 
-        assertEquals("{\"alg\":\"RS512\"}", strHeader);
+        assertEquals("{\"typ\":\"JWT\",\"alg\":\"RS512\"}", strHeader);
         assertTrue(strPayload.contains("\"claimOne\":\"one\""));
         assertTrue(strPayload.contains("\"claimTwo\":2"));
         assertTrue(strPayload.contains("\"claimThree\":3.2"));
