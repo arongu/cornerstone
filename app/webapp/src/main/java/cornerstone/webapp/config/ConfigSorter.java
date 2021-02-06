@@ -10,6 +10,12 @@ import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
 
+/**
+ * Sorts the loaded configuration into separate 'Properties':
+ * application
+ * work db
+ * user db
+ */
 public class ConfigSorter {
     private static final Logger logger = LoggerFactory.getLogger(ConfigSorter.class);
     private static final String errorMessage  = "'{}' is not set!";
@@ -24,7 +30,13 @@ public class ConfigSorter {
     }
 
     /**
-     * Logs and sets key-value pairs as a property.
+     * Adds key-value pairs to a Properties instance and the meantime it logs it.
+     * Values of keys which contains 'password' in their name will not be shown in the logs!
+     * e.g.: work_db_password = *****
+     * @param key this key will be added to the props
+     * @param value value of the key
+     * @param props the Properties object which the key/value will be added
+     * @param logPrefix prefix to make the logs easier to read e.g.: "db_work" or "db_user" or "app",
      */
     private static void addKeyValueAndLogIt(final Properties props, final String key, final String value, final String logPrefix) {
         if ( key != null && ! key.isEmpty() && value != null && ! value.isEmpty()) {
@@ -41,6 +53,14 @@ public class ConfigSorter {
         }
     }
 
+    /**
+     * Sorts the "raw" Properties object into 3 separate Properties by initializing them.
+     * Sorting happens by iterating through the ENUM values of each property sets.
+     * APP_ENUM         - holds the required application configuration filed names
+     * DB_USERS_ENUM    - holds the required USER DB configuration field names
+     * DB_WORK_ENUM     - holds the required WORK DB configuration field names
+     * @throws ConfigSorterException if any of the required field is missing.
+     */
     public void sortProperties() throws ConfigSorterException {
         final Set<String> missingProperties = new HashSet<>();
         // WORK DB

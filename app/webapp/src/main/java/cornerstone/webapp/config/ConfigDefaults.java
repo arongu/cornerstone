@@ -1,5 +1,11 @@
 package cornerstone.webapp.config;
 
+/**
+ * The basic configuration default used by the application when deployed.
+ * By default this sit the parameters where cornerstone will try to load:
+ *  - conf file (holds the properties used at runtime)
+ *  - key file  (the key which can be used to decrypt the configuration file)
+ */
 public final class ConfigDefaults {
     private ConfigDefaults(){};
 

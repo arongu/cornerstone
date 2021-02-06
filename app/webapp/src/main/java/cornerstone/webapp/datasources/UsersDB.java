@@ -10,6 +10,10 @@ import org.slf4j.LoggerFactory;
 import javax.inject.Inject;
 import java.util.Properties;
 
+/**
+ * Extended class of BasicDataSource.
+ * This database is responsible for storing user management related information.
+ */
 public class UsersDB extends BasicDataSource {
     private static final Logger logger = LoggerFactory.getLogger(UsersDB.class);
 

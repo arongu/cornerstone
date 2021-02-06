@@ -1,9 +1,9 @@
 package cornerstone.webapp.services.jwt;
 
 import cornerstone.webapp.config.ConfigLoader;
-import cornerstone.webapp.services.rsa.rotation.KeyPairWithUUID;
-import cornerstone.webapp.services.rsa.store.local.LocalKeyStore;
-import cornerstone.webapp.services.rsa.store.local.LocalKeyStoreImpl;
+import cornerstone.webapp.services.keys.rotation.KeyPairWithUUID;
+import cornerstone.webapp.services.keys.stores.local.LocalKeyStore;
+import cornerstone.webapp.services.keys.stores.local.LocalKeyStoreImpl;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 

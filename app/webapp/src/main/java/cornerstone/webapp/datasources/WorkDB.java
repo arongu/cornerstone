@@ -10,6 +10,10 @@ import org.slf4j.LoggerFactory;
 import javax.inject.Inject;
 import java.util.Properties;
 
+/**
+ * Extended class of BasicDataSource.
+ * This database is responsible for storing application related information.
+ */
 public class WorkDB extends BasicDataSource {
     private static final Logger logger = LoggerFactory.getLogger(WorkDB.class);
     

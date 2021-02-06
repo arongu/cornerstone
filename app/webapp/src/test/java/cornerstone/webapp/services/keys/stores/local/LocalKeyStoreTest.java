@@ -1,6 +1,6 @@
-package cornerstone.webapp.services.rsa.store.local;
+package cornerstone.webapp.services.keys.stores.local;
 
-import cornerstone.webapp.services.rsa.rotation.KeyPairWithUUID;
+import cornerstone.webapp.services.keys.rotation.KeyPairWithUUID;
 import org.junit.jupiter.api.Test;
 
 import java.security.PublicKey;

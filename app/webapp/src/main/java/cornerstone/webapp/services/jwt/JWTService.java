@@ -1,6 +1,6 @@
 package cornerstone.webapp.services.jwt;
 
-import cornerstone.webapp.services.rsa.store.local.SigningKeySetupException;
+import cornerstone.webapp.services.keys.stores.local.SigningKeySetupException;
 
 import java.util.Map;
 

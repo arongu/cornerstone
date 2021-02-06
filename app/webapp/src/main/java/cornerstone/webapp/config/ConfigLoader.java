@@ -17,12 +17,24 @@ public class ConfigLoader {
     private String keyFile;
     private String confFile;
 
+    /**
+     * Loads the configuration when the application is started.
+     * @param keyFile path of the decryption key file
+     * @param confFile path of the encrypted configuration file
+     */
     public ConfigLoader(final String keyFile, final String confFile) throws IOException {
         this.keyFile = keyFile;
         this.confFile = confFile;
         loadAndDecryptConfig();
     }
 
+    /**
+     * Opens both the keyFile and confFile and decrypts it, then loads the decrypted data into separate Properties.
+     * db_user_properties -- properties of "user" db, which only handles user related data
+     * db_work_properties -- properties of "work" db, which only handles application related data
+     * app_properties     -- properties of cornerstone itself (e.g.: rotation interval, node name etc.)
+     * @throws IOException when the underlying ConfigEncryptDecrypt files to load the keyfile or fails to decrypt the config file.
+     */
     public void loadAndDecryptConfig() throws IOException {
         final SecretKey secretKey   = ConfigEncryptDecrypt.loadAESKeyFromFile(keyFile);
         final Properties properties = ConfigEncryptDecrypt.decryptConfig(secretKey, confFile);
@@ -57,14 +69,23 @@ public class ConfigLoader {
         return confFile;
     }
 
+    /**
+     * @return cornerstone related properties.
+     */
     public Properties getAppProperties() {
         return app_properties;
     }
 
+    /**
+     * @return "work" database related properties.
+     */
     public Properties getWorkDbProperties() {
         return db_work_properties;
     }
 
+    /**
+     * @return "user" database related properties.
+     */
     public Properties getUsersDbProperties() {
         return db_users_properties;
     }

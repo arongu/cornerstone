@@ -1,10 +1,10 @@
-package cornerstone.webapp.services.rsa.rotation;
+package cornerstone.webapp.services.keys.rotation;
 
 import cornerstone.webapp.common.AlignedLogMessages;
 import cornerstone.webapp.common.CommonLogMessages;
-import cornerstone.webapp.services.rsa.store.db.PublicKeyStore;
-import cornerstone.webapp.services.rsa.store.db.PublicKeyStoreException;
-import cornerstone.webapp.services.rsa.store.local.LocalKeyStore;
+import cornerstone.webapp.services.keys.stores.db.PublicKeyStore;
+import cornerstone.webapp.services.keys.stores.db.PublicKeyStoreException;
+import cornerstone.webapp.services.keys.stores.local.LocalKeyStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

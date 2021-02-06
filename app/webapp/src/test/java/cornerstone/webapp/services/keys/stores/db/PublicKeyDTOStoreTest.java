@@ -1,9 +1,9 @@
-package cornerstone.webapp.services.rsa.store.db;
+package cornerstone.webapp.services.keys.stores.db;
 
 import cornerstone.webapp.config.ConfigLoader;
 import cornerstone.webapp.datasources.WorkDB;
-import cornerstone.webapp.services.rsa.common.PublicKeyData;
-import cornerstone.webapp.services.rsa.rotation.KeyPairWithUUID;
+import cornerstone.webapp.services.keys.common.PublicKeyData;
+import cornerstone.webapp.services.keys.rotation.KeyPairWithUUID;
 import org.junit.jupiter.api.*;
 
 import java.io.IOException;

@@ -1,4 +1,4 @@
-package cornerstone.webapp.services.rsa.store.local;
+package cornerstone.webapp.services.keys.stores.local;
 
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;

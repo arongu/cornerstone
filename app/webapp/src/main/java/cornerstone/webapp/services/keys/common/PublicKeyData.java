@@ -1,4 +1,4 @@
-package cornerstone.webapp.services.rsa.common;
+package cornerstone.webapp.services.keys.common;
 
 import java.sql.Timestamp;
 import java.util.UUID;

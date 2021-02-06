@@ -1,14 +1,13 @@
 package cornerstone.webapp.rest.endpoints.pubkeys;
 
 import cornerstone.webapp.rest.error_responses.ErrorResponse;
-import cornerstone.webapp.services.rsa.store.db.PublicKeyStore;
-import cornerstone.webapp.services.rsa.store.db.PublicKeyStoreException;
-import cornerstone.webapp.services.rsa.store.local.LocalKeyStore;
+import cornerstone.webapp.services.keys.stores.db.PublicKeyStore;
+import cornerstone.webapp.services.keys.stores.db.PublicKeyStoreException;
+import cornerstone.webapp.services.keys.stores.local.LocalKeyStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.security.PermitAll;
-import javax.annotation.security.RolesAllowed;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.ws.rs.GET;

@@ -1,4 +1,4 @@
-package cornerstone.webapp.services.rsa.store.log;
+package cornerstone.webapp.services.keys.stores.log;
 
 public class MessageElements {
     // key, keys

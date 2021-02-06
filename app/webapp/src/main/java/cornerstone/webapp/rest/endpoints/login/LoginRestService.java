@@ -7,7 +7,7 @@ import cornerstone.webapp.services.account.management.AccountManager;
 import cornerstone.webapp.services.account.management.AccountResultSet;
 import cornerstone.webapp.services.account.management.exceptions.single.*;
 import cornerstone.webapp.services.jwt.JWTService;
-import cornerstone.webapp.services.rsa.store.local.SigningKeySetupException;
+import cornerstone.webapp.services.keys.stores.local.SigningKeySetupException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

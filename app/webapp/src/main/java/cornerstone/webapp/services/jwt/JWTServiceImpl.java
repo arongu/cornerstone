@@ -3,9 +3,9 @@ package cornerstone.webapp.services.jwt;
 import cornerstone.webapp.common.CommonLogMessages;
 import cornerstone.webapp.config.ConfigLoader;
 import cornerstone.webapp.config.enums.APP_ENUM;
-import cornerstone.webapp.services.rsa.store.local.SigningKeySetup;
-import cornerstone.webapp.services.rsa.store.local.LocalKeyStore;
-import cornerstone.webapp.services.rsa.store.local.SigningKeySetupException;
+import cornerstone.webapp.services.keys.stores.local.SigningKeySetup;
+import cornerstone.webapp.services.keys.stores.local.LocalKeyStore;
+import cornerstone.webapp.services.keys.stores.local.SigningKeySetupException;
 import io.jsonwebtoken.Jwts;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,11 +52,14 @@ public class JWTServiceImpl implements JWTService {
         final long jwtTTL                     = Long.parseLong(properties.getProperty(APP_ENUM.APP_JWT_TTL.key));
         final long now                        = Instant.now().getEpochSecond();
 
-        final Map<String, Object> m = claimsMap != null ? new HashMap<>(claimsMap) : new HashMap<>();
-        m.put("keyId", signingKeySetup.uuid);
+//        final Map<String, Object> headers = new HashMap<>();
+//        headers.put("typ", "JWS");
+        final Map<String, Object> claims = claimsMap != null ? new HashMap<>(claimsMap) : new HashMap<>();
+        claims.put("keyId", signingKeySetup.uuid);
 
         return Jwts.builder()
-                .setClaims     (m)
+                //.setHeader     (headers)
+                .setClaims     (claims)
                 .setIssuer     (properties.getProperty(APP_ENUM.APP_NODE_NAME.key))
                 .setSubject    (subject)
                 .setIssuedAt   (Date.from(Instant.ofEpochSecond(now)))

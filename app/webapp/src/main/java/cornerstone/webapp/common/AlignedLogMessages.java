@@ -2,10 +2,10 @@ package cornerstone.webapp.common;
 
 import cornerstone.webapp.rest.endpoints.login.LoginRestService;
 import cornerstone.webapp.services.account.management.AccountManagerImpl;
-import cornerstone.webapp.services.rsa.rotation.KeyRotationTask;
-import cornerstone.webapp.services.rsa.rotation.KeyRotatorImpl;
-import cornerstone.webapp.services.rsa.store.db.PublicKeyStoreImpl;
-import cornerstone.webapp.services.rsa.store.local.LocalKeyStoreImpl;
+import cornerstone.webapp.services.keys.rotation.KeyRotationTask;
+import cornerstone.webapp.services.keys.rotation.KeyRotatorImpl;
+import cornerstone.webapp.services.keys.stores.db.PublicKeyStoreImpl;
+import cornerstone.webapp.services.keys.stores.local.LocalKeyStoreImpl;
 
 import java.nio.CharBuffer;
 import java.util.HashMap;

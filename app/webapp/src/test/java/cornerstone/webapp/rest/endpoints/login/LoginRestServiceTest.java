@@ -12,9 +12,9 @@ import cornerstone.webapp.services.account.management.exceptions.single.NoAccoun
 import cornerstone.webapp.services.account.management.exceptions.single.UnverifiedEmailException;
 import cornerstone.webapp.services.jwt.JWTService;
 import cornerstone.webapp.services.jwt.JWTServiceImpl;
-import cornerstone.webapp.services.rsa.rotation.KeyPairWithUUID;
-import cornerstone.webapp.services.rsa.store.local.LocalKeyStore;
-import cornerstone.webapp.services.rsa.store.local.LocalKeyStoreImpl;
+import cornerstone.webapp.services.keys.rotation.KeyPairWithUUID;
+import cornerstone.webapp.services.keys.stores.local.LocalKeyStore;
+import cornerstone.webapp.services.keys.stores.local.LocalKeyStoreImpl;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 

@@ -1,4 +1,4 @@
-package cornerstone.webapp.services.rsa.store.db;
+package cornerstone.webapp.services.keys.stores.db;
 
 public class PublicKeyStoreException extends Exception {
     public PublicKeyStoreException(){

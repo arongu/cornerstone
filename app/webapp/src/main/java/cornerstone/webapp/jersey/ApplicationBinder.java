@@ -8,12 +8,12 @@ import cornerstone.webapp.services.account.management.AccountManager;
 import cornerstone.webapp.services.account.management.AccountManagerImpl;
 import cornerstone.webapp.services.jwt.JWTService;
 import cornerstone.webapp.services.jwt.JWTServiceImpl;
-import cornerstone.webapp.services.rsa.rotation.KeyRotator;
-import cornerstone.webapp.services.rsa.rotation.KeyRotatorImpl;
-import cornerstone.webapp.services.rsa.store.db.PublicKeyStore;
-import cornerstone.webapp.services.rsa.store.db.PublicKeyStoreImpl;
-import cornerstone.webapp.services.rsa.store.local.LocalKeyStore;
-import cornerstone.webapp.services.rsa.store.local.LocalKeyStoreImpl;
+import cornerstone.webapp.services.keys.rotation.KeyRotator;
+import cornerstone.webapp.services.keys.rotation.KeyRotatorImpl;
+import cornerstone.webapp.services.keys.stores.db.PublicKeyStore;
+import cornerstone.webapp.services.keys.stores.db.PublicKeyStoreImpl;
+import cornerstone.webapp.services.keys.stores.local.LocalKeyStore;
+import cornerstone.webapp.services.keys.stores.local.LocalKeyStoreImpl;
 import org.glassfish.hk2.api.Immediate;
 import org.glassfish.jersey.internal.inject.AbstractBinder;
 import org.slf4j.Logger;
@@ -22,6 +22,12 @@ import org.slf4j.LoggerFactory;
 import javax.inject.Singleton;
 import java.io.IOException;
 
+/**
+ * ApplicationBinder is an extension of AbstractBinder.
+ * Responsible of bootstrapping the web application:
+ *  - loads the configuration
+ *  - creates all the singleton services used by the application
+ */
 public class ApplicationBinder extends AbstractBinder {
     private static final Logger logger = LoggerFactory.getLogger(ConfigLoader.class);
 
@@ -32,6 +38,9 @@ public class ApplicationBinder extends AbstractBinder {
     private String keyFile;
     private String confFile;
 
+    /**
+     * If KEY_FILE environment variable is set, try to load the key file from there.
+     */
     private void setKeyFileFromEnv() {
         keyFile = System.getProperty(ConfigDefaults.SYSTEM_PROPERTY_KEY_FILE);
         if (null != keyFile) {
@@ -44,6 +53,9 @@ public class ApplicationBinder extends AbstractBinder {
         }
     }
 
+    /**
+     * If CONF_FILE environment variable is set, try to load the conf file from there.
+     */
     private void setConfFileFromEnv() {
         confFile = System.getProperty(ConfigDefaults.SYSTEM_PROPERTY_CONF_FILE);
         if (null != confFile) {
@@ -64,7 +76,7 @@ public class ApplicationBinder extends AbstractBinder {
         try {
             // REGISTER ALL NON        @Path ANNOTATED CLASSES HERE !!!
             // DO NOT RELY ON          @Singleton or @Immediate !!!
-            // THOSE ONLY WORK WELL ON @PATH ANNOTATED CLASSES !!!
+            // THOSE ONLY WORK WELL ON @Path ANNOTATED CLASSES !!!
 
             // create an instance and register it as singleton
             bind(new ConfigLoader(keyFile, confFile)).to(ConfigLoader.class).in(Singleton.class);
