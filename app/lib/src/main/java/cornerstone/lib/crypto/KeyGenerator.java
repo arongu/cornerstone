@@ -20,9 +20,9 @@ public class KeyGenerator {
      * @param salt Salt for password.
      * @param iterationCount Number of iterations to be used.
      * @param keyLength Length of the key.
-     * @return Key to be used for encryption
-     * @throws NoSuchAlgorithmException
-     * @throws InvalidKeySpecException
+     * @return Encryption key.
+     * @throws NoSuchAlgorithmException Thrown when 'PBKDF2WithHmacSHA256' does not exist. Should never happen.
+     * @throws InvalidKeySpecException Thrown when the created secret key is invalid. Check byte lengths.
      */
     public static Key generateKey(final String password,
                                   final String salt,
@@ -35,6 +35,16 @@ public class KeyGenerator {
         return factory.generateSecret(keySpec);
     }
 
+    /**
+     * Generates a new secret key as a byte array.
+     * @param password Password.
+     * @param salt Salt for password.
+     * @param iterationCount Number of iterations to be used.
+     * @param keyLength Length of the key.
+     * @return Encryption key as byte array.
+     * @throws NoSuchAlgorithmException Thrown when 'PBKDF2WithHmacSHA256' does not exist. Should never happen.
+     * @throws InvalidKeySpecException Thrown when the created secret key is invalid. Check byte lengths.
+     */
     public static byte[] generateKeyAsBytes(final String password,
                                             final String salt,
                                             final int iterationCount,
@@ -43,6 +53,16 @@ public class KeyGenerator {
         return  generateKey(password, salt, iterationCount, keyLength).getEncoded();
     }
 
+    /**
+     * Generates a new secret key as a bas64 string.
+     * @param password Password.
+     * @param salt Salt for password.
+     * @param iterationCount Number of iterations to be used.
+     * @param keyLength Length of the key.
+     * @return Encryption key as base64 string.
+     * @throws NoSuchAlgorithmException Thrown when 'PBKDF2WithHmacSHA256' does not exist. Should never happen.
+     * @throws InvalidKeySpecException Thrown when the created secret key is invalid. Check byte lengths.
+     */
     public static String generateKeyAsBase64(final String password,
                                              final String salt,
                                              final int iterationCount,
