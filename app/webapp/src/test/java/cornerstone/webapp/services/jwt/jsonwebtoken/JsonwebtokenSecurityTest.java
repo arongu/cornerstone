@@ -62,25 +62,25 @@ public class JsonwebtokenSecurityTest {
         final String signature      = parsed[2];
 
         // HS
-        final String strHS256           = "{\"alg\":\"HS256\"}";
-        final String strHS384           = "{\"alg\":\"HS384\"}";
-        final String strHS512           = "{\"alg\":\"HS512\"}";
+        final String strHS256           = "{\"typ\":\"JWT\",\"alg\":\"HS256\"}";
+        final String strHS384           = "{\"typ\":\"JWT\",\"alg\":\"HS384\"}";
+        final String strHS512           = "{\"typ\":\"JWT\",\"alg\":\"HS512\"}";
         // ES
-        final String strES256           = "{\"alg\":\"ES256\"}";
-        final String strES384           = "{\"alg\":\"ES384\"}";
-        final String strES512           = "{\"alg\":\"ES512\"}";
+        final String strES256           = "{\"typ\":\"JWT\",\"alg\":\"ES256\"}";
+        final String strES384           = "{\"typ\":\"JWT\",\"alg\":\"ES384\"}";
+        final String strES512           = "{\"typ\":\"JWT\",\"alg\":\"ES512\"}";
         // RS
-        final String strRS256           = "{\"alg\":\"RS256\"}";
-        final String strRS384           = "{\"alg\":\"RS384\"}";
-        final String strRS512           = "{\"alg\":\"RS512\"}";
+        final String strRS256           = "{\"typ\":\"JWT\",\"alg\":\"RS256\"}";
+        final String strRS384           = "{\"typ\":\"JWT\",\"alg\":\"RS384\"}";
+        final String strRS512           = "{\"typ\":\"JWT\",\"alg\":\"RS512\"}";
         // PS
-        final String strPS256           = "{\"alg\":\"PS256\"}";
-        final String strPS384           = "{\"alg\":\"PS384\"}";
-        final String strPS512           = "{\"alg\":\"PS512\"}";
+        final String strPS256           = "{\"typ\":\"JWT\",\"alg\":\"PS256\"}";
+        final String strPS384           = "{\"typ\":\"JWT\",\"alg\":\"PS384\"}";
+        final String strPS512           = "{\"typ\":\"JWT\",\"alg\":\"PS512\"}";
         // custom strings
-        final String headerAlgs         = "{\"algs\":\"PS256\"}";
-        final String headerAlgXXX       = "{\"alg\":\"XXX\"}";
-        final String headerAlgEmpty     = "{\"alg\":\"\"}";
+        final String headerAlgs         = "{\"typ\":\"JWT\",\"algs\":\"PS256\"}";
+        final String headerAlgXXX       = "{\"typ\":\"JWT\",\"alg\":\"XXX\"}";
+        final String headerAlgEmpty     = "{\"typ\":\"JWT\",\"alg\":\"\"}";
 
 
         final Base64.Encoder encoder = Base64.getEncoder();
