@@ -37,12 +37,13 @@ public class ConfigSorter {
      * @param value Value of the key
      * @param props The Properties object which the key/value will be added.
      * @param logPrefix Prefix used to make the logs easier to read e.g.: "db_work" or "db_user" or "app".
+     * @param sensitiveValue To prevent password/keys to be leaked into logs the value will be replaced with asterisks if set to true.
      */
-    private static void addKeyValueAndLogIt(final Properties props, final String key, final String value, final String logPrefix) {
+    private static void addKeyValueAndLogIt(final Properties props, final String key, final String value, final String logPrefix, final boolean sensitiveValue) {
         if ( key != null && ! key.isEmpty() && value != null && ! value.isEmpty()) {
             props.setProperty(key, value);
 
-            if ( key.contains("password") || key.contains("key")) {
+            if ( sensitiveValue ) {
                 logger.info(String.format("++ %-15s %-30s = *****", logPrefix, key));
             } else {
                 logger.info(String.format("++ %-15s %-30s = '%s'", logPrefix, key, value));
@@ -67,7 +68,11 @@ public class ConfigSorter {
         properties_db_work = new Properties();
         for ( final DB_WORK_ENUM work_enum : DB_WORK_ENUM.values()) {
             if ( null != rawProperties.get(work_enum.key)) {
-                addKeyValueAndLogIt(properties_db_work, work_enum.key, rawProperties.getProperty(work_enum.key), DB_WORK_ENUM.PREFIX_DB_WORK);
+                addKeyValueAndLogIt(
+                        properties_db_work, work_enum.key,
+                        rawProperties.getProperty(work_enum.key), DB_WORK_ENUM.PREFIX_DB_WORK,
+                        work_enum.sensitiveValue
+                );
 
             } else {
                 logger.error(errorMessage, work_enum.key);
@@ -79,7 +84,11 @@ public class ConfigSorter {
         properties_db_users = new Properties();
         for ( final DB_USERS_ENUM db_users_enum : DB_USERS_ENUM.values()) {
             if ( null != rawProperties.get(db_users_enum.key)) {
-                addKeyValueAndLogIt(properties_db_users, db_users_enum.key, rawProperties.getProperty(db_users_enum.key), DB_USERS_ENUM.PREFIX_DB_USERS);
+                addKeyValueAndLogIt(
+                        properties_db_users, db_users_enum.key,
+                        rawProperties.getProperty(db_users_enum.key), DB_USERS_ENUM.PREFIX_DB_USERS,
+                        db_users_enum.sensitiveValue
+                );
 
             } else {
                 logger.error(errorMessage, db_users_enum.key);
@@ -91,7 +100,11 @@ public class ConfigSorter {
         properties_app = new Properties();
         for ( final APP_ENUM app_enum : APP_ENUM.values()) {
             if ( null != rawProperties.get(app_enum.key)) {
-                addKeyValueAndLogIt(properties_app, app_enum.key, rawProperties.getProperty(app_enum.key), APP_ENUM.PREFIX_APP);
+                addKeyValueAndLogIt(
+                        properties_app, app_enum.key,
+                        rawProperties.getProperty(app_enum.key), APP_ENUM.PREFIX_APP,
+                        app_enum.sensitiveValue
+                );
 
             } else {
                 logger.error(errorMessage, app_enum.key);
