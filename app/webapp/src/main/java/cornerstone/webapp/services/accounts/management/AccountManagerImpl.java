@@ -158,7 +158,7 @@ public class AccountManagerImpl implements AccountManager {
     }
 
     @Override
-    public int create(final String email, final String password, final boolean locked, final boolean verified, final AccountRole accountRole)
+    public int create(final String email, final String password, final boolean locked, final boolean verified, final UserRole accountRole)
             throws CreationException, CreationDuplicateException, CreationNullException {
 
         if (email == null || password == null || accountRole == null) {
@@ -217,10 +217,10 @@ public class AccountManagerImpl implements AccountManager {
                     int role_id;
 
                     try {
-                        role_id = AccountRole.valueOf(role).getId();
+                        role_id = UserRole.valueOf(role).getId();
 
                     } catch (final IllegalArgumentException e) {
-                        role_id = AccountRole.NO_ROLE.getId();
+                        role_id = UserRole.NO_ROLE.getId();
                     }
 
                     ps.setString (1, Crypt.crypt(password));
@@ -417,7 +417,7 @@ public class AccountManagerImpl implements AccountManager {
     }
 
     @Override
-    public int setRole(final String email, final AccountRole accountRole) throws RoleUpdateException {
+    public int setRole(final String email, final UserRole accountRole) throws RoleUpdateException {
         try (final Connection conn = usersDB.getConnection(); final PreparedStatement ps = conn.prepareStatement(SQL_UPDATE_ACCOUNT_ROLE)) {
             ps.setInt(1, accountRole.getId());
             ps.setString(2, email);

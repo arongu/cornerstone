@@ -11,6 +11,11 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
+/**
+ * This mapper is a fail safe, a last resort if any exception falls through that should have been handled in the code!
+ * Returns HTTP 500
+ */
+
 @Singleton
 @Provider
 @Priority(500)

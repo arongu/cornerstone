@@ -44,7 +44,7 @@ public class AccountManagerLoginAndCrudTest {
         final String password        = "miciMacko#";
         final boolean locked         = false;
         final boolean verified       = true;
-        final AccountRole accountRole = AccountRole.USER;
+        final UserRole accountRole = UserRole.USER;
         // results
         final AccountResultSet accountResultSet;
         final int number_of_accounts_created;
@@ -80,7 +80,7 @@ public class AccountManagerLoginAndCrudTest {
         final String password         = "casper#";
         final boolean locked          = false;
         final boolean verified        = false;
-        final AccountRole accountRole = AccountRole.ADMIN;
+        final UserRole accountRole = UserRole.ADMIN;
         // results
         final int number_of_accounts_created;
         final int number_of_accounts_deleted;
@@ -119,7 +119,7 @@ public class AccountManagerLoginAndCrudTest {
         TestHelper.deleteAccount(accountManager, email);
 
 
-        number_of_accounts_created = accountManager.create(email, password, locked, verified, AccountRole.NO_ROLE);
+        number_of_accounts_created = accountManager.create(email, password, locked, verified, UserRole.NO_ROLE);
         accountResultSet           = accountManager.get(email);
         final LockedException e    = assertThrows(LockedException.class, () -> accountManager.login(email, password));
 
@@ -148,7 +148,7 @@ public class AccountManagerLoginAndCrudTest {
         TestHelper.deleteAccount(accountManager, email);
 
 
-        number_of_accounts_created = accountManager.create(email, password, locked, verified, AccountRole.USER);
+        number_of_accounts_created = accountManager.create(email, password, locked, verified, UserRole.USER);
         assertThrows(BadPasswordException.class, () -> accountManager.login(email, bad_password));
         assertThrows(BadPasswordException.class, () -> accountManager.login(email, bad_password));
         final BadPasswordException e = assertThrows(BadPasswordException.class, () -> accountManager.login(email, bad_password));
@@ -181,7 +181,7 @@ public class AccountManagerLoginAndCrudTest {
         TestHelper.deleteAccount(accountManager, email);
 
 
-        number_of_accounts_created        = accountManager.create(email, password, locked, verified, AccountRole.USER);
+        number_of_accounts_created        = accountManager.create(email, password, locked, verified, UserRole.USER);
         account_frist_login               = accountManager.login(email, password);
         assertThrows(BadPasswordException.class, () -> accountManager.login(email, bad_password));
         assertThrows(BadPasswordException.class, () -> accountManager.login(email, bad_password));
@@ -217,7 +217,7 @@ public class AccountManagerLoginAndCrudTest {
         TestHelper.deleteAccount(accountManager, email);
 
 
-        number_of_accounts_created = accountManager.create(email, password, locked, verified, AccountRole.USER);
+        number_of_accounts_created = accountManager.create(email, password, locked, verified, UserRole.USER);
         for (int i = 0; i < MAX_LOGIN_ATTEMPTS_FROM_TEST_CONFIG; i++) {
             assertThrows(BadPasswordException.class, () -> accountManager.login(email, bad_password));
         }
@@ -252,7 +252,7 @@ public class AccountManagerLoginAndCrudTest {
         TestHelper.deleteAccount(accountManager, email);
 
 
-        number_of_accounts_created        = accountManager.create(email, password, locked, verified, AccountRole.USER);
+        number_of_accounts_created        = accountManager.create(email, password, locked, verified, UserRole.USER);
         result_first_login_good_password  = accountManager.login(email, password);
         for (int i = 0; i <= MAX_LOGIN_ATTEMPTS_FROM_TEST_CONFIG; i++) {
             final BadPasswordException e = assertThrows(BadPasswordException.class, () -> accountManager.login(email, bad_password));
@@ -294,7 +294,7 @@ public class AccountManagerLoginAndCrudTest {
         TestHelper.deleteAccount(accountManager, email);
 
 
-        number_of_accounts_created               = accountManager.create(email, password, locked, verified, AccountRole.USER);
+        number_of_accounts_created               = accountManager.create(email, password, locked, verified, UserRole.USER);
         assertThrows(BadPasswordException.class, () -> accountManager.login(email, bad_password));
         assertThrows(BadPasswordException.class, () -> accountManager.login(email, bad_password));
         assertThrows(BadPasswordException.class, () -> accountManager.login(email, bad_password));

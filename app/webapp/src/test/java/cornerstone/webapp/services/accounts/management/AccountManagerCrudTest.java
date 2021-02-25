@@ -50,7 +50,7 @@ public class AccountManagerCrudTest {
         final boolean locked   = false;
         final boolean verified = true;
         final Timestamp ts     = new Timestamp(System.currentTimeMillis());
-        final AccountRole role = AccountRole.USER;
+        final UserRole role = UserRole.USER;
         // results
         final int number_of_accounts_created;
         final AccountResultSet received_account;
@@ -87,7 +87,7 @@ public class AccountManagerCrudTest {
             final String password         = "password";
             final boolean locked          = false;
             final boolean verified        = true;
-            final AccountRole accountRole = AccountRole.USER;
+            final UserRole accountRole = UserRole.USER;
 
             accountManager.create(email, password, locked, verified, accountRole);
         });
@@ -116,7 +116,7 @@ public class AccountManagerCrudTest {
         final String password         = "password";
         final boolean locked          = false;
         final boolean verified        = true;
-        final AccountRole accountRole = AccountRole.SUPER;
+        final UserRole accountRole = UserRole.SUPER;
         // results
         final int number_of_accounts_created;
         final AccountResultSet received_account;
@@ -243,22 +243,22 @@ public class AccountManagerCrudTest {
 
 
         beforeUpdate       = accountManager.get(email);
-        number_of_updates += accountManager.setRole(email, AccountRole.NO_ROLE);
+        number_of_updates += accountManager.setRole(email, UserRole.NO_ROLE);
         afterUpdate1       = accountManager.get(email);
-        number_of_updates += accountManager.setRole(email, AccountRole.USER);
+        number_of_updates += accountManager.setRole(email, UserRole.USER);
         afterUpdate2       = accountManager.get(email);
-        number_of_updates += accountManager.setRole(email, AccountRole.SUPER);
+        number_of_updates += accountManager.setRole(email, UserRole.SUPER);
         afterUpdate3       = accountManager.get(email);
-        number_of_updates += accountManager.setRole(email, AccountRole.ADMIN);
+        number_of_updates += accountManager.setRole(email, UserRole.ADMIN);
         afterUpdate4       = accountManager.get(email);
 
 
         assertEquals(4, number_of_updates);
-        assertEquals(AccountRole.SUPER.getId(), beforeUpdate.role_id);
-        assertEquals(AccountRole.NO_ROLE.getId(), afterUpdate1.role_id);
-        assertEquals(AccountRole.USER.getId(), afterUpdate2.role_id);
-        assertEquals(AccountRole.SUPER.getId(), afterUpdate3.role_id);
-        assertEquals(AccountRole.ADMIN.getId(), afterUpdate4.role_id);
+        assertEquals(UserRole.SUPER.getId(), beforeUpdate.role_id);
+        assertEquals(UserRole.NO_ROLE.getId(), afterUpdate1.role_id);
+        assertEquals(UserRole.USER.getId(), afterUpdate2.role_id);
+        assertEquals(UserRole.SUPER.getId(), afterUpdate3.role_id);
+        assertEquals(UserRole.ADMIN.getId(), afterUpdate4.role_id);
     }
 
     @Test
@@ -282,10 +282,10 @@ public class AccountManagerCrudTest {
         final String email = "blabla@xxx.com";
 
 
-        assertThrows(CreationNullException.class, () -> accountManager.create(email, null, false, true, AccountRole.USER));
-        assertThrows(CreationNullException.class, () -> accountManager.create(null, "password", false, true, AccountRole.USER));
+        assertThrows(CreationNullException.class, () -> accountManager.create(email, null, false, true, UserRole.USER));
+        assertThrows(CreationNullException.class, () -> accountManager.create(null, "password", false, true, UserRole.USER));
         assertThrows(CreationNullException.class, () -> accountManager.create(email, "password", false, true, null));
-        assertThrows(CreationNullException.class, () -> accountManager.create(null, null, false, true, AccountRole.SUPER));
+        assertThrows(CreationNullException.class, () -> accountManager.create(null, null, false, true, UserRole.SUPER));
         assertThrows(CreationNullException.class, () -> accountManager.create(null, null, false, true, null));
 
 

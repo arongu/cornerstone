@@ -8,7 +8,7 @@ import cornerstone.webapp.rest.error_responses.MultiErrorResponse;
 import cornerstone.webapp.services.accounts.management.AccountManager;
 import cornerstone.webapp.services.accounts.management.AccountManagerImpl;
 import cornerstone.webapp.services.accounts.management.AccountResultSet;
-import cornerstone.webapp.services.accounts.management.AccountRole;
+import cornerstone.webapp.services.accounts.management.UserRole;
 import cornerstone.webapp.services.accounts.management.exceptions.multi.MultiCreationException;
 import cornerstone.webapp.services.accounts.management.exceptions.multi.MultiCreationInitialException;
 import cornerstone.webapp.services.accounts.management.exceptions.multi.MultiDeletionException;
@@ -98,7 +98,7 @@ public class AccountManagerRestServiceTest {
         final Timestamp                 email_address_verified_ts = new Timestamp(System.currentTimeMillis() + 1000000);
         final String                    password_hash             = "hash";
         final Timestamp                 password_hash_ts          = account_registration_ts;
-        final AccountRole               accountRole               = AccountRole.USER;
+        final UserRole accountRole               = UserRole.USER;
         final AccountResultSet          accountResultSet          = new AccountResultSet(account_id, account_registration_ts,
                                                                                          account_locked, account_locked_ts,
                                                                                          account_lock_reason, account_login_attempts,
@@ -158,7 +158,7 @@ public class AccountManagerRestServiceTest {
         final AccountManager accountManager                       = Mockito.mock(AccountManagerImpl.class);
         final AccountManagerRestService accountManagerRestService = new AccountManagerRestService(accountManager);
         final AccountEmailPassword accountEmailPassword           = new AccountEmailPassword("user@gmail.com", "password");
-        Mockito.when(accountManager.create(Mockito.anyString(), Mockito.anyString(), Mockito.anyBoolean(), Mockito.anyBoolean(), Mockito.any(AccountRole.class))).thenReturn(1);
+        Mockito.when(accountManager.create(Mockito.anyString(), Mockito.anyString(), Mockito.anyBoolean(), Mockito.anyBoolean(), Mockito.any(UserRole.class))).thenReturn(1);
 
 
         final Response response = accountManagerRestService.create(accountEmailPassword);
@@ -175,7 +175,7 @@ public class AccountManagerRestServiceTest {
         final AccountManager accountManager = Mockito.mock(AccountManagerImpl.class);
         final AccountManagerRestService accountManagerRestService = new AccountManagerRestService(accountManager);
         final AccountEmailPassword accountEmailPassword           = new AccountEmailPassword(mail, password);
-        Mockito.when(accountManager.create(Mockito.anyString(), Mockito.anyString(), Mockito.anyBoolean(), Mockito.anyBoolean(), Mockito.any(AccountRole.class))).thenThrow(new CreationException(mail));
+        Mockito.when(accountManager.create(Mockito.anyString(), Mockito.anyString(), Mockito.anyBoolean(), Mockito.anyBoolean(), Mockito.any(UserRole.class))).thenThrow(new CreationException(mail));
 
 
         final Response response = accountManagerRestService.create(accountEmailPassword);

@@ -8,7 +8,7 @@ import cornerstone.webapp.rest.error_responses.ErrorResponse;
 import cornerstone.webapp.rest.error_responses.MultiErrorResponse;
 import cornerstone.webapp.services.accounts.management.AccountManager;
 import cornerstone.webapp.services.accounts.management.AccountResultSet;
-import cornerstone.webapp.services.accounts.management.AccountRole;
+import cornerstone.webapp.services.accounts.management.UserRole;
 import cornerstone.webapp.services.accounts.management.exceptions.multi.MultiCreationException;
 import cornerstone.webapp.services.accounts.management.exceptions.multi.MultiCreationInitialException;
 import cornerstone.webapp.services.accounts.management.exceptions.multi.MultiDeletionException;
@@ -95,7 +95,7 @@ public class AccountManagerRestService {
                     accountEmailPassword.getEmail().toLowerCase().trim(),
                     accountEmailPassword.getPassword().trim(),
                     false, false,
-                    AccountRole.USER
+                    UserRole.USER
             );
 
             return Response.status(Response.Status.CREATED).header("Location", "/accounts/" + accountEmailPassword.getEmail()).build();

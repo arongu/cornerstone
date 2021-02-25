@@ -23,6 +23,13 @@ public class Cornerstone extends ResourceConfig {
         ServiceLocatorUtilities.enableImmediateScope(serviceLocator);
         packages("cornerstone.webapp");
         register(RolesAllowedDynamicFeature.class);
+        // security register filters
+
+// TODO: commented out, using annotations
+//        register(new AuthenticationFilter());
+//        register(new AuthorizationFilter());
+
+        // register ApplicationBinder
         register(new ApplicationBinder());
     }
 }
