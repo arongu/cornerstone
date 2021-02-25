@@ -17,19 +17,12 @@ import javax.inject.Inject;
  * https://stackoverflow.com/questions/18914130/when-to-use-singleton-annotation-of-jersey
  * https://stackoverflow.com/questions/45625925/what-exactly-is-the-resourceconfig-class-in-jersey-2
 */
-public class Cornerstone extends ResourceConfig {
+public class Boot extends ResourceConfig {
     @Inject
-    public Cornerstone(final ServiceLocator serviceLocator) {
+    public Boot(final ServiceLocator serviceLocator) {
         ServiceLocatorUtilities.enableImmediateScope(serviceLocator);
         packages("cornerstone.webapp");
-        register(RolesAllowedDynamicFeature.class);
-        // security register filters
-
-// TODO: commented out, using annotations
-//        register(new AuthenticationFilter());
-//        register(new AuthorizationFilter());
-
-        // register ApplicationBinder
-        register(new ApplicationBinder());
+        register(RolesAllowedDynamicFeature.class); // this required to the roles annotation to work
+        register(new ApplicationBinder());          // register ApplicationBinder
     }
 }

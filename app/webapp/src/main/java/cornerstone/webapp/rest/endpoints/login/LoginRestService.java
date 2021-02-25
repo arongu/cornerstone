@@ -27,9 +27,9 @@ import java.util.Map;
  * Does not require authentication.
  * Creates a signed JWT token and sends it back to the user.
  */
-@Singleton
 @PermitAll
 @Path("/login")
+@Singleton
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 public class LoginRestService {
@@ -54,7 +54,7 @@ public class LoginRestService {
 
         final AccountResultSet accountResultSet;
         try {
-             accountResultSet = accountManager.login(accountEmailPassword.getEmail(), accountEmailPassword.getPassword());
+            accountResultSet = accountManager.login(accountEmailPassword.getEmail(), accountEmailPassword.getPassword());
 
         } catch (final LockedException | UnverifiedEmailException | NoAccountException | BadPasswordException | RetrievalException e) {
             final ErrorResponse errorResponse;
