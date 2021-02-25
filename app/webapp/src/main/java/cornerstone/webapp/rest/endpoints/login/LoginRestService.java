@@ -44,6 +44,7 @@ public class LoginRestService {
         this.JWTService = JWTService;
     }
 
+    @PermitAll
     @POST
     public Response login(final AccountEmailPassword accountEmailPassword) throws SigningKeysException {
         if ( accountEmailPassword == null || accountEmailPassword.getEmail() == null || accountEmailPassword.getPassword() == null ) {

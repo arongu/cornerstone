@@ -1,7 +1,7 @@
 package cornerstone.webapp.security;
 
 import cornerstone.webapp.services.keys.stores.local.LocalKeyStore;
-import cornerstone.webapp.services.keys.stores.local.SigningKeysException;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.Jwts;
 import org.slf4j.Logger;
@@ -22,6 +22,10 @@ import javax.ws.rs.ext.Provider;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.security.PublicKey;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
 
 @Provider
 @Priority(Priorities.AUTHENTICATION)
@@ -29,28 +33,12 @@ public class AuthenticationFilter implements ContainerRequestFilter {
     private static final Logger logger = LoggerFactory.getLogger(AuthenticationFilter.class);
     public static final String STR_BEARER = "Bearer ";
 
-    // Messages
-    // Service
-    public static final String MSG_LOCAL_KEYSTORE_SERVICE_IS_NULL              = "LocalKeystore service is null!";
-    // Annotation
-
-    // Header
-    public static final String MSG_AUTHORIZATION_HEADER_IS_NOT_SET             = "HTTP Header " + HttpHeaders.AUTHORIZATION + " is not set!";
+    public static final String MSG_LOCAL_KEYSTORE_SERVICE_IS_NULL = "LocalKeystore service is null!";
+    public static final String MSG_LOCAL_KEYSTORE_ERROR = "LocalKeystore error during signing key retrieval: '%s'";
+    public static final String MSG_AUTHORIZATION_HEADER_IS_NOT_SET = "HTTP Header " + HttpHeaders.AUTHORIZATION + " is not set!";
     public static final String MSG_AUTHORIZATION_STRING_MUST_START_WITH_BEARER = "HTTP Header " + HttpHeaders.AUTHORIZATION + " must start with '" + STR_BEARER + "' received: '%s'!";
 
-    /**
-     * Preliminary check for HTTP Authorization header
-     * @param authorizationHeader the value of the Authorization Header
-     * @throws IOException Throws IOException when header string is null or does not start with STR_BEARER ('Bearer ')
-     */
-    private static void checkAuthorizationHeader(final String authorizationHeader) throws IOException {
-        if ( authorizationHeader == null) {
-            throw new IOException(MSG_AUTHORIZATION_HEADER_IS_NOT_SET);
-        }
-
-        if ( authorizationHeader.startsWith(STR_BEARER)) {
-            throw new IOException(String.format(MSG_AUTHORIZATION_STRING_MUST_START_WITH_BEARER, HTTP_HEADER_AUTHORIZATION_STRING));
-        }
+    public AuthenticationFilter() {
     }
 
     @Context
@@ -59,42 +47,63 @@ public class AuthenticationFilter implements ContainerRequestFilter {
     @Inject
     private LocalKeyStore localKeyStore;
 
+    private static String getJwsFromRequestContext(final ContainerRequestContext containerRequestContext) throws FilterException {
+        final String authorizationHeader = containerRequestContext.getHeaderString(HttpHeaders.AUTHORIZATION);
+        if (authorizationHeader == null) {
+            throw new FilterException(MSG_AUTHORIZATION_HEADER_IS_NOT_SET);
+        }
+
+        if (! authorizationHeader.startsWith(STR_BEARER)) {
+            throw new FilterException(String.format(MSG_AUTHORIZATION_STRING_MUST_START_WITH_BEARER, authorizationHeader));
+        }
+
+        return authorizationHeader.substring(STR_BEARER.length());
+    }
+
+    private static UUID getKeyIdFromJWS(final String jws) throws FilterException {
+        final Claims claims = Jwts.parserBuilder().build().parseClaimsJws(jws).getBody();
+        return UUID.fromString(String.valueOf(claims.get("keyId")));
+    }
+
     @Override
     public void filter(final ContainerRequestContext containerRequestContext) throws IOException {
         final Method method = resourceInfo.getResourceMethod();
+        if ( method != null) {
+            logger.info("noooooooooooooooooooot noooooooooooooooooooooooooooooot");
+        }
+        //@DenyAll -> deny
         if (method.isAnnotationPresent(DenyAll.class)) {
-            throw new IOException("DenyAll annotation present!");
+            throw new FilterException("DENIED -- @DenyAll");
         }
 
-        if (method.isAnnotationPresent(PermitAll.class)) {
-            if (method.isAnnotationPresent(RolesAllowed.class)) {
+        if (method.isAnnotationPresent(PermitAll.class)){
+            logger.info("pppppppppppppppppppppppppppppreeeeeeeeeeeeeeeeeeeeeesent");
+        }
+        //@PermitAll -> chek if @RolesAllowed is not set -> allow
+        if (method.isAnnotationPresent(PermitAll.class) && !method.isAnnotationPresent(RolesAllowed.class)) {
+            return;
+        }
 
+        //@RolesAllowed
+        if (method.isAnnotationPresent(RolesAllowed.class)) {
+            final String jws = getJwsFromRequestContext(containerRequestContext);
+            final UUID keyId = getKeyIdFromJWS(jws);
+
+            if (localKeyStore == null) {
+                throw new FilterException(MSG_LOCAL_KEYSTORE_SERVICE_IS_NULL);
+            }
+
+            PublicKey publicKey = localKeyStore.getPublicKey(keyId);
+            final JwtParser jwtParser = Jwts.parserBuilder().setSigningKey(publicKey).build();
+            final Claims claims = jwtParser.parseClaimsJws(jws).getBody();
+
+            final RolesAllowed rolesAnnotation = method.getAnnotation(RolesAllowed.class);
+            Set<String> rolesSet = new HashSet<String>(Arrays.asList(rolesAnnotation.value()));
+            if(rolesSet.contains(String.valueOf(claims.get("role")))){
+                return;
             }
         }
 
-        switch (method) {
-            case
-        }
+        throw new FilterException("DENIED -- ALL RULES EXHAUSTED");
     }
-
-/*
-        final String HTTP_HEADER_AUTHORIZATION_STRING = containerRequestContext.getHeaderString(HttpHeaders.AUTHORIZATION);
-        checkAuthorizationHeader(HTTP_HEADER_AUTHORIZATION_STRING);
-
-
-
-        if ( localKeyStore == null ) {
-            throw new IOException(MSG_LOCAL_KEYSTORE_SERVICE_IS_NULL);
-        }
-
-        try {
-            final PublicKey publicKey = localKeyStore.getSigningKeys().publicKey;
-            final JwtParser jwtParser = Jwts.parserBuilder().setSigningKey(publicKey).build();
-            jwtParser.parse(HTTP_HEADER_AUTHORIZATION_STRING.substring(STR_BEARER.length()));
-
-
-        } catch (final SigningKeysException signingKeysException) {
-            throw new IOException(signingKeysException.getMessage());
-        }
-    }*/
 }
