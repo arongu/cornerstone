@@ -65,6 +65,15 @@ public class AuthenticationFilter implements ContainerRequestFilter {
         return UUID.fromString(String.valueOf(claims.get("keyId")));
     }
 
+    /*
+    TODO
+        - method annotation should override class level annotation
+        - tidy up
+        - 1 single method for sanity check, run it when not @PermitAll, fail if one of the services are missing
+        - create methods to do the dirty work
+        - Write TCS to test annotations works as they should
+        - add logging, access log IP and reason of DENY/APPROVE
+     */
     @Override
     public void filter(final ContainerRequestContext containerRequestContext) throws IOException {
         final Method method = resourceInfo.getResourceMethod();

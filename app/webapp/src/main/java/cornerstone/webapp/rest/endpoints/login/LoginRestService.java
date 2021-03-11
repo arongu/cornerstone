@@ -44,6 +44,7 @@ public class LoginRestService {
         this.JWTService = JWTService;
     }
 
+    // TODO remove @PermitAll
     @PermitAll
     @POST
     public Response login(final AccountEmailPassword accountEmailPassword) throws SigningKeysException {

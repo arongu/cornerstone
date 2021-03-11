@@ -65,7 +65,7 @@ public class AccountManagerRestServiceTest {
     }
 
     @Test
-    public void searchAddressShould_shouldReturnErrorResponseWith503_whenAccountManagerThrowsEmailAddressSearchException() throws AccountSearchException {
+    public void searchAddress_shouldReturnErrorResponseWith503_whenAccountManagerThrowsEmailAddressSearchException() throws AccountSearchException {
         final AccountManager            accountManager            = Mockito.mock(AccountManagerImpl.class);
         final AccountManagerRestService accountManagerRestService = new AccountManagerRestService(accountManager);
         final AccountSearch             accountSearch             = new AccountSearch();
