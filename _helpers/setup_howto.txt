@@ -37,24 +37,30 @@ live:
 
 
 ===================================================================================
+# Before you migrate make sure that the postgres user used by flyway is set!
+# This user must have admin access to create the schemas and databases !
+-------------------------------------------------
+su root -> su postgres -> psql
+ALTER USER postgres PASSWORD '<PSQL PASSWORD>';
+-------------------------------------------------
 # Migrate the database, migration will take care of the rest!
-# Migration creates the tables, functions, triggers etc. and also sets the app user's permissions!
-# There are to profiles for this: live and dev .
+# Migration creates the databases, schemas, tables, functions, triggers etc. and also sets the app user's permissions!
+# There are two profiles for this: live and dev .
 # The properties of each profile are read from .m2/settings.xml
-# An example .m2/settings.xml can be found under __dev_files/m2 with these profiles.
+# An example .m2/settings.xml can be found under _helpers/m2 with these profiles.
 # Copy it under your home dir, ~/.m2/ and edit it to match the desired configuration!
 ===================================================================================
 # Remember to use the same settings when encrypting the data for cornerstone!
 ===================================================================================
     To migrate the users db:
-        cornerston/db/db_users
+        cornerstone/db/db_users
         dev:
             mvn flyway:migrate -Pdev
         live:
             mvn flyway:migrate -Plive
 
     To migrate the work db:
-        cornerston/db/work
+        cornerstone/db/work
         dev:
             mvn flyway:migrate -Pdev
         live:
