@@ -15,7 +15,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Stores the private, public key of the node, and alsoc caches public keys from other nodes.
+ * Stores the private, public key of the node, and also caches public keys from other nodes.
  */
 public class LocalKeyStoreImpl implements LocalKeyStore {
     private static final Logger logger = LoggerFactory.getLogger(LocalKeyStoreImpl.class);
