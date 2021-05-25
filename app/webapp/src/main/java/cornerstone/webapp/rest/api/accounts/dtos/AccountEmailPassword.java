@@ -1,4 +1,4 @@
-package cornerstone.webapp.rest.endpoints.accounts.dtos;
+package cornerstone.webapp.rest.api.accounts.dtos;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

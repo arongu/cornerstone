@@ -13,6 +13,7 @@ import java.util.NoSuchElementException;
 import java.util.UUID;
 
 public class SigningKeyResolverImpl implements SigningKeyResolver {
+    // TODO add logs
     private static final Logger logger = LoggerFactory.getLogger(SigningKeyResolverImpl.class);
     private final LocalKeyStore localKeyStore;
 

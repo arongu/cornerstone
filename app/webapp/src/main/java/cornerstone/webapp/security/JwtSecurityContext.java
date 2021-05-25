@@ -4,14 +4,18 @@ import cornerstone.webapp.services.accounts.management.UserRole;
 
 import javax.ws.rs.core.SecurityContext;
 import java.security.Principal;
+import java.util.Collections;
+import java.util.Set;
 
-public class TokenSecurityContext implements SecurityContext {
-    private final UserPrincipal userPrincipal;
+public class JwtSecurityContext implements SecurityContext {
+    private final PrincipalImpl userPrincipal;
+    private final Set<UserRole> userRoles;
     private final boolean secure;
 
-    public TokenSecurityContext(final UserPrincipal userPrincipal, final boolean secure) {
+    public JwtSecurityContext(final PrincipalImpl userPrincipal, final boolean secure, final Set<UserRole> userRoles) {
         this.userPrincipal = userPrincipal;
-        this.secure = secure;
+        this.userRoles     = Collections.unmodifiableSet(userRoles);
+        this.secure        = secure;
     }
 
     @Override
@@ -21,7 +25,7 @@ public class TokenSecurityContext implements SecurityContext {
 
     @Override
     public boolean isUserInRole(final String s) {
-        return userPrincipal.getUserRoles().contains(UserRole.valueOf(s));
+        return userRoles.contains(UserRole.valueOf(s));
     }
 
     @Override

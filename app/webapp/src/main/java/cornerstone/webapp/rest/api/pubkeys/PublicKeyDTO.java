@@ -1,4 +1,4 @@
-package cornerstone.webapp.rest.endpoints.pubkeys;
+package cornerstone.webapp.rest.api.pubkeys;
 
 public class PublicKeyDTO {
     private String pubkey;

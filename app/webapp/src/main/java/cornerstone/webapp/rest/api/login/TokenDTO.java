@@ -1,4 +1,4 @@
-package cornerstone.webapp.rest.endpoints.login;
+package cornerstone.webapp.rest.api.login;
 
 public class TokenDTO {
     private String token;

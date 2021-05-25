@@ -1,7 +1,7 @@
-package cornerstone.webapp.rest.endpoints.login;
+package cornerstone.webapp.rest.api.login;
 
 import cornerstone.webapp.logmsg.AlignedLogMessages;
-import cornerstone.webapp.rest.endpoints.accounts.dtos.AccountEmailPassword;
+import cornerstone.webapp.rest.api.accounts.dtos.AccountEmailPassword;
 import cornerstone.webapp.rest.error_responses.ErrorResponse;
 import cornerstone.webapp.services.accounts.management.AccountManager;
 import cornerstone.webapp.services.accounts.management.AccountResultSet;

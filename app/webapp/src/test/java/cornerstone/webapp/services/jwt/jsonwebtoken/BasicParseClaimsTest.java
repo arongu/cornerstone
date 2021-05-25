@@ -23,7 +23,7 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class jsonwebtokenBasicTest {
+public class BasicParseClaimsTest {
     private static ConfigLoader configLoader;
     private static LocalKeyStore localKeyStore;
 

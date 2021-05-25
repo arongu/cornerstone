@@ -1,4 +1,4 @@
-package cornerstone.webapp.rest.endpoints.accounts.dtos;
+package cornerstone.webapp.rest.api.accounts.dtos;
 
 public class AccountSetup {
     private String  email;

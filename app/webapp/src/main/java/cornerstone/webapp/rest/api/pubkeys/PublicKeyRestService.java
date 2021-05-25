@@ -1,4 +1,4 @@
-package cornerstone.webapp.rest.endpoints.pubkeys;
+package cornerstone.webapp.rest.api.pubkeys;
 
 import cornerstone.webapp.rest.error_responses.ErrorResponse;
 import cornerstone.webapp.services.keys.stores.db.PublicKeyStore;

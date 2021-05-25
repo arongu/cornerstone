@@ -15,7 +15,7 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class jsonwebtokenTimeTest {
+public class ExpirationTest {
     private static KeyPairWithUUID keyPairWithUUID;
 
     @BeforeAll

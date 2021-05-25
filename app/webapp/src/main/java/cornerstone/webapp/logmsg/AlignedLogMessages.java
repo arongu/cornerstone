@@ -1,6 +1,6 @@
 package cornerstone.webapp.logmsg;
 
-import cornerstone.webapp.rest.endpoints.login.LoginRestService;
+import cornerstone.webapp.rest.api.login.LoginRestService;
 import cornerstone.webapp.services.accounts.management.AccountManagerImpl;
 import cornerstone.webapp.services.keys.rotation.KeyRotationTask;
 import cornerstone.webapp.services.keys.rotation.KeyRotatorImpl;

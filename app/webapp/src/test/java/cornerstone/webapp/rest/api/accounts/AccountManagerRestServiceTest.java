@@ -1,8 +1,8 @@
-package cornerstone.webapp.rest.endpoints.accounts;
+package cornerstone.webapp.rest.api.accounts;
 
-import cornerstone.webapp.rest.endpoints.accounts.dtos.AccountEmailPassword;
-import cornerstone.webapp.rest.endpoints.accounts.dtos.AccountSearch;
-import cornerstone.webapp.rest.endpoints.accounts.dtos.AccountSetup;
+import cornerstone.webapp.rest.api.accounts.dtos.AccountEmailPassword;
+import cornerstone.webapp.rest.api.accounts.dtos.AccountSearch;
+import cornerstone.webapp.rest.api.accounts.dtos.AccountSetup;
 import cornerstone.webapp.rest.error_responses.ErrorResponse;
 import cornerstone.webapp.rest.error_responses.MultiErrorResponse;
 import cornerstone.webapp.services.accounts.management.AccountManager;

@@ -1,4 +1,4 @@
-package cornerstone.webapp.rest.endpoints.pubkeys;
+package cornerstone.webapp.rest.api.pubkeys;
 
 import cornerstone.webapp.rest.error_responses.ErrorResponse;
 import cornerstone.webapp.services.keys.rotation.KeyPairWithUUID;
@@ -31,7 +31,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
     getLiveKeyUUIDs - 500 error       DONE
  */
 
-public class PublicKeyDTORestServiceTest {
+public class PublicKeyRestServiceTest {
     // getPublicKey - 200
     @Test
     public void getPublicKey__shouldReturnKeyWith_200_OK__whenKeyExists() {

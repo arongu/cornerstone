@@ -5,7 +5,7 @@ import cornerstone.webapp.logmsg.CommonLogMessages;
 import cornerstone.webapp.configuration.ConfigLoader;
 import cornerstone.webapp.configuration.enums.APP_ENUM;
 import cornerstone.webapp.datasources.UsersDB;
-import cornerstone.webapp.rest.endpoints.accounts.dtos.AccountSetup;
+import cornerstone.webapp.rest.api.accounts.dtos.AccountSetup;
 import cornerstone.webapp.services.accounts.management.exceptions.multi.MultiCreationException;
 import cornerstone.webapp.services.accounts.management.exceptions.multi.MultiCreationInitialException;
 import cornerstone.webapp.services.accounts.management.exceptions.multi.MultiDeletionException;
