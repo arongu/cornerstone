@@ -1,6 +1,7 @@
 package cornerstone.webapp.security;
 
 import cornerstone.webapp.services.accounts.management.UserRole;
+import io.jsonwebtoken.Claims;
 
 import javax.ws.rs.core.SecurityContext;
 import java.security.Principal;
@@ -8,11 +9,17 @@ import java.util.Collections;
 import java.util.Set;
 
 public class JwtSecurityContext implements SecurityContext {
-    private final PrincipalImpl userPrincipal;
+    private final Principal userPrincipal;
     private final Set<UserRole> userRoles;
+    private final Claims claims;
     private final boolean secure;
 
-    public JwtSecurityContext(final PrincipalImpl userPrincipal, final boolean secure, final Set<UserRole> userRoles) {
+    public JwtSecurityContext(final boolean secure,
+                              final Principal userPrincipal,
+                              final Set<UserRole> userRoles,
+                              final Claims claims) {
+
+        this.claims        = claims;
         this.userPrincipal = userPrincipal;
         this.userRoles     = Collections.unmodifiableSet(userRoles);
         this.secure        = secure;
@@ -36,5 +43,9 @@ public class JwtSecurityContext implements SecurityContext {
     @Override
     public String getAuthenticationScheme() {
         return "Bearer";
+    }
+
+    public Claims getClaims() {
+        return claims;
     }
 }
