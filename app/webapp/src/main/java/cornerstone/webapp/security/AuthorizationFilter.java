@@ -22,6 +22,20 @@ import java.lang.reflect.Method;
 public class AuthorizationFilter implements ContainerRequestFilter {
     private static final Logger logger = LoggerFactory.getLogger(AuthorizationFilter.class);
 
+    private static final String NO_ANNOTATIONS             = "No annotation present on class or methods, nothing to work with. (Denied)" ;
+    private static final String CLASS_DENY_ALL             = "@DenyAll on class. (Denied)" ;
+    private static final String CLASS_ROLES_ALLOWED_DENY   = "@RolesAllowed on class, but user is not in the allowed roles. (Denied)" ;
+    private static final String CLASS_ROLES_ALLOWED_ALLOW  = "@RolesAllowed, user is in the allowed roles. (Allowed)" ;
+    private static final String CLASS_PERMIT_ALL           = "@PermitAll on class. (Allowed)" ;
+
+    private static final String METHOD_NO_ANNOTATIONS      = "Class level annotations exhausted, and no method level annotation is present.";
+    private static final String METHOD_DENY_ALL            = "@DenyAll on method. (Denied)" ;
+    private static final String METHOD_ROLES_ALLOWED_DENY  = "@RolesAllowed on method, but user is not in the allowed roles. (Denied)" ;
+    private static final String METHOD_ROLES_ALLOWED_ALLOW = "@RolesAllowed, user is in the allowed roles. (Allowed)" ;
+    private static final String METHOD_PERMIT_ALL          = "@PermitAll on class. (Allowed)" ;
+
+    private static final String ALL_EXHAUSTED_DENY         = "All method and class level rules are exhausted, denying by default. (Denied)" ;
+
     @Context
     private ResourceInfo resourceInfo;
 
@@ -32,12 +46,14 @@ public class AuthorizationFilter implements ContainerRequestFilter {
 
         // Deny if no class or method level annotations are present.
         if ( resourceClass.getAnnotations().length == 0 && resourceMethod.getAnnotations().length == 0) {
-            throw new ForbiddenException("No annotation present on class or methods, nothing to work with.");
+            logger.info(NO_ANNOTATIONS);
+            throw new ForbiddenException(NO_ANNOTATIONS);
         }
 
         // -- Class ---------------------------------------------------------------------------------------------
         if ( resourceClass.isAnnotationPresent(DenyAll.class)) {
-            throw new ForbiddenException("@DenyAll on class.");
+            logger.info(CLASS_DENY_ALL);
+            throw new ForbiddenException(CLASS_DENY_ALL);
         }
 
         if (resourceClass.isAnnotationPresent(RolesAllowed.class)) {
@@ -48,25 +64,30 @@ public class AuthorizationFilter implements ContainerRequestFilter {
 
                 for ( final String r : classLevelRolesAllowed) {
                     if ( secContext.isUserInRole(r)) {
+                        logger.info(CLASS_ROLES_ALLOWED_ALLOW);
                         return;
                     }
                 }
             }
 
-            throw new ForbiddenException("@RolesAllowed on class, but user is not in the allowed roles.");
+            logger.info(CLASS_ROLES_ALLOWED_DENY);
+            throw new ForbiddenException(CLASS_ROLES_ALLOWED_DENY);
         }
 
         if ( resourceClass.isAnnotationPresent(PermitAll.class)){
+            logger.info(CLASS_PERMIT_ALL);
             return;
         }
 
         // -- Method ---------------------------------------------------------------------------------------------
         if (resourceMethod.getAnnotations().length == 0) {
-            throw new ForbiddenException("All class level annotations exhausted, and no method level annotations present.");
+            logger.info(METHOD_NO_ANNOTATIONS);
+            throw new ForbiddenException(METHOD_NO_ANNOTATIONS);
         }
 
         if ( resourceMethod.isAnnotationPresent(DenyAll.class)) {
-            throw new ForbiddenException("@DenyAll on method.");
+            logger.info(METHOD_DENY_ALL);
+            throw new ForbiddenException(METHOD_DENY_ALL);
         }
 
         if ( resourceMethod.isAnnotationPresent(RolesAllowed.class)) {
@@ -77,18 +98,22 @@ public class AuthorizationFilter implements ContainerRequestFilter {
 
                 for ( final String r : methodLevelRolesAllowed) {
                     if ( secContext.isUserInRole(r)) {
+                        logger.info(METHOD_ROLES_ALLOWED_ALLOW);
                         return;
                     }
                 }
             }
 
-            throw new ForbiddenException("@RolesAllowed on method, but user is not in the allowed roles.");
+            logger.info(METHOD_ROLES_ALLOWED_DENY);
+            throw new ForbiddenException(METHOD_ROLES_ALLOWED_DENY);
         }
 
         if ( resourceMethod.isAnnotationPresent(PermitAll.class)){
+            logger.info(METHOD_PERMIT_ALL);
             return;
         }
 
-        throw new ForbiddenException("All method and class level rules are exhausted, denying by default.");
+        logger.info(ALL_EXHAUSTED_DENY);
+        throw new ForbiddenException(ALL_EXHAUSTED_DENY);
     }
 }
