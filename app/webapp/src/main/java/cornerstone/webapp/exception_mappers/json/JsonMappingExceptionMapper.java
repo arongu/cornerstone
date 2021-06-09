@@ -1,4 +1,4 @@
-package cornerstone.webapp.rest.exception_mappers.data;
+package cornerstone.webapp.exception_mappers.json;
 
 import com.fasterxml.jackson.databind.JsonMappingException;
 import cornerstone.webapp.rest.error_responses.ErrorResponse;

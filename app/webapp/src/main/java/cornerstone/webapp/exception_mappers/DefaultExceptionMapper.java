@@ -1,4 +1,4 @@
-package cornerstone.webapp.rest.exception_mappers;
+package cornerstone.webapp.exception_mappers;
 
 import cornerstone.webapp.rest.error_responses.ErrorResponse;
 import org.slf4j.Logger;
@@ -19,8 +19,8 @@ import javax.ws.rs.ext.Provider;
 @Singleton
 @Provider
 @Priority(500)
-public class GeneralExceptionMapper implements ExceptionMapper<Exception> {
-    private static final Logger logger = LoggerFactory.getLogger(GeneralExceptionMapper.class);
+public class DefaultExceptionMapper implements ExceptionMapper<Exception> {
+    private static final Logger logger = LoggerFactory.getLogger(DefaultExceptionMapper.class);
     private static final String message = "Unexpected exception caught! class name: '%s', message: '%s'";
 
     @Override

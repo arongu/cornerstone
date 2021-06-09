@@ -1,4 +1,4 @@
-package cornerstone.webapp.rest.exception_mappers.security;
+package cornerstone.webapp.exception_mappers.security;
 
 import cornerstone.webapp.rest.error_responses.ErrorResponse;
 
