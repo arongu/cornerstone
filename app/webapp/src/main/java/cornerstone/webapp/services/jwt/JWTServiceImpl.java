@@ -1,10 +1,10 @@
 package cornerstone.webapp.services.jwt;
 
-import cornerstone.webapp.logmsg.CommonLogMessages;
 import cornerstone.webapp.configuration.ConfigLoader;
 import cornerstone.webapp.configuration.enums.APP_ENUM;
-import cornerstone.webapp.services.keys.stores.local.SigningKeys;
+import cornerstone.webapp.logmsg.CommonLogMessages;
 import cornerstone.webapp.services.keys.stores.local.LocalKeyStore;
+import cornerstone.webapp.services.keys.stores.local.SigningKeys;
 import cornerstone.webapp.services.keys.stores.local.SigningKeysException;
 import io.jsonwebtoken.Header;
 import io.jsonwebtoken.Jwts;
@@ -70,7 +70,7 @@ public class JWTServiceImpl implements JWTService {
 
 
         final Map<String, Object> claims = claimsMap != null ? new HashMap<>(claimsMap) : new HashMap<>();
-        claims.put("keyId", signingKeySetup.uuid);
+        claims.put(JWT_SERVICE_CLAIMS.keyId.name(), signingKeySetup.uuid);
 
         return Jwts.builder()
                 .setHeaderParam(Header.TYPE, Header.JWT_TYPE)

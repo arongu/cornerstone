@@ -3,6 +3,7 @@ package cornerstone.webapp.security.filters;
 import cornerstone.webapp.security.JwtSecurityContext;
 import cornerstone.webapp.security.PrincipalImpl;
 import cornerstone.webapp.services.accounts.management.UserRole;
+import cornerstone.webapp.services.jwt.JWT_SERVICE_CLAIMS;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.Jwts;
@@ -20,14 +21,10 @@ import java.util.Set;
 
 class AuthenticationFilter implements ContainerRequestFilter {
     private static final String BEARER = "Bearer ";
-    private static final String ROLE   = "role"; // should be moved to enum so JWTCreatorService and this can verify
-                                                 // both service use the same "words"
-
     private final JwtParser jwtParser;
-    private SecurityContext securityContext;
 
     private static Set<UserRole> extractUserRoles(final Claims claims) {
-        final String role = claims.get(ROLE).toString();
+        final String role = claims.get(JWT_SERVICE_CLAIMS.role.name()).toString();
         final Set<UserRole> userRoles = new HashSet<>();
 
         try {

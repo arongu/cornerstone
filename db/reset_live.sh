@@ -3,7 +3,7 @@
 rm -v *.sql
 python3 bootstrap_sql_generator.py live
 
-# Bootstrap dev DBs
+# Bootstrap live DBs
 # echo 'db' is the password for the postgres user
 echo 'db' | su -c 'psql -f bootstrap__work.sql' postgres
 echo 'db' | su -c 'psql -f bootstrap__users.sql' postgres
