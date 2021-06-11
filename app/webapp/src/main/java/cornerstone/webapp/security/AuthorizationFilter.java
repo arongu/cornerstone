@@ -17,6 +17,34 @@ import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.ext.Provider;
 import java.lang.reflect.Method;
 
+/*
+!!! IF CLASS LEVEL ANNOTATION IS SET, ALL METHOD LEVEL ANNOTATIONS ARE IGNORED !!!
+Order of strength from top to bottom, lines on top are stronger than lines on bottom.
+
+------------------------------------------------------------------------------------------------------------------------
+Class
+------------------------------------------------------------------------------------------------------------------------
+ANNOTATION       EFFECT        IMPLEMENTATION NOTE
+------------------------------------------------------------------------------------------------------------------------
+no annotation    DENY ALL      DEFAULT            :
+
+@DenyAll         DENY ALL      IF SET STOP/IGNORE : Class level @RolesAllowed, @PermitAll, all method level annotations
+@RolesAllowed    ALLOW ROLES   IF SET STOP/IGNORE : Class level @PermitAll               , all method level annotations
+@PermitAll       PERMIT ALL    IF SET STOP/IGNORE :                                      , all method level annotations
+
+------------------------------------------------------------------------------------------------------------------------
+Method
+------------------------------------------------------------------------------------------------------------------------
+ANNOTATION       EFFECT        IMPLEMENTATION NOTE
+------------------------------------------------------------------------------------------------------------------------
+no annotation    DENY ALL      DEFAULT            :
+
+@DenyAll         DENY ALL      IF SET STOP/IGNORE : Method level @RolesAllowed, @PermitAll
+@RolesAllowed    ALLOW ROLES   IF SET STOP/IGNORE : Method level @PermitAll
+@PermitAll       PERMIT ALL    IF SET STOP/IGNORE :
+
+ */
+
 @Provider
 @Priority(Priorities.AUTHORIZATION)
 public class AuthorizationFilter implements ContainerRequestFilter {
