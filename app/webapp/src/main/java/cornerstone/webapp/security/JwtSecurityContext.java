@@ -32,12 +32,16 @@ public class JwtSecurityContext implements SecurityContext {
 
     @Override
     public boolean isUserInRole(final String s) {
-        return userRoles.contains(UserRole.valueOf(s));
+        if ( userRoles != null ) {
+            return userRoles.contains(UserRole.valueOf(s));
+        }
+
+        return false;
     }
 
     @Override
     public boolean isSecure() {
-        return secure;
+        return this.secure;
     }
 
     @Override

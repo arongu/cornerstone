@@ -78,7 +78,7 @@ class AuthenticationFilter implements ContainerRequestFilter {
             userRoles = null;
         }
 
-        final SecurityContext securityContext = new JwtSecurityContext(secure, principal, userRoles, claims);
-        containerRequestContext.setSecurityContext(securityContext);
+        final SecurityContext sc = new JwtSecurityContext(secure, principal, userRoles, claims);
+        containerRequestContext.setSecurityContext(sc);
     }
 }
