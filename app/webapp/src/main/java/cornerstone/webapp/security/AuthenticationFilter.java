@@ -54,6 +54,7 @@ class AuthenticationFilter implements ContainerRequestFilter {
     public void filter(final ContainerRequestContext containerRequestContext) throws IOException {
         final String authorizationHeader = containerRequestContext.getHeaderString(HttpHeaders.AUTHORIZATION);
         final boolean secure             = containerRequestContext.getSecurityContext().isSecure();
+
         Principal principal;
         Claims claims;
         Set<UserRole> userRoles;
