@@ -17,7 +17,6 @@ import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.ext.Provider;
-import java.io.IOException;
 import java.security.Principal;
 import java.util.HashSet;
 import java.util.Set;
@@ -51,7 +50,7 @@ class AuthenticationFilter implements ContainerRequestFilter {
     }
 
     @Override
-    public void filter(final ContainerRequestContext containerRequestContext) throws IOException {
+    public void filter(final ContainerRequestContext containerRequestContext) {
         final String authorizationHeader = containerRequestContext.getHeaderString(HttpHeaders.AUTHORIZATION);
         final boolean secure             = containerRequestContext.getSecurityContext().isSecure();
 
