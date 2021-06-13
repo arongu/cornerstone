@@ -80,6 +80,13 @@ public class AuthorizationFilter implements ContainerRequestFilter {
     @Context
     private ResourceInfo resourceInfo;
 
+    public AuthorizationFilter() {
+    }
+
+    public AuthorizationFilter(final ResourceInfo resourceInfo) {
+        this.resourceInfo = resourceInfo;
+    }
+
     @Override
     public void filter(final ContainerRequestContext containerRequestContext) throws RuntimeException {
         final Class<?> clazz = resourceInfo.getResourceClass();
