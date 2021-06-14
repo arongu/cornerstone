@@ -2,6 +2,7 @@ package cornerstone.webapp.security;
 
 import cornerstone.webapp.services.accounts.management.UserRole;
 import io.jsonwebtoken.Claims;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
@@ -22,20 +23,52 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 @ExtendWith(MockitoExtension.class)
 public class AuthorizationFilterRolesAllowedTest {
+    private static Class clazz;
+    private static Method method;
+
+    // test class annotations
     @RolesAllowed({"ADMIN"})
     @PermitAll
     public static class FilterMe {
-        @DenyAll
+        @PermitAll
         public void toBeFiltered() {
         }
     }
 
+
+    @BeforeAll
+    public static void beforeAll() throws NoSuchMethodException {
+        clazz  = FilterMe.class;
+        method = FilterMe.class.getMethod("toBeFiltered");
+    }
+
     @Test
-    void filter_shouldIgnorePermitAllAndShouldNotThrowException_whenRolesAllowedAnnotationIsSetToAdminAndUserRolesContainsAdmin() throws NoSuchMethodException {
-        // method, class initialization to avoid NullPointerException, for some reason it fails when Mockito does it
-        final Class clazz   = FilterMe.class;
-        final Method method = FilterMe.class.getMethod("toBeFiltered");
-        // mocking ResourceInfo
+    void CLASS_LEVEL__filter__RolesAllowedAdmin_shouldNotThrowExceptionWhenUserInAdminRole() {
+        final ResourceInfo resourceInfo = Mockito.mock(ResourceInfo.class);
+        Mockito.when(resourceInfo.getResourceClass()).thenReturn(clazz);
+        Mockito.when(resourceInfo.getResourceMethod()).thenReturn(method);
+
+        // prepare security context
+        final boolean isSecure        = false;
+        final Claims claims           = null;
+        final Principal principal     = new PrincipalImpl(UserRole.ADMIN.name());
+        final Set<UserRole> userRoles = new HashSet<>();
+        userRoles.add(UserRole.ADMIN);
+
+        // SecurityContext, ContainerRequestContext
+        final ContainerRequestContext containerRequestContext = Mockito.mock(ContainerRequestContext.class);
+        final SecurityContext securityContext                 = new JwtSecurityContext(isSecure, principal, userRoles, claims);
+        Mockito.when(containerRequestContext.getSecurityContext()).thenReturn(securityContext);
+
+
+        assertDoesNotThrow(() -> {
+            final AuthorizationFilter authorizationFilter = new AuthorizationFilter(resourceInfo);
+            authorizationFilter.filter(containerRequestContext);
+        });
+    }
+
+    @Test
+    void filter_shouldIgnorePermitAllAndMethodLevelDenyAllAndShouldNotThrowException_whenRolesAllowedAnnotationIsSetToAdminAndUserRolesContainsAdmin() {
         final ResourceInfo resourceInfo = Mockito.mock(ResourceInfo.class);
         Mockito.when(resourceInfo.getResourceClass()).thenReturn(clazz);
         Mockito.when(resourceInfo.getResourceMethod()).thenReturn(method);
