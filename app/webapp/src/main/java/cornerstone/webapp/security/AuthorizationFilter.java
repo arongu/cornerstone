@@ -7,6 +7,7 @@ import javax.annotation.Priority;
 import javax.annotation.security.DenyAll;
 import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.ForbiddenException;
 import javax.ws.rs.Priorities;
 import javax.ws.rs.container.ContainerRequestContext;
@@ -16,6 +17,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.ext.Provider;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 
 /*
 !!! IF CLASS LEVEL ANNOTATION IS SET, ALL METHOD LEVEL ANNOTATIONS ARE IGNORED !!!
@@ -42,8 +44,7 @@ no annotation    DENY ALL      DEFAULT            :
 @DenyAll         DENY ALL      IF SET STOP/IGNORE : Method level @RolesAllowed, @PermitAll
 @RolesAllowed    ALLOW ROLES   IF SET STOP/IGNORE : Method level @PermitAll
 @PermitAll       PERMIT ALL    IF SET STOP/IGNORE :
-
- */
+*/
 
 @Provider
 @Priority(Priorities.AUTHORIZATION)
@@ -51,19 +52,19 @@ public class AuthorizationFilter implements ContainerRequestFilter {
     private static final Logger logger = LoggerFactory.getLogger(AuthorizationFilter.class);
 
     // Early
-    private static final String NO_ANNOTATIONS             = "No annotation present on class or methods, nothing to work with. (Denied)" ;
+    private static final String NO_ANNOTATIONS             = "DENIED - %s -  No annotations are present on class or methods.";
     // Class
-    private static final String CLASS_DENY_ALL             = "@DenyAll on class. (Denied)" ;
-    private static final String CLASS_ROLES_ALLOWED_DENY   = "@RolesAllowed on class, but user is not in the allowed roles. (Denied)" ;
-    private static final String CLASS_ROLES_ALLOWED_ALLOW  = "@RolesAllowed, user is in the allowed roles. (Allowed)" ;
-    private static final String CLASS_PERMIT_ALL           = "@PermitAll on class. (Allowed)" ;
+    private static final String CLASS_DENY_ALL             = "DENIED - %s - @DenyAll (CLASS)";
+    private static final String CLASS_ROLES_ALLOWED_DENY   = "DENIED - %s -  @RolesAllowed (CLASS): %s, user is not in the allowed roles.";
+    private static final String CLASS_ROLES_ALLOWED_ALLOW  = "ALLOWED - {} - @RolesAllowed (CLASS): {}.";
+    private static final String CLASS_PERMIT_ALL           = "ALLOWED - {} - @PermitAll (CLASS)";
     // Method
-    private static final String METHOD_DENY_ALL            = "@DenyAll on method. (Denied)" ;
-    private static final String METHOD_ROLES_ALLOWED_DENY  = "@RolesAllowed on method, but user is not in the allowed roles. (Denied)" ;
-    private static final String METHOD_ROLES_ALLOWED_ALLOW = "@RolesAllowed, user is in the allowed roles. (Allowed)" ;
-    private static final String METHOD_PERMIT_ALL          = "@PermitAll on class. (Allowed)" ;
+    private static final String METHOD_DENY_ALL            = "DENIED - %s - @DenyAll (METHOD)";
+    private static final String METHOD_ROLES_ALLOWED_DENY  = "DENIED - %s - @RolesAllowed (METHOD): %s, user is not in the allowed roles.";
+    private static final String METHOD_ROLES_ALLOWED_ALLOW = "ALLOWED - {} - @RolesAllowed (METHOD): {}, user is in the allowed roles.";
+    private static final String METHOD_PERMIT_ALL          = "ALLOWED - %s - @PermitAll (METHOD)";
     // Default
-    private static final String ALL_EXHAUSTED_DENY         = "All method and class level rules are exhausted, denying by default. (Denied)" ;
+    private static final String ALL_EXHAUSTED_DENY         = "DENIED - %s - All class and method level rules are exhausted.";
 
     private static boolean isThereAnAllowedRoleInSecurityContext(final String[] rolesFromAnnotation, final SecurityContext securityContext) {
         if ( rolesFromAnnotation != null && rolesFromAnnotation.length > 0) {
@@ -80,6 +81,9 @@ public class AuthorizationFilter implements ContainerRequestFilter {
     @Context
     private ResourceInfo resourceInfo;
 
+    @Context
+    HttpServletRequest servletRequest;
+
     public AuthorizationFilter() {
     }
 
@@ -87,45 +91,56 @@ public class AuthorizationFilter implements ContainerRequestFilter {
         this.resourceInfo = resourceInfo;
     }
 
+    public AuthorizationFilter(final ResourceInfo resourceInfo, final HttpServletRequest servletRequest) {
+        this.resourceInfo = resourceInfo;
+        this.servletRequest = servletRequest;
+    }
+
     @Override
     public void filter(final ContainerRequestContext containerRequestContext) throws RuntimeException {
-        final Class<?> clazz = resourceInfo.getResourceClass();
-        final Method method  = resourceInfo.getResourceMethod();
+        final Class<?> clazz                  = resourceInfo.getResourceClass();
+        final Method method                   = resourceInfo.getResourceMethod();
+        final SecurityContext securityContext = containerRequestContext.getSecurityContext();
+        final String userName                 = securityContext.getUserPrincipal() != null ? securityContext.getUserPrincipal().getName() : "anonymous";
 
         // -- Early deny, if no annotation is present.
         if ( clazz.getAnnotations().length == 0 && method.getAnnotations().length == 0) {
-            logger.info(NO_ANNOTATIONS);
-            throw new ForbiddenException(NO_ANNOTATIONS);
+            final String msg = String.format(NO_ANNOTATIONS, userName);
+            logger.info(msg);
+            throw new ForbiddenException(msg);
         }
 
         // -- Class
         if ( clazz.isAnnotationPresent(DenyAll.class)) {
-            logger.info(CLASS_DENY_ALL);
-            throw new ForbiddenException(CLASS_DENY_ALL);
+            final String msg = String.format(CLASS_DENY_ALL, userName);
+            logger.info(msg);
+            throw new ForbiddenException(msg);
         }
 
         if ( clazz.isAnnotationPresent(RolesAllowed.class)) {
             final String[] rolesAllowedOnClass = clazz.getAnnotation(RolesAllowed.class).value();
-            final SecurityContext secContext   = containerRequestContext.getSecurityContext();
 
-            if ( isThereAnAllowedRoleInSecurityContext(rolesAllowedOnClass, secContext)) {
-                logger.info(CLASS_ROLES_ALLOWED_ALLOW);
+
+            if ( isThereAnAllowedRoleInSecurityContext(rolesAllowedOnClass, securityContext)) {
+                logger.info(CLASS_ROLES_ALLOWED_ALLOW, userName, Arrays.toString(rolesAllowedOnClass));
                 return;
             }
 
-            logger.info(CLASS_ROLES_ALLOWED_DENY);
-            throw new ForbiddenException(CLASS_ROLES_ALLOWED_DENY);
+            final String msg = String.format(CLASS_ROLES_ALLOWED_DENY, userName, Arrays.toString(rolesAllowedOnClass));
+            logger.info(msg);
+            throw new ForbiddenException(msg);
         }
 
         if ( clazz.isAnnotationPresent(PermitAll.class)) {
-            logger.info(CLASS_PERMIT_ALL);
+            logger.info(CLASS_PERMIT_ALL, userName);
             return;
         }
 
         // -- Method
         if ( method.isAnnotationPresent(DenyAll.class)) {
-            logger.info(METHOD_DENY_ALL);
-            throw new ForbiddenException(METHOD_DENY_ALL);
+            final String msg = String.format(METHOD_DENY_ALL, userName);
+            logger.info(msg);
+            throw new ForbiddenException(msg);
         }
 
         if ( method.isAnnotationPresent(RolesAllowed.class)) {
@@ -133,21 +148,23 @@ public class AuthorizationFilter implements ContainerRequestFilter {
             final SecurityContext secContext    = containerRequestContext.getSecurityContext();
 
             if ( isThereAnAllowedRoleInSecurityContext(rolesAllowedOnMethod, secContext)) {
-                logger.info(METHOD_ROLES_ALLOWED_ALLOW);
+                logger.info(METHOD_ROLES_ALLOWED_ALLOW, userName, Arrays.toString(rolesAllowedOnMethod));
                 return;
             }
 
-            logger.info(METHOD_ROLES_ALLOWED_DENY);
-            throw new ForbiddenException(METHOD_ROLES_ALLOWED_DENY);
+            final String msg = String.format(METHOD_ROLES_ALLOWED_DENY, userName, Arrays.toString(rolesAllowedOnMethod));
+            logger.info(msg);
+            throw new ForbiddenException(msg);
         }
 
         if ( method.isAnnotationPresent(PermitAll.class)) {
-            logger.info(METHOD_PERMIT_ALL);
+            logger.info(String.format(METHOD_PERMIT_ALL, userName));
             return;
         }
 
         // -- Default
-        logger.info(ALL_EXHAUSTED_DENY);
-        throw new ForbiddenException(ALL_EXHAUSTED_DENY);
+        final String msg = String.format(ALL_EXHAUSTED_DENY, userName);
+        logger.info(msg);
+        throw new ForbiddenException(msg);
     }
 }

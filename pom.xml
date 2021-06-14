@@ -12,6 +12,7 @@
 
     <properties>
         <java.version>11</java.version>
+        <javax.servlet.version>4.0.1</javax.servlet.version>
         <jakarta.version>2.1.6</jakarta.version>
         <jersey.version>2.34</jersey.version>
         <jupiter.version>5.7.2</jupiter.version>
@@ -98,6 +99,13 @@
             </dependency>
 
             <!-- cornerstone/app/webapp -->
+            <!-- javax, servlet -->
+            <dependency>
+                <groupId>javax.servlet</groupId>
+                <artifactId>javax.servlet-api</artifactId>
+                <version>${javax.servlet.version}</version>
+                <scope>provided</scope>
+            </dependency>
             <!-- Jakarta  -->
             <dependency>
                 <groupId>jakarta.ws.rs</groupId>
