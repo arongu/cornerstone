@@ -18,42 +18,44 @@ import java.security.Principal;
 import java.util.HashSet;
 import java.util.Set;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+
 @ExtendWith(MockitoExtension.class)
-public class AuthorizationFilterTest {
+public class AuthorizationFilterRolesAllowedTest {
     @RolesAllowed({"ADMIN"})
     @PermitAll
     public static class FilterMe {
         @DenyAll
         public void toBeFiltered() {
-
         }
     }
 
     @Test
     void filter_shouldIgnorePermitAllAndShouldNotThrowException_whenRolesAllowedAnnotationIsSetToAdminAndUserRolesContainsAdmin() throws NoSuchMethodException {
         // method, class initialization to avoid NullPointerException, for some reason it fails when Mockito does it
-        final Method method = FilterMe.class.getMethod("toBeFiltered");
         final Class clazz   = FilterMe.class;
-
+        final Method method = FilterMe.class.getMethod("toBeFiltered");
         // mocking ResourceInfo
         final ResourceInfo resourceInfo = Mockito.mock(ResourceInfo.class);
         Mockito.when(resourceInfo.getResourceClass()).thenReturn(clazz);
         Mockito.when(resourceInfo.getResourceMethod()).thenReturn(method);
+
         // prepare security context
-        final boolean isSecure                = false;
-        final Claims claims                   = null;
-        final Principal principal             = new PrincipalImpl(UserRole.ADMIN.name());
-        final Set<UserRole> userRoles         = new HashSet<>();
-        userRoles.add(UserRole.USER);
+        final boolean isSecure        = false;
+        final Claims claims           = null;
+        final Principal principal     = new PrincipalImpl(UserRole.ADMIN.name());
+        final Set<UserRole> userRoles = new HashSet<>();
         userRoles.add(UserRole.ADMIN);
 
         // SecurityContext, ContainerRequestContext
         final ContainerRequestContext containerRequestContext = Mockito.mock(ContainerRequestContext.class);
-        final SecurityContext securityContext = new JwtSecurityContext(isSecure, principal, userRoles, claims);
+        final SecurityContext securityContext                 = new JwtSecurityContext(isSecure, principal, userRoles, claims);
         Mockito.when(containerRequestContext.getSecurityContext()).thenReturn(securityContext);
 
 
-        AuthorizationFilter authorizationFilter = new AuthorizationFilter(resourceInfo);
-        authorizationFilter.filter(containerRequestContext);
+        assertDoesNotThrow(() -> {
+            final AuthorizationFilter authorizationFilter = new AuthorizationFilter(resourceInfo);
+            authorizationFilter.filter(containerRequestContext);
+        });
     }
 }
