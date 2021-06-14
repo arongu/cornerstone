@@ -8,9 +8,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import javax.annotation.security.DenyAll;
 import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
+import javax.ws.rs.ForbiddenException;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ResourceInfo;
 import javax.ws.rs.core.SecurityContext;
@@ -20,6 +20,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @ExtendWith(MockitoExtension.class)
 public class AuthorizationFilterRolesAllowedTest {
@@ -51,7 +52,7 @@ public class AuthorizationFilterRolesAllowedTest {
         // prepare security context
         final boolean isSecure        = false;
         final Claims claims           = null;
-        final Principal principal     = new PrincipalImpl(UserRole.ADMIN.name());
+        final Principal principal     = new PrincipalImpl("DrDummy");
         final Set<UserRole> userRoles = new HashSet<>();
         userRoles.add(UserRole.ADMIN);
 
@@ -68,7 +69,7 @@ public class AuthorizationFilterRolesAllowedTest {
     }
 
     @Test
-    void filter_shouldIgnorePermitAllAndMethodLevelDenyAllAndShouldNotThrowException_whenRolesAllowedAnnotationIsSetToAdminAndUserRolesContainsAdmin() {
+    void filter_shouldIgnorePermitAllAndMethodLevelDenyAllAndShouldThrowForbiddenException_whenRolesAllowedAnnotationIsSetToAdminAndUserRoleDoesNotContainAdmin() {
         final ResourceInfo resourceInfo = Mockito.mock(ResourceInfo.class);
         Mockito.when(resourceInfo.getResourceClass()).thenReturn(clazz);
         Mockito.when(resourceInfo.getResourceMethod()).thenReturn(method);
@@ -76,9 +77,9 @@ public class AuthorizationFilterRolesAllowedTest {
         // prepare security context
         final boolean isSecure        = false;
         final Claims claims           = null;
-        final Principal principal     = new PrincipalImpl(UserRole.ADMIN.name());
+        final Principal principal     = new PrincipalImpl("DrDummy");
         final Set<UserRole> userRoles = new HashSet<>();
-        userRoles.add(UserRole.ADMIN);
+        userRoles.add(UserRole.USER);
 
         // SecurityContext, ContainerRequestContext
         final ContainerRequestContext containerRequestContext = Mockito.mock(ContainerRequestContext.class);
@@ -86,7 +87,7 @@ public class AuthorizationFilterRolesAllowedTest {
         Mockito.when(containerRequestContext.getSecurityContext()).thenReturn(securityContext);
 
 
-        assertDoesNotThrow(() -> {
+        assertThrows(ForbiddenException.class, () -> {
             final AuthorizationFilter authorizationFilter = new AuthorizationFilter(resourceInfo);
             authorizationFilter.filter(containerRequestContext);
         });
