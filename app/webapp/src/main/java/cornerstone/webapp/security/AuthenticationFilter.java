@@ -58,6 +58,7 @@ class AuthenticationFilter implements ContainerRequestFilter {
     @Override
     public void filter(final ContainerRequestContext containerRequestContext) throws IOException {
         logger.info("............................ AUT ATU ATUAUTAu");
+        logger.error("assssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss");
 
         final String authorizationHeader;
         // security context elements:

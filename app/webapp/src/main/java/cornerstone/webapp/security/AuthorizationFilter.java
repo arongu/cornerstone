@@ -7,7 +7,7 @@ import javax.annotation.Priority;
 import javax.annotation.security.DenyAll;
 import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
-import javax.servlet.http.HttpServletRequest;
+//import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.ForbiddenException;
 import javax.ws.rs.Priorities;
 import javax.ws.rs.container.ContainerRequestContext;
@@ -83,17 +83,17 @@ public class AuthorizationFilter implements ContainerRequestFilter {
     @Context
     private ResourceInfo resourceInfo;
 
-    @Context
-    private HttpServletRequest httpServletRequest;
+//    @Context
+//    private HttpServletRequest httpServletRequest;
 
     public AuthorizationFilter(final ResourceInfo resourceInfo) {
         this.resourceInfo = resourceInfo;
     }
 
-    public AuthorizationFilter(final ResourceInfo resourceInfo, final HttpServletRequest httpServletRequest) {
-        this.resourceInfo = resourceInfo;
-        this.httpServletRequest = httpServletRequest;
-    }
+//    public AuthorizationFilter(final ResourceInfo resourceInfo, final HttpServletRequest httpServletRequest) {
+//        this.resourceInfo = resourceInfo;
+//        this.httpServletRequest = httpServletRequest;
+//    }
 
     @Override
     public void filter(final ContainerRequestContext containerRequestContext) throws RuntimeException {
@@ -111,6 +111,7 @@ public class AuthorizationFilter implements ContainerRequestFilter {
         }
 
         logger.info("... ...... 1");
+        logger.error("assssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss xxxxxxxxxxxxxxxxxxxxxxxxxx rrr");
 
         // get security context and set user name
         final SecurityContext securityContext = containerRequestContext.getSecurityContext();
