@@ -17,6 +17,7 @@ import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.ext.Provider;
+import java.io.IOException;
 import java.security.Principal;
 import java.util.HashSet;
 import java.util.Set;
@@ -27,57 +28,74 @@ class AuthenticationFilter implements ContainerRequestFilter {
     private static final Logger logger = LoggerFactory.getLogger(AuthenticationFilter.class);
     private static final String BEARER = "Bearer ";
     private static final String INVALID_USER_ROLE_FOR_SUBJECT = "Invalid user role detected in a signed JWT! role: '%s', subject: '%s'!";
-    private final JwtParser jwtParser;
 
+    // TODO this is not a single string, this is a set ! (for future, multiple roles will be available)
+    // SERIOUS issue
     private static Set<UserRole> extractUserRoles(final Claims claims) {
-        final String role = claims.get(JWT_SERVICE_CLAIMS.role.name()).toString();
         final Set<UserRole> userRoles = new HashSet<>();
+        String strRole = "default";
 
         try {
-            final UserRole userRole = UserRole.valueOf(role);
+            strRole                 = claims.get(JWT_SERVICE_CLAIMS.role.name()).toString();
+            final UserRole userRole = UserRole.valueOf(strRole);
             userRoles.add(userRole);
 
         } catch (final IllegalArgumentException | NullPointerException e) {
-            logger.error(String.format(INVALID_USER_ROLE_FOR_SUBJECT, role, claims.getSubject()));
+            logger.error(String.format(INVALID_USER_ROLE_FOR_SUBJECT, strRole, claims.getSubject()));
         }
 
         return userRoles;
     }
 
     @Inject
+    private final SigningKeyResolver signingKeyResolver;
+
     public AuthenticationFilter(final SigningKeyResolver signingKeyResolver) {
-        this.jwtParser = Jwts.parserBuilder().setSigningKeyResolver(signingKeyResolver).build();
+        this.signingKeyResolver = signingKeyResolver;
     }
 
+    //secure, principal, userRoles, claims
     @Override
-    public void filter(final ContainerRequestContext containerRequestContext) {
-        final String authorizationHeader = containerRequestContext.getHeaderString(HttpHeaders.AUTHORIZATION);
-        final boolean secure             = containerRequestContext.getSecurityContext().isSecure();
+    public void filter(final ContainerRequestContext containerRequestContext) throws IOException {
+        logger.info("............................ AUT ATU ATUAUTAu");
 
-        Principal principal;
-        Claims claims;
-        Set<UserRole> userRoles;
+        final String authorizationHeader;
+        // security context elements:
+        boolean secure;
+        final Principal principal;
+        final Set<UserRole> userRoles;
+        final Claims claims;
+
+        if ( containerRequestContext == null ) {
+            throw new IOException("containerRequestContext is null!");
+        }
+
+        authorizationHeader = containerRequestContext.getHeaderString(HttpHeaders.AUTHORIZATION);
+        SecurityContext sc  = containerRequestContext.getSecurityContext();
+        secure              = sc != null && sc.isSecure();
 
         if ( authorizationHeader != null && authorizationHeader.startsWith(BEARER)) {
             try {
-                final String jws = authorizationHeader.substring(BEARER.length());
-                claims           = jwtParser.parseClaimsJwt(jws).getBody();
-                principal        = new PrincipalImpl(claims.getSubject());
-                userRoles        = extractUserRoles(claims);
+                final String jws  = authorizationHeader.substring(BEARER.length());
+                final JwtParser p = Jwts.parserBuilder().setSigningKeyResolver(signingKeyResolver).build();
+
+                claims    = p.parseClaimsJwt(jws).getBody();
+                principal = new PrincipalImpl(claims.getSubject());
+                userRoles = extractUserRoles(claims);
 
             } catch (final Exception e) {
-                claims    = null;
-                principal = null;
-                userRoles = null;
+                throw new IOException(e.getMessage());
             }
 
         } else {
+            principal = new PrincipalImpl("Anonymous");
             claims    = null;
-            principal = null;
-            userRoles = null;
+            userRoles = new HashSet<>();
+            userRoles.add(UserRole.NO_ROLE);
         }
 
-        final SecurityContext sc = new JwtSecurityContext(secure, principal, userRoles, claims);
-        containerRequestContext.setSecurityContext(sc);
+        containerRequestContext.setSecurityContext(
+                new JwtSecurityContext(secure, principal, userRoles, claims)
+        );
     }
 }

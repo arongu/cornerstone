@@ -17,6 +17,7 @@ import cornerstone.webapp.services.accounts.management.exceptions.single.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.security.RolesAllowed;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.ws.rs.*;
@@ -24,6 +25,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.List;
 
+@RolesAllowed({"Admin", "User"})
 @Singleton
 @Path("/accounts")
 //@RolesAllowed("admin")
