@@ -57,10 +57,10 @@
 
         <!-- Webapp -->
         <!-- Serverlet -->
-<!--        <dependency>-->
-<!--            <groupId>javax.servlet</groupId>-->
-<!--            <artifactId>javax.servlet-api</artifactId>-->
-<!--        </dependency>-->
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+        </dependency>
         <!-- Jakarta  -->
         <dependency>
             <groupId>jakarta.ws.rs</groupId>

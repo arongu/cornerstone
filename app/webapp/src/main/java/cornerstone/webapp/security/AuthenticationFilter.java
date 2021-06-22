@@ -48,7 +48,10 @@ class AuthenticationFilter implements ContainerRequestFilter {
     }
 
     @Inject
-    private final SigningKeyResolver signingKeyResolver;
+    private SigningKeyResolver signingKeyResolver;
+
+    public AuthenticationFilter() {
+    }
 
     public AuthenticationFilter(final SigningKeyResolver signingKeyResolver) {
         this.signingKeyResolver = signingKeyResolver;

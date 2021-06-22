@@ -110,11 +110,11 @@
 
             <!-- cornerstone/app/webapp -->
             <!--  Serverlet -->
-<!--            <dependency>-->
-<!--                <groupId>javax.servlet</groupId>-->
-<!--                <artifactId>javax.servlet-api</artifactId>-->
-<!--                <version>${javax.serverlet.version}</version>-->
-<!--            </dependency>-->
+            <dependency>
+                <groupId>javax.servlet</groupId>
+                <artifactId>javax.servlet-api</artifactId>
+                <version>${javax.serverlet.version}</version>
+            </dependency>
             <!-- Jakarta  -->
             <dependency>
                 <groupId>jakarta.ws.rs</groupId>
