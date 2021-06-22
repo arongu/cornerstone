@@ -54,7 +54,7 @@ public class AuthorizationFilter implements ContainerRequestFilter {
 
     // Early
     private static final String NO_ANNOTATIONS             = "DENIED - %s -  No annotations are present on class or methods.";
-    private static final String NO_ANNOTATIONS_2           = "requester:xmail.com src:127.0.0.1:4212 method:GET, uri:/live/keys, access:DENIED, reason:No annotations are present on class or methods.";
+    //private static final String NO_ANNOTATIONS_2           = "requester:xmail.com src:127.0.0.1:4212 method:GET, uri:/live/keys, access:DENIED, reason:No annotations are present on class or methods.";
     // Class
     private static final String CLASS_DENY_ALL             = "DENIED - %s - @DenyAll (CLASS)";
     private static final String CLASS_ROLES_ALLOWED_DENY   = "DENIED - %s -  @RolesAllowed (CLASS): %s, user is not in the allowed roles.";

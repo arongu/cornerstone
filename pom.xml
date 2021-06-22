@@ -11,14 +11,24 @@
     <packaging>pom</packaging>
 
     <properties>
+        <!-- Java -->
         <java.version>11</java.version>
-        <javax.servlet.version>4.0.1</javax.servlet.version>
+
+        <!-- Serverlet -->
+        <javax.serverlet.version>4.0.1</javax.serverlet.version>
+
+        <!-- Jersey -->
         <jakarta.version>2.1.6</jakarta.version>
         <jersey.version>2.34</jersey.version>
-        <jupiter.version>5.7.2</jupiter.version>
+
+        <!-- JJWT -->
         <jjwt.version>0.11.2</jjwt.version>
+
+        <!-- Testing -->
+        <jupiter.version>5.7.2</jupiter.version>
         <mockito.version>3.10.0</mockito.version>
 
+        <!-- Maven -->
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -99,12 +109,11 @@
             </dependency>
 
             <!-- cornerstone/app/webapp -->
-            <!-- javax, servlet -->
+            <!--  Serverlet -->
 <!--            <dependency>-->
 <!--                <groupId>javax.servlet</groupId>-->
 <!--                <artifactId>javax.servlet-api</artifactId>-->
-<!--                <version>${javax.servlet.version}</version>-->
-<!--                <scope>provided</scope>-->
+<!--                <version>${javax.serverlet.version}</version>-->
 <!--            </dependency>-->
             <!-- Jakarta  -->
             <dependency>
