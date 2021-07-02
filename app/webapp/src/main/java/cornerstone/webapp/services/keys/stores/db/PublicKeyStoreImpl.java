@@ -1,8 +1,7 @@
 package cornerstone.webapp.services.keys.stores.db;
 
-import cornerstone.webapp.logmsg.AlignedLogMessages;
-import cornerstone.webapp.logmsg.CommonLogMessages;
 import cornerstone.webapp.datasources.WorkDB;
+import cornerstone.webapp.logmsg.CommonLogMessages;
 import cornerstone.webapp.services.keys.common.PublicKeyData;
 import cornerstone.webapp.services.keys.stores.logging.MessageElements;
 import org.slf4j.Logger;
@@ -61,21 +60,12 @@ public class PublicKeyStoreImpl implements PublicKeyStore {
             ps.setInt(3, ttl);
             ps.setString(4, base64_key);
 
-            final String logMsg = String.format(
-                    AlignedLogMessages.FORMAT__OFFSET_35C_35C_C_STR,
-                    AlignedLogMessages.OFFSETS_ALIGNED_CLASSES.get(getClass().getName()),
-                    MessageElements.PREFIX_DB + MessageElements.ADDED, MessageElements.PUBLIC_KEY, uuid
-            );
-
+            final String logMsg = MessageElements.PREFIX_DB + " " + MessageElements.ADDED + " " + MessageElements.PUBLIC_KEY + " " + uuid;
             logger.info(logMsg);
             return ps.executeUpdate();
 
         } catch (final SQLException e) {
-            final String errorLog = String.format("%s%s",
-                    AlignedLogMessages.OFFSETS_ALIGNED_CLASSES.get(getClass().getName()),
-                    String.format(ERROR_MESSAGE_FAILED_TO_INSERT_PUBLIC_KEY, uuid.toString(), e.getMessage(), e.getSQLState(), e.getErrorCode())
-            );
-
+            final String errorLog = String.format(ERROR_MESSAGE_FAILED_TO_INSERT_PUBLIC_KEY, uuid.toString(), e.getMessage(), e.getSQLState(), e.getErrorCode());
             logger.error(errorLog);
             throw new PublicKeyStoreException();
         }
@@ -90,21 +80,13 @@ public class PublicKeyStoreImpl implements PublicKeyStore {
     public int deleteKey(final UUID uuid) throws PublicKeyStoreException {
         try (final Connection conn = workDB.getConnection(); final PreparedStatement ps = conn.prepareStatement(SQL_DELETE_PUBLIC_KEY)) {
             ps.setObject(1, uuid);
-            final String logMsg = String.format(
-                    AlignedLogMessages.FORMAT__OFFSET_35C_35C_C_STR,
-                    AlignedLogMessages.OFFSETS_ALIGNED_CLASSES.get(getClass().getName()),
-                    MessageElements.PREFIX_DB + MessageElements.DELETED, MessageElements.PUBLIC_KEY, uuid
-            );
+            final String logMsg = MessageElements.PREFIX_DB + " " + MessageElements.DELETED + " " + MessageElements.PUBLIC_KEY + " " + uuid;
 
             logger.info(logMsg);
             return ps.executeUpdate();
 
         } catch (final SQLException e) {
-            final String errorLog = String.format("%s%s",
-                    AlignedLogMessages.OFFSETS_ALIGNED_CLASSES.get(getClass().getName()),
-                    String.format(ERROR_MESSAGE_FAILED_TO_DELETE_PUBLIC_KEY, uuid.toString(), e.getMessage(), e.getSQLState(), e.getErrorCode())
-            );
-
+            final String errorLog = String.format(ERROR_MESSAGE_FAILED_TO_DELETE_PUBLIC_KEY, uuid.toString(), e.getMessage(), e.getSQLState(), e.getErrorCode());
             logger.error(errorLog);
             throw new PublicKeyStoreException();
         }
@@ -133,33 +115,18 @@ public class PublicKeyStoreImpl implements PublicKeyStore {
                         rs.getString("base64_key")
                 );
 
-                final String logMsg = String.format(
-                        AlignedLogMessages.FORMAT__OFFSET_35C_35C_C_STR,
-                        AlignedLogMessages.OFFSETS_ALIGNED_CLASSES.get(getClass().getName()),
-                        MessageElements.PREFIX_DB + MessageElements.FETCHED, MessageElements.PUBLIC_KEY, keyData
-                );
-
+                final String logMsg = MessageElements.PREFIX_DB + " " + MessageElements.FETCHED + " " + MessageElements.PUBLIC_KEY + " " + keyData;
                 logger.info(logMsg);
                 return keyData;
 
             } else {
-                final String errorLog = String.format(
-                        AlignedLogMessages.FORMAT__OFFSET_35C_35C_C_STR,
-                        AlignedLogMessages.OFFSETS_ALIGNED_CLASSES.get(getClass().getName()),
-                        MessageElements.PREFIX_DB + MessageElements.NO_SUCH,
-                        MessageElements.PUBLIC_KEY, uuid
-                );
-
+                final String errorLog = MessageElements.PREFIX_DB + " " + MessageElements.NO_SUCH + " " + MessageElements.PUBLIC_KEY + " " + uuid;
                 logger.info(errorLog);
                 throw new NoSuchElementException();
             }
 
         } catch (final SQLException e) {
-            final String errorLog = String.format("%s%s",
-                    AlignedLogMessages.OFFSETS_ALIGNED_CLASSES.get(getClass().getName()),
-                    String.format(ERROR_MESSAGE_FAILED_TO_SELECT_PUBLIC_KEY, uuid.toString(), e.getMessage(), e.getSQLState(), e.getErrorCode())
-            );
-
+            final String errorLog = String.format(ERROR_MESSAGE_FAILED_TO_SELECT_PUBLIC_KEY, uuid.toString(), e.getMessage(), e.getSQLState(), e.getErrorCode());
             logger.error(errorLog);
             throw new PublicKeyStoreException();
         }
@@ -189,32 +156,15 @@ public class PublicKeyStoreImpl implements PublicKeyStore {
                 }
             }
 
-            final String logMsg = String.format(
-                    AlignedLogMessages.FORMAT__OFFSET_35C_35C_C_STR,
-                    AlignedLogMessages.OFFSETS_ALIGNED_CLASSES.get(getClass().getName()),
-                    MessageElements.PREFIX_DB + MessageElements.NUMBER_OF_FETCHED,
-                    MessageElements.PUBLIC_KEYS + MessageElements.POSTFIX_LIVE,
-                    keys.size()
-            );
-
-            final String logMsg2 = String.format(
-                    AlignedLogMessages.FORMAT__OFFSET_35C_35C_C_STR,
-                    AlignedLogMessages.OFFSETS_ALIGNED_CLASSES.get(getClass().getName()),
-                    MessageElements.PREFIX_DB + MessageElements.FETCHED,
-                    MessageElements.PUBLIC_KEYS + MessageElements.POSTFIX_LIVE,
-                    keys
-            );
+            final String logMsg  = MessageElements.PREFIX_DB   + " " + MessageElements.NUMBER_OF_FETCHED + " " + MessageElements.PUBLIC_KEYS + " " + MessageElements.POSTFIX_LIVE + " " + keys.size();
+            final String logMsg2 = MessageElements.PUBLIC_KEYS + " " + MessageElements.POSTFIX_LIVE + " " + keys;
 
             logger.info(logMsg);
             logger.info(logMsg2);
             return keys;
 
         } catch (final SQLException e) {
-            final String errorLog = String.format("%s%s",
-                    AlignedLogMessages.OFFSETS_ALIGNED_CLASSES.get(getClass().getName()),
-                    String.format(ERROR_MESSAGE_FAILED_TO_SELECT_ACTIVE_PUBLIC_KEYS, e.getMessage(), e.getSQLState(), e.getErrorCode())
-            );
-
+            final String errorLog = String.format(ERROR_MESSAGE_FAILED_TO_SELECT_ACTIVE_PUBLIC_KEYS, e.getMessage(), e.getSQLState(), e.getErrorCode());
             logger.error(errorLog);
             throw new PublicKeyStoreException();
         }
@@ -231,38 +181,20 @@ public class PublicKeyStoreImpl implements PublicKeyStore {
             final ResultSet rs = ps.executeQuery();
             final List<UUID> uuids = new LinkedList<>();
 
-            if ( rs != null){
+            if ( rs != null) {
                 while (rs.next()){
                     uuids.add((UUID) rs.getObject("uuid"));
                 }
             }
 
-            final String logMsg1 = String.format(
-                    AlignedLogMessages.FORMAT__OFFSET_35C_35C_C_STR,
-                    AlignedLogMessages.OFFSETS_ALIGNED_CLASSES.get(getClass().getName()),
-                    MessageElements.PREFIX_DB + MessageElements.NUMBER_OF_FETCHED,
-                    MessageElements.PUBLIC_KEY_UUIDS + MessageElements.POSTFIX_LIVE,
-                    uuids.size()
-            );
-
-            final String logMsg2 = String.format(
-                    AlignedLogMessages.FORMAT__OFFSET_35C_35C_C_STR,
-                    AlignedLogMessages.OFFSETS_ALIGNED_CLASSES.get(getClass().getName()),
-                    MessageElements.PREFIX_DB + MessageElements.FETCHED,
-                    MessageElements.PUBLIC_KEY_UUIDS + MessageElements.POSTFIX_LIVE,
-                    uuids
-            );
-
+            final String logMsg1 = MessageElements.PREFIX_DB + " " + MessageElements.NUMBER_OF_FETCHED + " " + MessageElements.PUBLIC_KEY_UUIDS + " " + MessageElements.POSTFIX_LIVE + " " + uuids.size();
+            final String logMsg2 = MessageElements.PREFIX_DB + " " + MessageElements.FETCHED           + " " + MessageElements.PUBLIC_KEY_UUIDS + " " + MessageElements.POSTFIX_LIVE + " " + uuids;
             logger.info(logMsg1);
             logger.info(logMsg2);
             return uuids;
 
         } catch (final SQLException e) {
-            final String errorLog = String.format("%s%s",
-                    AlignedLogMessages.OFFSETS_ALIGNED_CLASSES.get(getClass().getName()),
-                    String.format(ERROR_MESSAGE_FAILED_TO_SELECT_EXPIRED_PUBLIC_KEY_UUIDS, e.getMessage(), e.getSQLState(), e.getErrorCode())
-            );
-
+            final String errorLog = String.format(ERROR_MESSAGE_FAILED_TO_SELECT_EXPIRED_PUBLIC_KEY_UUIDS, e.getMessage(), e.getSQLState(), e.getErrorCode());
             logger.error(errorLog);
             throw new PublicKeyStoreException();
         }
@@ -285,32 +217,15 @@ public class PublicKeyStoreImpl implements PublicKeyStore {
                 }
             }
 
-            final String logMsg1 = String.format(
-                    AlignedLogMessages.FORMAT__OFFSET_35C_35C_C_STR,
-                    AlignedLogMessages.OFFSETS_ALIGNED_CLASSES.get(getClass().getName()),
-                    MessageElements.PREFIX_DB + MessageElements.NUMBER_OF_FETCHED,
-                    MessageElements.PUBLIC_KEY_UUIDS + MessageElements.POSTFIX_EXPIRED,
-                    expired_uuids.size()
-            );
-
-            final String logMsg2 = String.format(
-                    AlignedLogMessages.FORMAT__OFFSET_35C_35C_C_STR,
-                    AlignedLogMessages.OFFSETS_ALIGNED_CLASSES.get(getClass().getName()),
-                    MessageElements.PREFIX_DB + MessageElements.FETCHED,
-                    MessageElements.PUBLIC_KEY_UUIDS + MessageElements.POSTFIX_EXPIRED,
-                    expired_uuids
-            );
+            final String logMsg1 = MessageElements.PREFIX_DB + " " + MessageElements.NUMBER_OF_FETCHED + " " + MessageElements.PUBLIC_KEY_UUIDS + " " + MessageElements.POSTFIX_EXPIRED + " " + expired_uuids.size();
+            final String logMsg2 = MessageElements.PREFIX_DB + " " + MessageElements.FETCHED           + " " + MessageElements.PUBLIC_KEY_UUIDS + " " + MessageElements.POSTFIX_EXPIRED + " " + expired_uuids;
 
             logger.info(logMsg1);
             logger.info(logMsg2);
             return expired_uuids;
 
         } catch (final SQLException e) {
-            final String errorLog = String.format("%s%s",
-                    AlignedLogMessages.OFFSETS_ALIGNED_CLASSES.get(getClass().getName()),
-                    String.format(ERROR_MESSAGE_FAILED_TO_SELECT_EXPIRED_PUBLIC_KEY_UUIDS, e.getMessage(), e.getSQLState(), e.getErrorCode())
-            );
-
+            final String errorLog = String.format(ERROR_MESSAGE_FAILED_TO_SELECT_EXPIRED_PUBLIC_KEY_UUIDS, e.getMessage(), e.getSQLState(), e.getErrorCode());
             logger.error(errorLog);
             throw new PublicKeyStoreException();
         }
@@ -325,22 +240,12 @@ public class PublicKeyStoreImpl implements PublicKeyStore {
     public int deleteExpiredKeys() throws PublicKeyStoreException {
         try (final Connection conn = workDB.getConnection(); final PreparedStatement ps = conn.prepareStatement(SQL_DELETE_EXPIRED_PUBLIC_KEYS)) {
             final int deletes = ps.executeUpdate();
-            final String logMsg = String.format(
-                    AlignedLogMessages.FORMAT__OFFSET_35C_35C_C_STR,
-                    AlignedLogMessages.OFFSETS_ALIGNED_CLASSES.get(getClass().getName()),
-                    MessageElements.PREFIX_DB + MessageElements.DELETED,
-                    MessageElements.PUBLIC_KEYS + MessageElements.POSTFIX_EXPIRED, deletes
-            );
-
+            final String logMsg = MessageElements.PREFIX_DB + " " + MessageElements.DELETED + " " + MessageElements.PUBLIC_KEYS + " " + MessageElements.POSTFIX_EXPIRED + " " + deletes;
             logger.info(logMsg);
             return deletes;
 
         } catch (final SQLException e) {
-            final String errorLog = String.format("%s%s",
-                    AlignedLogMessages.OFFSETS_ALIGNED_CLASSES.get(getClass().getName()),
-                    String.format(ERROR_MESSAGE_FAILED_TO_DELETE_EXPIRED_PUBLIC_KEYS, e.getMessage(), e.getSQLState(), e.getErrorCode())
-            );
-
+            final String errorLog = String.format(ERROR_MESSAGE_FAILED_TO_DELETE_EXPIRED_PUBLIC_KEYS, e.getMessage(), e.getSQLState(), e.getErrorCode());
             logger.error(errorLog);
             throw new PublicKeyStoreException();
         }

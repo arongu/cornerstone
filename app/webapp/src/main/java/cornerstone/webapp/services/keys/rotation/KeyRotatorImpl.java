@@ -43,8 +43,8 @@ public class KeyRotatorImpl implements KeyRotator {
         final int jwtTTL               = Integer.parseInt(appProperties.getProperty(APP_ENUM.APP_JWT_TTL.key));
         final long period              = rsaTTL * 1000L;
 
-        final Timer timer = new Timer(getClass().getName());
-        final KeyRotationTask task = new KeyRotationTask(localKeyStore, databasePublicKeyStore, rsaTTL, jwtTTL, nodeName);
+        final Timer timer              = new Timer(getClass().getName());
+        final KeyRotationTask task     = new KeyRotationTask(localKeyStore, databasePublicKeyStore, rsaTTL, jwtTTL, nodeName);
         timer.schedule(task, 0, period);
     }
 }

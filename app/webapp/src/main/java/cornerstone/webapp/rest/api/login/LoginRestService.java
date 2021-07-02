@@ -1,6 +1,5 @@
 package cornerstone.webapp.rest.api.login;
 
-import cornerstone.webapp.logmsg.AlignedLogMessages;
 import cornerstone.webapp.rest.api.accounts.dtos.AccountEmailPassword;
 import cornerstone.webapp.rest.error_responses.ErrorResponse;
 import cornerstone.webapp.services.accounts.management.AccountManager;
@@ -27,16 +26,17 @@ import java.util.Map;
  * Does not require authentication.
  * Creates a signed JWT token and sends it back to the user.
  */
-@PermitAll
 @Path("/login")
 @Singleton
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 public class LoginRestService {
     private static final Logger logger = LoggerFactory.getLogger(LoginRestService.class);
-
     private final AccountManager accountManager;
     private final JWTService JWTService;
+
+    public static final String LOG_MESSAGE_TOKEN_GRANTED = "Token granted for '%s' with claims: '%s'";
+    public static final String LOG_MESSAGE_TOKEN_DENIED  = "Token denied for '%s' with reason: '%s'";
 
     @Inject
     public LoginRestService(final AccountManager accountManager, final JWTService JWTService) {
@@ -44,7 +44,6 @@ public class LoginRestService {
         this.JWTService = JWTService;
     }
 
-    // TODO remove @PermitAll
     @PermitAll
     @POST
     public Response login(final AccountEmailPassword accountEmailPassword) throws SigningKeysException {
@@ -61,14 +60,7 @@ public class LoginRestService {
         } catch (final LockedException | UnverifiedEmailException | NoAccountException | BadPasswordException | RetrievalException e) {
             final ErrorResponse errorResponse;
             final Response.Status responseStatus;
-            final String logMsg;
-
-            logMsg = String.format(
-                    AlignedLogMessages.FORMAT__OFFSET_35C_C_35C_C_STR,
-                    AlignedLogMessages.OFFSETS_ALIGNED_CLASSES.get(getClass().getName()),
-                    "TOKEN DENIED", accountEmailPassword.getEmail(), e.getMessage()
-            );
-
+            final String logMsg = String.format(LOG_MESSAGE_TOKEN_DENIED, accountEmailPassword.getEmail(), e.getMessage());
 
             if ( e instanceof RetrievalException ) {
                 logger.error(logMsg);
@@ -89,11 +81,7 @@ public class LoginRestService {
         claims.put("role", accountResultSet.role_name);
 
         final String jwt = JWTService.createJws(accountEmailPassword.getPassword(), claims);
-        final String logMsg = String.format(
-                AlignedLogMessages.FORMAT__OFFSET_35C_C_35C_C_STR,
-                AlignedLogMessages.OFFSETS_ALIGNED_CLASSES.get(getClass().getName()),
-                "TOKEN GRANTED", accountEmailPassword.getEmail(), claims
-        );
+        final String logMsg = String.format(LOG_MESSAGE_TOKEN_GRANTED, accountEmailPassword.getEmail(), claims);
 
         logger.info(logMsg);
         return Response.status(Response.Status.OK).entity(new TokenDTO(jwt)).build();

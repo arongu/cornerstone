@@ -1,6 +1,5 @@
 package cornerstone.webapp.services.keys.rotation;
 
-import cornerstone.webapp.logmsg.AlignedLogMessages;
 import cornerstone.webapp.logmsg.CommonLogMessages;
 import cornerstone.webapp.services.keys.stores.db.PublicKeyStore;
 import cornerstone.webapp.services.keys.stores.db.PublicKeyStoreException;
@@ -68,11 +67,7 @@ public class KeyRotationTask extends TimerTask {
             publicKeyStore.addKey(kp.uuid, nodeName, rsaTTL + jwtTTL, base64_pub_key);
 
         } catch (final PublicKeyStoreException e) {
-            logger.error(String.format(AlignedLogMessages.FORMAT__OFFSET_STR_STR,
-                    AlignedLogMessages.OFFSETS_ALIGNED_CLASSES.get(getClass().getName()),
-                    "FAILED TO STORE PUBLIC KEY IN DB",
-                    kp.uuid)
-            );
+            logger.error("FAILED TO STORE PUBLIC KEY IN DB " + kp.uuid);
         }
     }
 
@@ -87,10 +82,7 @@ public class KeyRotationTask extends TimerTask {
             localKeyStore.keepOnly(publicKeyStore.getLiveKeyUUIDs());
 
         } catch (final PublicKeyStoreException e) {
-            logger.error(String.format(AlignedLogMessages.FORMAT__OFFSET_STR,
-                    AlignedLogMessages.OFFSETS_ALIGNED_CLASSES.get(getClass().getName()),
-                    "FAILED TO SYNC LOCAL <- DB (KEEPING EVERYTHING IN LOCAL STORE)")
-            );
+            logger.error("FAILED TO SYNC LOCAL <- DB (KEEPING EVERYTHING IN LOCAL STORE)");
         }
     }
 
@@ -103,27 +95,18 @@ public class KeyRotationTask extends TimerTask {
             publicKeyStore.deleteExpiredKeys();
 
         } catch (final PublicKeyStoreException e) {
-            logger.error(String.format(AlignedLogMessages.FORMAT__OFFSET_STR,
-                    AlignedLogMessages.OFFSETS_ALIGNED_CLASSES.get(getClass().getName()),
-                    "FAILED TO DELETE EXPIRED KEYS FROM DB")
-            );
+            logger.error("FAILED TO DELETE EXPIRED KEYS FROM DB");
         }
     }
 
     @Override
     public void run() {
-        logger.info(String.format(AlignedLogMessages.FORMAT__OFFSET_STR,
-                AlignedLogMessages.OFFSETS_ALIGNED_CLASSES.get(getClass().getName()),
-                "(STARTED)  ------------------------------------------------------------------------------------------")
-        );
+        logger.info("(STARTED)  ------------------------------------------------------------------------------------------");
 
         changeLocalKeysThenStorePublicKeyAndItsUUIDinDb();
         cleanUpLocalPublicKeysKeepOnlyActiveKeysFromDb();
         cleanUpDbRemoveExpiredPublicKeys();
 
-        logger.info(String.format(AlignedLogMessages.FORMAT__OFFSET_STR,
-                AlignedLogMessages.OFFSETS_ALIGNED_CLASSES.get(getClass().getName()),
-                "------------------------------------------------------------------------------------------ (FINISHED)")
-        );
+        logger.info("------------------------------------------------------------------------------------------ (FINISHED)");
     }
 }

@@ -1,10 +1,9 @@
 package cornerstone.webapp.services.accounts.management;
 
-import cornerstone.webapp.logmsg.AlignedLogMessages;
-import cornerstone.webapp.logmsg.CommonLogMessages;
 import cornerstone.webapp.configuration.ConfigLoader;
 import cornerstone.webapp.configuration.enums.APP_ENUM;
 import cornerstone.webapp.datasources.UsersDB;
+import cornerstone.webapp.logmsg.CommonLogMessages;
 import cornerstone.webapp.rest.api.accounts.dtos.AccountSetup;
 import cornerstone.webapp.services.accounts.management.exceptions.multi.MultiCreationException;
 import cornerstone.webapp.services.accounts.management.exceptions.multi.MultiCreationInitialException;
@@ -24,20 +23,20 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class AccountManagerImpl implements AccountManager {
-    private static final String CREATED                    = "CREATED";
-    private static final String DELETED                    = "DELETED";
-    private static final String DELETE_NO_ACCOUNT          = "NO ACCOUNT TO DELETE";
-    private static final String EMAIL_ADDRESS_CHANGED      = "EMAIL ADDRESS CHANGED";
-    private static final String LOCKED                     = "LOCKED";
-    private static final String LOGGED_IN                  = "LOGGED IN";
-    private static final String LOGIN_ATTEMPTS_CLEARED     = "LOGIN ATTEMPTS CLEARED";
-    private static final String LOGIN_ATTEMPTS_INCREMENTED = "LOGIN ATTEMPTS INCREMENTED";
-    private static final String LOGIN_FAILED               = "LOGIN FAILED";
-    private static final String PASSWORD_CHANGED           = "PASSWORD CHANGED";
-    private static final String RETRIEVE_NO_ACCOUNT        = "NO ACCOUNT TO RETRIEVE";
-    private static final String RETRIEVED                  = "RETRIEVED";
-    private static final String ROLE_CHANGED               = "ROLE CHANGED";
-    private static final String UNLOCKED                   = "UNLOCKED";
+    private static final String CREATED                    = "CREATED '%s'";
+    private static final String DELETED                    = "DELETED '%s'";
+    private static final String DELETE_NO_ACCOUNT          = "NO ACCOUNT TO DELETE '%s'";
+    private static final String EMAIL_ADDRESS_CHANGED      = "EMAIL ADDRESS CHANGED '%s' -> '%s'";
+    private static final String LOCKED                     = "LOCKED '%s'";
+    private static final String LOGGED_IN                  = "LOGGED IN '%s'";
+    private static final String LOGIN_ATTEMPTS_CLEARED     = "LOGIN ATTEMPTS CLEARED '%s'";
+    private static final String LOGIN_ATTEMPTS_INCREMENTED = "LOGIN ATTEMPTS INCREMENTED '%s'";
+    private static final String LOGIN_FAILED               = "LOGIN FAILED '%s'";
+    private static final String PASSWORD_CHANGED           = "PASSWORD CHANGED '%s'";
+    private static final String RETRIEVE_NO_ACCOUNT        = "NO ACCOUNT TO RETRIEVE '%s'";
+    private static final String RETRIEVED                  = "RETRIEVED '%s'";
+    private static final String ROLE_CHANGED               = "ROLE CHANGED '%s'";
+    private static final String UNLOCKED                   = "UNLOCKED '%s'";
 
     // SQL statements
     private static final String SQL_SELECT_ACCOUNT                                = "SELECT accounts.*, roles.role_name FROM user_data.accounts JOIN user_data.roles ON (accounts.role_id = roles.role_id) WHERE email_address=(?)";
@@ -95,12 +94,7 @@ public class AccountManagerImpl implements AccountManager {
 
             final String logMsg;
             if ( rs.next()) {
-                 logMsg = String.format(
-                         AlignedLogMessages.FORMAT__OFFSET_35C_C_STR,
-                         AlignedLogMessages.OFFSETS_ALIGNED_CLASSES.get(getClass().getName()),
-                         RETRIEVED, email
-                );
-
+                logMsg = String.format(RETRIEVED, email);
                 logger.info(logMsg);
                 return new AccountResultSet(
                         rs.getInt      ("account_id"),
@@ -120,12 +114,7 @@ public class AccountManagerImpl implements AccountManager {
                 );
 
             } else {
-                logMsg = String.format(
-                        AlignedLogMessages.FORMAT__OFFSET_35C_C_STR,
-                        AlignedLogMessages.OFFSETS_ALIGNED_CLASSES.get(getClass().getName()),
-                        RETRIEVE_NO_ACCOUNT, email
-                );
-
+                logMsg = String.format(RETRIEVE_NO_ACCOUNT, email);
                 logger.info(logMsg);
                 throw new NoAccountException(email);
             }
@@ -173,10 +162,7 @@ public class AccountManagerImpl implements AccountManager {
             ps.setInt(5, accountRole.getId());
 
             final int updates = ps.executeUpdate();
-            final String logMsg = String.format(
-                    AlignedLogMessages.FORMAT__OFFSET_35C_C_STR, AlignedLogMessages.OFFSETS_ALIGNED_CLASSES.get(getClass().getName()),
-                    CREATED, email
-            );
+            final String logMsg = String.format(CREATED, email);
 
             logger.info(logMsg);
             return updates;
@@ -230,11 +216,7 @@ public class AccountManagerImpl implements AccountManager {
                     ps.setInt(5, role_id);
 
                     updatedRows += ps.executeUpdate();
-                    final String logMsg = String.format(
-                            AlignedLogMessages.FORMAT__OFFSET_35C_C_STR,
-                            AlignedLogMessages.OFFSETS_ALIGNED_CLASSES.get(getClass().getName()),
-                            CREATED, email
-                    );
+                    final String logMsg = String.format(CREATED, email);
                     logger.info(logMsg);
 
                 } catch (final CreationNullException e) {
@@ -278,23 +260,15 @@ public class AccountManagerImpl implements AccountManager {
     public int delete(final String email) throws DeletionException, NoAccountException {
         try {
             final int deletedRows = executeSqlUpdate(email, SQL_DELETE_ACCOUNT, usersDB);
-            if ( deletedRows > 0) {
-                final String logMsg = String.format(
-                        AlignedLogMessages.FORMAT__OFFSET_35C_C_STR,
-                        AlignedLogMessages.OFFSETS_ALIGNED_CLASSES.get(getClass().getName()),
-                        DELETED, email
-                );
+            final String logMsg;
 
+            if ( deletedRows > 0) {
+                logMsg = String.format(DELETED, email);
                 logger.info(logMsg);
                 return deletedRows;
 
             } else {
-                final String logMsg = String.format(
-                        AlignedLogMessages.FORMAT__OFFSET_35C_C_STR,
-                        AlignedLogMessages.OFFSETS_ALIGNED_CLASSES.get(getClass().getName()),
-                        DELETE_NO_ACCOUNT, email
-                );
-
+                logMsg = String.format(DELETE_NO_ACCOUNT, email);
                 logger.info(logMsg);
                 throw new NoAccountException(email);
             }
@@ -319,21 +293,11 @@ public class AccountManagerImpl implements AccountManager {
 
                     if ( n > 0) {
                         deletedRows += n;
-                        final String logMsg = String.format(
-                                AlignedLogMessages.FORMAT__OFFSET_35C_C_STR,
-                                AlignedLogMessages.OFFSETS_ALIGNED_CLASSES.get(getClass().getName()),
-                                DELETED, email
-                        );
-
+                        final String logMsg = String.format(DELETED, email);
                         logger.info(logMsg);
 
                     } else {
-                        final String logMsg = String.format(
-                                AlignedLogMessages.FORMAT__OFFSET_35C_C_STR,
-                                AlignedLogMessages.OFFSETS_ALIGNED_CLASSES.get(getClass().getName()),
-                                DELETE_NO_ACCOUNT, email
-                        );
-
+                        final String logMsg = String.format(DELETE_NO_ACCOUNT, email);
                         logger.info(logMsg);
                         throw new NoAccountException(email);
                     }
@@ -377,12 +341,7 @@ public class AccountManagerImpl implements AccountManager {
             ps.setString(2, email);
             final int updatedRows = ps.executeUpdate();
 
-            final String logMsg = String.format(
-                    AlignedLogMessages.FORMAT__OFFSET_35C_C_STR,
-                    AlignedLogMessages.OFFSETS_ALIGNED_CLASSES.get(getClass().getName()),
-                    PASSWORD_CHANGED, email
-            );
-
+            final String logMsg = String.format(PASSWORD_CHANGED, email);
             logger.info(logMsg);
             return updatedRows;
 
@@ -400,12 +359,7 @@ public class AccountManagerImpl implements AccountManager {
             ps.setString(2, currentEmail);
             final int updatedRows = ps.executeUpdate();
 
-            final String logMsg = String.format(
-                    AlignedLogMessages.FORMAT__OFFSET_35C_C_STR,
-                    AlignedLogMessages.OFFSETS_ALIGNED_CLASSES.get(getClass().getName()),
-                    EMAIL_ADDRESS_CHANGED, "'" + currentEmail + "' -> '" + newEmail + "'"
-            );
-
+            final String logMsg = String.format(EMAIL_ADDRESS_CHANGED, currentEmail, newEmail);
             logger.info(logMsg);
             return updatedRows;
 
@@ -423,12 +377,7 @@ public class AccountManagerImpl implements AccountManager {
             ps.setString(2, email);
             final int updatedRows = ps.executeUpdate();
 
-            final String logMsg = String.format(
-                    AlignedLogMessages.FORMAT__OFFSET_35C_C_STR,
-                    AlignedLogMessages.OFFSETS_ALIGNED_CLASSES.get(getClass().getName()),
-                    ROLE_CHANGED, email
-            );
-
+            final String logMsg = String.format(ROLE_CHANGED, email);
             logger.info(logMsg);
             return updatedRows;
 
@@ -447,12 +396,7 @@ public class AccountManagerImpl implements AccountManager {
             ps.setString(3, email);
             final int updatedRows = ps.executeUpdate();
 
-            final String logMsg = String.format(
-                    AlignedLogMessages.FORMAT__OFFSET_35C_C_STR,
-                    AlignedLogMessages.OFFSETS_ALIGNED_CLASSES.get(getClass().getName()),
-                    LOCKED, email
-            );
-
+            final String logMsg = String.format(LOCKED, email);
             logger.info(logMsg);
             return updatedRows;
 
@@ -471,17 +415,12 @@ public class AccountManagerImpl implements AccountManager {
             ps.setString(3, email);
             final int updatedRows = ps.executeUpdate();
 
-            final String logMsg = String.format(
-                    AlignedLogMessages.FORMAT__OFFSET_35C_C_STR,
-                    AlignedLogMessages.OFFSETS_ALIGNED_CLASSES.get(getClass().getName()),
-                    UNLOCKED, email
-            );
-
+            final String logMsg = String.format(UNLOCKED, email);
             logger.info(logMsg);
             return updatedRows;
 
         } catch (final SQLException e) {
-            final String errorLog     = String.format(ERROR_LOG_UPDATE_LOCK_FAILED, email, false, "???", e.getMessage(), e.getSQLState());
+            final String errorLog = String.format(ERROR_LOG_UPDATE_LOCK_FAILED, email, false, "???", e.getMessage(), e.getSQLState());
             logger.error(errorLog);
             throw new LockUpdateException(email);
         }
@@ -490,12 +429,7 @@ public class AccountManagerImpl implements AccountManager {
     @Override
     public int incrementLoginAttempts(final String email) throws LoginAttemptsUpdateException {
         try {
-            final String logMsg = String.format(
-                    AlignedLogMessages.FORMAT__OFFSET_35C_C_STR,
-                    AlignedLogMessages.OFFSETS_ALIGNED_CLASSES.get(getClass().getName()),
-                    LOGIN_ATTEMPTS_INCREMENTED, email
-            );
-
+            final String logMsg = String.format(LOGIN_ATTEMPTS_INCREMENTED, email);
             logger.info(logMsg);
             return executeSqlUpdate(email, SQL_UPDATE_LOGIN_ATTEMPTS_INCREMENT, usersDB);
 
@@ -509,11 +443,7 @@ public class AccountManagerImpl implements AccountManager {
     @Override
     public int clearLoginAttempts(final String email) throws LoginAttemptsUpdateException {
         try {
-            final String logMsg = String.format(
-                    AlignedLogMessages.FORMAT__OFFSET_35C_C_STR,
-                    AlignedLogMessages.OFFSETS_ALIGNED_CLASSES.get(getClass().getName()),
-                    LOGIN_ATTEMPTS_CLEARED, email
-            );
+            final String logMsg = String.format(LOGIN_ATTEMPTS_CLEARED, email);
 
             logger.info(logMsg);
             return executeSqlUpdate(email, SQL_UPDATE_LOGIN_ATTEMPTS_CLEAR, usersDB);
@@ -550,12 +480,12 @@ public class AccountManagerImpl implements AccountManager {
                 catch (final LoginAttemptsUpdateException ignored) {}
             }
 
-            final String logMsg = String.format(AlignedLogMessages.FORMAT__OFFSET_35C_C_STR, AlignedLogMessages.OFFSETS_ALIGNED_CLASSES.get(getClass().getName()), LOGGED_IN, email);
+            final String logMsg = String.format(LOGGED_IN, email);
             logger.info(logMsg);
             return accountResultSet;
 
         } else {
-            final String logMsg = String.format(AlignedLogMessages.FORMAT__OFFSET_35C_C_STR, AlignedLogMessages.OFFSETS_ALIGNED_CLASSES.get(getClass().getName()), LOGIN_FAILED, email);
+            final String logMsg = String.format(LOGIN_FAILED, email);
             logger.info(logMsg);
 
             final int maxLoginAttempts = Integer.parseInt(configLoader.getAppProperties().getProperty(APP_ENUM.APP_MAX_LOGIN_ATTEMPTS.key));
