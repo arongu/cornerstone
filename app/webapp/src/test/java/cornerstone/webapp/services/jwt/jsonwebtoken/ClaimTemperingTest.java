@@ -7,7 +7,6 @@ import cornerstone.webapp.services.jwt.JWTServiceImpl;
 import cornerstone.webapp.services.keys.rotation.KeyPairWithUUID;
 import cornerstone.webapp.services.keys.stores.local.LocalKeyStore;
 import cornerstone.webapp.services.keys.stores.local.LocalKeyStoreImpl;
-import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.SignatureException;
 import org.junit.jupiter.api.BeforeAll;
@@ -21,7 +20,6 @@ import java.security.PublicKey;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -57,20 +55,17 @@ public class ClaimTemperingTest {
         final JWTService jwtService = new JWTServiceImpl(configLoader, localKeyStore);
         final Key publicKey         = localKeyStore.getSigningKeys().publicKey;
         final String jws            = jwtService.createJws(subject);
-        final Claims extractClaims  = Jwts.parserBuilder().setSigningKey(publicKey).build().parseClaimsJws(jws).getBody();
-        final UUID uuid             = UUID.fromString((String) extractClaims.get("keyId"));
-
 
         // forging jws
         final KeyPair forgedKeyPair                = new KeyPairWithUUID().keyPair;
         final LocalKeyStore forgedLocalKeyStore    = new LocalKeyStoreImpl();
-        forgedLocalKeyStore.setSigningKeys(uuid, forgedKeyPair.getPrivate(), forgedKeyPair.getPublic());
+        forgedLocalKeyStore.setSigningKeys(localKeyStore.getSigningKeys().uuid, forgedKeyPair.getPrivate(), forgedKeyPair.getPublic());
         // sign with the new forged key, using the original data, and uuid
         final JWTService forgedJwtService          = new JWTServiceImpl(configLoader, forgedLocalKeyStore);
         final String forgedJws                     = forgedJwtService.createJws(subject);
 
 
-        assertEquals(subject, Jwts.parserBuilder().setSigningKey(publicKey).build().parseClaimsJws(jws).getBody().getSubject());
+        assertEquals(subject,                        Jwts.parserBuilder().setSigningKey(publicKey).build().parseClaimsJws(jws).getBody().getSubject());
         assertThrows(SignatureException.class, () -> Jwts.parserBuilder().setSigningKey(publicKey).build().parseClaimsJws(forgedJws).getBody().getSubject());
     }
 

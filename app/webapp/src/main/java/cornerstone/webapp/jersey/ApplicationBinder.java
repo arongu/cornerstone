@@ -93,12 +93,12 @@ public class ApplicationBinder extends AbstractBinder {
             bindAsContract (WorkDB.class).in(Singleton.class);
 
             // implementation -> interface bindings
-            bind(AccountManagerImpl.class).to(AccountManager.class).in(Singleton.class);
-            bind    (JWTServiceImpl.class).to    (JWTService.class).in(Singleton.class);
-            bind (LocalKeyStoreImpl.class).to (LocalKeyStore.class).in(Singleton.class);
-            bind    (KeyRotatorImpl.class).to    (KeyRotator.class).in(Immediate.class);
-            bind(PublicKeyStoreImpl.class).to(PublicKeyStore.class).in(Singleton.class);
-            bind(SigningKeyResolver.class).to(SigningKeyResolverImpl.class).in(Singleton.class);
+            bind    (AccountManagerImpl.class).to    (AccountManager.class).in(Singleton.class);
+            bind        (JWTServiceImpl.class).to        (JWTService.class).in(Singleton.class);
+            bind     (LocalKeyStoreImpl.class).to     (LocalKeyStore.class).in(Singleton.class);
+            bind        (KeyRotatorImpl.class).to        (KeyRotator.class).in(Immediate.class);
+            bind    (PublicKeyStoreImpl.class).to    (PublicKeyStore.class).in(Singleton.class);
+            bind(SigningKeyResolverImpl.class).to(SigningKeyResolver.class).in(Singleton.class);
 
         } catch (final IOException e) {
             throw new RuntimeException(e.getMessage());

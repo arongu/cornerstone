@@ -50,6 +50,7 @@ public class AlgMismatchTest {
         final String subject        = "hellomoto@xmal.com";
         final JWTService jwtService = new JWTServiceImpl(configLoader, localKeyStore);
         final Key publicKey         = localKeyStore.getSigningKeys().publicKey;
+        final String keyId          = localKeyStore.getSigningKeys().uuid.toString();
         final String jws            = jwtService.createJws(subject);
         final String[] parsed       = jws.split("\\.");
         final String payload        = parsed[1];
@@ -66,7 +67,8 @@ public class AlgMismatchTest {
         // RS
         final String strRS256           = "{\"typ\":\"JWT\",\"alg\":\"RS256\"}";
         final String strRS384           = "{\"typ\":\"JWT\",\"alg\":\"RS384\"}";
-        final String strRS512           = "{\"typ\":\"JWT\",\"alg\":\"RS512\"}";
+        //final String strRS512         = "{\"typ\":\"JWT\",\"alg\":\"RS512\"}"; // proof even headers cannot be tempered, keyId - kid is added from JWTServiceImpl
+        final String strRS512           = "{\"typ\":\"JWT\",\"kid\":\"" + keyId + "\",\"alg\":\"RS512\"}";
         // PS
         final String strPS256           = "{\"typ\":\"JWT\",\"alg\":\"PS256\"}";
         final String strPS384           = "{\"typ\":\"JWT\",\"alg\":\"PS384\"}";
@@ -112,6 +114,7 @@ public class AlgMismatchTest {
         // RS512
         assertDoesNotThrow(() -> {
             final String forgedJws = new String(encoder.encode(strRS512.getBytes())) + "." + payload + "." + signature;
+            System.out.println(jws);
             Jwts.parserBuilder().setSigningKey(publicKey).build().parseClaimsJws(forgedJws).getBody().getSubject();
         });
 

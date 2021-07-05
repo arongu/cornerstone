@@ -68,12 +68,10 @@ public class JWTServiceImpl implements JWTService {
         final long jwtTTL                     = Long.parseLong(properties.getProperty(APP_ENUM.APP_JWT_TTL.key));
         final long now                        = Instant.now().getEpochSecond();
 
-
         final Map<String, Object> claims = claimsMap != null ? new HashMap<>(claimsMap) : new HashMap<>();
-        claims.put(JWT_SERVICE_CLAIMS.keyId.name(), signingKeySetup.uuid);
-
         return Jwts.builder()
                 .setHeaderParam(Header.TYPE, Header.JWT_TYPE)
+                .setHeaderParam("kid", signingKeySetup.uuid.toString())
                 .setClaims     (claims)
                 .setIssuer     (properties.getProperty(APP_ENUM.APP_NODE_NAME.key))
                 .setSubject    (subject)

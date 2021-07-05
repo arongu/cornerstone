@@ -15,9 +15,13 @@ import java.util.UUID;
 public class SigningKeyResolverImpl implements SigningKeyResolver {
     // TODO add logs
     private static final Logger logger = LoggerFactory.getLogger(SigningKeyResolverImpl.class);
-    private final LocalKeyStore localKeyStore;
 
     @Inject
+    private LocalKeyStore localKeyStore;
+
+    public SigningKeyResolverImpl() {
+    }
+
     public SigningKeyResolverImpl(final LocalKeyStore localKeyStore) {
         this.localKeyStore = localKeyStore;
     }

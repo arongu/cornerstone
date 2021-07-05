@@ -8,7 +8,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.security.PermitAll;
-import javax.annotation.security.RolesAllowed;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.ws.rs.GET;
@@ -39,7 +38,7 @@ public class PublicKeyRestService {
     private final PublicKeyStore publicKeyStore;
 
     @Inject
-    public PublicKeyRestService(final LocalKeyStore localKeyStore, final PublicKeyStore publicKeyStore){
+    public PublicKeyRestService(final LocalKeyStore localKeyStore, final PublicKeyStore publicKeyStore) {
         this.localKeyStore = localKeyStore;
         this.publicKeyStore = publicKeyStore;
     }
@@ -92,7 +91,6 @@ public class PublicKeyRestService {
 
     @GET
     @Path("uuid/live")
-    @PermitAll // TODO remove me
     @Produces(MediaType.APPLICATION_JSON)
     public Response getLiveKeyUUIDs() {
         try {
@@ -107,7 +105,6 @@ public class PublicKeyRestService {
 
     @GET
     @Path("uuid/expired")
-    @RolesAllowed("USER") // TODO remove me
     @Produces(MediaType.APPLICATION_JSON)
     public Response getExpiredKeyUUIDs() {
         try {

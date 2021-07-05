@@ -53,10 +53,10 @@ public class JWTServiceTest {
         final String strPayload      = new String(decoder.decode(parsed[1]));
 
 
-        assertEquals("{\"typ\":\"JWT\",\"alg\":\"RS512\"}", strHeader);
+        assertEquals("{\"typ\":\"JWT\",\"kid\":\"" + strUuid + "\",\"alg\":\"RS512\"}", strHeader);
         assertTrue(strPayload.contains("\"claimOne\":\"one\""));
         assertTrue(strPayload.contains("\"claimTwo\":2"));
         assertTrue(strPayload.contains("\"claimThree\":3.2"));
-        assertTrue(strPayload.contains("\"keyId\":\"" + strUuid + "\""));
+        assertTrue(strHeader.contains("\"kid\":\"" + strUuid + "\""));
     }
 }

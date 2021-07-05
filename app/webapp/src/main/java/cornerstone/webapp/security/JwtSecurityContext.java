@@ -21,7 +21,7 @@ public class JwtSecurityContext implements SecurityContext {
 
         this.claims        = claims;
         this.userPrincipal = userPrincipal;
-        this.userRoles     = Collections.unmodifiableSet(userRoles);
+        this.userRoles     = userRoles != null ? Collections.unmodifiableSet(userRoles) : null;
         this.secure        = secure;
     }
 
