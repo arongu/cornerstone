@@ -1,8 +1,8 @@
 package cornerstone.webapp.rest.api.pubkeys;
 
 import cornerstone.webapp.rest.error_responses.ErrorResponse;
-import cornerstone.webapp.services.keys.stores.db.PublicKeyStore;
-import cornerstone.webapp.services.keys.stores.db.PublicKeyStoreException;
+import cornerstone.webapp.services.keys.stores.db.DatabaseKeyStore;
+import cornerstone.webapp.services.keys.stores.db.DatabaseKeyStoreException;
 import cornerstone.webapp.services.keys.stores.local.LocalKeyStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,10 +35,10 @@ public class PublicKeyRestService {
     private static final Logger logger = LoggerFactory.getLogger(PublicKeyRestService.class);
 
     private final LocalKeyStore localKeyStore;
-    private final PublicKeyStore publicKeyStore;
+    private final DatabaseKeyStore publicKeyStore;
 
     @Inject
-    public PublicKeyRestService(final LocalKeyStore localKeyStore, final PublicKeyStore publicKeyStore) {
+    public PublicKeyRestService(final LocalKeyStore localKeyStore, final DatabaseKeyStore publicKeyStore) {
         this.localKeyStore = localKeyStore;
         this.publicKeyStore = publicKeyStore;
     }
@@ -68,12 +68,12 @@ public class PublicKeyRestService {
         // Try to get key from database and cache it locally
         if (base64Key == null) {
             try {
-                base64Key = publicKeyStore.getKey(uuid).getBase64Key();
+                base64Key = publicKeyStore.getPublicKey(uuid).getBase64Key();
                 localKeyStore.addPublicKey(uuid, base64Key);
 
             } catch (final NoSuchElementException ignored) {
 
-            } catch (final PublicKeyStoreException | NoSuchAlgorithmException | InvalidKeySpecException e) {
+            } catch (final DatabaseKeyStoreException | NoSuchAlgorithmException | InvalidKeySpecException e) {
                 logger.error(String.format("An error occurred during public key retrieval/local caching, exception class: '%s', exception message: '%s'", e.getClass().getCanonicalName(), e.getMessage()));
                 final ErrorResponse er = new ErrorResponse(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), "An error occurred during public key retrieval/local caching.");
                 return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(er).build();
@@ -94,10 +94,10 @@ public class PublicKeyRestService {
     @Produces(MediaType.APPLICATION_JSON)
     public Response getLiveKeyUUIDs() {
         try {
-            final List<UUID> uuidList = publicKeyStore.getLiveKeyUUIDs();
+            final List<UUID> uuidList = publicKeyStore.getLivePublicKeyUUIDs();
             return Response.status(Response.Status.OK).entity(uuidList).build();
 
-        } catch (final PublicKeyStoreException e) {
+        } catch (final DatabaseKeyStoreException e) {
             final ErrorResponse er = new ErrorResponse(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), "An error occurred during live key retrieval.");
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(er).build();
         }
@@ -108,10 +108,10 @@ public class PublicKeyRestService {
     @Produces(MediaType.APPLICATION_JSON)
     public Response getExpiredKeyUUIDs() {
         try {
-            final List<UUID> uuidList = publicKeyStore.getExpiredKeyUUIDs();
+            final List<UUID> uuidList = publicKeyStore.getExpiredPublicKeyUUIDs();
             return Response.status(Response.Status.OK).entity(uuidList).build();
 
-        } catch (final PublicKeyStoreException e) {
+        } catch (final DatabaseKeyStoreException e) {
             final ErrorResponse er = new ErrorResponse(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), "An error occurred during expired key retrieval.");
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(er).build();
         }

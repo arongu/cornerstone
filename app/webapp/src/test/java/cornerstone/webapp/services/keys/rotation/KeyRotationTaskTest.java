@@ -1,8 +1,8 @@
 package cornerstone.webapp.services.keys.rotation;
 
-import cornerstone.webapp.services.keys.stores.db.PublicKeyStore;
-import cornerstone.webapp.services.keys.stores.db.PublicKeyStoreException;
-import cornerstone.webapp.services.keys.stores.db.PublicKeyStoreImpl;
+import cornerstone.webapp.services.keys.stores.db.DatabaseKeyStore;
+import cornerstone.webapp.services.keys.stores.db.DatabaseKeyStoreException;
+import cornerstone.webapp.services.keys.stores.db.DatabaseKeyStoreImpl;
 import cornerstone.webapp.services.keys.stores.local.LocalKeyStore;
 import cornerstone.webapp.services.keys.stores.local.LocalKeyStoreImpl;
 import org.junit.jupiter.api.Test;
@@ -19,7 +19,7 @@ import static org.mockito.Mockito.*;
 
 public class KeyRotationTaskTest {
     @Test
-    public void run_shouldGoThrowAllTheSteps_whenCalled() throws PublicKeyStoreException {
+    public void run_shouldGoThrowAllTheSteps_whenCalled() throws DatabaseKeyStoreException {
         final int rsaTTL       = 1000;
         final int jwtTTL       = 500;
         final String nodeName  = "mockito-node";
@@ -30,8 +30,8 @@ public class KeyRotationTaskTest {
         uuids.add(uuid_B);
         // mocks
         final LocalKeyStore  localKeyStore  = Mockito.mock(LocalKeyStoreImpl.class);
-        final PublicKeyStore publicKeyStore = Mockito.mock(PublicKeyStoreImpl.class);
-        when(publicKeyStore.getLiveKeyUUIDs()).thenReturn(uuids);
+        final DatabaseKeyStore publicKeyStore = Mockito.mock(DatabaseKeyStoreImpl.class);
+        when(publicKeyStore.getLivePublicKeyUUIDs()).thenReturn(uuids);
 
 
         final KeyRotationTask keyRotationTask = new KeyRotationTask(localKeyStore, publicKeyStore, jwtTTL, rsaTTL, nodeName);
@@ -39,21 +39,21 @@ public class KeyRotationTaskTest {
 
 
         verify(localKeyStore, times(1)).setSigningKeys(any(UUID.class), any(PrivateKey.class), any(PublicKey.class));
-        verify(publicKeyStore, times(1)).addKey(any(UUID.class), eq(nodeName), eq(rsaTTL + jwtTTL), anyString());
-        verify(publicKeyStore, times(1)).getLiveKeyUUIDs();
-        verify(localKeyStore, times(1)).keepOnly(eq(uuids));
-        verify(publicKeyStore, times(1)).deleteExpiredKeys();
+        verify(publicKeyStore, times(1)).addPublicKey(any(UUID.class), eq(nodeName), eq(rsaTTL + jwtTTL), anyString());
+        verify(publicKeyStore, times(1)).getLivePublicKeyUUIDs();
+        verify(localKeyStore, times(1)).keepOnlyPublicKeys(eq(uuids));
+        verify(publicKeyStore, times(1)).deleteExpiredPublicKeys();
     }
 
     @Test
-    public void run_shouldWriteAnErrorLog_whenAddKeyThrowsAnException() throws PublicKeyStoreException {
+    public void run_shouldWriteAnErrorLog_whenAddKeyThrowsAnException() throws DatabaseKeyStoreException {
         final int rsaTTL      = 1000;
         final int jwtTTL      = 500;
         final String nodeName = "mockito-node";
         // mocks
         final LocalKeyStore  localKeyStore  = Mockito.mock(LocalKeyStoreImpl.class);
-        final PublicKeyStore publicKeyStore = Mockito.mock(PublicKeyStoreImpl.class);
-        when(publicKeyStore.addKey(any(UUID.class), anyString(), anyInt(), anyString())).thenThrow(PublicKeyStoreException.class);
+        final DatabaseKeyStore publicKeyStore = Mockito.mock(DatabaseKeyStoreImpl.class);
+        when(publicKeyStore.addPublicKey(any(UUID.class), anyString(), anyInt(), anyString())).thenThrow(DatabaseKeyStoreException.class);
 
 
         assertDoesNotThrow(() -> {
@@ -63,14 +63,14 @@ public class KeyRotationTaskTest {
     }
 
     @Test
-    public void run_shouldWriteAnErrorLog_whenGetLiveKeyUUIDsThrowsAnException() throws PublicKeyStoreException {
+    public void run_shouldWriteAnErrorLog_whenGetLiveKeyUUIDsThrowsAnException() throws DatabaseKeyStoreException {
         final int rsaTTL      = 1000;
         final int jwtTTL      = 500;
         final String nodeName = "mockito-node";
         // mocks
         final LocalKeyStore  localKeyStore  = Mockito.mock(LocalKeyStoreImpl.class);
-        final PublicKeyStore publicKeyStore = Mockito.mock(PublicKeyStoreImpl.class);
-        when(publicKeyStore.getLiveKeyUUIDs()).thenThrow(PublicKeyStoreException.class);
+        final DatabaseKeyStore publicKeyStore = Mockito.mock(DatabaseKeyStoreImpl.class);
+        when(publicKeyStore.getLivePublicKeyUUIDs()).thenThrow(DatabaseKeyStoreException.class);
 
 
         assertDoesNotThrow(() -> {

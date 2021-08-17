@@ -9,7 +9,7 @@ import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class LocalKeyStoreTest {
+public class LocalKeyStoreImplTest {
     @Test
     void crudTest_add_get_delete_get_uuids() {
         final LocalKeyStore localKeyStore = new LocalKeyStoreImpl();
@@ -36,7 +36,7 @@ public class LocalKeyStoreTest {
     }
 
     @Test
-    public void crudTest_addDeletePublicKeys_shouldDeleteAllKeys() {
+    public void crudTest_addDeletePublicKeys_shouldDeleteAllKeys() throws LocalKeyStoreException {
         final int to_be_created = 5;
         int number_of_throws    = 0;
         final LocalKeyStore localKeyStore = new LocalKeyStoreImpl();
@@ -56,7 +56,7 @@ public class LocalKeyStoreTest {
 
 
         // delete
-        localKeyStore.deletePublicKeys(new ArrayList<>(created_uuids));
+        localKeyStore.deletePublicKey(new ArrayList<>(created_uuids));
         for (final UUID uuid : created_uuids) {
             try {
                 localKeyStore.getPublicKey(uuid);
@@ -110,7 +110,15 @@ public class LocalKeyStoreTest {
     }
 
     @Test
-    public void sync_shouldKeepToBeeKeptAndDeleteTheRest() {
+    void addPublicKey_shouldThrowException_whenUuidIsNull() {
+        assertThrows(InvalidKeySpecException.class, () -> {
+            LocalKeyStore localKeyStore = new LocalKeyStoreImpl();
+            localKeyStore.addPublicKey(null, "ff");
+        });
+    }
+
+    @Test
+    public void sync_shouldKeepToBeeKeptAndDeleteTheRest() throws LocalKeyStoreException {
         final int to_be_created = 5;
         final List<UUID> uuids = new ArrayList<>();
         final Map<UUID,PublicKey> map = new HashMap<>();
@@ -131,7 +139,7 @@ public class LocalKeyStoreTest {
         uuids_to_be_kept.add(uuids.get(0));
         uuids_to_be_kept.add(uuids.get(2));
         uuids_to_be_kept.add(uuids.get(4));
-        localKeyStore.keepOnly(uuids_to_be_kept);
+        localKeyStore.keepOnlyPublicKeys(uuids_to_be_kept);
 
 
         assertEquals(3, localKeyStore.getPublicKeyUUIDs().size());

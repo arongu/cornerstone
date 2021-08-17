@@ -67,6 +67,19 @@ public class LocalKeyStoreImpl implements LocalKeyStore {
     }
 
     /**
+     * Deletes a list of public keys based on the passed UUIDs.
+     * @param toRemove Takes a list of UUIDs and deletes any matching keys from the store.
+     */
+    @Override
+    public void deletePublicKey(final List<UUID> toRemove) {
+        publicKeys.keySet().forEach(uuid -> {
+            if ( toRemove.contains(uuid)){
+                deletePublicKey(uuid);
+            }
+        });
+    }
+
+    /**
      * Returns a public key based on UUID.
      * @param uuid UUID of the key.
      * @return Returns the PublicKey object based on the UUID.
@@ -85,25 +98,12 @@ public class LocalKeyStoreImpl implements LocalKeyStore {
     }
 
     /**
-     * Deletes a list of public keys based on the passed UUIDs.
-     * @param uuidsToBeRemoved Takes a list of UUIDs and deletes any matching keys from the store.
-     */
-    @Override
-    public void deletePublicKeys(final List<UUID> uuidsToBeRemoved) {
-        publicKeys.keySet().forEach(uuid -> {
-            if ( uuidsToBeRemoved.contains(uuid)){
-                deletePublicKey(uuid);
-            }
-        });
-    }
-
-    /**
      * Keeps only the keys with listed UUIDs, deletes the rest of it.
      * Removes any key from the store which is not present in the passed UUIDs.
      * @param toBeKept List of the key UUIDs that needs to be kept, the rest will be deleted.
      */
     @Override
-    public void keepOnly(final List<UUID> toBeKept) {
+    public void keepOnlyPublicKeys(final List<UUID> toBeKept) {
         int deleted = 0;
         for ( final UUID uuid : publicKeys.keySet()) {
             if ( uuid.equals(live_uuid) || toBeKept.contains(uuid)) {

@@ -11,8 +11,8 @@ import cornerstone.webapp.services.jwt.JWTServiceImpl;
 import cornerstone.webapp.services.jwt.SigningKeyResolverImpl;
 import cornerstone.webapp.services.keys.rotation.KeyRotator;
 import cornerstone.webapp.services.keys.rotation.KeyRotatorImpl;
-import cornerstone.webapp.services.keys.stores.db.PublicKeyStore;
-import cornerstone.webapp.services.keys.stores.db.PublicKeyStoreImpl;
+import cornerstone.webapp.services.keys.stores.db.DatabaseKeyStore;
+import cornerstone.webapp.services.keys.stores.db.DatabaseKeyStoreImpl;
 import cornerstone.webapp.services.keys.stores.local.LocalKeyStore;
 import cornerstone.webapp.services.keys.stores.local.LocalKeyStoreImpl;
 import io.jsonwebtoken.SigningKeyResolver;
@@ -97,7 +97,7 @@ public class ApplicationBinder extends AbstractBinder {
             bind        (JWTServiceImpl.class).to        (JWTService.class).in(Singleton.class);
             bind     (LocalKeyStoreImpl.class).to     (LocalKeyStore.class).in(Singleton.class);
             bind        (KeyRotatorImpl.class).to        (KeyRotator.class).in(Immediate.class);
-            bind    (PublicKeyStoreImpl.class).to    (PublicKeyStore.class).in(Singleton.class);
+            bind    (DatabaseKeyStoreImpl.class).to    (DatabaseKeyStore.class).in(Singleton.class);
             bind(SigningKeyResolverImpl.class).to(SigningKeyResolver.class).in(Singleton.class);
 
         } catch (final IOException e) {

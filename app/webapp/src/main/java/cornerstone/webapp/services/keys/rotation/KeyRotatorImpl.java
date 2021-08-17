@@ -3,7 +3,7 @@ package cornerstone.webapp.services.keys.rotation;
 import cornerstone.webapp.configuration.ConfigLoader;
 import cornerstone.webapp.configuration.enums.APP_ENUM;
 import cornerstone.webapp.logmsg.CommonLogMessages;
-import cornerstone.webapp.services.keys.stores.db.PublicKeyStore;
+import cornerstone.webapp.services.keys.stores.db.DatabaseKeyStore;
 import cornerstone.webapp.services.keys.stores.local.LocalKeyStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,13 +18,13 @@ import java.util.Timer;
 public class KeyRotatorImpl implements KeyRotator {
     private static final Logger logger = LoggerFactory.getLogger(KeyRotatorImpl.class);
 
-    private final PublicKeyStore databasePublicKeyStore;
+    private final DatabaseKeyStore databasePublicKeyStore;
     private final LocalKeyStore localKeyStore;
     private final ConfigLoader configLoader;
 
     @Inject
     public KeyRotatorImpl(final ConfigLoader configLoader,
-                          final PublicKeyStore dbPublicKeyStore,
+                          final DatabaseKeyStore dbPublicKeyStore,
                           final LocalKeyStore localKeyStore) {
 
         this.configLoader = configLoader;

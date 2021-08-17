@@ -1,8 +1,8 @@
 package cornerstone.webapp.services.keys.rotation;
 
 import cornerstone.webapp.logmsg.CommonLogMessages;
-import cornerstone.webapp.services.keys.stores.db.PublicKeyStore;
-import cornerstone.webapp.services.keys.stores.db.PublicKeyStoreException;
+import cornerstone.webapp.services.keys.stores.db.DatabaseKeyStore;
+import cornerstone.webapp.services.keys.stores.db.DatabaseKeyStoreException;
 import cornerstone.webapp.services.keys.stores.local.LocalKeyStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,7 +20,7 @@ public class KeyRotationTask extends TimerTask {
     private static final Logger logger = LoggerFactory.getLogger(KeyRotationTask.class);
 
     private final LocalKeyStore localKeyStore;
-    private final PublicKeyStore publicKeyStore;
+    private final DatabaseKeyStore publicKeyStore;
     private final int rsaTTL;
     private final int jwtTTL;
     private final String nodeName;
@@ -34,7 +34,7 @@ public class KeyRotationTask extends TimerTask {
      * @param nodeName name of the node, this will be added to the JWS as well (configurable via app conf file)
      */
     public KeyRotationTask(final LocalKeyStore localKeyStore,
-                           final PublicKeyStore publicKeyStore,
+                           final DatabaseKeyStore publicKeyStore,
                            final int rsaTTL,
                            final int jwtTTL,
                            final String nodeName) {
@@ -64,9 +64,9 @@ public class KeyRotationTask extends TimerTask {
         localKeyStore.setSigningKeys(kp.uuid, kp.keyPair.getPrivate(), kp.keyPair.getPublic());
 
         try {
-            publicKeyStore.addKey(kp.uuid, nodeName, rsaTTL + jwtTTL, base64_pub_key);
+            publicKeyStore.addPublicKey(kp.uuid, nodeName, rsaTTL + jwtTTL, base64_pub_key);
 
-        } catch (final PublicKeyStoreException e) {
+        } catch (final DatabaseKeyStoreException e) {
             logger.error("FAILED TO STORE PUBLIC KEY IN DB " + kp.uuid);
         }
     }
@@ -79,9 +79,9 @@ public class KeyRotationTask extends TimerTask {
      */
     private void cleanUpLocalPublicKeysKeepOnlyActiveKeysFromDb() {
         try {
-            localKeyStore.keepOnly(publicKeyStore.getLiveKeyUUIDs());
+            localKeyStore.keepOnlyPublicKeys(publicKeyStore.getLivePublicKeyUUIDs());
 
-        } catch (final PublicKeyStoreException e) {
+        } catch (final DatabaseKeyStoreException e) {
             logger.error("FAILED TO SYNC LOCAL <- DB (KEEPING EVERYTHING IN LOCAL STORE)");
         }
     }
@@ -92,9 +92,9 @@ public class KeyRotationTask extends TimerTask {
      */
     private void cleanUpDbRemoveExpiredPublicKeys() {
         try {
-            publicKeyStore.deleteExpiredKeys();
+            publicKeyStore.deleteExpiredPublicKeys();
 
-        } catch (final PublicKeyStoreException e) {
+        } catch (final DatabaseKeyStoreException e) {
             logger.error("FAILED TO DELETE EXPIRED KEYS FROM DB");
         }
     }

@@ -49,14 +49,14 @@ public interface LocalKeyStore {
      * Deletes a list of public keys based on the passed UUIDs.
      * @param uuidsToBeRemoved Takes a list of UUIDs and deletes any matching keys from the store.
      */
-    void deletePublicKeys(final List<UUID> uuidsToBeRemoved);
+    void deletePublicKey(final List<UUID> uuidsToBeRemoved);
 
     /**
      * Keeps only the keys with listed UUIDs, deletes the rest of it.
      * Removes any key from the store which is not present in the passed UUIDs.
      * @param toBeKept List of the key UUIDs that needs to be kept, the rest will be deleted.
      */
-    void keepOnly(final List<UUID> toBeKept);
+    void keepOnlyPublicKeys(final List<UUID> toBeKept);
 
     /**
      * Sets the keys used for JWT/JWS signing.

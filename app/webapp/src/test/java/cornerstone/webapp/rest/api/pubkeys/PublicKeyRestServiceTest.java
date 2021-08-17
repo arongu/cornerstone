@@ -2,9 +2,9 @@ package cornerstone.webapp.rest.api.pubkeys;
 
 import cornerstone.webapp.rest.error_responses.ErrorResponse;
 import cornerstone.webapp.services.keys.rotation.KeyPairWithUUID;
-import cornerstone.webapp.services.keys.stores.db.PublicKeyStore;
-import cornerstone.webapp.services.keys.stores.db.PublicKeyStoreException;
-import cornerstone.webapp.services.keys.stores.db.PublicKeyStoreImpl;
+import cornerstone.webapp.services.keys.stores.db.DatabaseKeyStore;
+import cornerstone.webapp.services.keys.stores.db.DatabaseKeyStoreException;
+import cornerstone.webapp.services.keys.stores.db.DatabaseKeyStoreImpl;
 import cornerstone.webapp.services.keys.stores.local.LocalKeyStore;
 import cornerstone.webapp.services.keys.stores.local.LocalKeyStoreImpl;
 import org.junit.jupiter.api.Test;
@@ -54,11 +54,11 @@ public class PublicKeyRestServiceTest {
 
     // getPublicKey - 404
     @Test
-    public void getPublicKey__shouldReturn_404_NotFound__whenKeyDoesNotExistInBothKeyStores() throws PublicKeyStoreException {
+    public void getPublicKey__shouldReturn_404_NotFound__whenKeyDoesNotExistInBothKeyStores() throws DatabaseKeyStoreException {
         final LocalKeyStore localKeyStore               = Mockito.mock(LocalKeyStoreImpl.class);
-        final PublicKeyStore publicKeyStore             = Mockito.mock(PublicKeyStoreImpl.class);
+        final DatabaseKeyStore publicKeyStore             = Mockito.mock(DatabaseKeyStoreImpl.class);
         final PublicKeyRestService publicKeyRestService = new PublicKeyRestService(localKeyStore, publicKeyStore);
-        Mockito.when(publicKeyStore.getKey(Mockito.any(UUID.class))).thenThrow(NoSuchElementException.class);
+        Mockito.when(publicKeyStore.getPublicKey(Mockito.any(UUID.class))).thenThrow(NoSuchElementException.class);
         Mockito.when(localKeyStore.getPublicKey(Mockito.any(UUID.class))).thenThrow(NoSuchElementException.class);
 
 
@@ -69,18 +69,18 @@ public class PublicKeyRestServiceTest {
         assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatus());
         assertEquals("No such key.", er.getError());
         Mockito.verify(localKeyStore, Mockito.times(1)).getPublicKey(Mockito.any(UUID.class));
-        Mockito.verify(publicKeyStore, Mockito.times(1)).getKey(Mockito.any(UUID.class));
+        Mockito.verify(publicKeyStore, Mockito.times(1)).getPublicKey(Mockito.any(UUID.class));
     }
 
 
     // getPublicKey - 503  DONE
     @Test
-    public void getPublicKey__shouldReturn_503__whenPublicKeyStoreExceptionIsThrown() throws PublicKeyStoreException {
+    public void getPublicKey__shouldReturn_503__whenPublicKeyStoreExceptionIsThrown() throws DatabaseKeyStoreException {
         final LocalKeyStore localKeyStore               = Mockito.mock(LocalKeyStoreImpl.class);
-        final PublicKeyStore publicKeyStore             = Mockito.mock(PublicKeyStoreImpl.class);
+        final DatabaseKeyStore publicKeyStore             = Mockito.mock(DatabaseKeyStoreImpl.class);
         final PublicKeyRestService publicKeyRestService = new PublicKeyRestService(localKeyStore, publicKeyStore);
         Mockito.when(localKeyStore.getPublicKey(Mockito.any(UUID.class))).thenThrow(NoSuchElementException.class);
-        Mockito.when(publicKeyStore.getKey(Mockito.any(UUID.class))).thenThrow(PublicKeyStoreException.class);
+        Mockito.when(publicKeyStore.getPublicKey(Mockito.any(UUID.class))).thenThrow(DatabaseKeyStoreException.class);
 
 
         final Response response = publicKeyRestService.getPublicKey("00000000-0000-0000-0000-000000000111");
@@ -90,20 +90,20 @@ public class PublicKeyRestServiceTest {
         assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), response.getStatus());
         assertEquals("An error occurred during public key retrieval/local caching.", er.getError());
         Mockito.verify(localKeyStore, Mockito.times(1)).getPublicKey(Mockito.any(UUID.class));
-        Mockito.verify(publicKeyStore, Mockito.times(1)).getKey(Mockito.any(UUID.class));
+        Mockito.verify(publicKeyStore, Mockito.times(1)).getPublicKey(Mockito.any(UUID.class));
     }
 
     // getExpiredKeyUUIDs - 200 content
     @Test
-    public void getExpiredKeyUUIDs__shouldReturn_200_OK_withListOfUUIDs__whenThereAreExpiredKeys() throws PublicKeyStoreException {
-        final PublicKeyStore publicKeyStore             = Mockito.mock(PublicKeyStore.class);
+    public void getExpiredKeyUUIDs__shouldReturn_200_OK_withListOfUUIDs__whenThereAreExpiredKeys() throws DatabaseKeyStoreException {
+        final DatabaseKeyStore publicKeyStore             = Mockito.mock(DatabaseKeyStore.class);
         final PublicKeyRestService publicKeyRestService = new PublicKeyRestService(null, publicKeyStore);
         final List<UUID> uuidList                       = new LinkedList<>();
         final UUID expiredUuid                          = UUID.fromString("00000000-0000-0000-0000-000000005555");
         final UUID expiredUuid2                         = UUID.fromString("00000000-0000-0000-0000-000000006666");
         uuidList.add(expiredUuid);
         uuidList.add(expiredUuid2);
-        Mockito.when(publicKeyStore.getExpiredKeyUUIDs()).thenReturn(uuidList);
+        Mockito.when(publicKeyStore.getExpiredPublicKeyUUIDs()).thenReturn(uuidList);
 
 
         final Response response       = publicKeyRestService.getExpiredKeyUUIDs();
@@ -119,10 +119,10 @@ public class PublicKeyRestServiceTest {
 
     // getExpiredKeyUUIDs - 200 no-content
     @Test
-    public void getExpiredKeyUUIDs__shouldReturn_200_OK_withEmptyList__whenThereAreNoExpiredKeys() throws PublicKeyStoreException {
-        final PublicKeyStore publicKeyStore             = Mockito.mock(PublicKeyStore.class);
+    public void getExpiredKeyUUIDs__shouldReturn_200_OK_withEmptyList__whenThereAreNoExpiredKeys() throws DatabaseKeyStoreException {
+        final DatabaseKeyStore publicKeyStore             = Mockito.mock(DatabaseKeyStore.class);
         final PublicKeyRestService publicKeyRestService = new PublicKeyRestService(null, publicKeyStore);
-        Mockito.when(publicKeyStore.getExpiredKeyUUIDs()).thenReturn(new LinkedList<>());
+        Mockito.when(publicKeyStore.getExpiredPublicKeyUUIDs()).thenReturn(new LinkedList<>());
 
 
         final Response response       = publicKeyRestService.getExpiredKeyUUIDs();
@@ -135,10 +135,10 @@ public class PublicKeyRestServiceTest {
 
     // getExpiredKeyUUIDs - 503 error
     @Test
-    public void getExpiredKeyUUIDs__shouldReturn_500__whenPublicKeyStoreExceptionIsThrown() throws PublicKeyStoreException {
-        final PublicKeyStore publicKeyStore             = Mockito.mock(PublicKeyStore.class);
+    public void getExpiredKeyUUIDs__shouldReturn_500__whenPublicKeyStoreExceptionIsThrown() throws DatabaseKeyStoreException {
+        final DatabaseKeyStore publicKeyStore             = Mockito.mock(DatabaseKeyStore.class);
         final PublicKeyRestService publicKeyRestService = new PublicKeyRestService(null, publicKeyStore);
-        Mockito.when(publicKeyStore.getExpiredKeyUUIDs()).thenThrow(PublicKeyStoreException.class);
+        Mockito.when(publicKeyStore.getExpiredPublicKeyUUIDs()).thenThrow(DatabaseKeyStoreException.class);
 
 
         final Response response = publicKeyRestService.getExpiredKeyUUIDs();
@@ -151,12 +151,12 @@ public class PublicKeyRestServiceTest {
 
     // getLiveKeyUUIDs - 200 content
     @Test
-    public void getLiveKeyUUIDs__shouldReturn_200_OK_withListOfUUIDs__whenThereAreLiveKeys() throws PublicKeyStoreException {
-        final PublicKeyStore publicKeyStore = Mockito.mock(PublicKeyStore.class);
+    public void getLiveKeyUUIDs__shouldReturn_200_OK_withListOfUUIDs__whenThereAreLiveKeys() throws DatabaseKeyStoreException {
+        final DatabaseKeyStore publicKeyStore = Mockito.mock(DatabaseKeyStore.class);
         final PublicKeyRestService publicKeyRestService = new PublicKeyRestService(null, publicKeyStore);
         final List<UUID> list = new LinkedList<>();
         list.add(UUID.fromString("00000000-0000-0000-0000-000000005555"));
-        Mockito.when(publicKeyStore.getLiveKeyUUIDs()).thenReturn(list);
+        Mockito.when(publicKeyStore.getLivePublicKeyUUIDs()).thenReturn(list);
 
 
         final Response response       = publicKeyRestService.getLiveKeyUUIDs();
@@ -170,10 +170,10 @@ public class PublicKeyRestServiceTest {
 
     // getLiveKeyUUIDs - 200 no-content
     @Test
-    public void getLiveKeyUUIDs__shouldReturn_200_OK_withEmptyList__whenThereAreNoLiveKeys() throws PublicKeyStoreException {
-        final PublicKeyStore publicKeyStore = Mockito.mock(PublicKeyStore.class);
+    public void getLiveKeyUUIDs__shouldReturn_200_OK_withEmptyList__whenThereAreNoLiveKeys() throws DatabaseKeyStoreException {
+        final DatabaseKeyStore publicKeyStore = Mockito.mock(DatabaseKeyStore.class);
         final PublicKeyRestService publicKeyRestService = new PublicKeyRestService(null, publicKeyStore);
-        Mockito.when(publicKeyStore.getLiveKeyUUIDs()).thenReturn(new LinkedList<>());
+        Mockito.when(publicKeyStore.getLivePublicKeyUUIDs()).thenReturn(new LinkedList<>());
 
 
         final Response response       = publicKeyRestService.getLiveKeyUUIDs();
@@ -186,10 +186,10 @@ public class PublicKeyRestServiceTest {
 
     // getLiveKeyUUIDs - 500 error
     @Test
-    public void getLiveKeyUUIDs__shouldReturn_503__whenPublicKeyStoreExceptionIsThrown() throws PublicKeyStoreException {
-        final PublicKeyStore publicKeyStore = Mockito.mock(PublicKeyStore.class);
+    public void getLiveKeyUUIDs__shouldReturn_503__whenPublicKeyStoreExceptionIsThrown() throws DatabaseKeyStoreException {
+        final DatabaseKeyStore publicKeyStore = Mockito.mock(DatabaseKeyStore.class);
         final PublicKeyRestService publicKeyRestService = new PublicKeyRestService(null, publicKeyStore);
-        Mockito.when(publicKeyStore.getLiveKeyUUIDs()).thenThrow(PublicKeyStoreException.class);
+        Mockito.when(publicKeyStore.getLivePublicKeyUUIDs()).thenThrow(DatabaseKeyStoreException.class);
 
 
         final Response response = publicKeyRestService.getLiveKeyUUIDs();

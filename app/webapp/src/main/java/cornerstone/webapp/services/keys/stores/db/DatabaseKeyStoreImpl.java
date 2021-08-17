@@ -14,8 +14,8 @@ import java.util.*;
 /**
  * Only manages public keys in the database, does not store any keys locally, that purpose is strictly for the LocalKeyStore.
  */
-public class PublicKeyStoreImpl implements PublicKeyStore {
-    private static final Logger logger = LoggerFactory.getLogger(PublicKeyStoreImpl.class);
+public class DatabaseKeyStoreImpl implements DatabaseKeyStore {
+    private static final Logger logger = LoggerFactory.getLogger(DatabaseKeyStoreImpl.class);
 
     // SQL queries
     // NOTE: There are SQL triggers in the DB to calculate the expire date!
@@ -39,7 +39,7 @@ public class PublicKeyStoreImpl implements PublicKeyStore {
     private final WorkDB workDB;
 
     @Inject
-    public PublicKeyStoreImpl(final WorkDB workDB) {
+    public DatabaseKeyStoreImpl(final WorkDB workDB) {
         this.workDB = workDB;
         logger.info(String.format(CommonLogMessages.MESSAGE_CONSTRUCTOR_CALLED, getClass().getName()));
     }
@@ -50,10 +50,10 @@ public class PublicKeyStoreImpl implements PublicKeyStore {
      * @param node_name Name of the node.
      * @param ttl TTL of the public key (DB will calculate it NOW() + TTL.
      * @return Returns the number of the deleted keys, this should be always 1 or 0.
-     * @throws PublicKeyStoreException When SQL exception occurs.
+     * @throws DatabaseKeyStoreException When SQL exception occurs.
      */
     @Override
-    public int addKey(final UUID uuid, final String node_name, final int ttl, final String base64_key) throws PublicKeyStoreException {
+    public int addPublicKey(final UUID uuid, final String node_name, final int ttl, final String base64_key) throws DatabaseKeyStoreException {
         try (final Connection conn = workDB.getConnection(); final PreparedStatement ps = conn.prepareStatement(SQL_INSERT_PUBLIC_KEY)) {
             ps.setObject(1, uuid);
             ps.setString(2, node_name);
@@ -67,17 +67,17 @@ public class PublicKeyStoreImpl implements PublicKeyStore {
         } catch (final SQLException e) {
             final String errorLog = String.format(ERROR_MESSAGE_FAILED_TO_INSERT_PUBLIC_KEY, uuid.toString(), e.getMessage(), e.getSQLState(), e.getErrorCode());
             logger.error(errorLog);
-            throw new PublicKeyStoreException();
+            throw new DatabaseKeyStoreException();
         }
     }
 
     /**
      * Deletes a public key from the database based on the given UUID.
      * @return Returns the number of the deleted keys, this should be always 1 or 0.
-     * @throws PublicKeyStoreException When SQL exception occurs.
+     * @throws DatabaseKeyStoreException When SQL exception occurs.
      */
     @Override
-    public int deleteKey(final UUID uuid) throws PublicKeyStoreException {
+    public int deletePublicKey(final UUID uuid) throws DatabaseKeyStoreException {
         try (final Connection conn = workDB.getConnection(); final PreparedStatement ps = conn.prepareStatement(SQL_DELETE_PUBLIC_KEY)) {
             ps.setObject(1, uuid);
             final String logMsg = MessageElements.PREFIX_DB + " " + MessageElements.DELETED + " " + MessageElements.PUBLIC_KEY + " " + uuid;
@@ -88,7 +88,7 @@ public class PublicKeyStoreImpl implements PublicKeyStore {
         } catch (final SQLException e) {
             final String errorLog = String.format(ERROR_MESSAGE_FAILED_TO_DELETE_PUBLIC_KEY, uuid.toString(), e.getMessage(), e.getSQLState(), e.getErrorCode());
             logger.error(errorLog);
-            throw new PublicKeyStoreException();
+            throw new DatabaseKeyStoreException();
         }
     }
 
@@ -96,11 +96,11 @@ public class PublicKeyStoreImpl implements PublicKeyStore {
      * Fetches the database for a public key.
      * @param uuid The UUID of the desired public key.
      * @return Matching public key with UUID as a compound object. (node_name, ttl, creation_ts, expire_ts, base64_key)
-     * @throws PublicKeyStoreException When SQL exception occurs.
+     * @throws DatabaseKeyStoreException When SQL exception occurs.
      * @throws NoSuchElementException When the key does not exist.
      */
     @Override
-    public PublicKeyData getKey(final UUID uuid) throws PublicKeyStoreException, NoSuchElementException {
+    public PublicKeyData getPublicKey(final UUID uuid) throws DatabaseKeyStoreException, NoSuchElementException {
         try (final Connection conn = workDB.getConnection(); final PreparedStatement ps = conn.prepareStatement(SQL_SELECT_PUBLIC_KEY)) {
             ps.setObject(1, uuid);
             final ResultSet rs = ps.executeQuery();
@@ -128,17 +128,17 @@ public class PublicKeyStoreImpl implements PublicKeyStore {
         } catch (final SQLException e) {
             final String errorLog = String.format(ERROR_MESSAGE_FAILED_TO_SELECT_PUBLIC_KEY, uuid.toString(), e.getMessage(), e.getSQLState(), e.getErrorCode());
             logger.error(errorLog);
-            throw new PublicKeyStoreException();
+            throw new DatabaseKeyStoreException();
         }
     }
 
     /**
      * Fetches the database for the live public keys.
      * @return Live public keys as a list.
-     * @throws PublicKeyStoreException When SQL exception occurs.
+     * @throws DatabaseKeyStoreException When SQL exception occurs.
      */
     @Override
-    public List<PublicKeyData> getLiveKeys() throws PublicKeyStoreException {
+    public List<PublicKeyData> getLivePublicKeys() throws DatabaseKeyStoreException {
         try (final Connection conn = workDB.getConnection(); final PreparedStatement ps = conn.prepareStatement(SQL_SELECT_NON_EXPIRED_PUBLIC_KEYS)) {
             final ResultSet rs = ps.executeQuery();
             final List<PublicKeyData> keys = new LinkedList<>();
@@ -166,17 +166,17 @@ public class PublicKeyStoreImpl implements PublicKeyStore {
         } catch (final SQLException e) {
             final String errorLog = String.format(ERROR_MESSAGE_FAILED_TO_SELECT_ACTIVE_PUBLIC_KEYS, e.getMessage(), e.getSQLState(), e.getErrorCode());
             logger.error(errorLog);
-            throw new PublicKeyStoreException();
+            throw new DatabaseKeyStoreException();
         }
     }
 
     /**
      * Fetches the database for the live public key UUIDs.
      * @return List<UUID> Live key UUIDs as a list.
-     * @throws PublicKeyStoreException When SQL exception occurs.
+     * @throws DatabaseKeyStoreException When SQL exception occurs.
      */
     @Override
-    public List<UUID> getLiveKeyUUIDs() throws PublicKeyStoreException {
+    public List<UUID> getLivePublicKeyUUIDs() throws DatabaseKeyStoreException {
         try (final Connection conn = workDB.getConnection(); final PreparedStatement ps = conn.prepareStatement(SQL_SELECT_NON_EXPIRED_PUBLIC_KEY_UUIDS)) {
             final ResultSet rs = ps.executeQuery();
             final List<UUID> uuids = new LinkedList<>();
@@ -196,17 +196,17 @@ public class PublicKeyStoreImpl implements PublicKeyStore {
         } catch (final SQLException e) {
             final String errorLog = String.format(ERROR_MESSAGE_FAILED_TO_SELECT_EXPIRED_PUBLIC_KEY_UUIDS, e.getMessage(), e.getSQLState(), e.getErrorCode());
             logger.error(errorLog);
-            throw new PublicKeyStoreException();
+            throw new DatabaseKeyStoreException();
         }
     }
 
     /**
      * Fetches the database for the expired keys UUIDs.
      * @return List<UUID> List of the expired key UUIDs.
-     * @throws PublicKeyStoreException When SQL exception occurs.
+     * @throws DatabaseKeyStoreException When SQL exception occurs.
      */
     @Override
-    public List<UUID> getExpiredKeyUUIDs() throws PublicKeyStoreException {
+    public List<UUID> getExpiredPublicKeyUUIDs() throws DatabaseKeyStoreException {
         try (final Connection conn = workDB.getConnection(); final PreparedStatement ps = conn.prepareStatement(SQL_SELECT_EXPIRED_PUBLIC_KEY_UUIDS)) {
             final ResultSet rs = ps.executeQuery();
             final List<UUID> expired_uuids = new ArrayList<>();
@@ -227,17 +227,17 @@ public class PublicKeyStoreImpl implements PublicKeyStore {
         } catch (final SQLException e) {
             final String errorLog = String.format(ERROR_MESSAGE_FAILED_TO_SELECT_EXPIRED_PUBLIC_KEY_UUIDS, e.getMessage(), e.getSQLState(), e.getErrorCode());
             logger.error(errorLog);
-            throw new PublicKeyStoreException();
+            throw new DatabaseKeyStoreException();
         }
     }
 
     /**
      * Executes an SQL query to remove all the expired key. (expired_ts < NOW() (NOW() is at postgres, not calculated here)
      * @return The number of deleted expired keys.
-     * @throws PublicKeyStoreException When SQL exception occurs.
+     * @throws DatabaseKeyStoreException When SQL exception occurs.
      */
     @Override
-    public int deleteExpiredKeys() throws PublicKeyStoreException {
+    public int deleteExpiredPublicKeys() throws DatabaseKeyStoreException {
         try (final Connection conn = workDB.getConnection(); final PreparedStatement ps = conn.prepareStatement(SQL_DELETE_EXPIRED_PUBLIC_KEYS)) {
             final int deletes = ps.executeUpdate();
             final String logMsg = MessageElements.PREFIX_DB + " " + MessageElements.DELETED + " " + MessageElements.PUBLIC_KEYS + " " + MessageElements.POSTFIX_EXPIRED + " " + deletes;
@@ -247,7 +247,7 @@ public class PublicKeyStoreImpl implements PublicKeyStore {
         } catch (final SQLException e) {
             final String errorLog = String.format(ERROR_MESSAGE_FAILED_TO_DELETE_EXPIRED_PUBLIC_KEYS, e.getMessage(), e.getSQLState(), e.getErrorCode());
             logger.error(errorLog);
-            throw new PublicKeyStoreException();
+            throw new DatabaseKeyStoreException();
         }
     }
 }

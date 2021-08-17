@@ -14,8 +14,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class PublicKeyDTOStoreTest {
-    private static PublicKeyStore publicKeyStore;
+public class PublicKeyStoreImplTest {
+    private static DatabaseKeyStore publicKeyStore;
 
     @BeforeAll
     public static void setup() {
@@ -25,7 +25,7 @@ public class PublicKeyDTOStoreTest {
 
         try {
             final ConfigLoader configLoader = new ConfigLoader(key_file, conf_file);
-            publicKeyStore  = new PublicKeyStoreImpl(new WorkDB(configLoader));
+            publicKeyStore  = new DatabaseKeyStoreImpl(new WorkDB(configLoader));
 
         } catch (final IOException e) {
             e.printStackTrace();
@@ -51,10 +51,10 @@ public class PublicKeyDTOStoreTest {
 
         // ADD
         for (final Map.Entry<UUID,String> e : keys_to_be_added.entrySet()) {
-            count_added += publicKeyStore.addKey(e.getKey(), getClass().getName(), 111_222_333, e.getValue());
+            count_added += publicKeyStore.addPublicKey(e.getKey(), getClass().getName(), 111_222_333, e.getValue());
         }
         // GET
-        List<PublicKeyData> liveKeys = publicKeyStore.getLiveKeys();
+        List<PublicKeyData> liveKeys = publicKeyStore.getLivePublicKeys();
 
 
         for (final Map.Entry<UUID,String> e : keys_to_be_added.entrySet()) {
@@ -72,24 +72,24 @@ public class PublicKeyDTOStoreTest {
 
     @Order(1)
     @Test
-    public void t01_getThePreviouslyCreatedLiveAndExpiredKeysThenDeleteThemOneByOne_shouldDeleteAllKeys() throws PublicKeyStoreException {
+    public void t01_getThePreviouslyCreatedLiveAndExpiredKeysThenDeleteThemOneByOne_shouldDeleteAllKeys() throws DatabaseKeyStoreException {
         final List<UUID> uuid_list_expired;
         final List<UUID> uuid_list_live;
         int number_of_uuids;
         int number_of_deletes = 0;
 
 
-        uuid_list_expired = publicKeyStore.getExpiredKeyUUIDs();
-        uuid_list_live    = publicKeyStore.getLiveKeyUUIDs();
+        uuid_list_expired = publicKeyStore.getExpiredPublicKeyUUIDs();
+        uuid_list_live    = publicKeyStore.getLivePublicKeyUUIDs();
         number_of_uuids   = uuid_list_expired.size() + uuid_list_live.size();
 
         for (final UUID uuid : uuid_list_expired) {
-            publicKeyStore.deleteKey(uuid);
+            publicKeyStore.deletePublicKey(uuid);
             number_of_deletes++;
         }
 
         for (final UUID uuid : uuid_list_live) {
-            publicKeyStore.deleteKey(uuid);
+            publicKeyStore.deletePublicKey(uuid);
             number_of_deletes++;
         }
 
@@ -99,7 +99,7 @@ public class PublicKeyDTOStoreTest {
 
     @Order(2)
     @Test
-    public void t02_deleteExpiredKeys_shouldDeleteAllExpiredKey() throws PublicKeyStoreException {
+    public void t02_deleteExpiredKeys_shouldDeleteAllExpiredKey() throws DatabaseKeyStoreException {
         int wanted_expired_keys        = 5;
         int expired_keys_created       = 0;
         // results
@@ -111,13 +111,13 @@ public class PublicKeyDTOStoreTest {
         for (int i = 0; i < wanted_expired_keys; i++) {
             final KeyPairWithUUID kp = new KeyPairWithUUID();
             final String base64pubkey = enc.encodeToString(kp.keyPair.getPublic().getEncoded());
-            expired_keys_created += publicKeyStore.addKey(kp.uuid, getClass().getName(), 0, base64pubkey);
+            expired_keys_created += publicKeyStore.addPublicKey(kp.uuid, getClass().getName(), 0, base64pubkey);
         }
 
 
-        expired_keys_received_first_time  = publicKeyStore.getExpiredKeyUUIDs().size();
-        expired_keys_deleted              = publicKeyStore.deleteExpiredKeys();
-        expired_keys_received_second_time = publicKeyStore.getExpiredKeyUUIDs().size();
+        expired_keys_received_first_time  = publicKeyStore.getExpiredPublicKeyUUIDs().size();
+        expired_keys_deleted              = publicKeyStore.deleteExpiredPublicKeys();
+        expired_keys_received_second_time = publicKeyStore.getExpiredPublicKeyUUIDs().size();
 
 
         assertEquals(wanted_expired_keys, expired_keys_created);
@@ -129,7 +129,7 @@ public class PublicKeyDTOStoreTest {
 
     @Order(3)
     @Test
-    public void t03_add_get_delete_verify_CRUD_test() throws PublicKeyStoreException {
+    public void t03_add_get_delete_verify_CRUD_test() throws DatabaseKeyStoreException {
         int wanted_number_of_cruds = 5;
         // results
         int number_of_keys_added            = 0;
@@ -148,22 +148,22 @@ public class PublicKeyDTOStoreTest {
             final String base64pubkey = enc.encodeToString(kp.keyPair.getPublic().getEncoded());
 
             keys_to_be_added.put(kp.uuid, base64pubkey);
-            number_of_keys_added += publicKeyStore.addKey(kp.uuid, getClass().getName(), 1_000_000, base64pubkey);
+            number_of_keys_added += publicKeyStore.addPublicKey(kp.uuid, getClass().getName(), 1_000_000, base64pubkey);
         }
 
         // GET
         for (Map.Entry<UUID, String> entry : keys_to_be_added.entrySet()) {
             final UUID uuid = entry.getKey();
-            received_pubkey_data.put(uuid, publicKeyStore.getKey(uuid));
+            received_pubkey_data.put(uuid, publicKeyStore.getPublicKey(uuid));
             number_of_keys_got++;
         }
 
         // DELETE & GET
         for (Map.Entry<UUID, String> entry : keys_to_be_added.entrySet()) {
             final UUID uuid = entry.getKey();
-            number_of_keys_deleted += publicKeyStore.deleteKey(uuid);
+            number_of_keys_deleted += publicKeyStore.deletePublicKey(uuid);
             try {
-                publicKeyStore.getKey(uuid);
+                publicKeyStore.getPublicKey(uuid);
                 number_of_keys_got_after_delete++;
             } catch (final NoSuchElementException ignored){
 
