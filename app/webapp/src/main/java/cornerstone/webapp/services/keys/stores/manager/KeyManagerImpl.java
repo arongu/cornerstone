@@ -27,63 +27,78 @@ public class KeyManagerImpl implements KeyManager {
     @Inject
     private ConfigLoader configLoader;
 
-    private Set<PublicKeyData> toAdd = new HashSet<>();
+    private Set<KeyData> toAdd = new HashSet<>();
     private Set<UUID> toDelete = new HashSet<>();
+
+    public class KeyData {
+        String b64key;
+        UUID uuid;
+
+        KeyData(final UUID uuid, final String b64key) {
+            this.uuid = uuid;
+            this.b64key = b64key;
+        }
+    }
 
     public KeyManagerImpl() {
     }
 
-    public KeyManagerImpl(final ConfigLoader configLoader, final LocalKeyStore localKeyStore, final DatabaseKeyStore databaseKeyStore) {
-        this.configLoader = configLoader;
-        this.localKeyStore = localKeyStore;
-        this.databaseKeyStore = databaseKeyStore;
-    }
+    public KeyManagerImpl(final ConfigLoader configLoader,
+                          final LocalKeyStore localKeyStore,
+                          final DatabaseKeyStore databaseKeyStore,
+                          final Set<KeyData> toAdd,
+                          final Set<UUID> toDelete) {
 
-    public KeyManagerImpl(final LocalKeyStore localKeyStore, final DatabaseKeyStore databaseKeyStore, final ConfigLoader configLoader) {
+        this.configLoader = configLoader;
         this.localKeyStore = localKeyStore;
         this.databaseKeyStore = databaseKeyStore;
-        this.configLoader = configLoader;
+        this.toAdd = toAdd;
+        this.toDelete = toDelete;
     }
 
     @Override
     public void addPublicKey(final UUID uuid, final String base64_key) throws KeyManagerException {
+        if ( uuid == null)       { throw new KeyManagerException("UUID must not be null!"); }
+        if ( base64_key == null) { throw new KeyManagerException("Base64 key must not be null!"); }
+
         // try to add key to local cache
         try {
             localKeyStore.addPublicKey(uuid, base64_key);
         } catch (final NoSuchAlgorithmException | InvalidKeySpecException e) {
+            logger.error(e.getMessage());
             throw new KeyManagerException(e.getMessage());
         }
 
-        // if local cache did not find any error with the key proceed to database
+        // try to add to database, if it fails cache it
         final String nodeName = configLoader.getAppProperties().getProperty(APP_ENUM.APP_NODE_NAME.key);
         final int rsaTTL      = Integer.parseInt(configLoader.getAppProperties().getProperty(APP_ENUM.APP_RSA_TTL.key));
-        final int jwtTTL      = Integer.parseInt(configLoader.getAppProperties().getProperty(APP_ENUM.APP_RSA_TTL.key));
+        final int jwtTTL      = Integer.parseInt(configLoader.getAppProperties().getProperty(APP_ENUM.APP_JWT_TTL.key));
 
         try {
             databaseKeyStore.addPublicKey(uuid, nodeName, rsaTTL + jwtTTL, base64_key);
         } catch (final DatabaseKeyStoreException dbe) {
-            final PublicKeyData publicKeyData = new PublicKeyData(uuid, nodeName, rsaTTL + jwtTTL, null, null, base64_key);
-            toAdd.add(publicKeyData);
-            logger.error(dbe.getMessage());
+            // cache it to add it later
+            toAdd.add(new KeyData(uuid,base64_key));
+            logger.error("Failed to add {} key to database: {}", uuid, dbe.getMessage());
+            logger.info("{} key is cached, for retrial.", uuid);
         }
     }
 
     @Override
     public void addPublicKey(final UUID uuid, final PublicKey publicKey) throws KeyManagerException {
-        final String nodeName   = configLoader.getAppProperties().getProperty(APP_ENUM.APP_NODE_NAME.key);
-        final int rsaTTL        = Integer.parseInt(configLoader.getAppProperties().getProperty(APP_ENUM.APP_RSA_TTL.key));
-        final int jwtTTL        = Integer.parseInt(configLoader.getAppProperties().getProperty(APP_ENUM.APP_RSA_TTL.key));
-        final String base64_key = Base64.getEncoder().encodeToString(publicKey.getEncoded());
+        if ( uuid == null)      { throw new KeyManagerException("UUID must not be null!"); }
+        if ( publicKey == null) { throw new KeyManagerException("Public key must not be null!"); }
 
-        localKeyStore.addPublicKey(uuid, publicKey);
-
+        final String base64_key;
         try {
-            databaseKeyStore.addPublicKey(uuid, nodeName, rsaTTL + jwtTTL, base64_key);
-        } catch (final DatabaseKeyStoreException dbe) {
-            final PublicKeyData publicKeyData = new PublicKeyData(uuid, nodeName, rsaTTL + jwtTTL, null, null, base64_key);
-            toAdd.add(publicKeyData);
-            logger.error(dbe.getMessage());
+             base64_key = Base64.getEncoder().encodeToString(publicKey.getEncoded());
+        } catch (final Exception e){
+            final String message = "Error during public key conversion: " + e.getMessage();
+            logger.error(message);
+            throw new KeyManagerException(message);
         }
+
+        addPublicKey(uuid, base64_key);
     }
 
     @Override

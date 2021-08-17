@@ -18,9 +18,12 @@ import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.util.Base64;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class KeyManagerImplTest {
     private static ConfigLoader configLoader;
@@ -46,8 +49,8 @@ public class KeyManagerImplTest {
     }
 
     @Test
-    public void addPublicKey_shouldAddPublicKeyToLocalKeyStoreAndThenDatabaseKeyStore_whenEverythingIsOK() throws KeyManagerException, DatabaseKeyStoreException {
-        final KeyManager keyManager = new KeyManagerImpl(configLoader, localKeyStore, databaseKeyStore);
+    public void addPublicKey_shouldAddPublicKeyToLocalKeyStoreAndThenDatabaseKeyStore_whenEverythingIsOK_PublicKey() throws KeyManagerException, DatabaseKeyStoreException {
+        final KeyManager keyManager = new KeyManagerImpl(configLoader, localKeyStore, databaseKeyStore, null, null);
         final KeyPairWithUUID keyPairWithUUID = new KeyPairWithUUID();
         final PublicKey publicKey = keyPairWithUUID.keyPair.getPublic();
         final UUID uuid = keyPairWithUUID.uuid;
@@ -62,8 +65,8 @@ public class KeyManagerImplTest {
     }
 
     @Test
-    public void addPublicKey_asBase64Key_shouldAddPublicKeyToLocalKeyStoreAndThenDatabaseKeyStore_whenEverythingIsOK() throws KeyManagerException, DatabaseKeyStoreException {
-        final KeyManager keyManager = new KeyManagerImpl(configLoader, localKeyStore, databaseKeyStore);
+    public void addPublicKey_shouldAddPublicKeyToLocalKeyStoreAndThenDatabaseKeyStore_whenEverythingIsOK_Base64() throws KeyManagerException, DatabaseKeyStoreException {
+        final KeyManager keyManager = new KeyManagerImpl(configLoader, localKeyStore, databaseKeyStore, null, null);
         final KeyPairWithUUID keyPairWithUUID = new KeyPairWithUUID();
         final PublicKey publicKey = keyPairWithUUID.keyPair.getPublic();
         final UUID uuid = keyPairWithUUID.uuid;
@@ -77,22 +80,38 @@ public class KeyManagerImplTest {
         assertEquals(b64PublicKey, databaseKeyStore.getPublicKey(uuid).getBase64Key());
     }
 
-//    @Test
-//    public void addPublicKey_shouldThrowExceptionAndShouldNotCallDatabaseKeyStore_whenKeyIsInvalid() throws KeyManagerException, DatabaseKeyStoreException, InvalidKeySpecException, NoSuchAlgorithmException {
-//        final LocalKeyStore mockLocalKeyStore       = Mockito.mock(LocalKeyStore.class);
-//        final DatabaseKeyStore mockDatabaseKeyStore = Mockito.mock(DatabaseKeyStore.class);
-//        Mockito.doThrow(new InvalidKeySpecException())
-//               .when(mockLocalKeyStore).addPublicKey(Mockito.any(UUID.class), Mockito.any(PublicKey.class));
-//        //Mockito.when(mockLocalKeyStore.addPublicKey(Mockito.any(), (String) Mockito.any())).thenThrow(InvalidKeySpecException.class);
-////        Mockito.when(
-////                mockLocalKeyStore).addPublicKey(Mockito.isA(UUID.class), Mockito.isA(PublicKey.class);
-//     //Mockito.when(mockLocalKeyStore.addPublicKey(Mockito.any(UUID.class), Mockito.any(String.class))).thenThrow(new InvalidKeySpecException());
-//
-//        final KeyManager keyManager = new KeyManagerImpl(configLoader, mockLocalKeyStore, mockDatabaseKeyStore);
-//
-//        keyManager.addPublicKey(UUID.randomUUID(), (PublicKey) null);
-//
-//        //assertThrows(KeyManagerException.class, () -> keyManager.addPublicKey(UUID.randomUUID(), "not a key"));
-//        //Mockito.verify(mockDatabaseKeyStore, Mockito.times(0)).addPublicKey(Mockito.any(UUID.class), Mockito.any(), Mockito.any(), Mockito.any());
-//    }
+    @Test
+    public void addPublicKey_shouldThrowKeyManagerException_whenKeyIsNull() throws InvalidKeySpecException, NoSuchAlgorithmException {
+        final LocalKeyStore mockLocalKeyStore       = Mockito.mock(LocalKeyStore.class);
+        final DatabaseKeyStore mockDatabaseKeyStore = Mockito.mock(DatabaseKeyStore.class);
+        Mockito.doThrow(new InvalidKeySpecException()).when(mockLocalKeyStore).addPublicKey(Mockito.any(), (String) Mockito.any());
+        final KeyManager keyManager = new KeyManagerImpl(configLoader, mockLocalKeyStore, mockDatabaseKeyStore, null, null);
+
+        assertThrows(KeyManagerException.class, () -> keyManager.addPublicKey(UUID.randomUUID(), (PublicKey) null));
+    }
+
+    @Test
+    public void addPublicKey_shouldThrowKeyManagerException_whenKeyIsInvalid() throws InvalidKeySpecException, NoSuchAlgorithmException {
+        final LocalKeyStore mockLocalKeyStore       = Mockito.mock(LocalKeyStore.class);
+        final DatabaseKeyStore mockDatabaseKeyStore = Mockito.mock(DatabaseKeyStore.class);
+        Mockito.doThrow(new InvalidKeySpecException()).when(mockLocalKeyStore).addPublicKey(Mockito.any(), (String) Mockito.any());
+        final KeyManager keyManager = new KeyManagerImpl(configLoader, mockLocalKeyStore, mockDatabaseKeyStore, null, null);
+
+        assertThrows(KeyManagerException.class, () -> keyManager.addPublicKey(UUID.randomUUID(), "thisIsNotaKey"));
+    }
+
+    // todo refine it
+    @Test
+    public void addPublicKey_shouldCacheKeyForAddition_whenDatabaseThrowsException() throws KeyManagerException, DatabaseKeyStoreException {
+        final Set<KeyManagerImpl.KeyData> toAdd     = new HashSet<>();
+        final LocalKeyStore mockLocalKeyStore       = Mockito.mock(LocalKeyStore.class);
+        final DatabaseKeyStore mockDatabaseKeyStore = Mockito.mock(DatabaseKeyStore.class);
+        final UUID uuid                             = UUID.randomUUID();
+        Mockito.doThrow(new DatabaseKeyStoreException("Nope."))
+                .when(mockDatabaseKeyStore)
+                .addPublicKey(Mockito.any(UUID.class), Mockito.any(String.class), Mockito.any(Integer.class), Mockito.any(String.class));
+        final KeyManager keyManager = new KeyManagerImpl(configLoader, mockLocalKeyStore, mockDatabaseKeyStore, toAdd, null);
+
+        keyManager.addPublicKey(uuid, "mockedlocalkeystoresodoesntmatter");
+    }
 }
