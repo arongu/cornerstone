@@ -27,18 +27,8 @@ public class KeyManagerImpl implements KeyManager {
     @Inject
     private ConfigLoader configLoader;
 
-    private Set<KeyData> toAdd = new HashSet<>();
+    private Map<UUID, String> toAdd = new HashMap<>();
     private Set<UUID> toDelete = new HashSet<>();
-
-    public class KeyData {
-        String b64key;
-        UUID uuid;
-
-        KeyData(final UUID uuid, final String b64key) {
-            this.uuid = uuid;
-            this.b64key = b64key;
-        }
-    }
 
     public KeyManagerImpl() {
     }
@@ -46,7 +36,7 @@ public class KeyManagerImpl implements KeyManager {
     public KeyManagerImpl(final ConfigLoader configLoader,
                           final LocalKeyStore localKeyStore,
                           final DatabaseKeyStore databaseKeyStore,
-                          final Set<KeyData> toAdd,
+                          final Map<UUID,String> toAdd,
                           final Set<UUID> toDelete) {
 
         this.configLoader = configLoader;
@@ -78,9 +68,11 @@ public class KeyManagerImpl implements KeyManager {
             databaseKeyStore.addPublicKey(uuid, nodeName, rsaTTL + jwtTTL, base64_key);
         } catch (final DatabaseKeyStoreException dbe) {
             // cache it to add it later
-            toAdd.add(new KeyData(uuid,base64_key));
             logger.error("Failed to add {} key to database: {}", uuid, dbe.getMessage());
-            logger.info("{} key is cached, for retrial.", uuid);
+            if ( ! toAdd.containsKey(uuid)){
+                toAdd.put(uuid, base64_key);
+                logger.info("{} key is cached for retry.", uuid);
+            }
         }
     }
 
@@ -104,6 +96,7 @@ public class KeyManagerImpl implements KeyManager {
     @Override
     public void deletePublicKey(UUID uuid) {
         localKeyStore.deletePublicKey(uuid);
+        toAdd.remove(uuid); // in case the key was added earlier, but failed to be published, then give upon it
         //databaseKeyStore.deletePublicKey(uuid);
     }
 
