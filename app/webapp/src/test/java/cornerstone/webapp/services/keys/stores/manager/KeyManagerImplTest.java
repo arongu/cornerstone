@@ -17,7 +17,10 @@ import java.nio.file.Paths;
 import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
-import java.util.*;
+import java.util.Base64;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -87,8 +90,8 @@ public class KeyManagerImplTest {
     }
 
     /*
-        [throws] local keystore
-        [should not call] database keystore
+        [throws exception] local keystore
+        [should not call ] database keystore
         PublicKey null
      */
     @Test
@@ -107,12 +110,12 @@ public class KeyManagerImplTest {
     }
 
     /*
-        [throws] local keystore
-        [should not call] database keystore
+        [throws exception] local keystore
+        [should not call ] database keystore
         PublicKey invalid
     */
     @Test
-    public void addPublicKey_shouldThrowKeyManagerException_whenPublicKeyIsInvalid() throws InvalidKeySpecException, NoSuchAlgorithmException, DatabaseKeyStoreException {
+    public void addPublicKey_shouldThrowKeyManagerException_whenPublicKeyIsInvalid_Base64() throws InvalidKeySpecException, NoSuchAlgorithmException, DatabaseKeyStoreException {
         final LocalKeyStore mockLocalKeyStore       = Mockito.mock(LocalKeyStore.class);
         Mockito.doThrow(new InvalidKeySpecException()).when(mockLocalKeyStore).addPublicKey(Mockito.any(), (String) Mockito.any());
         final DatabaseKeyStore mockDatabaseKeyStore = Mockito.mock(DatabaseKeyStore.class);
@@ -126,13 +129,13 @@ public class KeyManagerImplTest {
     }
 
     /*
-        [throws] local keystore
-        [should call 1x ] database keystore
+        [OK]               local keystore
+        [throws exception] database keystore
         [should use cache] cache
         PublicKey valid
     */
     @Test
-    public void addPublicKey_shouldCachePublicKeyForAddition_whenDatabaseThrowsException() throws DatabaseKeyStoreException, KeyManagerException {
+    public void addPublicKey_shouldCachePublicKeyForAddition_whenDatabaseThrowsException_PublicKey() throws DatabaseKeyStoreException, KeyManagerException, InvalidKeySpecException, NoSuchAlgorithmException {
         final Map<UUID,String> toAdd                = new HashMap<>();
         final LocalKeyStore mockLocalKeyStore       = Mockito.mock(LocalKeyStore.class);
         final DatabaseKeyStore mockDatabaseKeyStore = Mockito.mock(DatabaseKeyStore.class);
@@ -146,6 +149,32 @@ public class KeyManagerImplTest {
 
 
         assertTrue(toAdd.containsValue(base64key));
+        Mockito.verify(mockLocalKeyStore, Mockito.times(1)).addPublicKey(Mockito.any(UUID.class), Mockito.any(String.class));
+        Mockito.verify(mockDatabaseKeyStore, Mockito.times(1)).addPublicKey(Mockito.any(UUID.class), Mockito.any(String.class), Mockito.anyInt(), Mockito.any(String.class));
+    }
+
+    /*
+        [OK]               local keystore
+        [throws exception] database keystore
+        [should use cache] cache
+        base64key valid
+    */
+    @Test
+    public void addPublicKey_shouldCachePublicKeyForAddition_whenDatabaseThrowsException_Base64() throws DatabaseKeyStoreException, KeyManagerException, InvalidKeySpecException, NoSuchAlgorithmException {
+        final Map<UUID,String> toAdd                = new HashMap<>();
+        final LocalKeyStore mockLocalKeyStore       = Mockito.mock(LocalKeyStore.class);
+        final DatabaseKeyStore mockDatabaseKeyStore = Mockito.mock(DatabaseKeyStore.class);
+        Mockito.doThrow(new DatabaseKeyStoreException("DB error.")).when(mockDatabaseKeyStore).addPublicKey(Mockito.any(UUID.class), Mockito.any(String.class), Mockito.any(Integer.class), Mockito.any(String.class));
+        final KeyPairWithUUID keyPairWithUUID       = new KeyPairWithUUID();
+        final String base64key                      = Base64.getEncoder().encodeToString(keyPairWithUUID.keyPair.getPublic().getEncoded());
+
+
+        final KeyManager keyManager = new KeyManagerImpl(configLoader, mockLocalKeyStore, mockDatabaseKeyStore, toAdd, null);
+        keyManager.addPublicKey(keyPairWithUUID.uuid, base64key);
+
+
+        assertTrue(toAdd.containsValue(base64key));
+        Mockito.verify(mockLocalKeyStore, Mockito.times(1)).addPublicKey(Mockito.any(UUID.class), Mockito.any(String.class));
         Mockito.verify(mockDatabaseKeyStore, Mockito.times(1)).addPublicKey(Mockito.any(UUID.class), Mockito.any(String.class), Mockito.anyInt(), Mockito.any(String.class));
     }
 }

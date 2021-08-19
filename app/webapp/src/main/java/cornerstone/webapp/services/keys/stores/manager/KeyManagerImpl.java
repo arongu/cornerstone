@@ -2,7 +2,6 @@ package cornerstone.webapp.services.keys.stores.manager;
 
 import cornerstone.webapp.configuration.ConfigLoader;
 import cornerstone.webapp.configuration.enums.APP_ENUM;
-import cornerstone.webapp.services.keys.common.PublicKeyData;
 import cornerstone.webapp.services.keys.stores.db.DatabaseKeyStore;
 import cornerstone.webapp.services.keys.stores.db.DatabaseKeyStoreException;
 import cornerstone.webapp.services.keys.stores.local.LocalKeyStore;
@@ -55,7 +54,7 @@ public class KeyManagerImpl implements KeyManager {
         try {
             localKeyStore.addPublicKey(uuid, base64_key);
         } catch (final NoSuchAlgorithmException | InvalidKeySpecException e) {
-            logger.error(e.getMessage());
+            logger.error("Failed to add key '{}' to local keystore!", uuid);
             throw new KeyManagerException(e.getMessage());
         }
 
@@ -66,12 +65,13 @@ public class KeyManagerImpl implements KeyManager {
 
         try {
             databaseKeyStore.addPublicKey(uuid, nodeName, rsaTTL + jwtTTL, base64_key);
+            logger.info("Key '{}' added.", uuid);
         } catch (final DatabaseKeyStoreException dbe) {
             // cache it to add it later
-            logger.error("Failed to add {} key to database: {}", uuid, dbe.getMessage());
+            logger.error("Failed to add key '{}' to database! Exception message: {}", uuid, dbe.getMessage());
             if ( ! toAdd.containsKey(uuid)){
                 toAdd.put(uuid, base64_key);
-                logger.info("{} key is cached for retry.", uuid);
+                logger.info("Key '{}' is cached for later re-insert.", uuid);
             }
         }
     }
@@ -85,7 +85,7 @@ public class KeyManagerImpl implements KeyManager {
         try {
              base64_key = Base64.getEncoder().encodeToString(publicKey.getEncoded());
         } catch (final Exception e){
-            final String message = "Error during public key conversion: " + e.getMessage();
+            final String message = "Error during public key conversion! Exception message: " + e.getMessage();
             logger.error(message);
             throw new KeyManagerException(message);
         }
