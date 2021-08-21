@@ -51,7 +51,7 @@ public class PublicKeyStoreImplTest {
 
         // ADD
         for (final Map.Entry<UUID,String> e : keys_to_be_added.entrySet()) {
-            count_added += publicKeyStore.addPublicKey(e.getKey(), getClass().getName(), 111_222_333, e.getValue());
+            count_added += publicKeyStore.addPublicKey(e.getKey(), getClass().getSimpleName(), 111_222_333, e.getValue());
         }
         // GET
         List<PublicKeyData> liveKeys = publicKeyStore.getLivePublicKeys();
@@ -111,7 +111,7 @@ public class PublicKeyStoreImplTest {
         for (int i = 0; i < wanted_expired_keys; i++) {
             final KeyPairWithUUID kp = new KeyPairWithUUID();
             final String base64pubkey = enc.encodeToString(kp.keyPair.getPublic().getEncoded());
-            expired_keys_created += publicKeyStore.addPublicKey(kp.uuid, getClass().getName(), 0, base64pubkey);
+            expired_keys_created += publicKeyStore.addPublicKey(kp.uuid, getClass().getSimpleName(), 0, base64pubkey);
         }
 
 
@@ -148,7 +148,7 @@ public class PublicKeyStoreImplTest {
             final String base64pubkey = enc.encodeToString(kp.keyPair.getPublic().getEncoded());
 
             keys_to_be_added.put(kp.uuid, base64pubkey);
-            number_of_keys_added += publicKeyStore.addPublicKey(kp.uuid, getClass().getName(), 1_000_000, base64pubkey);
+            number_of_keys_added += publicKeyStore.addPublicKey(kp.uuid, getClass().getSimpleName(), 1_000_000, base64pubkey);
         }
 
         // GET
