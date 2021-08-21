@@ -8,8 +8,9 @@ public class MessageElements {
     public static final String PUBLIC_AND_PRIVATE_KEY = "PUBLIC AND PRIVATE KEY";
 
     // prefixes
-    public static final String PREFIX_DB    = "(DB) ";
-    public static final String PREFIX_LOCAL = "(LOCAL) ";
+    public static final String PREFIX_DB      = "(DB) ";
+    public static final String PREFIX_LOCAL   = "(LOCAL) ";
+    public static final String PREFIX_MANAGER = "(MANAGER) ";
 
     // postfixes
     public static final String POSTFIX_EXPIRED = " (EXPIRED)";
@@ -29,4 +30,18 @@ public class MessageElements {
     public static final String DELETED = "DELETED";
     public static final String KEPT    = "KEPT";
     public static final String NO_SUCH = "NO SUCH";
+
+    // manager
+    // stores
+    public static final String DATABASE_KEYSTORE_ERROR           = "DB KEYSTORE ERROR";
+    public static final String LOCAL_KEYSTORE_ERROR              = "LOCAL KEYSTORE ERROR";
+    // cache add
+    public static final String PUBLIC_KEY_ADDED_FOR_REINSERT     = "PUBLIC KEY ADDED TO RE-INSERT";
+    public static final String PUBLIC_KEY_REMOVED_FROM_REINSERT  = "PUBLIC KEY REMOVED FROM RE-INSERT";
+    // cache remove
+    public static final String PUBLIC_KEY_ADDED_TO_RE_DELETE     = "PUBLIC KEY ADDED TO RE-DELETE";
+    public static final String PUBLIC_KEY_REMOVED_FROM_RE_DELETE = "PUBLIC KEY REMOVED FROM RE-DELETE";
+    // conversion, invalid
+    public static final String PUBLIC_KEY_CONVERSION_ERROR       = "PUBLIC KEY BASE64 CONVERSION ERROR";
+    public static final String PUBLIC_KEY_IS_INVALID             = "PUBLIC KEY IS INVALID";
 }

@@ -6,6 +6,7 @@ import cornerstone.webapp.services.keys.stores.db.DatabaseKeyStore;
 import cornerstone.webapp.services.keys.stores.db.DatabaseKeyStoreException;
 import cornerstone.webapp.services.keys.stores.local.LocalKeyStore;
 import cornerstone.webapp.services.keys.stores.local.SigningKeys;
+import cornerstone.webapp.services.keys.stores.logging.MessageElements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,8 +55,9 @@ public class KeyManagerImpl implements KeyManager {
         try {
             localKeyStore.addPublicKey(uuid, base64_key);
         } catch (final NoSuchAlgorithmException | InvalidKeySpecException e) {
-            logger.error("Failed to add key '{}' to local keystore!", uuid);
-            throw new KeyManagerException(e.getMessage());
+            final String msg = MessageElements.PREFIX_MANAGER + " " + MessageElements.PUBLIC_KEY_IS_INVALID + " " + uuid.toString();
+            logger.error(msg);
+            throw new KeyManagerException(msg);
         }
 
         // try to add to database, if it fails cache it
@@ -65,13 +67,14 @@ public class KeyManagerImpl implements KeyManager {
 
         try {
             databaseKeyStore.addPublicKey(uuid, nodeName, rsaTTL + jwtTTL, base64_key);
-            logger.info("Key '{}' added.", uuid);
+            logger.info(MessageElements.PREFIX_MANAGER + " " + MessageElements.ADDED + " " + MessageElements.PUBLIC_KEY + " " + uuid.toString());
+
         } catch (final DatabaseKeyStoreException dbe) {
-            // cache it to add it later
-            logger.error("Failed to add key '{}' to database! Exception message: {}", uuid, dbe.getMessage());
+            logger.error(MessageElements.PREFIX_MANAGER + " " + MessageElements.DATABASE_KEYSTORE_ERROR + ": " + dbe.getMessage());
+
             if ( ! toAdd.containsKey(uuid)){
                 toAdd.put(uuid, base64_key);
-                logger.info("Key '{}' is cached for later re-insert.", uuid);
+                logger.info(MessageElements.PREFIX_MANAGER + " " + MessageElements.PUBLIC_KEY_ADDED_FOR_REINSERT + " " + uuid);
             }
         }
     }
@@ -85,19 +88,25 @@ public class KeyManagerImpl implements KeyManager {
         try {
              base64_key = Base64.getEncoder().encodeToString(publicKey.getEncoded());
         } catch (final Exception e){
-            final String message = "Error during public key conversion! Exception message: " + e.getMessage();
-            logger.error(message);
-            throw new KeyManagerException(message);
+            final String msg = MessageElements.PREFIX_MANAGER + " " + MessageElements.PUBLIC_KEY_CONVERSION_ERROR;
+            logger.error(msg);
+            throw new KeyManagerException(msg);
         }
 
         addPublicKey(uuid, base64_key);
     }
 
     @Override
-    public void deletePublicKey(UUID uuid) {
+    public void deletePublicKey(final UUID uuid) {
         localKeyStore.deletePublicKey(uuid);
         toAdd.remove(uuid); // in case the key was added earlier, but failed to be published, then give upon it
-        //databaseKeyStore.deletePublicKey(uuid);
+        try {
+            databaseKeyStore.deletePublicKey(uuid);
+        } catch (final DatabaseKeyStoreException dbe){
+            logger.error(MessageElements.PREFIX_MANAGER + " " + MessageElements.DATABASE_KEYSTORE_ERROR + ": " + dbe.getMessage());
+            toDelete.add(uuid);
+            logger.info(MessageElements.PREFIX_MANAGER + " " + MessageElements.PUBLIC_KEY_ADDED_TO_RE_DELETE + " " + uuid);
+        }
     }
 
     @Override

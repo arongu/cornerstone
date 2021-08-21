@@ -39,8 +39,6 @@ public class KeyManagerImplTest {
             configLoader                          = new ConfigLoader(key_file, conf_file);
             localKeyStore                         = new LocalKeyStoreImpl();
             databaseKeyStore                      = new DatabaseKeyStoreImpl(new WorkDB(configLoader));
-            final KeyPairWithUUID keyPairWithUUID = new KeyPairWithUUID();
-            localKeyStore.setSigningKeys(keyPairWithUUID.uuid, keyPairWithUUID.keyPair.getPrivate(), keyPairWithUUID.keyPair.getPublic());
 
         } catch (final IOException e) {
             e.printStackTrace();
@@ -54,18 +52,18 @@ public class KeyManagerImplTest {
      */
     @Test
     public void addPublicKey_shouldAddPublicKeyToLocalKeyStoreAndThenDatabaseKeyStore_whenEverythingIsOK_PublicKey() throws KeyManagerException, DatabaseKeyStoreException {
-        final KeyManager keyManager = new KeyManagerImpl(configLoader, localKeyStore, databaseKeyStore, null, null);
-        final KeyPairWithUUID keyPairWithUUID = new KeyPairWithUUID();
-        final PublicKey publicKey = keyPairWithUUID.keyPair.getPublic();
-        final UUID uuid = keyPairWithUUID.uuid;
-        final String b64PublicKey = Base64.getEncoder().encodeToString(keyPairWithUUID.keyPair.getPublic().getEncoded());
+        final KeyManager keyManager   = new KeyManagerImpl(configLoader, localKeyStore, databaseKeyStore, null, null);
+        final KeyPairWithUUID keyPair = new KeyPairWithUUID();
+        final UUID uuid               = keyPair.uuid;
+        final PublicKey pubKey        = keyPair.keyPair.getPublic();
+        final String b64pubKey        = Base64.getEncoder().encodeToString(pubKey.getEncoded());
 
 
-        keyManager.addPublicKey(uuid, publicKey);
+        keyManager.addPublicKey(uuid, pubKey);
 
 
-        assertEquals(publicKey, localKeyStore.getPublicKey(uuid));
-        assertEquals(b64PublicKey, databaseKeyStore.getPublicKey(uuid).getBase64Key());
+        assertEquals(pubKey, localKeyStore.getPublicKey(uuid));
+        assertEquals(b64pubKey, databaseKeyStore.getPublicKey(uuid).getBase64Key());
     }
 
     /*
@@ -75,18 +73,18 @@ public class KeyManagerImplTest {
      */
     @Test
     public void addPublicKey_shouldAddPublicKeyToLocalKeyStoreAndThenDatabaseKeyStore_whenEverythingIsOK_Base64() throws KeyManagerException, DatabaseKeyStoreException {
-        final KeyManager keyManager = new KeyManagerImpl(configLoader, localKeyStore, databaseKeyStore, null, null);
-        final KeyPairWithUUID keyPairWithUUID = new KeyPairWithUUID();
-        final PublicKey publicKey = keyPairWithUUID.keyPair.getPublic();
-        final UUID uuid = keyPairWithUUID.uuid;
-        final String b64PublicKey = Base64.getEncoder().encodeToString(keyPairWithUUID.keyPair.getPublic().getEncoded());
+        final KeyManager keyManager   = new KeyManagerImpl(configLoader, localKeyStore, databaseKeyStore, null, null);
+        final KeyPairWithUUID keyPair = new KeyPairWithUUID();
+        final UUID uuid               = keyPair.uuid;
+        final PublicKey pubKey        = keyPair.keyPair.getPublic();
+        final String b64pubKey        = Base64.getEncoder().encodeToString(pubKey.getEncoded());
 
 
-        keyManager.addPublicKey(uuid, b64PublicKey);
+        keyManager.addPublicKey(uuid, b64pubKey);
 
 
-        assertEquals(publicKey, localKeyStore.getPublicKey(uuid));
-        assertEquals(b64PublicKey, databaseKeyStore.getPublicKey(uuid).getBase64Key());
+        assertEquals(pubKey, localKeyStore.getPublicKey(uuid));
+        assertEquals(b64pubKey, databaseKeyStore.getPublicKey(uuid).getBase64Key());
     }
 
     /*
@@ -140,16 +138,16 @@ public class KeyManagerImplTest {
         final LocalKeyStore mockLocalKeyStore       = Mockito.mock(LocalKeyStore.class);
         final DatabaseKeyStore mockDatabaseKeyStore = Mockito.mock(DatabaseKeyStore.class);
         Mockito.doThrow(new DatabaseKeyStoreException("DB error.")).when(mockDatabaseKeyStore).addPublicKey(Mockito.any(UUID.class), Mockito.any(String.class), Mockito.any(Integer.class), Mockito.any(String.class));
-        final KeyPairWithUUID keyPairWithUUID       = new KeyPairWithUUID();
-        final String base64key                      = Base64.getEncoder().encodeToString(keyPairWithUUID.keyPair.getPublic().getEncoded());
+        final KeyPairWithUUID keyPair               = new KeyPairWithUUID();
+        final String b64pubKey                      = Base64.getEncoder().encodeToString(keyPair.keyPair.getPublic().getEncoded());
 
 
         final KeyManager keyManager = new KeyManagerImpl(configLoader, mockLocalKeyStore, mockDatabaseKeyStore, toAdd, null);
-        keyManager.addPublicKey(keyPairWithUUID.uuid, keyPairWithUUID.keyPair.getPublic());
+        keyManager.addPublicKey(keyPair.uuid, keyPair.keyPair.getPublic());
 
 
-        assertTrue(toAdd.containsValue(base64key));
-        Mockito.verify(mockLocalKeyStore, Mockito.times(1)).addPublicKey(Mockito.any(UUID.class), Mockito.any(String.class));
+        assertTrue(toAdd.containsValue(b64pubKey));
+        Mockito.verify(mockLocalKeyStore,    Mockito.times(1)).addPublicKey(Mockito.any(UUID.class), Mockito.any(String.class));
         Mockito.verify(mockDatabaseKeyStore, Mockito.times(1)).addPublicKey(Mockito.any(UUID.class), Mockito.any(String.class), Mockito.anyInt(), Mockito.any(String.class));
     }
 
@@ -165,16 +163,28 @@ public class KeyManagerImplTest {
         final LocalKeyStore mockLocalKeyStore       = Mockito.mock(LocalKeyStore.class);
         final DatabaseKeyStore mockDatabaseKeyStore = Mockito.mock(DatabaseKeyStore.class);
         Mockito.doThrow(new DatabaseKeyStoreException("DB error.")).when(mockDatabaseKeyStore).addPublicKey(Mockito.any(UUID.class), Mockito.any(String.class), Mockito.any(Integer.class), Mockito.any(String.class));
-        final KeyPairWithUUID keyPairWithUUID       = new KeyPairWithUUID();
-        final String base64key                      = Base64.getEncoder().encodeToString(keyPairWithUUID.keyPair.getPublic().getEncoded());
+        final KeyPairWithUUID keyPair               = new KeyPairWithUUID();
+        final String b64pubKey                      = Base64.getEncoder().encodeToString(keyPair.keyPair.getPublic().getEncoded());
 
 
         final KeyManager keyManager = new KeyManagerImpl(configLoader, mockLocalKeyStore, mockDatabaseKeyStore, toAdd, null);
-        keyManager.addPublicKey(keyPairWithUUID.uuid, base64key);
+        keyManager.addPublicKey(keyPair.uuid, b64pubKey);
 
 
-        assertTrue(toAdd.containsValue(base64key));
-        Mockito.verify(mockLocalKeyStore, Mockito.times(1)).addPublicKey(Mockito.any(UUID.class), Mockito.any(String.class));
+        assertTrue(toAdd.containsValue(b64pubKey));
+        Mockito.verify(mockLocalKeyStore,    Mockito.times(1)).addPublicKey(Mockito.any(UUID.class), Mockito.any(String.class));
         Mockito.verify(mockDatabaseKeyStore, Mockito.times(1)).addPublicKey(Mockito.any(UUID.class), Mockito.any(String.class), Mockito.anyInt(), Mockito.any(String.class));
+    }
+
+    /*
+        [OK]               local keystore
+        [OK]               database keystore
+        [should use 1x]    add cache
+        [should use 1x]    delete cache
+        base64key valid
+    */
+    @Test
+    public void deleteKey_shouldDeletePublicKeyFromLocalAndDatabaseKeyStoreAndAlsoFromBothCaches_whenEverythingIsOK_Base64(){
+
     }
 }
