@@ -102,9 +102,10 @@ public class KeyManagerImpl implements KeyManager {
         toAdd.remove(uuid); // in case the key was added earlier, but failed to be published, then give upon it
         try {
             databaseKeyStore.deletePublicKey(uuid);
+            toDelete.remove(uuid); // in case it was in a delete list, get rid of it
         } catch (final DatabaseKeyStoreException dbe){
             logger.error(MessageElements.PREFIX_MANAGER + " " + MessageElements.DATABASE_KEYSTORE_ERROR + ": " + dbe.getMessage());
-            toDelete.add(uuid);
+            toDelete.add(uuid); // if it cannot be removed from the db at this time, add it to the removal list
             logger.info(MessageElements.PREFIX_MANAGER + " " + MessageElements.PUBLIC_KEY_ADDED_TO_RE_DELETE + " " + uuid);
         }
     }
