@@ -60,13 +60,13 @@ public class DatabaseKeyStoreImpl implements DatabaseKeyStore {
             ps.setInt(3, ttl);
             ps.setString(4, base64_key);
 
-            final String logMsg = MessageElements.PREFIX_DB + " " + MessageElements.ADDED + " " + MessageElements.PUBLIC_KEY + " " + uuid;
-            logger.info(logMsg);
+            final String m = MessageElements.PREFIX_DB + MessageElements.ADDED + " " + MessageElements.PUBLIC_KEY + " " + uuid;
+            logger.info(m);
             return ps.executeUpdate();
 
         } catch (final SQLException e) {
-            final String errorLog = String.format(ERROR_MESSAGE_FAILED_TO_INSERT_PUBLIC_KEY, uuid.toString(), e.getMessage(), e.getSQLState(), e.getErrorCode());
-            logger.error(errorLog);
+            final String em = String.format(ERROR_MESSAGE_FAILED_TO_INSERT_PUBLIC_KEY, uuid.toString(), e.getMessage(), e.getSQLState(), e.getErrorCode());
+            logger.error(em);
             throw new DatabaseKeyStoreException();
         }
     }
@@ -80,14 +80,14 @@ public class DatabaseKeyStoreImpl implements DatabaseKeyStore {
     public int deletePublicKey(final UUID uuid) throws DatabaseKeyStoreException {
         try (final Connection conn = workDB.getConnection(); final PreparedStatement ps = conn.prepareStatement(SQL_DELETE_PUBLIC_KEY)) {
             ps.setObject(1, uuid);
-            final String logMsg = MessageElements.PREFIX_DB + " " + MessageElements.DELETED + " " + MessageElements.PUBLIC_KEY + " " + uuid;
+            final String m = MessageElements.PREFIX_DB + MessageElements.DELETED + " " + MessageElements.PUBLIC_KEY + " " + uuid;
 
-            logger.info(logMsg);
+            logger.info(m);
             return ps.executeUpdate();
 
         } catch (final SQLException e) {
-            final String errorLog = String.format(ERROR_MESSAGE_FAILED_TO_DELETE_PUBLIC_KEY, uuid.toString(), e.getMessage(), e.getSQLState(), e.getErrorCode());
-            logger.error(errorLog);
+            final String em = String.format(ERROR_MESSAGE_FAILED_TO_DELETE_PUBLIC_KEY, uuid.toString(), e.getMessage(), e.getSQLState(), e.getErrorCode());
+            logger.error(em);
             throw new DatabaseKeyStoreException();
         }
     }
@@ -115,19 +115,19 @@ public class DatabaseKeyStoreImpl implements DatabaseKeyStore {
                         rs.getString("base64_key")
                 );
 
-                final String logMsg = MessageElements.PREFIX_DB + " " + MessageElements.FETCHED + " " + MessageElements.PUBLIC_KEY + " " + keyData;
-                logger.info(logMsg);
+                final String m = MessageElements.PREFIX_DB + MessageElements.FETCHED + " " + MessageElements.PUBLIC_KEY + " " + keyData;
+                logger.info(m);
                 return keyData;
 
             } else {
-                final String errorLog = MessageElements.PREFIX_DB + " " + MessageElements.NO_SUCH + " " + MessageElements.PUBLIC_KEY + " " + uuid;
-                logger.info(errorLog);
+                final String em = MessageElements.PREFIX_DB + MessageElements.NO_SUCH + " " + MessageElements.PUBLIC_KEY + " " + uuid;
+                logger.info(em);
                 throw new NoSuchElementException();
             }
 
         } catch (final SQLException e) {
-            final String errorLog = String.format(ERROR_MESSAGE_FAILED_TO_SELECT_PUBLIC_KEY, uuid.toString(), e.getMessage(), e.getSQLState(), e.getErrorCode());
-            logger.error(errorLog);
+            final String em = String.format(ERROR_MESSAGE_FAILED_TO_SELECT_PUBLIC_KEY, uuid.toString(), e.getMessage(), e.getSQLState(), e.getErrorCode());
+            logger.error(em);
             throw new DatabaseKeyStoreException();
         }
     }
@@ -156,11 +156,11 @@ public class DatabaseKeyStoreImpl implements DatabaseKeyStore {
                 }
             }
 
-            final String logMsg  = MessageElements.PREFIX_DB   + " " + MessageElements.NUMBER_OF_FETCHED + " " + MessageElements.PUBLIC_KEYS + " " + MessageElements.POSTFIX_LIVE + " " + keys.size();
-            final String logMsg2 = MessageElements.PUBLIC_KEYS + " " + MessageElements.POSTFIX_LIVE + " " + keys;
+            final String m  = MessageElements.PREFIX_DB   + MessageElements.NUMBER_OF_FETCHED + " " + MessageElements.PUBLIC_KEYS + " " + MessageElements.POSTFIX_LIVE + " " + keys.size();
+            final String m2 = MessageElements.PUBLIC_KEYS + MessageElements.POSTFIX_LIVE + " " + keys;
 
-            logger.info(logMsg);
-            logger.info(logMsg2);
+            logger.info(m);
+            logger.info(m2);
             return keys;
 
         } catch (final SQLException e) {
@@ -187,15 +187,15 @@ public class DatabaseKeyStoreImpl implements DatabaseKeyStore {
                 }
             }
 
-            final String logMsg1 = MessageElements.PREFIX_DB + " " + MessageElements.NUMBER_OF_FETCHED + " " + MessageElements.PUBLIC_KEY_UUIDS + " " + MessageElements.POSTFIX_LIVE + " " + uuids.size();
-            final String logMsg2 = MessageElements.PREFIX_DB + " " + MessageElements.FETCHED           + " " + MessageElements.PUBLIC_KEY_UUIDS + " " + MessageElements.POSTFIX_LIVE + " " + uuids;
-            logger.info(logMsg1);
-            logger.info(logMsg2);
+            final String m  = MessageElements.PREFIX_DB + MessageElements.NUMBER_OF_FETCHED + " " + MessageElements.PUBLIC_KEY_UUIDS + " " + MessageElements.POSTFIX_LIVE + " " + uuids.size();
+            final String m2 = MessageElements.PREFIX_DB + MessageElements.FETCHED           + " " + MessageElements.PUBLIC_KEY_UUIDS + " " + MessageElements.POSTFIX_LIVE + " " + uuids;
+            logger.info(m);
+            logger.info(m2);
             return uuids;
 
         } catch (final SQLException e) {
-            final String errorLog = String.format(ERROR_MESSAGE_FAILED_TO_SELECT_EXPIRED_PUBLIC_KEY_UUIDS, e.getMessage(), e.getSQLState(), e.getErrorCode());
-            logger.error(errorLog);
+            final String em = String.format(ERROR_MESSAGE_FAILED_TO_SELECT_EXPIRED_PUBLIC_KEY_UUIDS, e.getMessage(), e.getSQLState(), e.getErrorCode());
+            logger.error(em);
             throw new DatabaseKeyStoreException();
         }
     }
@@ -217,16 +217,16 @@ public class DatabaseKeyStoreImpl implements DatabaseKeyStore {
                 }
             }
 
-            final String logMsg1 = MessageElements.PREFIX_DB + " " + MessageElements.NUMBER_OF_FETCHED + " " + MessageElements.PUBLIC_KEY_UUIDS + " " + MessageElements.POSTFIX_EXPIRED + " " + expired_uuids.size();
-            final String logMsg2 = MessageElements.PREFIX_DB + " " + MessageElements.FETCHED           + " " + MessageElements.PUBLIC_KEY_UUIDS + " " + MessageElements.POSTFIX_EXPIRED + " " + expired_uuids;
+            final String m = MessageElements.PREFIX_DB + MessageElements.NUMBER_OF_FETCHED + " " + MessageElements.PUBLIC_KEY_UUIDS + " " + MessageElements.POSTFIX_EXPIRED + " " + expired_uuids.size();
+            final String m2 = MessageElements.PREFIX_DB + MessageElements.FETCHED           + " " + MessageElements.PUBLIC_KEY_UUIDS + " " + MessageElements.POSTFIX_EXPIRED + " " + expired_uuids;
 
-            logger.info(logMsg1);
-            logger.info(logMsg2);
+            logger.info(m);
+            logger.info(m2);
             return expired_uuids;
 
         } catch (final SQLException e) {
-            final String errorLog = String.format(ERROR_MESSAGE_FAILED_TO_SELECT_EXPIRED_PUBLIC_KEY_UUIDS, e.getMessage(), e.getSQLState(), e.getErrorCode());
-            logger.error(errorLog);
+            final String em = String.format(ERROR_MESSAGE_FAILED_TO_SELECT_EXPIRED_PUBLIC_KEY_UUIDS, e.getMessage(), e.getSQLState(), e.getErrorCode());
+            logger.error(em);
             throw new DatabaseKeyStoreException();
         }
     }
@@ -240,13 +240,13 @@ public class DatabaseKeyStoreImpl implements DatabaseKeyStore {
     public int deleteExpiredPublicKeys() throws DatabaseKeyStoreException {
         try (final Connection conn = workDB.getConnection(); final PreparedStatement ps = conn.prepareStatement(SQL_DELETE_EXPIRED_PUBLIC_KEYS)) {
             final int deletes = ps.executeUpdate();
-            final String logMsg = MessageElements.PREFIX_DB + " " + MessageElements.DELETED + " " + MessageElements.PUBLIC_KEYS + " " + MessageElements.POSTFIX_EXPIRED + " " + deletes;
-            logger.info(logMsg);
+            final String m = MessageElements.PREFIX_DB + MessageElements.DELETED + " " + MessageElements.PUBLIC_KEYS + " " + MessageElements.POSTFIX_EXPIRED + " " + deletes;
+            logger.info(m);
             return deletes;
 
         } catch (final SQLException e) {
-            final String errorLog = String.format(ERROR_MESSAGE_FAILED_TO_DELETE_EXPIRED_PUBLIC_KEYS, e.getMessage(), e.getSQLState(), e.getErrorCode());
-            logger.error(errorLog);
+            final String em = String.format(ERROR_MESSAGE_FAILED_TO_DELETE_EXPIRED_PUBLIC_KEYS, e.getMessage(), e.getSQLState(), e.getErrorCode());
+            logger.error(em);
             throw new DatabaseKeyStoreException();
         }
     }

@@ -32,6 +32,9 @@ public class MessageElements {
     public static final String NO_SUCH = "NO SUCH";
 
     // manager
+    public static final String ADDING                            = "ADDING ";
+    public static final String DELETING                          = "DELETING ";
+    public static final String FETCHING                          = "FETCHING ";
     // stores
     public static final String DATABASE_KEYSTORE_ERROR           = "DB KEYSTORE ERROR";
     public static final String LOCAL_KEYSTORE_ERROR              = "LOCAL KEYSTORE ERROR";

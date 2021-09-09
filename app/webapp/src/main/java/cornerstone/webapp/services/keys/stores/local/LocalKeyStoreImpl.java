@@ -36,8 +36,8 @@ public class LocalKeyStoreImpl implements LocalKeyStore {
     @Override
     public void addPublicKey(final UUID uuid, final PublicKey publicKey) {
         publicKeys.put(uuid, publicKey);
-        final String logMsg = MessageElements.PREFIX_LOCAL + " " + MessageElements.ADDED + " " + MessageElements.PUBLIC_KEY + " " + uuid;
-        logger.info(logMsg);
+        final String m = MessageElements.PREFIX_LOCAL + MessageElements.ADDED + " " + MessageElements.PUBLIC_KEY + " " + uuid;
+        logger.info(m);
     }
 
     /**
@@ -62,8 +62,8 @@ public class LocalKeyStoreImpl implements LocalKeyStore {
     @Override
     public void deletePublicKey(final UUID uuid) {
         publicKeys.remove(uuid);
-        final String logMsg = MessageElements.PREFIX_LOCAL + " " + MessageElements.DELETED + " " + MessageElements.PUBLIC_KEY + " " + uuid;
-        logger.info(logMsg);
+        final String m = MessageElements.PREFIX_LOCAL + MessageElements.DELETED + " " + MessageElements.PUBLIC_KEY + " " + uuid;
+        logger.info(m);
     }
 
     /**
@@ -92,8 +92,8 @@ public class LocalKeyStoreImpl implements LocalKeyStore {
             // TODO add log message for fetching
             return keyData;
         } else {
-            final String logMsg = MessageElements.PREFIX_LOCAL + " " + MessageElements.NO_SUCH + " " + MessageElements.PUBLIC_KEY + " " + uuid;
-            logger.info(logMsg);
+            final String m = MessageElements.PREFIX_LOCAL + MessageElements.NO_SUCH + " " + MessageElements.PUBLIC_KEY + " " + uuid;
+            logger.info(m);
             throw new NoSuchElementException();
         }
     }
@@ -108,20 +108,20 @@ public class LocalKeyStoreImpl implements LocalKeyStore {
         int deleted = 0;
         for ( final UUID uuid : publicKeys.keySet()) {
             if ( uuid.equals(live_uuid) || toBeKept.contains(uuid)) {
-                final String logMsg = MessageElements.PREFIX_LOCAL + " " + MessageElements.SYNC + " " + MessageElements.PUBLIC_KEY + " " + MessageElements.KEPT + " " + uuid;
-                logger.info(logMsg);
+                final String m = MessageElements.PREFIX_LOCAL + MessageElements.SYNC + " " + MessageElements.PUBLIC_KEY + " " + MessageElements.KEPT + " " + uuid;
+                logger.info(m);
 
             } else {
                 publicKeys.remove(uuid);
                 deleted++;
 
-                final String logMsg = MessageElements.PREFIX_LOCAL + " " + MessageElements.SYNC + " " + MessageElements.PUBLIC_KEY + " " + MessageElements.DELETED + " " + uuid;
-                logger.info(logMsg);
+                final String m = MessageElements.PREFIX_LOCAL + MessageElements.SYNC + " " + MessageElements.PUBLIC_KEY + " " + MessageElements.DELETED + " " + uuid;
+                logger.info(m);
             }
         }
 
-        final String logMsg = MessageElements.PREFIX_LOCAL + " " + MessageElements.SYNC + " " + MessageElements.PUBLIC_KEY + " " + MessageElements.KEPT + ", " + MessageElements.DELETED + " " + toBeKept.size() + " " + deleted;
-        logger.info(logMsg);
+        final String m = MessageElements.PREFIX_LOCAL + MessageElements.SYNC + " " + MessageElements.PUBLIC_KEY + " " + MessageElements.KEPT + ", " + MessageElements.DELETED + " " + toBeKept.size() + " " + deleted;
+        logger.info(m);
     }
 
     /**
@@ -137,8 +137,8 @@ public class LocalKeyStoreImpl implements LocalKeyStore {
         this.livePublicKey  = publicKey;
         publicKeys.put(uuid, publicKey);
 
-        final String logMsg = MessageElements.PREFIX_LOCAL + " " + MessageElements.SET + " " + MessageElements.PUBLIC_AND_PRIVATE_KEY + " " + uuid;
-        logger.info(logMsg);
+        final String m = MessageElements.PREFIX_LOCAL + MessageElements.SET + " " + MessageElements.PUBLIC_AND_PRIVATE_KEY + " " + uuid;
+        logger.info(m);
     }
 
     /**
@@ -157,8 +157,8 @@ public class LocalKeyStoreImpl implements LocalKeyStore {
     @Override
     public SigningKeys getSigningKeys() throws SigningKeysException {
         if ( null == livePrivateKey || null == livePublicKey || null == live_uuid) {
-            final String errorLog = MessageElements.PREFIX_LOCAL + " " + MessageElements.NOT_SET + " " + MessageElements.PUBLIC_AND_PRIVATE_KEY;
-            logger.error(errorLog);
+            final String m = MessageElements.PREFIX_LOCAL + MessageElements.NOT_SET + " " + MessageElements.PUBLIC_AND_PRIVATE_KEY;
+            logger.error(m);
             throw new SigningKeysException("Signing keys are not initialized properly!");
 
         } else {
@@ -175,7 +175,7 @@ public class LocalKeyStoreImpl implements LocalKeyStore {
         live_uuid = null;
         livePrivateKey = null;
 
-        final String logMsg = MessageElements.PREFIX_LOCAL + " " + "DROPPED ALL" + " " + MessageElements.PUBLIC_AND_PRIVATE_KEY;
-        logger.info(logMsg);
+        final String m = MessageElements.PREFIX_LOCAL + "DROPPED ALL " + MessageElements.PUBLIC_AND_PRIVATE_KEY;
+        logger.info(m);
     }
 }

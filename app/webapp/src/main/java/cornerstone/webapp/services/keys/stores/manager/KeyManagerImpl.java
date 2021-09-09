@@ -54,11 +54,14 @@ public class KeyManagerImpl implements KeyManager {
 
         // try to add key to local cache
         try {
+            final String m = MessageElements.PREFIX_MANAGER + MessageElements.PREFIX_LOCAL + MessageElements.ADDING + uuid.toString();
+            logger.info(m);
             localKeyStore.addPublicKey(uuid, base64_key);
+
         } catch (final NoSuchAlgorithmException | InvalidKeySpecException e) {
-            final String msg = MessageElements.PREFIX_MANAGER + " " + MessageElements.PUBLIC_KEY_IS_INVALID + " " + uuid.toString();
-            logger.error(msg);
-            throw new KeyManagerException(msg);
+            final String m = MessageElements.PREFIX_MANAGER + MessageElements.PREFIX_LOCAL + MessageElements.PUBLIC_KEY_IS_INVALID + " " + uuid.toString();
+            logger.error(m);
+            throw new KeyManagerException(m);
         }
 
         // try to add to database, if it fails cache it
@@ -67,15 +70,18 @@ public class KeyManagerImpl implements KeyManager {
         final int jwtTTL      = Integer.parseInt(configLoader.getAppProperties().getProperty(APP_ENUM.APP_JWT_TTL.key));
 
         try {
+            final String m = MessageElements.PREFIX_MANAGER + MessageElements.PREFIX_DB + MessageElements.ADDING + MessageElements.PUBLIC_KEY + " " + uuid.toString();
+            logger.info(m);
             databaseKeyStore.addPublicKey(uuid, nodeName, rsaTTL + jwtTTL, base64_key);
-            logger.info(MessageElements.PREFIX_MANAGER + " " + MessageElements.ADDED + " " + MessageElements.PUBLIC_KEY + " " + uuid.toString());
 
         } catch (final DatabaseKeyStoreException dbe) {
-            logger.error(MessageElements.PREFIX_MANAGER + " " + MessageElements.DATABASE_KEYSTORE_ERROR + ": " + dbe.getMessage());
+            final String m = MessageElements.PREFIX_MANAGER + MessageElements.DATABASE_KEYSTORE_ERROR + ": " + dbe.getMessage();
+            logger.error(m);
 
             if ( ! toAdd.containsKey(uuid)){
                 toAdd.put(uuid, base64_key);
-                logger.info(MessageElements.PREFIX_MANAGER + " " + MessageElements.PUBLIC_KEY_ADDED_FOR_REINSERT + " " + uuid);
+                final String msg = MessageElements.PREFIX_MANAGER + MessageElements.PUBLIC_KEY_ADDED_FOR_REINSERT + " " + uuid;
+                logger.info(msg);
             }
         }
     }
@@ -89,9 +95,9 @@ public class KeyManagerImpl implements KeyManager {
         try {
              base64_key = Base64.getEncoder().encodeToString(publicKey.getEncoded());
         } catch (final Exception e){
-            final String msg = MessageElements.PREFIX_MANAGER + " " + MessageElements.PUBLIC_KEY_CONVERSION_ERROR;
-            logger.error(msg);
-            throw new KeyManagerException(msg);
+            final String m = MessageElements.PREFIX_MANAGER + MessageElements.PUBLIC_KEY_CONVERSION_ERROR;
+            logger.error(m);
+            throw new KeyManagerException(m);
         }
 
         addPublicKey(uuid, base64_key);
@@ -99,15 +105,22 @@ public class KeyManagerImpl implements KeyManager {
 
     @Override
     public void deletePublicKey(final UUID uuid) {
+        final String m = MessageElements.PREFIX_MANAGER + MessageElements.DELETING + MessageElements.PUBLIC_KEY + " " + uuid;
+        logger.info(m);
+
         localKeyStore.deletePublicKey(uuid);
         toAdd.remove(uuid); // in case the key was added earlier, but failed to be published, then give upon it
         try {
             databaseKeyStore.deletePublicKey(uuid);
             toDelete.remove(uuid); // in case it was in a delete list, get rid of it
+
         } catch (final DatabaseKeyStoreException dbe){
-            logger.error(MessageElements.PREFIX_MANAGER + " " + MessageElements.DATABASE_KEYSTORE_ERROR + ": " + dbe.getMessage());
+            final String err = MessageElements.PREFIX_MANAGER + MessageElements.DATABASE_KEYSTORE_ERROR + ": " + dbe.getMessage();
+            logger.error(err);
+
+            final String msg = MessageElements.PREFIX_MANAGER + MessageElements.PUBLIC_KEY_ADDED_TO_RE_DELETE + " " + uuid;
             toDelete.add(uuid); // if it cannot be removed from the db at this time, add it to the removal list
-            logger.info(MessageElements.PREFIX_MANAGER + " " + MessageElements.PUBLIC_KEY_ADDED_TO_RE_DELETE + " " + uuid);
+            logger.info(msg);
         }
     }
 
@@ -115,30 +128,25 @@ public class KeyManagerImpl implements KeyManager {
     public PublicKey getPublicKey(final UUID uuid) throws KeyManagerException {
         try {
             final PublicKey pk = localKeyStore.getPublicKey(uuid);
-            logger.info(MessageElements.PREFIX_MANAGER + MessageElements.PREFIX_LOCAL + " " + MessageElements.FETCHED + " " + uuid);
+            logger.info(MessageElements.PREFIX_MANAGER + MessageElements.PREFIX_LOCAL + MessageElements.FETCHING + " " + uuid);
             return pk;
 
         } catch (final NoSuchElementException ignore){
-            logger.info(MessageElements.PREFIX_MANAGER + MessageElements.PREFIX_LOCAL + " " + MessageElements.NO_SUCH + " " + uuid);
+            logger.info(MessageElements.PREFIX_MANAGER + MessageElements.PREFIX_LOCAL + MessageElements.NO_SUCH + " " + uuid);
         }
-
 
         try {
             final PublicKeyData data = databaseKeyStore.getPublicKey(uuid);
-            logger.info(MessageElements.PREFIX_MANAGER + MessageElements.PREFIX_LOCAL + " " + MessageElements.ADDED + " " + uuid);
-            localKeyStore.addPublicKey(data.getUUID(), data.getBase64Key());
+            logger.info(MessageElements.PREFIX_MANAGER + MessageElements.PREFIX_LOCAL + MessageElements.ADDING + " " + uuid);
 
-            logger.info(MessageElements.PREFIX_MANAGER + MessageElements.PREFIX_LOCAL + " " + MessageElements.FETCHED + " " + uuid);
+            localKeyStore.addPublicKey(data.getUUID(), data.getBase64Key());
             return localKeyStore.getPublicKey(uuid);
 
         } catch (final NoSuchElementException ne) {
             logger.info("NO such element!");
             throw ne;
 
-        } catch (final DatabaseKeyStoreException dbe){
-            throw new KeyManagerException();
-
-        } catch (final InvalidKeySpecException | NoSuchAlgorithmException ce){
+        } catch (final DatabaseKeyStoreException | InvalidKeySpecException | NoSuchAlgorithmException e){
             throw new KeyManagerException();
         }
     }

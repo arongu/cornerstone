@@ -41,6 +41,7 @@ public class KeyManagerImplTest {
         } catch (final IOException e) {
             e.printStackTrace();
         }
+        System.out.println("...end of @BeforeAll");
     }
 
     @AfterAll
@@ -63,7 +64,7 @@ public class KeyManagerImplTest {
      */
     @Test
     public void addPublicKey_shouldAddPublicKeyToLocalKeyStoreAndThenDatabaseKeyStore_whenEverythingIsOK_PublicKey() throws KeyManagerException, DatabaseKeyStoreException {
-        final KeyManager keyManager   = new KeyManagerImpl(configLoader, localKeyStore, databaseKeyStore, null, null);
+        final KeyManager keyManager   = new KeyManagerImpl(configLoader, localKeyStore, databaseKeyStore,null,null);
         final KeyPairWithUUID keyPair = new KeyPairWithUUID();
         final UUID uuid               = keyPair.uuid;
         final PublicKey pubKey        = keyPair.keyPair.getPublic();
@@ -86,7 +87,7 @@ public class KeyManagerImplTest {
      */
     @Test
     public void addPublicKey_shouldAddPublicKeyToLocalKeyStoreAndThenDatabaseKeyStore_whenEverythingIsOK_Base64() throws KeyManagerException, DatabaseKeyStoreException {
-        final KeyManager keyManager   = new KeyManagerImpl(configLoader, localKeyStore, databaseKeyStore, null, null);
+        final KeyManager keyManager   = new KeyManagerImpl(configLoader, localKeyStore, databaseKeyStore,null,null);
         final KeyPairWithUUID keyPair = new KeyPairWithUUID();
         final UUID uuid               = keyPair.uuid;
         final PublicKey pubKey        = keyPair.keyPair.getPublic();
@@ -115,7 +116,7 @@ public class KeyManagerImplTest {
         Mockito.doReturn(1).when(mockDatabaseKeyStore).addPublicKey(Mockito.any(UUID.class), Mockito.any(String.class), Mockito.anyInt(), Mockito.any(String.class));
 
 
-        final KeyManager keyManager = new KeyManagerImpl(configLoader, mockLocalKeyStore, mockDatabaseKeyStore, null, null);
+        final KeyManager keyManager = new KeyManagerImpl(configLoader, mockLocalKeyStore, mockDatabaseKeyStore,null,null);
 
 
         assertThrows(KeyManagerException.class, () -> keyManager.addPublicKey(UUID.randomUUID(), (PublicKey) null));
