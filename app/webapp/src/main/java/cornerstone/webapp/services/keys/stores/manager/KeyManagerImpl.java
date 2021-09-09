@@ -2,6 +2,7 @@ package cornerstone.webapp.services.keys.stores.manager;
 
 import cornerstone.webapp.configuration.ConfigLoader;
 import cornerstone.webapp.configuration.enums.APP_ENUM;
+import cornerstone.webapp.services.keys.common.PublicKeyData;
 import cornerstone.webapp.services.keys.stores.db.DatabaseKeyStore;
 import cornerstone.webapp.services.keys.stores.db.DatabaseKeyStoreException;
 import cornerstone.webapp.services.keys.stores.local.LocalKeyStore;
@@ -111,8 +112,35 @@ public class KeyManagerImpl implements KeyManager {
     }
 
     @Override
-    public PublicKey getPublicKey(UUID uuid) throws KeyManagerException {
-        return null;
+    public PublicKey getPublicKey(final UUID uuid) throws KeyManagerException {
+        try {
+            final PublicKey pk = localKeyStore.getPublicKey(uuid);
+            logger.info(MessageElements.PREFIX_MANAGER + MessageElements.PREFIX_LOCAL + " " + MessageElements.FETCHED + " " + uuid);
+            return pk;
+
+        } catch (final NoSuchElementException ignore){
+            logger.info(MessageElements.PREFIX_MANAGER + MessageElements.PREFIX_LOCAL + " " + MessageElements.NO_SUCH + " " + uuid);
+        }
+
+
+        try {
+            final PublicKeyData data = databaseKeyStore.getPublicKey(uuid);
+            logger.info(MessageElements.PREFIX_MANAGER + MessageElements.PREFIX_LOCAL + " " + MessageElements.ADDED + " " + uuid);
+            localKeyStore.addPublicKey(data.getUUID(), data.getBase64Key());
+
+            logger.info(MessageElements.PREFIX_MANAGER + MessageElements.PREFIX_LOCAL + " " + MessageElements.FETCHED + " " + uuid);
+            return localKeyStore.getPublicKey(uuid);
+
+        } catch (final NoSuchElementException ne) {
+            logger.info("NO such element!");
+            throw ne;
+
+        } catch (final DatabaseKeyStoreException dbe){
+            throw new KeyManagerException();
+
+        } catch (final InvalidKeySpecException | NoSuchAlgorithmException ce){
+            throw new KeyManagerException();
+        }
     }
 
     @Override

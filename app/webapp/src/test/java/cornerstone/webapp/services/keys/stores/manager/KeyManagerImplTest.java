@@ -53,6 +53,7 @@ public class KeyManagerImplTest {
         for (UUID l : lv)  { databaseKeyStore.deletePublicKey(l); }
     }
 
+    // --- addPublicKey
     /*
         [OK]        local keystore
         [OK]        database keystore
@@ -194,7 +195,10 @@ public class KeyManagerImplTest {
         Mockito.verify(mockLocalKeyStore,    Mockito.times(1)).addPublicKey(Mockito.any(UUID.class), Mockito.any(String.class));
         Mockito.verify(mockDatabaseKeyStore, Mockito.times(1)).addPublicKey(Mockito.any(UUID.class), Mockito.any(String.class), Mockito.anyInt(), Mockito.any(String.class));
     }
+    // --- end of addPublicKey
 
+
+    // -- deleteKey
     /*
         [OK]            local keystore
         [OK]            database keystore
@@ -243,5 +247,27 @@ public class KeyManagerImplTest {
         Mockito.verify(mockLocalKeyStore, Mockito.times(1)).deletePublicKey(Mockito.eq(uuid));
         Mockito.verify(mockAdd,           Mockito.times(1)).remove(Mockito.eq(uuid));
         Mockito.verify(mockDelete,        Mockito.times(1)).add(Mockito.eq(uuid));
+    }
+    // -- end of deleteKey
+
+
+    // getPublicKey
+    /*
+        [OK] local keystore
+        [OK] database keystore
+    */
+    @Test
+    public void getPublicKey_shouldTryToGetKeyFromLocalKeyStoreThenGoToDatabaseFetchItThenCacheIt_whenLocalKeyStoreDoesNotHaveTheKey() throws NoSuchElementException, DatabaseKeyStoreException, KeyManagerException {
+        final KeyPairWithUUID keyPairWithUUID = new KeyPairWithUUID();
+        final UUID uuid                       = keyPairWithUUID.uuid;
+        final PublicKey publicKey             = keyPairWithUUID.keyPair.getPublic();
+        final String b64pubKey                = Base64.getEncoder().encodeToString(keyPairWithUUID.keyPair.getPublic().getEncoded());
+        databaseKeyStore.addPublicKey(uuid, this.getClass().getSimpleName(),300, b64pubKey);
+        final LocalKeyStore localStore        = new LocalKeyStoreImpl();
+        final KeyManager keyManager           = new KeyManagerImpl(configLoader, localStore, databaseKeyStore,null,null);
+
+        assertThrows(NoSuchElementException.class, () -> localStore.getPublicKey(uuid));
+        assertEquals(publicKey, keyManager.getPublicKey(uuid));
+        assertEquals(publicKey, localStore.getPublicKey(uuid));
     }
 }
