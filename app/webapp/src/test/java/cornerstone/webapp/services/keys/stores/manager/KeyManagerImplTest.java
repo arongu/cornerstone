@@ -8,6 +8,8 @@ import cornerstone.webapp.services.keys.stores.db.DatabaseKeyStoreException;
 import cornerstone.webapp.services.keys.stores.db.DatabaseKeyStoreImpl;
 import cornerstone.webapp.services.keys.stores.local.LocalKeyStore;
 import cornerstone.webapp.services.keys.stores.local.LocalKeyStoreImpl;
+import cornerstone.webapp.services.keys.stores.local.SigningKeys;
+import cornerstone.webapp.services.keys.stores.local.SigningKeysException;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -252,7 +254,6 @@ public class KeyManagerImplTest {
     // -- end of deleteKey
 
 
-    // TODO finish getPublicKey tests
     // getPublicKey
     /*
         [OK] local keystore
@@ -290,5 +291,130 @@ public class KeyManagerImplTest {
         assertThrows(NoSuchElementException.class, () -> localKeyStore.getPublicKey(uuid)); // validate that is not in the local store
         assertEquals(publicKey, keyManager.getPublicKey(uuid));                             // keyManager should fetch it, and cache it in local store
         assertEquals(publicKey, localKeyStore.getPublicKey(uuid));                          // validate that key is in the local store
+    }
+
+    /*
+        [OK]              local keystore
+        [returns garbage] database keystore
+    */
+    @Test
+    public void getPublicKey_shouldThrowKeyManagerException_whenDatabaseReturnsGarbageAndTriesToCacheTheBase64KeyInTheLocalStore() throws DatabaseKeyStoreException {
+        final UUID uuid = UUID.randomUUID();
+        final String garbage = Base64.getEncoder().encodeToString("garbage".getBytes());
+        databaseKeyStore.addPublicKey(uuid, this.getClass().getSimpleName(), 300, garbage);
+        final KeyManager keyManager = new KeyManagerImpl(configLoader, localKeyStore, databaseKeyStore, null, null);
+
+        assertThrows(KeyManagerException.class, () -> keyManager.getPublicKey(uuid));
+    }
+
+    /*
+        [OK]               local keystore
+        [throws exception] database keystore
+    */
+    @Test
+    public void getPublicKey_shouldThrowKeyManagerException_whenDatabaseThrowsException() throws DatabaseKeyStoreException {
+        final UUID uuid = UUID.randomUUID();
+        final DatabaseKeyStore mockDatabaseKeyStore = Mockito.mock(DatabaseKeyStore.class);
+        Mockito.doThrow(new DatabaseKeyStoreException("DB error.")).when(mockDatabaseKeyStore).getPublicKey(Mockito.any(UUID.class));
+        final KeyManager keyManager = new KeyManagerImpl(configLoader, localKeyStore, mockDatabaseKeyStore, null, null);
+
+        assertThrows(KeyManagerException.class, () -> keyManager.getPublicKey(uuid));
+    }
+    // -- end of getPublicKey
+
+
+    // getSigningKeys
+    /*
+        [OK] local keystore
+        [OK] signing keys
+    */
+    @Test
+    public void getSigningKeys_shouldCallLocalKeyStoreAndReturnSigningKeys_whenEverythingIsOK() throws SigningKeysException, KeyManagerException {
+        final LocalKeyStore lks = new LocalKeyStoreImpl();
+        final KeyPairWithUUID kp = new KeyPairWithUUID();
+        lks.setSigningKeys(kp.uuid, kp.keyPair.getPrivate(), kp.keyPair.getPublic());
+        final KeyManager keyManager = new KeyManagerImpl(null, lks,null,null,null);
+
+
+        final SigningKeys signingKeys = keyManager.getSigningKeys();
+
+
+        assertEquals(kp.keyPair.getPrivate(), signingKeys.privateKey);
+        assertEquals(kp.keyPair.getPublic(), signingKeys.publicKey);
+    }
+
+    /*
+        [OK]      local keystore
+        [not set] signing keys
+    */
+    @Test
+    public void getSigningKeys_shouldThrowSigningKeysException_whenSigningKeysAreNotSet() {
+        final LocalKeyStore lks = new LocalKeyStoreImpl();
+        final KeyManager keyManager = new KeyManagerImpl(null, lks,null,null,null);
+
+
+        assertThrows(SigningKeysException.class, keyManager::getSigningKeys);
+    }
+    // -- end of getSigningKeys
+
+
+    // removeExpiredKeys
+    /*
+        [OK] DatabaseKeyStore
+    */
+    @Test
+    public void removeExpiredKeys_shouldCallDatabaseKeyStoreDeleteExpiredPublicKeys_whenRemoveExpiredKeysCalled() throws DatabaseKeyStoreException {
+        final DatabaseKeyStore mockDatabaseKeyStore = Mockito.mock(DatabaseKeyStore.class);
+        final KeyManager keyManager = new KeyManagerImpl(null, null, mockDatabaseKeyStore,null,null);
+
+
+        keyManager.removeExpiredKeys();
+
+
+        Mockito.verify(mockDatabaseKeyStore, Mockito.times(1)).deleteExpiredPublicKeys();
+    }
+
+    /*
+        [throws exception] DatabaseKeyStore
+    */
+    @Test
+    public void removeExpiredKeys_shouldThrowDatabaseKeyStoreException_whenRemoveExpiredKeysThrowsException() throws DatabaseKeyStoreException {
+        final DatabaseKeyStore mockDatabaseKeyStore = Mockito.mock(DatabaseKeyStore.class);
+        Mockito.doThrow(new DatabaseKeyStoreException("DB error.")).when(mockDatabaseKeyStore).deleteExpiredPublicKeys();
+        final KeyManager keyManager = new KeyManagerImpl(null, null, mockDatabaseKeyStore,null,null);
+
+
+        assertThrows(DatabaseKeyStoreException.class, keyManager::removeExpiredKeys);
+
+
+        Mockito.verify(mockDatabaseKeyStore, Mockito.times(1)).deleteExpiredPublicKeys();
+    }
+    // -- end of removeExpiredKeys
+
+
+    // setSigningKeys
+    /*
+        [OK] local keystore
+        [OK] signing keys
+    */
+    @Test
+    public void setSigningKeys_shouldCallLocalKeyStore_whenSetSigningKeysIsCalled() throws SigningKeysException, KeyManagerException {
+        final KeyPairWithUUID kp = new KeyPairWithUUID();
+        final LocalKeyStore lks  = new LocalKeyStoreImpl();
+        final KeyManager keyManager = new KeyManagerImpl(null, lks,null,null,null);
+
+
+        assertThrows(SigningKeysException.class, localKeyStore::getSigningKeys);
+        lks.setSigningKeys(kp.uuid, kp.keyPair.getPrivate(), kp.keyPair.getPublic());
+        final SigningKeys signingKeys = keyManager.getSigningKeys();
+        assertEquals(kp.keyPair.getPublic(), signingKeys.publicKey);
+        assertEquals(kp.keyPair.getPrivate(), signingKeys.privateKey);
+    }
+    // -- end of setSigningKeys
+
+    // syncLiveKeys
+    @Test
+    public void syncLiveKeys_shouldCallDatabasKeyA(){
+
     }
 }
