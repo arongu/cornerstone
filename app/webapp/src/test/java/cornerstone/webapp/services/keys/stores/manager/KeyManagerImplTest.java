@@ -265,9 +265,9 @@ public class KeyManagerImplTest {
         final UUID uuid                       = keyPairWithUUID.uuid;
         final PublicKey publicKey             = keyPairWithUUID.keyPair.getPublic();
         final String b64pubKey                = Base64.getEncoder().encodeToString(keyPairWithUUID.keyPair.getPublic().getEncoded());
-        databaseKeyStore.addPublicKey(uuid, this.getClass().getSimpleName(),300, b64pubKey);
         final LocalKeyStore localStore        = new LocalKeyStoreImpl();
         final KeyManager keyManager           = new KeyManagerImpl(configLoader, localStore, databaseKeyStore,null,null);
+        databaseKeyStore.addPublicKey(uuid, this.getClass().getSimpleName(),300, b64pubKey);
 
         assertThrows(NoSuchElementException.class, () -> localStore.getPublicKey(uuid));
         assertEquals(publicKey, keyManager.getPublicKey(uuid));
@@ -284,8 +284,8 @@ public class KeyManagerImplTest {
         final UUID uuid                       = keyPairWithUUID.uuid;
         final PublicKey publicKey             = keyPairWithUUID.keyPair.getPublic();
         final String b64pubKey                = Base64.getEncoder().encodeToString(keyPairWithUUID.keyPair.getPublic().getEncoded());
-        databaseKeyStore.addPublicKey(uuid, this.getClass().getSimpleName(),300, b64pubKey);
         final KeyManager keyManager           = new KeyManagerImpl(configLoader, localKeyStore, databaseKeyStore,null,null);
+        databaseKeyStore.addPublicKey(uuid, this.getClass().getSimpleName(),300, b64pubKey);
 
 
         assertThrows(NoSuchElementException.class, () -> localKeyStore.getPublicKey(uuid)); // validate that is not in the local store
@@ -301,8 +301,8 @@ public class KeyManagerImplTest {
     public void getPublicKey_shouldThrowKeyManagerException_whenDatabaseReturnsGarbageAndTriesToCacheTheBase64KeyInTheLocalStore() throws DatabaseKeyStoreException {
         final UUID uuid = UUID.randomUUID();
         final String garbage = Base64.getEncoder().encodeToString("garbage".getBytes());
-        databaseKeyStore.addPublicKey(uuid, this.getClass().getSimpleName(), 300, garbage);
         final KeyManager keyManager = new KeyManagerImpl(configLoader, localKeyStore, databaseKeyStore, null, null);
+        databaseKeyStore.addPublicKey(uuid, this.getClass().getSimpleName(), 300, garbage);
 
         assertThrows(KeyManagerException.class, () -> keyManager.getPublicKey(uuid));
     }
@@ -413,8 +413,37 @@ public class KeyManagerImplTest {
     // -- end of setSigningKeys
 
     // syncLiveKeys
+    /*
+        [OK] local keystore
+        [OK] signing keys
+    */
     @Test
-    public void syncLiveKeys_shouldCallDatabasKeyA(){
+    public void syncLiveKeys_shouldSyncLocalKeyStoreWithDatabase() throws DatabaseKeyStoreException {
+        final Base64.Encoder encoder    = Base64.getEncoder();
+        final String nodeName           = this.getClass().getSimpleName();
+        final KeyPairWithUUID expired_a = new KeyPairWithUUID();
+        final KeyPairWithUUID expired_b = new KeyPairWithUUID();
+        final KeyPairWithUUID expired_c = new KeyPairWithUUID();
+        final KeyPairWithUUID live_a    = new KeyPairWithUUID();
+        final KeyPairWithUUID live_b    = new KeyPairWithUUID();
+        final LocalKeyStore lks         = new LocalKeyStoreImpl();
+        // set keys for local keystore
+        lks.addPublicKey(expired_a.uuid , expired_a.keyPair.getPublic());
+        lks.addPublicKey(expired_b.uuid , expired_b.keyPair.getPublic());
+        lks.addPublicKey(expired_c.uuid , expired_c.keyPair.getPublic());
+        lks.addPublicKey(live_a.uuid , live_a.keyPair.getPublic());
+        lks.addPublicKey(live_b.uuid , live_b.keyPair.getPublic());
+        // set keys for database
+        databaseKeyStore.addPublicKey(expired_a.uuid, nodeName, -10000, encoder.encodeToString(expired_a.keyPair.getPublic().getEncoded()));
+        databaseKeyStore.addPublicKey(expired_b.uuid, nodeName, -10000, encoder.encodeToString(expired_b.keyPair.getPublic().getEncoded()));
+        databaseKeyStore.addPublicKey(expired_c.uuid, nodeName, -10000, encoder.encodeToString(expired_c.keyPair.getPublic().getEncoded()));
+        databaseKeyStore.addPublicKey(live_a.uuid, nodeName, 30000, encoder.encodeToString(live_a.keyPair.getPublic().getEncoded()));
+        databaseKeyStore.addPublicKey(live_b.uuid, nodeName, 30000, encoder.encodeToString(live_b.keyPair.getPublic().getEncoded()));
+        // key manager
+        final KeyManager keyManager = new KeyManagerImpl(null, lks, databaseKeyStore, null, null);
 
+
+        keyManager.syncLiveKeys();
+        keyManager.removeExpiredKeys();
     }
 }
