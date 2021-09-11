@@ -7,6 +7,7 @@ import cornerstone.webapp.services.keys.stores.db.DatabaseKeyStore;
 import cornerstone.webapp.services.keys.stores.db.DatabaseKeyStoreException;
 import cornerstone.webapp.services.keys.stores.local.LocalKeyStore;
 import cornerstone.webapp.services.keys.stores.local.SigningKeys;
+import cornerstone.webapp.services.keys.stores.local.SigningKeysException;
 import cornerstone.webapp.services.keys.stores.logging.MessageElements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -131,7 +132,6 @@ public class KeyManagerImpl implements KeyManager {
             return localKeyStore.getPublicKey(uuid);
 
         } catch (final NoSuchElementException ignore){
-
         }
 
         try {
@@ -159,17 +159,26 @@ public class KeyManagerImpl implements KeyManager {
     }
 
     @Override
-    public SigningKeys getSigningKeys() throws KeyManagerException {
-        return null;
+    public SigningKeys getSigningKeys() throws SigningKeysException {
+        logger.info(MessageElements.PREFIX_MANAGER + MessageElements.FETCHING + MessageElements.PUBLIC_AND_PRIVATE_KEY);
+        return localKeyStore.getSigningKeys();
     }
 
     @Override
-    public void setSigningKeys() throws KeyManagerException {
-
+    public int removeExpiredKeys() throws DatabaseKeyStoreException {
+        logger.info(MessageElements.PREFIX_MANAGER + MessageElements.DELETING + MessageElements.EXPIRED_KEYS);
+        return databaseKeyStore.deleteExpiredPublicKeys();
     }
 
     @Override
-    public void sync(UUID uuid, PrivateKey privateKey, PublicKey publicKey) throws KeyManagerException {
+    public void setSigningKeys(final UUID uuid, final PrivateKey privateKey, final PublicKey publicKey) {
+        logger.info(MessageElements.PREFIX_MANAGER + MessageElements.ADDING + MessageElements.PUBLIC_AND_PRIVATE_KEY);
+        localKeyStore.setSigningKeys(uuid, privateKey, publicKey);
+    }
 
+    @Override
+    public void syncLiveKeys() throws DatabaseKeyStoreException {
+        logger.info(MessageElements.PREFIX_MANAGER + MessageElements.SYNC);
+        localKeyStore.keepOnlyPublicKeys(databaseKeyStore.getLivePublicKeyUUIDs());
     }
 }

@@ -252,6 +252,7 @@ public class KeyManagerImplTest {
     // -- end of deleteKey
 
 
+    // TODO finish getPublicKey tests
     // getPublicKey
     /*
         [OK] local keystore
