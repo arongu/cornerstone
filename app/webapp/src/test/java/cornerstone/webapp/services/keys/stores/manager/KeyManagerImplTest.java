@@ -41,12 +41,12 @@ public class KeyManagerImplTest {
         } catch (final IOException e) {
             e.printStackTrace();
         }
-        System.out.println("...end of @BeforeAll");
+        System.out.println("... @BeforeAll END ...");
     }
 
     @AfterAll
     public static void cleanDB() throws DatabaseKeyStoreException {
-        System.out.println("...@AfterAll");
+        System.out.println("... @AfterAll (cleanDB) ...");
         final List<UUID> exp = databaseKeyStore.getExpiredPublicKeyUUIDs();
         final List<UUID> lv  = databaseKeyStore.getLivePublicKeyUUIDs();
 
@@ -207,7 +207,7 @@ public class KeyManagerImplTest {
         [should use 1x] toDelete
     */
     @Test
-    public void deleteKey_shouldDeletePublicKeyFromLocalKeyStoreAndDatabaseKeyStoreAndAlsoFromBothCaches_whenEverythingIsOK4() throws KeyManagerException, DatabaseKeyStoreException {
+    public void deleteKey_shouldDeletePublicKeyFromLocalKeyStoreAndDatabaseKeyStoreAndAlsoFromBothCaches_whenEverythingIsOK() throws KeyManagerException, DatabaseKeyStoreException {
         final Map<UUID,String> toAdd  = Mockito.mock(HashMap.class);
         final Set<UUID> toDelete      = Mockito.mock(HashSet.class);
         final LocalKeyStore lks       = Mockito.mock(LocalKeyStore.class);
@@ -232,7 +232,7 @@ public class KeyManagerImplTest {
         [should use it 1x] toDelete - cache
     */
     @Test
-    public void deleteKey_shouldRemoveUuidFromToAddAndAddUuidTotoDelete_whenDatabaseKeyStoreThrowsException() throws KeyManagerException, DatabaseKeyStoreException {
+    public void deleteKey_shouldRemoveUuidFromToAddAndAddUuidTotoDelete_whenDatabaseKeyStoreThrowsExceptionMocked() throws KeyManagerException, DatabaseKeyStoreException {
         final UUID uuid                             = UUID.randomUUID();
         final Map<UUID,String> mockAdd              = Mockito.mock(HashMap.class);
         final Set<UUID> mockDelete                  = Mockito.mock(HashSet.class);
@@ -258,7 +258,7 @@ public class KeyManagerImplTest {
         [OK] database keystore
     */
     @Test
-    public void getPublicKey_shouldTryToGetKeyFromLocalKeyStoreThenGoToDatabaseFetchItThenCacheIt_whenLocalKeyStoreDoesNotHaveTheKey() throws NoSuchElementException, DatabaseKeyStoreException, KeyManagerException {
+    public void getPublicKey_shouldTryToGetKeyFromLocalKeyStoreThenGoToDatabaseFetchItThenCacheIt_whenLocalKeyStoreDoesNotHaveTheKeyMock() throws NoSuchElementException, DatabaseKeyStoreException, KeyManagerException {
         final KeyPairWithUUID keyPairWithUUID = new KeyPairWithUUID();
         final UUID uuid                       = keyPairWithUUID.uuid;
         final PublicKey publicKey             = keyPairWithUUID.keyPair.getPublic();
@@ -270,5 +270,24 @@ public class KeyManagerImplTest {
         assertThrows(NoSuchElementException.class, () -> localStore.getPublicKey(uuid));
         assertEquals(publicKey, keyManager.getPublicKey(uuid));
         assertEquals(publicKey, localStore.getPublicKey(uuid));
+    }
+
+    /*
+        [OK] local keystore
+        [OK] database keystore
+    */
+    @Test
+    public void getPublicKey_shouldTryToGetKeyFromLocalKeyStoreThenGoToDatabaseFetchItThenCacheIt_whenLocalKeyStoreDoesNotHaveTheKey() throws NoSuchElementException, DatabaseKeyStoreException, KeyManagerException {
+        final KeyPairWithUUID keyPairWithUUID = new KeyPairWithUUID();
+        final UUID uuid                       = keyPairWithUUID.uuid;
+        final PublicKey publicKey             = keyPairWithUUID.keyPair.getPublic();
+        final String b64pubKey                = Base64.getEncoder().encodeToString(keyPairWithUUID.keyPair.getPublic().getEncoded());
+        databaseKeyStore.addPublicKey(uuid, this.getClass().getSimpleName(),300, b64pubKey);
+        final KeyManager keyManager           = new KeyManagerImpl(configLoader, localKeyStore, databaseKeyStore,null,null);
+
+
+        assertThrows(NoSuchElementException.class, () -> localKeyStore.getPublicKey(uuid)); // validate that is not in the local store
+        assertEquals(publicKey, keyManager.getPublicKey(uuid));                             // keyManager should fetch it, and cache it in local store
+        assertEquals(publicKey, localKeyStore.getPublicKey(uuid));                          // validate that key is in the local store
     }
 }

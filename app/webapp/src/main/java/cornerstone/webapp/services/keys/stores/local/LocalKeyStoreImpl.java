@@ -89,7 +89,8 @@ public class LocalKeyStoreImpl implements LocalKeyStore {
     public PublicKey getPublicKey(final UUID uuid) throws NoSuchElementException {
         final PublicKey keyData = publicKeys.get(uuid);
         if ( null != keyData) {
-            // TODO add log message for fetching
+            final String m = MessageElements.PREFIX_LOCAL + MessageElements.FETCHED + " " + MessageElements.PUBLIC_KEY + " " + uuid;
+            logger.info(m);
             return keyData;
         } else {
             final String m = MessageElements.PREFIX_LOCAL + MessageElements.NO_SUCH + " " + MessageElements.PUBLIC_KEY + " " + uuid;

@@ -47,4 +47,5 @@ public class MessageElements {
     // conversion, invalid
     public static final String PUBLIC_KEY_CONVERSION_ERROR       = "PUBLIC KEY BASE64 CONVERSION ERROR";
     public static final String PUBLIC_KEY_IS_INVALID             = "PUBLIC KEY IS INVALID";
+    public static final String PUBLIC_KEY_RECEIVED_FROM_DATABASE_IS_CORRUPT = "PUBLIC KEY RECEIVED FROM DATABASE IS CORRUPT";
 }
