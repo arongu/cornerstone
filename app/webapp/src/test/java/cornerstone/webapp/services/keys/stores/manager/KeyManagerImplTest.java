@@ -449,6 +449,7 @@ public class KeyManagerImplTest {
         final KeyManager keyManager = new KeyManagerImpl(null, testLocalKeyStore, databaseKeyStore, null, null);
         keyManager.syncLiveKeys();
 
+
         // verify all the expired keys are gone from the local store
         System.out.println("... verify expired keys are removed ...");
         for ( final Map.Entry<UUID, PublicKey> e : expired_keys.entrySet()) {
@@ -461,4 +462,52 @@ public class KeyManagerImplTest {
             assertEquals(e.getValue(), testLocalKeyStore.getPublicKey(e.getKey()));
         }
     }
+
+    /*
+        [OK]               local keystore
+        [OK]               signing keys
+        [throws exception] database keystore
+    */
+    @Test
+    public void syncLiveKeys_shouldThrowDatabasKeyStoreException_whenDatabaseThrowsException() throws DatabaseKeyStoreException {
+        final HashMap<UUID, PublicKey> expired_keys = new HashMap<>();
+        final HashMap<UUID, PublicKey> live_keys    = new HashMap<>();
+        final LocalKeyStore testLocalKeyStore       = new LocalKeyStoreImpl();
+        final DatabaseKeyStore mockDatabaseKeyStore  = Mockito.mock(DatabaseKeyStore.class);
+        Mockito.doThrow(new DatabaseKeyStoreException("DB error.")).when(mockDatabaseKeyStore).getLivePublicKeyUUIDs();
+
+        // expired keys
+        System.out.println("... expired keys ...");
+        for ( int i = 0; i < 3; i++) {
+            final KeyPairWithUUID k = new KeyPairWithUUID();
+            expired_keys.put(k.uuid, k.keyPair.getPublic());
+            testLocalKeyStore.addPublicKey(k.uuid, k.keyPair.getPublic());
+        }
+        // live keys
+        System.out.println("... live keys ...");
+        for ( int i = 0; i < 2; i++) {
+            final KeyPairWithUUID k = new KeyPairWithUUID();
+            live_keys.put(k.uuid, k.keyPair.getPublic());
+            testLocalKeyStore.addPublicKey(k.uuid, k.keyPair.getPublic());
+        }
+
+
+        // key manager
+        final KeyManager keyManager = new KeyManagerImpl(null, testLocalKeyStore, mockDatabaseKeyStore, null, null);
+        assertThrows(DatabaseKeyStoreException.class, keyManager::syncLiveKeys);
+
+
+        // verify all the expired keys are still present from the local store
+        System.out.println("... verify expired keys are still present ...");
+        for ( final Map.Entry<UUID, PublicKey> e : expired_keys.entrySet()) {
+            assertEquals(e.getValue(), testLocalKeyStore.getPublicKey(e.getKey()));
+        }
+
+        // verify all the live keys are present in the local store
+        System.out.println("... verify live keys are also present ...");
+        for ( final Map.Entry<UUID, PublicKey> e : live_keys.entrySet()) {
+            assertEquals(e.getValue(), testLocalKeyStore.getPublicKey(e.getKey()));
+        }
+    }
+    // -- end of syncLiveKeys
 }
