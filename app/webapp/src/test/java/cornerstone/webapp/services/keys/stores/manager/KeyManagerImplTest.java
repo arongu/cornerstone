@@ -412,38 +412,53 @@ public class KeyManagerImplTest {
     }
     // -- end of setSigningKeys
 
+
     // syncLiveKeys
     /*
         [OK] local keystore
+        [OK] database keystore
         [OK] signing keys
     */
     @Test
-    public void syncLiveKeys_shouldSyncLocalKeyStoreWithDatabase() throws DatabaseKeyStoreException {
-        final Base64.Encoder encoder    = Base64.getEncoder();
-        final String nodeName           = this.getClass().getSimpleName();
-        final KeyPairWithUUID expired_a = new KeyPairWithUUID();
-        final KeyPairWithUUID expired_b = new KeyPairWithUUID();
-        final KeyPairWithUUID expired_c = new KeyPairWithUUID();
-        final KeyPairWithUUID live_a    = new KeyPairWithUUID();
-        final KeyPairWithUUID live_b    = new KeyPairWithUUID();
-        final LocalKeyStore lks         = new LocalKeyStoreImpl();
-        // set keys for local keystore
-        lks.addPublicKey(expired_a.uuid , expired_a.keyPair.getPublic());
-        lks.addPublicKey(expired_b.uuid , expired_b.keyPair.getPublic());
-        lks.addPublicKey(expired_c.uuid , expired_c.keyPair.getPublic());
-        lks.addPublicKey(live_a.uuid , live_a.keyPair.getPublic());
-        lks.addPublicKey(live_b.uuid , live_b.keyPair.getPublic());
-        // set keys for database
-        databaseKeyStore.addPublicKey(expired_a.uuid, nodeName, -10000, encoder.encodeToString(expired_a.keyPair.getPublic().getEncoded()));
-        databaseKeyStore.addPublicKey(expired_b.uuid, nodeName, -10000, encoder.encodeToString(expired_b.keyPair.getPublic().getEncoded()));
-        databaseKeyStore.addPublicKey(expired_c.uuid, nodeName, -10000, encoder.encodeToString(expired_c.keyPair.getPublic().getEncoded()));
-        databaseKeyStore.addPublicKey(live_a.uuid, nodeName, 30000, encoder.encodeToString(live_a.keyPair.getPublic().getEncoded()));
-        databaseKeyStore.addPublicKey(live_b.uuid, nodeName, 30000, encoder.encodeToString(live_b.keyPair.getPublic().getEncoded()));
+    public void syncLiveKeys_shouldSyncLocalKeyStoreWithDatabase_whenEverythingIsOK() throws DatabaseKeyStoreException {
+        final Base64.Encoder encoder                = Base64.getEncoder();
+        final String nodeName                       = this.getClass().getSimpleName();
+        final HashMap<UUID, PublicKey> expired_keys = new HashMap<>();
+        final HashMap<UUID, PublicKey> live_keys    = new HashMap<>();
+        final LocalKeyStore testLocalKeyStore       = new LocalKeyStoreImpl();
+
+        // expired keys
+        System.out.println("... expired keys ...");
+        for ( int i = 0; i < 3; i++) {
+            final KeyPairWithUUID k = new KeyPairWithUUID();
+            expired_keys.put(k.uuid, k.keyPair.getPublic());
+            testLocalKeyStore.addPublicKey(k.uuid, k.keyPair.getPublic());
+            databaseKeyStore.addPublicKey(k.uuid, nodeName, -10000, encoder.encodeToString(k.keyPair.getPublic().getEncoded()));
+        }
+        // live keys
+        System.out.println("... live keys ...");
+        for ( int i = 0; i < 2; i++) {
+            final KeyPairWithUUID k = new KeyPairWithUUID();
+            live_keys.put(k.uuid, k.keyPair.getPublic());
+            testLocalKeyStore.addPublicKey(k.uuid, k.keyPair.getPublic());
+            databaseKeyStore.addPublicKey(k.uuid, nodeName, 30000, encoder.encodeToString(k.keyPair.getPublic().getEncoded()));
+        }
+
+
         // key manager
-        final KeyManager keyManager = new KeyManagerImpl(null, lks, databaseKeyStore, null, null);
-
-
+        final KeyManager keyManager = new KeyManagerImpl(null, testLocalKeyStore, databaseKeyStore, null, null);
         keyManager.syncLiveKeys();
-        keyManager.removeExpiredKeys();
+
+        // verify all the expired keys are gone from the local store
+        System.out.println("... verify expired keys are removed ...");
+        for ( final Map.Entry<UUID, PublicKey> e : expired_keys.entrySet()) {
+            assertThrows(NoSuchElementException.class, () -> testLocalKeyStore.getPublicKey(e.getKey()));
+        }
+
+        // verify all the live keys are present in the local store
+        System.out.println("... verify live keys are present ...");
+        for ( final Map.Entry<UUID, PublicKey> e : live_keys.entrySet()) {
+            assertEquals(e.getValue(), testLocalKeyStore.getPublicKey(e.getKey()));
+        }
     }
 }
