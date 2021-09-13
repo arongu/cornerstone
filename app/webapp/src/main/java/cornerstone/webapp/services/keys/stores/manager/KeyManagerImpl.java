@@ -22,17 +22,21 @@ import java.util.*;
 public class KeyManagerImpl implements KeyManager {
     private static final Logger logger = LoggerFactory.getLogger(KeyManagerImpl.class);
 
-    @Inject
-    private LocalKeyStore localKeyStore;
-    @Inject
-    private DatabaseKeyStore databaseKeyStore;
-    @Inject
-    private ConfigLoader configLoader;
+    private final ConfigLoader     configLoader;
+    private final LocalKeyStore    localKeyStore;
+    private final DatabaseKeyStore databaseKeyStore;
 
     private Map<UUID, String> toAdd = new HashMap<>();
     private Set<UUID> toDelete = new HashSet<>();
 
-    public KeyManagerImpl() {
+    @Inject
+    public KeyManagerImpl(final ConfigLoader configLoader,
+                          final LocalKeyStore localKeyStore,
+                          final  DatabaseKeyStore databaseKeyStore) {
+
+        this.configLoader     = configLoader;
+        this.localKeyStore    = localKeyStore;
+        this.databaseKeyStore = databaseKeyStore;
     }
 
     public KeyManagerImpl(final ConfigLoader configLoader,
@@ -123,6 +127,20 @@ public class KeyManagerImpl implements KeyManager {
             toDelete.add(uuid); // if it cannot be removed from the db at this time, add it to the removal list
             logger.info(msg);
         }
+    }
+
+    @Override
+    public List<UUID> getExpiredPublicKeyUUIDs() throws DatabaseKeyStoreException {
+        final String m = MessageElements.PREFIX_MANAGER + MessageElements.FETCHING + MessageElements.POSTFIX_EXPIRED;
+        logger.info(m);
+        return databaseKeyStore.getExpiredPublicKeyUUIDs();
+    }
+
+    @Override
+    public List<UUID> getLivePublicKeyUUIDs() throws DatabaseKeyStoreException {
+        final String m = MessageElements.PREFIX_MANAGER + MessageElements.FETCHING + MessageElements.POSTFIX_LIVE;
+        logger.info(m);
+        return databaseKeyStore.getLivePublicKeyUUIDs();
     }
 
     @Override

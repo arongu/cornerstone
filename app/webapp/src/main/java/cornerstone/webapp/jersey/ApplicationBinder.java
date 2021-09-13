@@ -15,6 +15,8 @@ import cornerstone.webapp.services.keys.stores.db.DatabaseKeyStore;
 import cornerstone.webapp.services.keys.stores.db.DatabaseKeyStoreImpl;
 import cornerstone.webapp.services.keys.stores.local.LocalKeyStore;
 import cornerstone.webapp.services.keys.stores.local.LocalKeyStoreImpl;
+import cornerstone.webapp.services.keys.stores.manager.KeyManager;
+import cornerstone.webapp.services.keys.stores.manager.KeyManagerImpl;
 import io.jsonwebtoken.SigningKeyResolver;
 import org.glassfish.hk2.api.Immediate;
 import org.glassfish.jersey.internal.inject.AbstractBinder;
@@ -93,12 +95,13 @@ public class ApplicationBinder extends AbstractBinder {
             bindAsContract (WorkDB.class).in(Singleton.class);
 
             // implementation -> interface bindings
-            bind    (AccountManagerImpl.class).to    (AccountManager.class).in(Singleton.class);
-            bind        (JWTServiceImpl.class).to        (JWTService.class).in(Singleton.class);
-            bind     (LocalKeyStoreImpl.class).to     (LocalKeyStore.class).in(Singleton.class);
-            bind        (KeyRotatorImpl.class).to        (KeyRotator.class).in(Immediate.class);
-            bind    (DatabaseKeyStoreImpl.class).to    (DatabaseKeyStore.class).in(Singleton.class);
-            bind(SigningKeyResolverImpl.class).to(SigningKeyResolver.class).in(Singleton.class);
+            bind     (AccountManagerImpl.class).to     (AccountManager.class).in(Singleton.class);
+            bind         (JWTServiceImpl.class).to         (JWTService.class).in(Singleton.class);
+            bind      (LocalKeyStoreImpl.class).to      (LocalKeyStore.class).in(Singleton.class);
+            bind   (DatabaseKeyStoreImpl.class).to   (DatabaseKeyStore.class).in(Singleton.class);
+            bind         (KeyRotatorImpl.class).to         (KeyRotator.class).in(Immediate.class);
+            bind         (KeyManagerImpl.class).to         (KeyManager.class).in(Singleton.class);
+            bind (SigningKeyResolverImpl.class).to (SigningKeyResolver.class).in(Singleton.class);
 
         } catch (final IOException e) {
             throw new RuntimeException(e.getMessage());

@@ -4,6 +4,8 @@ import cornerstone.webapp.rest.error_responses.ErrorResponse;
 import cornerstone.webapp.services.keys.stores.db.DatabaseKeyStore;
 import cornerstone.webapp.services.keys.stores.db.DatabaseKeyStoreException;
 import cornerstone.webapp.services.keys.stores.local.LocalKeyStore;
+import cornerstone.webapp.services.keys.stores.manager.KeyManager;
+import cornerstone.webapp.services.keys.stores.manager.KeyManagerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,14 +35,11 @@ import java.util.UUID;
 @PermitAll
 public class PublicKeyRestService {
     private static final Logger logger = LoggerFactory.getLogger(PublicKeyRestService.class);
-
-    private final LocalKeyStore localKeyStore;
-    private final DatabaseKeyStore publicKeyStore;
+    private final KeyManager keyManager;
 
     @Inject
-    public PublicKeyRestService(final LocalKeyStore localKeyStore, final DatabaseKeyStore publicKeyStore) {
-        this.localKeyStore = localKeyStore;
-        this.publicKeyStore = publicKeyStore;
+    public PublicKeyRestService(final KeyManager keyManager) {
+        this.keyManager = keyManager;
     }
 
     @GET
@@ -52,40 +51,31 @@ public class PublicKeyRestService {
         try {
             uuid = UUID.fromString(uuidString);
 
-        } catch (final IllegalArgumentException illegalArgumentException) {
-            final ErrorResponse er = new ErrorResponse(Response.Status.BAD_REQUEST.getStatusCode(), illegalArgumentException.getMessage());
-            return Response.status(Response.Status.BAD_REQUEST).entity(er).build();
+        } catch (final IllegalArgumentException e) {
+            final ErrorResponse er = new ErrorResponse(Response.Status.BAD_REQUEST.getStatusCode(), e.getMessage());
+            return Response.status(Response.Status.BAD_REQUEST)
+                           .entity(er).build();
         }
 
-        // Try to get key from local keystore
-        String base64Key = null;
         try {
-            final PublicKey publicKey = localKeyStore.getPublicKey(uuid);
-            base64Key = Base64.getEncoder().encodeToString(publicKey.getEncoded());
+            final PublicKey publicKey       = keyManager.getPublicKey(uuid);
+            final String    base64PublicKey = Base64.getEncoder().encodeToString(publicKey.getEncoded());
 
-        } catch (final NoSuchElementException ignored) {}
+            return Response.status(Response.Status.OK)
+                           .entity(new PublicKeyDTO(base64PublicKey)).build();
 
-        // Try to get key from database and cache it locally
-        if (base64Key == null) {
-            try {
-                base64Key = publicKeyStore.getPublicKey(uuid).getBase64Key();
-                localKeyStore.addPublicKey(uuid, base64Key);
-
-            } catch (final NoSuchElementException ignored) {
-
-            } catch (final DatabaseKeyStoreException | NoSuchAlgorithmException | InvalidKeySpecException e) {
-                logger.error(String.format("An error occurred during public key retrieval/local caching, exception class: '%s', exception message: '%s'", e.getClass().getCanonicalName(), e.getMessage()));
-                final ErrorResponse er = new ErrorResponse(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), "An error occurred during public key retrieval/local caching.");
-                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(er).build();
-            }
-        }
-
-        // Send response
-        if (base64Key != null) {
-            return Response.status(Response.Status.OK).entity(new PublicKeyDTO(base64Key)).build();
-        } else {
+        } catch (final NoSuchElementException e) {
             final ErrorResponse errorResponse = new ErrorResponse(Response.Status.NOT_FOUND.getStatusCode(), "No such key.");
-            return Response.status(Response.Status.NOT_FOUND).entity(errorResponse).build();
+
+            return Response.status(Response.Status.NOT_FOUND)
+                           .entity(errorResponse).build();
+
+        } catch (final KeyManagerException e) {
+            final String msg = "An error occurred during public key retrieval!";
+            logger.error(msg);
+
+            final ErrorResponse er = new ErrorResponse(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), msg);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(er).build();
         }
     }
 
@@ -94,11 +84,11 @@ public class PublicKeyRestService {
     @Produces(MediaType.APPLICATION_JSON)
     public Response getLiveKeyUUIDs() {
         try {
-            final List<UUID> uuidList = publicKeyStore.getLivePublicKeyUUIDs();
-            return Response.status(Response.Status.OK).entity(uuidList).build();
+            final List<UUID> uuids = keyManager.getLivePublicKeyUUIDs();
+            return Response.status(Response.Status.OK).entity(uuids).build();
 
         } catch (final DatabaseKeyStoreException e) {
-            final ErrorResponse er = new ErrorResponse(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), "An error occurred during live key retrieval.");
+            final ErrorResponse er = new ErrorResponse(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), "An error occurred during live uuid retrieval.");
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(er).build();
         }
     }
@@ -108,11 +98,11 @@ public class PublicKeyRestService {
     @Produces(MediaType.APPLICATION_JSON)
     public Response getExpiredKeyUUIDs() {
         try {
-            final List<UUID> uuidList = publicKeyStore.getExpiredPublicKeyUUIDs();
-            return Response.status(Response.Status.OK).entity(uuidList).build();
+            final List<UUID> uuids = keyManager.getExpiredPublicKeyUUIDs();
+            return Response.status(Response.Status.OK).entity(uuids).build();
 
         } catch (final DatabaseKeyStoreException e) {
-            final ErrorResponse er = new ErrorResponse(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), "An error occurred during expired key retrieval.");
+            final ErrorResponse er = new ErrorResponse(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), "An error occurred during expired uuid retrieval.");
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(er).build();
         }
     }
