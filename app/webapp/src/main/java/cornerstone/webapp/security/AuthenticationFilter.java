@@ -43,7 +43,7 @@ public class AuthenticationFilter implements ContainerRequestFilter {
             userRoles.add(userRole);
 
         } catch (final IllegalArgumentException | NullPointerException e) {
-            logger.error(String.format(INVALID_USER_ROLE_FOR_SUBJECT, roleFromClaims, claims.getSubject()));
+            logger.error(SecurityMessageElements.SECURITY_PREFIX + String.format(INVALID_USER_ROLE_FOR_SUBJECT, roleFromClaims, claims.getSubject()));
         }
 
         return userRoles;
@@ -65,16 +65,19 @@ public class AuthenticationFilter implements ContainerRequestFilter {
     //secure, principal, userRoles, claims
     @Override
     public void filter(ContainerRequestContext containerRequestContext) throws IOException, ForbiddenException {
+        final String m = String.format(SecurityMessageElements.SECURITY_PREFIX + "Filtering URI='%s', METHOD='%s', ADDR='%s'", httpServletRequest.getRequestURI(), httpServletRequest.getMethod(), httpServletRequest.getLocalAddr());
+        logger.info(m);
+
         if ( containerRequestContext == null) {
-            final String msg = "containerRequestContext is null!";
+            final String msg = SecurityMessageElements.SECURITY_PREFIX + "containerRequestContext is null!";
             logger.error(msg);
-            throw new IOException(msg);
+            throw new IOException();
         }
 
         if ( containerRequestContext.getSecurityContext() == null) {
-            final String msg = "containerRequestContext.getSecurityContext() returned null!";
+            final String msg = SecurityMessageElements.SECURITY_PREFIX + "containerRequestContext.getSecurityContext() returned null!";
             logger.error(msg);
-            throw new IOException(msg);
+            throw new IOException();
         }
 
         final String authorizationHeader = containerRequestContext.getHeaderString(HttpHeaders.AUTHORIZATION);
@@ -88,13 +91,12 @@ public class AuthenticationFilter implements ContainerRequestFilter {
             final String    jws       = authorizationHeader.substring(BEARER.length());
             final JwtParser jwtParser = Jwts.parserBuilder().setSigningKeyResolver(signingKeyResolver).build();
 
-            Jws<Claims> claimsJws;
+            Jws<Claims> claimsJws = null;
             try {
                 claimsJws = jwtParser.parseClaimsJws(jws);
 
             } catch (final ExpiredJwtException | UnsupportedJwtException | MalformedJwtException | SignatureException | IllegalArgumentException | NoSuchElementException exception) {
-                logger.info("JWT exception.");
-                throw new ForbiddenException();
+                logger.info(SecurityMessageElements.SECURITY_PREFIX + "JWS could not be parsed! Anonymous level permissions granted.");
 
             } catch (final NullPointerException nullPointerException) {
                 throw new ForbiddenException();
@@ -107,7 +109,7 @@ public class AuthenticationFilter implements ContainerRequestFilter {
             }
         }
 
-        Principal principal = subject == null ? new PrincipalImpl("Anonymous") : new PrincipalImpl(subject);
+        final Principal principal = subject == null ? new PrincipalImpl("Anonymous") : new PrincipalImpl(subject);
         containerRequestContext.setSecurityContext(
                 new JwtSecurityContext(secure, principal, userRoles, claims)
         );
