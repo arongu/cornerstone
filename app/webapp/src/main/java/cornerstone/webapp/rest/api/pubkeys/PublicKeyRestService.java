@@ -1,9 +1,7 @@
 package cornerstone.webapp.rest.api.pubkeys;
 
 import cornerstone.webapp.rest.error_responses.ErrorResponse;
-import cornerstone.webapp.services.keys.stores.db.DatabaseKeyStore;
 import cornerstone.webapp.services.keys.stores.db.DatabaseKeyStoreException;
-import cornerstone.webapp.services.keys.stores.local.LocalKeyStore;
 import cornerstone.webapp.services.keys.stores.manager.KeyManager;
 import cornerstone.webapp.services.keys.stores.manager.KeyManagerException;
 import org.slf4j.Logger;
@@ -18,9 +16,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
-import java.security.spec.InvalidKeySpecException;
 import java.util.Base64;
 import java.util.List;
 import java.util.NoSuchElementException;

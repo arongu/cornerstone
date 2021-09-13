@@ -8,9 +8,10 @@ public class MessageElements {
     public static final String PUBLIC_AND_PRIVATE_KEY = "PUBLIC AND PRIVATE KEY";
 
     // prefixes
-    public static final String PREFIX_DB      = "(DB) ";
-    public static final String PREFIX_LOCAL   = "(LOCAL) ";
-    public static final String PREFIX_MANAGER = "(MANAGER) ";
+    public static final String PREFIX_DB       = "(DB) ";
+    public static final String PREFIX_LOCAL    = "(LOCAL) ";
+    public static final String PREFIX_MANAGER  = "(MANAGER) ";
+    public static final String PREFIX_RESOLVER = "(RESOLVER) ";
 
     // postfixes
     public static final String POSTFIX_EXPIRED = " (EXPIRED)";
@@ -30,6 +31,9 @@ public class MessageElements {
     public static final String DELETED = "DELETED";
     public static final String KEPT    = "KEPT";
     public static final String NO_SUCH = "NO SUCH";
+
+    // resolver
+    public static final String RESOLVING = "RESOLVING KEY %s";
 
     // manager
     public static final String ADDING                            = "ADDING ";
