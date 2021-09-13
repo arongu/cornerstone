@@ -85,16 +85,16 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 
 
         if ( authorizationHeader != null && authorizationHeader.startsWith(BEARER)) {
-            final String jws = authorizationHeader.substring(BEARER.length());
-            JwtParser jwtParser = Jwts.parserBuilder().setSigningKeyResolver(signingKeyResolver).build();
+            final String    jws       = authorizationHeader.substring(BEARER.length());
+            final JwtParser jwtParser = Jwts.parserBuilder().setSigningKeyResolver(signingKeyResolver).build();
 
             Jws<Claims> claimsJws;
             try {
                 claimsJws = jwtParser.parseClaimsJws(jws);
 
             } catch (final ExpiredJwtException | UnsupportedJwtException | MalformedJwtException | SignatureException | IllegalArgumentException | NoSuchElementException exception) {
-                logger.info(exception.getMessage());
-                throw new ForbiddenException(exception.getMessage());
+                logger.info("JWT exception.");
+                throw new ForbiddenException();
 
             } catch (final NullPointerException nullPointerException) {
                 throw new ForbiddenException();

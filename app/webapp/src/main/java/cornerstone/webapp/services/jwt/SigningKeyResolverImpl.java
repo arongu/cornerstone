@@ -26,7 +26,7 @@ public class SigningKeyResolverImpl implements SigningKeyResolver {
 
     private Key getKey(final JwsHeader<?> jwsHeader) throws NoSuchElementException, KeyManagerException {
         final UUID   uuid = UUID.fromString(jwsHeader.getKeyId());
-        final String m    = MessageElements.PREFIX_MANAGER + String.format(MessageElements.RESOLVING, uuid);
+        final String m    = MessageElements.PREFIX_RESOLVER + String.format(MessageElements.RESOLVING, uuid);
         logger.info(m);
 
         return keyManager.getPublicKey(uuid);

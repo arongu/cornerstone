@@ -160,7 +160,7 @@ public class KeyManagerImpl implements KeyManager {
             return localKeyStore.getPublicKey(uuid);
 
         } catch (final NoSuchElementException e) {
-            final String m = MessageElements.PREFIX_MANAGER + MessageElements.NO_SUCH + MessageElements.PUBLIC_KEY + " " + uuid;
+            final String m = MessageElements.PREFIX_MANAGER + "FINAL RESOLUTION -- " + MessageElements.NO_SUCH + " " + MessageElements.PUBLIC_KEY + " " + uuid;
             logger.info(m);
             throw e;
 
