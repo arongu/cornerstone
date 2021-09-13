@@ -171,9 +171,10 @@ public class KeyManagerImpl implements KeyManager {
     }
 
     @Override
-    public void setSigningKeys(final UUID uuid, final PrivateKey privateKey, final PublicKey publicKey) {
+    public void setSigningKeys(final UUID uuid, final PrivateKey privateKey, final PublicKey publicKey) throws KeyManagerException {
         logger.info(MessageElements.PREFIX_MANAGER + MessageElements.ADDING + MessageElements.PUBLIC_AND_PRIVATE_KEY);
         localKeyStore.setSigningKeys(uuid, privateKey, publicKey);
+        addPublicKey(uuid, publicKey);
     }
 
     @Override

@@ -15,6 +15,6 @@ public interface KeyManager {
     PublicKey     getPublicKey(final UUID uuid) throws KeyManagerException;
     SigningKeys   getSigningKeys() throws KeyManagerException, SigningKeysException;
     int           removeExpiredKeys() throws DatabaseKeyStoreException;
-    void          setSigningKeys(final UUID uuid, final PrivateKey privateKey, final PublicKey publicKey);
+    void          setSigningKeys(final UUID uuid, final PrivateKey privateKey, final PublicKey publicKey) throws KeyManagerException;
     void          syncLiveKeys() throws DatabaseKeyStoreException;
 }
