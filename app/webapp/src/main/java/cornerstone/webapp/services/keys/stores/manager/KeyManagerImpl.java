@@ -2,6 +2,7 @@ package cornerstone.webapp.services.keys.stores.manager;
 
 import cornerstone.webapp.configuration.ConfigLoader;
 import cornerstone.webapp.configuration.enums.APP_ENUM;
+import cornerstone.webapp.logmsg.CommonLogMessages;
 import cornerstone.webapp.services.keys.common.PublicKeyData;
 import cornerstone.webapp.services.keys.stores.db.DatabaseKeyStore;
 import cornerstone.webapp.services.keys.stores.db.DatabaseKeyStoreException;
@@ -59,12 +60,12 @@ public class KeyManagerImpl implements KeyManager {
 
         // try to add key to local cache
         try {
-            final String m = KeyRelatedMessageElements.PREFIX_MANAGER + KeyRelatedMessageElements.PREFIX_LOCAL + KeyRelatedMessageElements.ADDING + uuid.toString();
+            final String m = CommonLogMessages.GENRE_KEY + KeyRelatedMessageElements.PREFIX_MANAGER + KeyRelatedMessageElements.PREFIX_LOCAL + KeyRelatedMessageElements.ADDING + uuid.toString();
             logger.info(m);
             localKeyStore.addPublicKey(uuid, base64Key);
 
         } catch (final NoSuchAlgorithmException | InvalidKeySpecException e) {
-            final String m = KeyRelatedMessageElements.PREFIX_MANAGER + KeyRelatedMessageElements.PREFIX_LOCAL + KeyRelatedMessageElements.PUBLIC_KEY_IS_INVALID + " " + uuid.toString();
+            final String m = CommonLogMessages.GENRE_KEY + KeyRelatedMessageElements.PREFIX_MANAGER + KeyRelatedMessageElements.PREFIX_LOCAL + KeyRelatedMessageElements.PUBLIC_KEY_IS_INVALID + " " + uuid.toString();
             logger.error(m);
             throw new KeyManagerException();
         }
@@ -75,17 +76,17 @@ public class KeyManagerImpl implements KeyManager {
         final int jwtTTL      = Integer.parseInt(configLoader.getAppProperties().getProperty(APP_ENUM.APP_JWT_TTL.key));
 
         try {
-            final String m = KeyRelatedMessageElements.PREFIX_MANAGER + KeyRelatedMessageElements.PREFIX_DB + KeyRelatedMessageElements.ADDING + KeyRelatedMessageElements.PUBLIC_KEY + " " + uuid.toString();
+            final String m = CommonLogMessages.GENRE_KEY + KeyRelatedMessageElements.PREFIX_MANAGER + KeyRelatedMessageElements.PREFIX_DB + KeyRelatedMessageElements.ADDING + KeyRelatedMessageElements.PUBLIC_KEY + " " + uuid.toString();
             logger.info(m);
             databaseKeyStore.addPublicKey(uuid, nodeName,rsaTTL + jwtTTL, base64Key);
 
         } catch (final DatabaseKeyStoreException dbe) {
-            final String m = KeyRelatedMessageElements.PREFIX_MANAGER + KeyRelatedMessageElements.DATABASE_KEYSTORE_ERROR + ": " + dbe.getMessage();
+            final String m = CommonLogMessages.GENRE_KEY + KeyRelatedMessageElements.PREFIX_MANAGER + KeyRelatedMessageElements.DATABASE_KEYSTORE_ERROR + ": " + dbe.getMessage();
             logger.error(m);
 
             if ( ! toAdd.containsKey(uuid)){
                 toAdd.put(uuid, base64Key);
-                final String msg = KeyRelatedMessageElements.PREFIX_MANAGER + KeyRelatedMessageElements.PUBLIC_KEY_ADDED_FOR_REINSERT + " " + uuid;
+                final String msg = CommonLogMessages.GENRE_KEY + KeyRelatedMessageElements.PREFIX_MANAGER + KeyRelatedMessageElements.PUBLIC_KEY_ADDED_FOR_REINSERT + " " + uuid;
                 logger.info(msg);
             }
         }
@@ -100,7 +101,7 @@ public class KeyManagerImpl implements KeyManager {
         try {
              base64_key = Base64.getEncoder().encodeToString(publicKey.getEncoded());
         } catch (final Exception e){
-            final String m = KeyRelatedMessageElements.PREFIX_MANAGER + KeyRelatedMessageElements.PUBLIC_KEY_CONVERSION_ERROR;
+            final String m = CommonLogMessages.GENRE_KEY + KeyRelatedMessageElements.PREFIX_MANAGER + KeyRelatedMessageElements.PUBLIC_KEY_CONVERSION_ERROR;
             logger.error(m);
             throw new KeyManagerException(m);
         }
@@ -110,7 +111,7 @@ public class KeyManagerImpl implements KeyManager {
 
     @Override
     public void deletePublicKey(final UUID uuid) {
-        final String m = KeyRelatedMessageElements.PREFIX_MANAGER + KeyRelatedMessageElements.DELETING + KeyRelatedMessageElements.PUBLIC_KEY + " " + uuid;
+        final String m = CommonLogMessages.GENRE_KEY + KeyRelatedMessageElements.PREFIX_MANAGER + KeyRelatedMessageElements.DELETING + KeyRelatedMessageElements.PUBLIC_KEY + " " + uuid;
         logger.info(m);
 
         localKeyStore.deletePublicKey(uuid);
@@ -120,10 +121,10 @@ public class KeyManagerImpl implements KeyManager {
             toDelete.remove(uuid); // in case it was in a delete list, get rid of it
 
         } catch (final DatabaseKeyStoreException dbe){
-            final String err = KeyRelatedMessageElements.PREFIX_MANAGER + KeyRelatedMessageElements.DATABASE_KEYSTORE_ERROR + ": " + dbe.getMessage();
+            final String err = CommonLogMessages.GENRE_KEY + KeyRelatedMessageElements.PREFIX_MANAGER + KeyRelatedMessageElements.DATABASE_KEYSTORE_ERROR + ": " + dbe.getMessage();
             logger.error(err);
 
-            final String msg = KeyRelatedMessageElements.PREFIX_MANAGER + KeyRelatedMessageElements.PUBLIC_KEY_ADDED_TO_RE_DELETE + " " + uuid;
+            final String msg = CommonLogMessages.GENRE_KEY + KeyRelatedMessageElements.PREFIX_MANAGER + KeyRelatedMessageElements.PUBLIC_KEY_ADDED_TO_RE_DELETE + " " + uuid;
             toDelete.add(uuid); // if it cannot be removed from the db at this time, add it to the removal list
             logger.info(msg);
         }
@@ -131,14 +132,14 @@ public class KeyManagerImpl implements KeyManager {
 
     @Override
     public List<UUID> getExpiredPublicKeyUUIDs() throws DatabaseKeyStoreException {
-        final String m = KeyRelatedMessageElements.PREFIX_MANAGER + KeyRelatedMessageElements.FETCHING + KeyRelatedMessageElements.POSTFIX_EXPIRED;
+        final String m = CommonLogMessages.GENRE_KEY + KeyRelatedMessageElements.PREFIX_MANAGER + KeyRelatedMessageElements.FETCHING + KeyRelatedMessageElements.POSTFIX_EXPIRED;
         logger.info(m);
         return databaseKeyStore.getExpiredPublicKeyUUIDs();
     }
 
     @Override
     public List<UUID> getLivePublicKeyUUIDs() throws DatabaseKeyStoreException {
-        final String m = KeyRelatedMessageElements.PREFIX_MANAGER + KeyRelatedMessageElements.FETCHING + KeyRelatedMessageElements.POSTFIX_LIVE;
+        final String m = CommonLogMessages.GENRE_KEY + KeyRelatedMessageElements.PREFIX_MANAGER + KeyRelatedMessageElements.FETCHING + KeyRelatedMessageElements.POSTFIX_LIVE;
         logger.info(m);
         return databaseKeyStore.getLivePublicKeyUUIDs();
     }
@@ -146,31 +147,33 @@ public class KeyManagerImpl implements KeyManager {
     @Override
     public PublicKey getPublicKey(final UUID uuid) throws KeyManagerException {
         try {
-            logger.info(KeyRelatedMessageElements.PREFIX_MANAGER + KeyRelatedMessageElements.PREFIX_LOCAL + KeyRelatedMessageElements.FETCHING + " " + uuid);
+            final String m = CommonLogMessages.GENRE_KEY + KeyRelatedMessageElements.PREFIX_MANAGER + KeyRelatedMessageElements.PREFIX_LOCAL + KeyRelatedMessageElements.FETCHING + " " + uuid;
+            logger.info(m);
             return localKeyStore.getPublicKey(uuid);
 
         } catch (final NoSuchElementException ignore){
         }
 
         try {
-            logger.info(KeyRelatedMessageElements.PREFIX_MANAGER + KeyRelatedMessageElements.PREFIX_DB + KeyRelatedMessageElements.FETCHING + " " + uuid);
+            final String m = CommonLogMessages.GENRE_KEY + KeyRelatedMessageElements.PREFIX_MANAGER + KeyRelatedMessageElements.PREFIX_DB + KeyRelatedMessageElements.FETCHING + " " + uuid;
+            logger.info(m);
             final PublicKeyData data = databaseKeyStore.getPublicKey(uuid);
             localKeyStore.addPublicKey(data.getUUID(), data.getBase64Key());
 
             return localKeyStore.getPublicKey(uuid);
 
         } catch (final NoSuchElementException e) {
-            final String m = KeyRelatedMessageElements.PREFIX_MANAGER + "FINAL RESOLUTION -- " + KeyRelatedMessageElements.NO_SUCH + " " + KeyRelatedMessageElements.PUBLIC_KEY + " " + uuid;
+            final String m = CommonLogMessages.GENRE_KEY + KeyRelatedMessageElements.PREFIX_MANAGER + "FINAL RESOLUTION -- " + KeyRelatedMessageElements.NO_SUCH + " " + KeyRelatedMessageElements.PUBLIC_KEY + " " + uuid;
             logger.info(m);
             throw e;
 
         } catch (final DatabaseKeyStoreException e) {
-            final String m = KeyRelatedMessageElements.PREFIX_MANAGER + KeyRelatedMessageElements.DATABASE_KEYSTORE_ERROR;
+            final String m = CommonLogMessages.GENRE_KEY + KeyRelatedMessageElements.PREFIX_MANAGER + KeyRelatedMessageElements.DATABASE_KEYSTORE_ERROR;
             logger.error(m);
             throw new KeyManagerException(m);
 
         } catch (final InvalidKeySpecException | NoSuchAlgorithmException e){
-            final String m = KeyRelatedMessageElements.PREFIX_MANAGER + KeyRelatedMessageElements.PUBLIC_KEY_RECEIVED_FROM_DATABASE_IS_CORRUPT + " " + uuid;
+            final String m = CommonLogMessages.GENRE_KEY + KeyRelatedMessageElements.PREFIX_MANAGER + KeyRelatedMessageElements.PUBLIC_KEY_RECEIVED_FROM_DATABASE_IS_CORRUPT + " " + uuid;
             logger.error(m);
             throw new KeyManagerException(m);
         }
@@ -178,26 +181,30 @@ public class KeyManagerImpl implements KeyManager {
 
     @Override
     public SigningKeys getSigningKeys() throws SigningKeysException {
-        logger.info(KeyRelatedMessageElements.PREFIX_MANAGER + KeyRelatedMessageElements.FETCHING + KeyRelatedMessageElements.PUBLIC_AND_PRIVATE_KEY);
+        final String m = CommonLogMessages.GENRE_KEY + KeyRelatedMessageElements.PREFIX_MANAGER + KeyRelatedMessageElements.FETCHING + KeyRelatedMessageElements.PUBLIC_AND_PRIVATE_KEY;
+        logger.info(m);
         return localKeyStore.getSigningKeys();
     }
 
     @Override
     public int removeExpiredKeys() throws DatabaseKeyStoreException {
-        logger.info(KeyRelatedMessageElements.PREFIX_MANAGER + KeyRelatedMessageElements.DELETING + KeyRelatedMessageElements.EXPIRED_KEYS);
+        final String m = CommonLogMessages.GENRE_KEY + KeyRelatedMessageElements.PREFIX_MANAGER + KeyRelatedMessageElements.DELETING + KeyRelatedMessageElements.EXPIRED_KEYS;
+        logger.info(m);
         return databaseKeyStore.deleteExpiredPublicKeys();
     }
 
     @Override
     public void setSigningKeys(final UUID uuid, final PrivateKey privateKey, final PublicKey publicKey) throws KeyManagerException {
-        logger.info(KeyRelatedMessageElements.PREFIX_MANAGER + KeyRelatedMessageElements.ADDING + KeyRelatedMessageElements.PUBLIC_AND_PRIVATE_KEY);
+        final String m = CommonLogMessages.GENRE_KEY + KeyRelatedMessageElements.PREFIX_MANAGER + KeyRelatedMessageElements.ADDING + KeyRelatedMessageElements.PUBLIC_AND_PRIVATE_KEY;
+        logger.info(m);
         localKeyStore.setSigningKeys(uuid, privateKey, publicKey);
         addPublicKey(uuid, publicKey);
     }
 
     @Override
     public void syncLiveKeys() throws DatabaseKeyStoreException {
-        logger.info(KeyRelatedMessageElements.PREFIX_MANAGER + KeyRelatedMessageElements.SYNC);
+        final String m = CommonLogMessages.GENRE_KEY + KeyRelatedMessageElements.PREFIX_MANAGER + KeyRelatedMessageElements.SYNC;
+        logger.info(m);
         localKeyStore.keepOnlyPublicKeys(databaseKeyStore.getLivePublicKeyUUIDs());
     }
 }
