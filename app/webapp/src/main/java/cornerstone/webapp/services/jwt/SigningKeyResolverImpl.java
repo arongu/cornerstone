@@ -26,10 +26,25 @@ public class SigningKeyResolverImpl implements SigningKeyResolver {
     }
 
     private Key getKey(final JwsHeader<?> jwsHeader) throws NoSuchElementException, KeyManagerException {
-        final UUID   uuid = UUID.fromString(jwsHeader.getKeyId());
-        final String m    = CommonLogMessages.GENRE_SECURITY + KeyRelatedMessageElements.PREFIX_RESOLVER + String.format(KeyRelatedMessageElements.RESOLVING, uuid);
-        logger.info(m);
+        if ( jwsHeader == null) {
+            throw new NoSuchElementException();
+        }
 
+        final String v = jwsHeader.getKeyId();
+        if ( v == null) {
+            throw new NoSuchElementException();
+        }
+
+        final UUID uuid;
+        try {
+            uuid = UUID.fromString(v);
+
+        } catch (final IllegalArgumentException e) {
+            throw new NoSuchElementException();
+        }
+
+        final String m = CommonLogMessages.GENRE_SECURITY + KeyRelatedMessageElements.PREFIX_RESOLVER + String.format(KeyRelatedMessageElements.RESOLVING, uuid);
+        logger.info(m);
         return keyManager.getPublicKey(uuid);
     }
 

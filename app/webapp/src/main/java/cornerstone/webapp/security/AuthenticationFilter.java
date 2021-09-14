@@ -103,9 +103,6 @@ public class AuthenticationFilter implements ContainerRequestFilter {
             } catch (final ExpiredJwtException | UnsupportedJwtException | MalformedJwtException | SignatureException | IllegalArgumentException | NoSuchElementException exception) {
                 logger.info(CommonLogMessages.GENRE_SECURITY + CommonLogMessages.GENRE_FILTER + "JWT/JWS could not be validated! (Anonymous will be granted)");
 
-            } catch (final NullPointerException nullPointerException) {
-                logger.error(CommonLogMessages.GENRE_SECURITY + CommonLogMessages.GENRE_FILTER + "NullPointerException caught!");
-                throw new ForbiddenException();
             }
 
             if ( claimsJws != null && claimsJws.getBody() != null) {

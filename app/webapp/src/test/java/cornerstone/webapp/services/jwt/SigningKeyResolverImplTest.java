@@ -128,12 +128,44 @@ public class SigningKeyResolverImplTest {
         assertThrows(NoSuchElementException.class, () -> signingKeyResolver.resolveSigningKey(jwsHeader, (Claims) null));
     }
 
+    /*
+        [does not have it] local keystore
+        [does not have it] database keystore
+    */
     @Test
     public void resolveSigningKey_shouldThrowNoSuchElementException_whenUUIDdoesNotExist() {
         final KeyManager         keyManager         = new KeyManagerImpl(null, LOCAL_KEYSTORE, DATABASE_KEYSTORE);
         final SigningKeyResolver signingKeyResolver = new SigningKeyResolverImpl(keyManager);
         final JwsHeader<?>       jwsHeader          = Jwts.jwsHeader().setKeyId(UUID.randomUUID().toString());
 
+
+        assertThrows(NoSuchElementException.class, () -> signingKeyResolver.resolveSigningKey(jwsHeader, (Claims) null));
+    }
+
+    /*
+        [OK]   local keystore
+        [OK]   database keystore
+        [null] jwsHeader
+    */
+    @Test
+    public void resolveSigningKey_shouldThrowNoSuchElementException_whenJwsHeaderIsNull() {
+        final KeyManager         keyManager         = new KeyManagerImpl(null, LOCAL_KEYSTORE, DATABASE_KEYSTORE);
+        final SigningKeyResolver signingKeyResolver = new SigningKeyResolverImpl(keyManager);
+        final JwsHeader<?>       jwsHeader          = null;
+
+        assertThrows(NoSuchElementException.class, () -> signingKeyResolver.resolveSigningKey(jwsHeader, (Claims) null));
+    }
+
+    /*
+        [OK]   local keystore
+        [OK]   database keystore
+        [null] jwsHeader is not null, but keyId is
+    */
+    @Test
+    public void resolveSigningKey_shouldThrowNoSuchElementException_whenKeyIdIsNull() {
+        final KeyManager         keyManager         = new KeyManagerImpl(null, LOCAL_KEYSTORE, DATABASE_KEYSTORE);
+        final SigningKeyResolver signingKeyResolver = new SigningKeyResolverImpl(keyManager);
+        final JwsHeader<?>       jwsHeader          = Jwts.jwsHeader().setKeyId(null);
 
         assertThrows(NoSuchElementException.class, () -> signingKeyResolver.resolveSigningKey(jwsHeader, (Claims) null));
     }
