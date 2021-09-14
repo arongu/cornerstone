@@ -18,7 +18,6 @@ import javax.ws.rs.container.PreMatching;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.ext.Provider;
-import java.io.IOException;
 import java.security.Principal;
 import java.util.HashSet;
 import java.util.NoSuchElementException;
@@ -45,7 +44,7 @@ public class AuthenticationFilter implements ContainerRequestFilter {
             userRoles.add(userRole);
 
         } catch (final IllegalArgumentException | NullPointerException e) {
-            final String em = CommonLogMessages.GENRE_SECURITY + CommonLogMessages.GENRE_FILTER + String.format(INVALID_USER_ROLE_FOR_SUBJECT, roleFromClaims, claims.getSubject());
+            final String em = CommonLogMessages.PREFIX_SECURITY + CommonLogMessages.PREFIX_FILTER + String.format(INVALID_USER_ROLE_FOR_SUBJECT, roleFromClaims, claims.getSubject());
             logger.error(em);
         }
 
@@ -67,20 +66,20 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 
     //secure, principal, userRoles, claims
     @Override
-    public void filter(ContainerRequestContext containerRequestContext) throws IOException, ForbiddenException {
+    public void filter(final ContainerRequestContext containerRequestContext) throws ForbiddenException {
         final String m = String.format(
-                CommonLogMessages.GENRE_SECURITY + CommonLogMessages.GENRE_FILTER + "Filtering URI='%s', METHOD='%s', ADDR='%s'", httpServletRequest.getRequestURI(), httpServletRequest.getMethod(), httpServletRequest.getLocalAddr()
+                CommonLogMessages.PREFIX_SECURITY + CommonLogMessages.PREFIX_FILTER + "Filtering URI='%s', METHOD='%s', ADDR='%s'", httpServletRequest.getRequestURI(), httpServletRequest.getMethod(), httpServletRequest.getLocalAddr()
         );
         logger.info(m);
 
         if ( containerRequestContext == null) {
-            final String m2 = CommonLogMessages.GENRE_SECURITY + CommonLogMessages.GENRE_FILTER + "containerRequestContext is null!";
+            final String m2 = CommonLogMessages.PREFIX_SECURITY + CommonLogMessages.PREFIX_FILTER + "containerRequestContext is null!";
             logger.error(m2);
             throw new ForbiddenException();
         }
 
         if ( containerRequestContext.getSecurityContext() == null) {
-            final String m3 = CommonLogMessages.GENRE_SECURITY + CommonLogMessages.GENRE_FILTER + "containerRequestContext.getSecurityContext() returned null!";
+            final String m3 = CommonLogMessages.PREFIX_SECURITY + CommonLogMessages.PREFIX_FILTER + "containerRequestContext.getSecurityContext() returned null!";
             logger.error(m3);
             throw new ForbiddenException();
         }
@@ -91,7 +90,6 @@ public class AuthenticationFilter implements ContainerRequestFilter {
         Set<UserRole> userRoles          = null;
         Claims claims                    = null;
 
-
         if ( authorizationHeader != null && authorizationHeader.startsWith(BEARER)) {
             final String    jws       = authorizationHeader.substring(BEARER.length());
             final JwtParser jwtParser = Jwts.parserBuilder().setSigningKeyResolver(signingKeyResolver).build();
@@ -101,8 +99,7 @@ public class AuthenticationFilter implements ContainerRequestFilter {
                 claimsJws = jwtParser.parseClaimsJws(jws);
 
             } catch (final ExpiredJwtException | UnsupportedJwtException | MalformedJwtException | SignatureException | IllegalArgumentException | NoSuchElementException exception) {
-                logger.info(CommonLogMessages.GENRE_SECURITY + CommonLogMessages.GENRE_FILTER + "JWT/JWS could not be validated! (Anonymous will be granted)");
-
+                logger.info(CommonLogMessages.PREFIX_SECURITY + CommonLogMessages.PREFIX_FILTER + "JWT/JWS could not be validated! (Anonymous will be granted)");
             }
 
             if ( claimsJws != null && claimsJws.getBody() != null) {

@@ -27,11 +27,15 @@ public class SigningKeyResolverImpl implements SigningKeyResolver {
 
     private Key getKey(final JwsHeader<?> jwsHeader) throws NoSuchElementException, KeyManagerException {
         if ( jwsHeader == null) {
+            final String m = CommonLogMessages.PREFIX_JWS + CommonLogMessages.PREFIX_MAPPER + "jwsHeader == null";
+            logger.info(m);
             throw new NoSuchElementException();
         }
 
         final String v = jwsHeader.getKeyId();
         if ( v == null) {
+            final String m = CommonLogMessages.PREFIX_JWS + CommonLogMessages.PREFIX_MAPPER + "getKeyId() == null";
+            logger.info(m);
             throw new NoSuchElementException();
         }
 
@@ -40,10 +44,12 @@ public class SigningKeyResolverImpl implements SigningKeyResolver {
             uuid = UUID.fromString(v);
 
         } catch (final IllegalArgumentException e) {
+            final String m = CommonLogMessages.PREFIX_JWS + CommonLogMessages.PREFIX_MAPPER + "UUID conversion error";
+            logger.info(m);
             throw new NoSuchElementException();
         }
 
-        final String m = CommonLogMessages.GENRE_SECURITY + KeyRelatedMessageElements.PREFIX_RESOLVER + String.format(KeyRelatedMessageElements.RESOLVING, uuid);
+        final String m = CommonLogMessages.PREFIX_JWS + KeyRelatedMessageElements.PREFIX_RESOLVER + String.format(KeyRelatedMessageElements.RESOLVING, uuid);
         logger.info(m);
         return keyManager.getPublicKey(uuid);
     }
@@ -54,7 +60,7 @@ public class SigningKeyResolverImpl implements SigningKeyResolver {
             return getKey(jwsHeader);
 
         } catch (final KeyManagerException e) {
-            final String em = CommonLogMessages.GENRE_SECURITY + KeyRelatedMessageElements.PREFIX_RESOLVER + KeyRelatedMessageElements.DATABASE_KEYSTORE_ERROR;
+            final String em = CommonLogMessages.PREFIX_JWS + KeyRelatedMessageElements.PREFIX_RESOLVER + KeyRelatedMessageElements.DATABASE_KEYSTORE_ERROR;
             logger.error(em);
             throw new NoSuchElementException();
         }

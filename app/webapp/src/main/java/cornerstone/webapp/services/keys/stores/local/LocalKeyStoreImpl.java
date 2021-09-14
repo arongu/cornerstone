@@ -37,7 +37,7 @@ public class LocalKeyStoreImpl implements LocalKeyStore {
     @Override
     public void addPublicKey(final UUID uuid, final PublicKey publicKey) {
         publicKeys.put(uuid, publicKey);
-        final String m = CommonLogMessages.GENRE_KEY + KeyRelatedMessageElements.PREFIX_LOCAL + KeyRelatedMessageElements.ADDED + " " + KeyRelatedMessageElements.PUBLIC_KEY + " " + uuid;
+        final String m = CommonLogMessages.PREFIX_KEY + KeyRelatedMessageElements.PREFIX_LOCAL + KeyRelatedMessageElements.ADDED + " " + KeyRelatedMessageElements.PUBLIC_KEY + " " + uuid;
         logger.info(m);
     }
 
@@ -63,7 +63,7 @@ public class LocalKeyStoreImpl implements LocalKeyStore {
     @Override
     public void deletePublicKey(final UUID uuid) {
         publicKeys.remove(uuid);
-        final String m = CommonLogMessages.GENRE_KEY + KeyRelatedMessageElements.PREFIX_LOCAL + KeyRelatedMessageElements.DELETED + " " + KeyRelatedMessageElements.PUBLIC_KEY + " " + uuid;
+        final String m = CommonLogMessages.PREFIX_KEY + KeyRelatedMessageElements.PREFIX_LOCAL + KeyRelatedMessageElements.DELETED + " " + KeyRelatedMessageElements.PUBLIC_KEY + " " + uuid;
         logger.info(m);
     }
 
@@ -90,11 +90,11 @@ public class LocalKeyStoreImpl implements LocalKeyStore {
     public PublicKey getPublicKey(final UUID uuid) throws NoSuchElementException {
         final PublicKey keyData = publicKeys.get(uuid);
         if ( null != keyData) {
-            final String m = CommonLogMessages.GENRE_KEY + KeyRelatedMessageElements.PREFIX_LOCAL + KeyRelatedMessageElements.FETCHED + " " + KeyRelatedMessageElements.PUBLIC_KEY + " " + uuid;
+            final String m = CommonLogMessages.PREFIX_KEY + KeyRelatedMessageElements.PREFIX_LOCAL + KeyRelatedMessageElements.FETCHED + " " + KeyRelatedMessageElements.PUBLIC_KEY + " " + uuid;
             logger.info(m);
             return keyData;
         } else {
-            final String m = CommonLogMessages.GENRE_KEY + KeyRelatedMessageElements.PREFIX_LOCAL + KeyRelatedMessageElements.NO_SUCH + " " + KeyRelatedMessageElements.PUBLIC_KEY + " " + uuid;
+            final String m = CommonLogMessages.PREFIX_KEY + KeyRelatedMessageElements.PREFIX_LOCAL + KeyRelatedMessageElements.NO_SUCH + " " + KeyRelatedMessageElements.PUBLIC_KEY + " " + uuid;
             logger.info(m);
             throw new NoSuchElementException();
         }
@@ -110,19 +110,19 @@ public class LocalKeyStoreImpl implements LocalKeyStore {
         int deleted = 0;
         for ( final UUID uuid : publicKeys.keySet()) {
             if ( uuid.equals(live_uuid) || toBeKept.contains(uuid)) {
-                final String m = CommonLogMessages.GENRE_KEY + KeyRelatedMessageElements.PREFIX_LOCAL + KeyRelatedMessageElements.SYNC + " " + KeyRelatedMessageElements.PUBLIC_KEY + " " + KeyRelatedMessageElements.KEPT + " " + uuid;
+                final String m = CommonLogMessages.PREFIX_KEY + KeyRelatedMessageElements.PREFIX_LOCAL + KeyRelatedMessageElements.SYNC + " " + KeyRelatedMessageElements.PUBLIC_KEY + " " + KeyRelatedMessageElements.KEPT + " " + uuid;
                 logger.info(m);
 
             } else {
                 publicKeys.remove(uuid);
                 deleted++;
 
-                final String m = CommonLogMessages.GENRE_KEY + KeyRelatedMessageElements.PREFIX_LOCAL + KeyRelatedMessageElements.SYNC + " " + KeyRelatedMessageElements.PUBLIC_KEY + " " + KeyRelatedMessageElements.DELETED + " " + uuid;
+                final String m = CommonLogMessages.PREFIX_KEY + KeyRelatedMessageElements.PREFIX_LOCAL + KeyRelatedMessageElements.SYNC + " " + KeyRelatedMessageElements.PUBLIC_KEY + " " + KeyRelatedMessageElements.DELETED + " " + uuid;
                 logger.info(m);
             }
         }
 
-        final String m = CommonLogMessages.GENRE_KEY + KeyRelatedMessageElements.PREFIX_LOCAL + KeyRelatedMessageElements.SYNC + " " + KeyRelatedMessageElements.PUBLIC_KEY + " " + KeyRelatedMessageElements.KEPT + ", " + KeyRelatedMessageElements.DELETED + " " + toBeKept.size() + " " + deleted;
+        final String m = CommonLogMessages.PREFIX_KEY + KeyRelatedMessageElements.PREFIX_LOCAL + KeyRelatedMessageElements.SYNC + " " + KeyRelatedMessageElements.PUBLIC_KEY + " " + KeyRelatedMessageElements.KEPT + ", " + KeyRelatedMessageElements.DELETED + " " + toBeKept.size() + " " + deleted;
         logger.info(m);
     }
 
@@ -139,7 +139,7 @@ public class LocalKeyStoreImpl implements LocalKeyStore {
         this.livePublicKey  = publicKey;
         publicKeys.put(uuid, publicKey);
 
-        final String m = CommonLogMessages.GENRE_KEY + KeyRelatedMessageElements.PREFIX_LOCAL + KeyRelatedMessageElements.SET + " " + KeyRelatedMessageElements.PUBLIC_AND_PRIVATE_KEY + " " + uuid;
+        final String m = CommonLogMessages.PREFIX_KEY + KeyRelatedMessageElements.PREFIX_LOCAL + KeyRelatedMessageElements.SET + " " + KeyRelatedMessageElements.PUBLIC_AND_PRIVATE_KEY + " " + uuid;
         logger.info(m);
     }
 
@@ -159,7 +159,7 @@ public class LocalKeyStoreImpl implements LocalKeyStore {
     @Override
     public SigningKeys getSigningKeys() throws SigningKeysException {
         if ( null == livePrivateKey || null == livePublicKey || null == live_uuid) {
-            final String m = CommonLogMessages.GENRE_KEY + KeyRelatedMessageElements.PREFIX_LOCAL + KeyRelatedMessageElements.NOT_SET + " " + KeyRelatedMessageElements.PUBLIC_AND_PRIVATE_KEY;
+            final String m = CommonLogMessages.PREFIX_KEY + KeyRelatedMessageElements.PREFIX_LOCAL + KeyRelatedMessageElements.NOT_SET + " " + KeyRelatedMessageElements.PUBLIC_AND_PRIVATE_KEY;
             logger.error(m);
             throw new SigningKeysException("Signing keys are not initialized properly!");
 
@@ -177,7 +177,7 @@ public class LocalKeyStoreImpl implements LocalKeyStore {
         live_uuid = null;
         livePrivateKey = null;
 
-        final String m = CommonLogMessages.GENRE_KEY + KeyRelatedMessageElements.PREFIX_LOCAL + "DROPPED ALL " + KeyRelatedMessageElements.PUBLIC_AND_PRIVATE_KEY;
+        final String m = CommonLogMessages.PREFIX_KEY + KeyRelatedMessageElements.PREFIX_LOCAL + "DROPPED ALL " + KeyRelatedMessageElements.PUBLIC_AND_PRIVATE_KEY;
         logger.info(m);
     }
 }

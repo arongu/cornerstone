@@ -103,7 +103,7 @@ public class AuthorizationFilter implements ContainerRequestFilter {
     public void filter(final ContainerRequestContext containerRequestContext) throws RuntimeException {
         // forbid when not initialized
         if ( resourceInfo == null || containerRequestContext == null) {
-            final String m = CommonLogMessages.GENRE_SECURITY + CommonLogMessages.GENRE_FILTER + "resourceInfo/containerRequest is not set!";
+            final String m = CommonLogMessages.PREFIX_SECURITY + CommonLogMessages.PREFIX_FILTER + "resourceInfo/containerRequest is not set!";
             logger.error(m);
             throw new ForbiddenException();
         }
@@ -112,7 +112,7 @@ public class AuthorizationFilter implements ContainerRequestFilter {
         final Class<?> clazz = resourceInfo.getResourceClass();
         final Method method  = resourceInfo.getResourceMethod();
         if ( clazz == null || method == null ) {
-            final String msgClazzMethod = CommonLogMessages.GENRE_SECURITY + CommonLogMessages.GENRE_FILTER + "resourceInfo.getResourceClass()/resourceInfo.getResourceMethod() returned null!";
+            final String msgClazzMethod = CommonLogMessages.PREFIX_SECURITY + CommonLogMessages.PREFIX_FILTER + "resourceInfo.getResourceClass()/resourceInfo.getResourceMethod() returned null!";
             logger.error(msgClazzMethod);
             throw new ForbiddenException();
         }
@@ -123,14 +123,14 @@ public class AuthorizationFilter implements ContainerRequestFilter {
 
         // -- Early deny, if no annotation is present.
         if (clazz.getAnnotations().length == 0 && method.getAnnotations().length == 0) {
-            final String msgAnno = CommonLogMessages.GENRE_SECURITY + CommonLogMessages.GENRE_FILTER + String.format(NO_ANNOTATIONS, userName);
+            final String msgAnno = CommonLogMessages.PREFIX_SECURITY + CommonLogMessages.PREFIX_FILTER + String.format(NO_ANNOTATIONS, userName);
             logger.info(msgAnno);
             throw new ForbiddenException();
         }
 
         // -- Class
         if ( clazz.isAnnotationPresent(DenyAll.class)) {
-            final String msgDenyAll = CommonLogMessages.GENRE_SECURITY + CommonLogMessages.GENRE_FILTER + String.format(CLASS_DENY_ALL, userName);
+            final String msgDenyAll = CommonLogMessages.PREFIX_SECURITY + CommonLogMessages.PREFIX_FILTER + String.format(CLASS_DENY_ALL, userName);
             logger.info(msgDenyAll);
             throw new ForbiddenException();
         }
@@ -139,25 +139,25 @@ public class AuthorizationFilter implements ContainerRequestFilter {
             final String[] rolesAllowedOnClass = clazz.getAnnotation(RolesAllowed.class).value();
 
             if ( isThereAnAllowedRoleInSecurityContext(rolesAllowedOnClass, securityContext)) {
-                final String msgRolesAllowed = CommonLogMessages.GENRE_SECURITY + CommonLogMessages.GENRE_FILTER + String.format(CLASS_ROLES_ALLOWED_ALLOW, userName, Arrays.toString(rolesAllowedOnClass));
+                final String msgRolesAllowed = CommonLogMessages.PREFIX_SECURITY + CommonLogMessages.PREFIX_FILTER + String.format(CLASS_ROLES_ALLOWED_ALLOW, userName, Arrays.toString(rolesAllowedOnClass));
                 logger.info(msgRolesAllowed);
                 return;
             }
 
-            final String msgClassRolesDeny = CommonLogMessages.GENRE_SECURITY + CommonLogMessages.GENRE_FILTER + String.format(CLASS_ROLES_ALLOWED_DENY, userName, Arrays.toString(rolesAllowedOnClass));
+            final String msgClassRolesDeny = CommonLogMessages.PREFIX_SECURITY + CommonLogMessages.PREFIX_FILTER + String.format(CLASS_ROLES_ALLOWED_DENY, userName, Arrays.toString(rolesAllowedOnClass));
             logger.info(msgClassRolesDeny);
             throw new ForbiddenException();
         }
 
         if ( clazz.isAnnotationPresent(PermitAll.class)) {
-            final String msgClassPermitAll = CommonLogMessages.GENRE_SECURITY + CommonLogMessages.GENRE_FILTER + String.format(CLASS_PERMIT_ALL, userName);
+            final String msgClassPermitAll = CommonLogMessages.PREFIX_SECURITY + CommonLogMessages.PREFIX_FILTER + String.format(CLASS_PERMIT_ALL, userName);
             logger.info(msgClassPermitAll);
             return;
         }
 
         // -- Method
         if ( method.isAnnotationPresent(DenyAll.class)) {
-            final String msgMethodDenyAll = CommonLogMessages.GENRE_SECURITY + CommonLogMessages.GENRE_FILTER + String.format(METHOD_DENY_ALL, userName);
+            final String msgMethodDenyAll = CommonLogMessages.PREFIX_SECURITY + CommonLogMessages.PREFIX_FILTER + String.format(METHOD_DENY_ALL, userName);
             logger.info(msgMethodDenyAll);
             throw new ForbiddenException();
         }
@@ -167,24 +167,24 @@ public class AuthorizationFilter implements ContainerRequestFilter {
             final SecurityContext secContext    = containerRequestContext.getSecurityContext();
 
             if ( isThereAnAllowedRoleInSecurityContext(rolesAllowedOnMethod, secContext)) {
-                final String msgMethodRolesAllow = CommonLogMessages.GENRE_SECURITY + CommonLogMessages.GENRE_FILTER + String.format(METHOD_ROLES_ALLOWED_ALLOW, userName, Arrays.toString(rolesAllowedOnMethod));
+                final String msgMethodRolesAllow = CommonLogMessages.PREFIX_SECURITY + CommonLogMessages.PREFIX_FILTER + String.format(METHOD_ROLES_ALLOWED_ALLOW, userName, Arrays.toString(rolesAllowedOnMethod));
                 logger.info(msgMethodRolesAllow);
                 return;
             }
 
-            final String msgMethodRolesDeny = CommonLogMessages.GENRE_SECURITY + CommonLogMessages.GENRE_FILTER + String.format(METHOD_ROLES_ALLOWED_DENY, userName, Arrays.toString(rolesAllowedOnMethod));
+            final String msgMethodRolesDeny = CommonLogMessages.PREFIX_SECURITY + CommonLogMessages.PREFIX_FILTER + String.format(METHOD_ROLES_ALLOWED_DENY, userName, Arrays.toString(rolesAllowedOnMethod));
             logger.info(msgMethodRolesDeny);
             throw new ForbiddenException();
         }
 
         if ( method.isAnnotationPresent(PermitAll.class)) {
-            final String msgMethodPermitAll = CommonLogMessages.GENRE_SECURITY + CommonLogMessages.GENRE_FILTER + String.format(METHOD_PERMIT_ALL, userName);
+            final String msgMethodPermitAll = CommonLogMessages.PREFIX_SECURITY + CommonLogMessages.PREFIX_FILTER + String.format(METHOD_PERMIT_ALL, userName);
             logger.info(msgMethodPermitAll);
             return;
         }
 
         // -- Default
-        final String msgDefaultRule = CommonLogMessages.GENRE_SECURITY + CommonLogMessages.GENRE_FILTER + String.format(ALL_EXHAUSTED_DENY, userName);
+        final String msgDefaultRule = CommonLogMessages.PREFIX_SECURITY + CommonLogMessages.PREFIX_FILTER + String.format(ALL_EXHAUSTED_DENY, userName);
         logger.info(msgDefaultRule);
         throw new ForbiddenException();
     }
