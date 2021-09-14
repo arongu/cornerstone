@@ -3,7 +3,7 @@ package cornerstone.webapp.services.keys.stores.db;
 import cornerstone.webapp.datasources.WorkDB;
 import cornerstone.webapp.logmsg.CommonLogMessages;
 import cornerstone.webapp.services.keys.common.PublicKeyData;
-import cornerstone.webapp.services.keys.stores.logging.MessageElements;
+import cornerstone.webapp.services.keys.stores.logging.KeyRelatedMessageElements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,7 +60,7 @@ public class DatabaseKeyStoreImpl implements DatabaseKeyStore {
             ps.setInt(3, ttl);
             ps.setString(4, base64_key);
 
-            final String m = MessageElements.PREFIX_DB + MessageElements.ADDED + " " + MessageElements.PUBLIC_KEY + " " + uuid;
+            final String m = KeyRelatedMessageElements.PREFIX_DB + KeyRelatedMessageElements.ADDED + " " + KeyRelatedMessageElements.PUBLIC_KEY + " " + uuid;
             logger.info(m);
             return ps.executeUpdate();
 
@@ -80,7 +80,7 @@ public class DatabaseKeyStoreImpl implements DatabaseKeyStore {
     public int deletePublicKey(final UUID uuid) throws DatabaseKeyStoreException {
         try (final Connection conn = workDB.getConnection(); final PreparedStatement ps = conn.prepareStatement(SQL_DELETE_PUBLIC_KEY)) {
             ps.setObject(1, uuid);
-            final String m = MessageElements.PREFIX_DB + MessageElements.DELETED + " " + MessageElements.PUBLIC_KEY + " " + uuid;
+            final String m = KeyRelatedMessageElements.PREFIX_DB + KeyRelatedMessageElements.DELETED + " " + KeyRelatedMessageElements.PUBLIC_KEY + " " + uuid;
 
             logger.info(m);
             return ps.executeUpdate();
@@ -115,12 +115,12 @@ public class DatabaseKeyStoreImpl implements DatabaseKeyStore {
                         rs.getString("base64_key")
                 );
 
-                final String m = MessageElements.PREFIX_DB + MessageElements.FETCHED + " " + MessageElements.PUBLIC_KEY + " " + keyData;
+                final String m = KeyRelatedMessageElements.PREFIX_DB + KeyRelatedMessageElements.FETCHED + " " + KeyRelatedMessageElements.PUBLIC_KEY + " " + keyData;
                 logger.info(m);
                 return keyData;
 
             } else {
-                final String em = MessageElements.PREFIX_DB + MessageElements.NO_SUCH + " " + MessageElements.PUBLIC_KEY + " " + uuid;
+                final String em = KeyRelatedMessageElements.PREFIX_DB + KeyRelatedMessageElements.NO_SUCH + " " + KeyRelatedMessageElements.PUBLIC_KEY + " " + uuid;
                 logger.info(em);
                 throw new NoSuchElementException();
             }
@@ -156,8 +156,8 @@ public class DatabaseKeyStoreImpl implements DatabaseKeyStore {
                 }
             }
 
-            final String m  = MessageElements.PREFIX_DB   + MessageElements.NUMBER_OF_FETCHED + " " + MessageElements.PUBLIC_KEYS + " " + MessageElements.POSTFIX_LIVE + " " + keys.size();
-            final String m2 = MessageElements.PUBLIC_KEYS + MessageElements.POSTFIX_LIVE + " " + keys;
+            final String m  = KeyRelatedMessageElements.PREFIX_DB   + KeyRelatedMessageElements.NUMBER_OF_FETCHED + " " + KeyRelatedMessageElements.PUBLIC_KEYS + " " + KeyRelatedMessageElements.POSTFIX_LIVE + " " + keys.size();
+            final String m2 = KeyRelatedMessageElements.PUBLIC_KEYS + KeyRelatedMessageElements.POSTFIX_LIVE + " " + keys;
 
             logger.info(m);
             logger.info(m2);
@@ -187,8 +187,8 @@ public class DatabaseKeyStoreImpl implements DatabaseKeyStore {
                 }
             }
 
-            final String m  = MessageElements.PREFIX_DB + MessageElements.NUMBER_OF_FETCHED + " " + MessageElements.PUBLIC_KEY_UUIDS + " " + MessageElements.POSTFIX_LIVE + " " + uuids.size();
-            final String m2 = MessageElements.PREFIX_DB + MessageElements.FETCHED           + " " + MessageElements.PUBLIC_KEY_UUIDS + " " + MessageElements.POSTFIX_LIVE + " " + uuids;
+            final String m  = KeyRelatedMessageElements.PREFIX_DB + KeyRelatedMessageElements.NUMBER_OF_FETCHED + " " + KeyRelatedMessageElements.PUBLIC_KEY_UUIDS + " " + KeyRelatedMessageElements.POSTFIX_LIVE + " " + uuids.size();
+            final String m2 = KeyRelatedMessageElements.PREFIX_DB + KeyRelatedMessageElements.FETCHED           + " " + KeyRelatedMessageElements.PUBLIC_KEY_UUIDS + " " + KeyRelatedMessageElements.POSTFIX_LIVE + " " + uuids;
             logger.info(m);
             logger.info(m2);
             return uuids;
@@ -217,8 +217,8 @@ public class DatabaseKeyStoreImpl implements DatabaseKeyStore {
                 }
             }
 
-            final String m = MessageElements.PREFIX_DB + MessageElements.NUMBER_OF_FETCHED + " " + MessageElements.PUBLIC_KEY_UUIDS + " " + MessageElements.POSTFIX_EXPIRED + " " + expired_uuids.size();
-            final String m2 = MessageElements.PREFIX_DB + MessageElements.FETCHED           + " " + MessageElements.PUBLIC_KEY_UUIDS + " " + MessageElements.POSTFIX_EXPIRED + " " + expired_uuids;
+            final String m = KeyRelatedMessageElements.PREFIX_DB + KeyRelatedMessageElements.NUMBER_OF_FETCHED + " " + KeyRelatedMessageElements.PUBLIC_KEY_UUIDS + " " + KeyRelatedMessageElements.POSTFIX_EXPIRED + " " + expired_uuids.size();
+            final String m2 = KeyRelatedMessageElements.PREFIX_DB + KeyRelatedMessageElements.FETCHED           + " " + KeyRelatedMessageElements.PUBLIC_KEY_UUIDS + " " + KeyRelatedMessageElements.POSTFIX_EXPIRED + " " + expired_uuids;
 
             logger.info(m);
             logger.info(m2);
@@ -240,7 +240,7 @@ public class DatabaseKeyStoreImpl implements DatabaseKeyStore {
     public int deleteExpiredPublicKeys() throws DatabaseKeyStoreException {
         try (final Connection conn = workDB.getConnection(); final PreparedStatement ps = conn.prepareStatement(SQL_DELETE_EXPIRED_PUBLIC_KEYS)) {
             final int deletes = ps.executeUpdate();
-            final String m = MessageElements.PREFIX_DB + MessageElements.DELETED + " " + MessageElements.PUBLIC_KEYS + " " + MessageElements.POSTFIX_EXPIRED + " " + deletes;
+            final String m = KeyRelatedMessageElements.PREFIX_DB + KeyRelatedMessageElements.DELETED + " " + KeyRelatedMessageElements.PUBLIC_KEYS + " " + KeyRelatedMessageElements.POSTFIX_EXPIRED + " " + deletes;
             logger.info(m);
             return deletes;
 

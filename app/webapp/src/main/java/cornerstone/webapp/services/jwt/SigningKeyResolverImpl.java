@@ -1,6 +1,6 @@
 package cornerstone.webapp.services.jwt;
 
-import cornerstone.webapp.services.keys.stores.logging.MessageElements;
+import cornerstone.webapp.services.keys.stores.logging.KeyRelatedMessageElements;
 import cornerstone.webapp.services.keys.stores.manager.KeyManager;
 import cornerstone.webapp.services.keys.stores.manager.KeyManagerException;
 import io.jsonwebtoken.Claims;
@@ -26,7 +26,7 @@ public class SigningKeyResolverImpl implements SigningKeyResolver {
 
     private Key getKey(final JwsHeader<?> jwsHeader) throws NoSuchElementException, KeyManagerException {
         final UUID   uuid = UUID.fromString(jwsHeader.getKeyId());
-        final String m    = MessageElements.PREFIX_RESOLVER + String.format(MessageElements.RESOLVING, uuid);
+        final String m    = KeyRelatedMessageElements.PREFIX_RESOLVER + String.format(KeyRelatedMessageElements.RESOLVING, uuid);
         logger.info(m);
 
         return keyManager.getPublicKey(uuid);
@@ -38,7 +38,7 @@ public class SigningKeyResolverImpl implements SigningKeyResolver {
             return getKey(jwsHeader);
 
         } catch (final KeyManagerException e) {
-            final String em = MessageElements.PREFIX_RESOLVER + MessageElements.DATABASE_KEYSTORE_ERROR;
+            final String em = KeyRelatedMessageElements.PREFIX_RESOLVER + KeyRelatedMessageElements.DATABASE_KEYSTORE_ERROR;
             logger.error(em);
             throw new NoSuchElementException();
         }

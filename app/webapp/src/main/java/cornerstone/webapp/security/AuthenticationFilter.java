@@ -1,5 +1,6 @@
 package cornerstone.webapp.security;
 
+import cornerstone.webapp.logmsg.CommonLogMessages;
 import cornerstone.webapp.services.accounts.management.UserRole;
 import cornerstone.webapp.services.jwt.JWT_SERVICE_CLAIMS;
 import io.jsonwebtoken.*;
@@ -31,7 +32,8 @@ public class AuthenticationFilter implements ContainerRequestFilter {
     private static final String BEARER = "Bearer ";
     private static final String INVALID_USER_ROLE_FOR_SUBJECT = "Invalid user role detected in a signed JWT! subject: '%s', role: '%s' !";
 
-    // TODO this is not a single string, this is a set ! (for future, multiple roles will be available) // SERIOUS issue
+    // TODO this is not a single string, this is a set !
+    //  (for future, multiple roles will be available) // SERIOUS issue
     private static Set<UserRole> extractUserRoles(final Claims claims) {
         Set<UserRole> userRoles = null;
         String roleFromClaims   = "UNSET";
@@ -43,7 +45,8 @@ public class AuthenticationFilter implements ContainerRequestFilter {
             userRoles.add(userRole);
 
         } catch (final IllegalArgumentException | NullPointerException e) {
-            logger.error(SecurityMessageElements.SECURITY_PREFIX + String.format(INVALID_USER_ROLE_FOR_SUBJECT, roleFromClaims, claims.getSubject()));
+            final String em = CommonLogMessages.GENRE_SECURITY + CommonLogMessages.GENRE_FILTER + String.format(INVALID_USER_ROLE_FOR_SUBJECT, roleFromClaims, claims.getSubject());
+            logger.error(em);
         }
 
         return userRoles;
@@ -52,12 +55,12 @@ public class AuthenticationFilter implements ContainerRequestFilter {
     @Context
     private HttpServletRequest httpServletRequest;
 
-    @Inject
     private SigningKeyResolver signingKeyResolver;
 
     public AuthenticationFilter() {
     }
 
+    @Inject
     public AuthenticationFilter(final SigningKeyResolver signingKeyResolver) {
         this.signingKeyResolver = signingKeyResolver;
     }
@@ -65,19 +68,21 @@ public class AuthenticationFilter implements ContainerRequestFilter {
     //secure, principal, userRoles, claims
     @Override
     public void filter(ContainerRequestContext containerRequestContext) throws IOException, ForbiddenException {
-        final String m = String.format(SecurityMessageElements.SECURITY_PREFIX + "Filtering URI='%s', METHOD='%s', ADDR='%s'", httpServletRequest.getRequestURI(), httpServletRequest.getMethod(), httpServletRequest.getLocalAddr());
+        final String m = String.format(
+                CommonLogMessages.GENRE_SECURITY + CommonLogMessages.GENRE_FILTER + "Filtering URI='%s', METHOD='%s', ADDR='%s'", httpServletRequest.getRequestURI(), httpServletRequest.getMethod(), httpServletRequest.getLocalAddr()
+        );
         logger.info(m);
 
         if ( containerRequestContext == null) {
-            final String msg = SecurityMessageElements.SECURITY_PREFIX + "containerRequestContext is null!";
-            logger.error(msg);
-            throw new IOException();
+            final String m2 = CommonLogMessages.GENRE_SECURITY + CommonLogMessages.GENRE_FILTER + "containerRequestContext is null!";
+            logger.error(m2);
+            throw new ForbiddenException();
         }
 
         if ( containerRequestContext.getSecurityContext() == null) {
-            final String msg = SecurityMessageElements.SECURITY_PREFIX + "containerRequestContext.getSecurityContext() returned null!";
-            logger.error(msg);
-            throw new IOException();
+            final String m3 = CommonLogMessages.GENRE_SECURITY + CommonLogMessages.GENRE_FILTER + "containerRequestContext.getSecurityContext() returned null!";
+            logger.error(m3);
+            throw new ForbiddenException();
         }
 
         final String authorizationHeader = containerRequestContext.getHeaderString(HttpHeaders.AUTHORIZATION);
@@ -96,9 +101,10 @@ public class AuthenticationFilter implements ContainerRequestFilter {
                 claimsJws = jwtParser.parseClaimsJws(jws);
 
             } catch (final ExpiredJwtException | UnsupportedJwtException | MalformedJwtException | SignatureException | IllegalArgumentException | NoSuchElementException exception) {
-                logger.info(SecurityMessageElements.SECURITY_PREFIX + "JWS could not be parsed! Anonymous level permissions granted.");
+                logger.info(CommonLogMessages.GENRE_SECURITY + CommonLogMessages.GENRE_FILTER + "JWT/JWS could not be validated! (Anonymous will be granted)");
 
             } catch (final NullPointerException nullPointerException) {
+                logger.error(CommonLogMessages.GENRE_SECURITY + CommonLogMessages.GENRE_FILTER + "NullPointerException caught!");
                 throw new ForbiddenException();
             }
 

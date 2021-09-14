@@ -1,6 +1,6 @@
 package cornerstone.webapp.services.keys.stores.logging;
 
-public class MessageElements {
+public class KeyRelatedMessageElements {
     // key, keys
     public static final String PUBLIC_KEY             = "PUBLIC KEY";
     public static final String PUBLIC_KEYS            = "PUBLIC KEYS";
