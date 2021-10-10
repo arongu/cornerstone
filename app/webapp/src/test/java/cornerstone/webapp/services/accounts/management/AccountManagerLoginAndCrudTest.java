@@ -23,7 +23,7 @@ public class AccountManagerLoginAndCrudTest {
 
     @BeforeAll
     public static void setSystemProperties() {
-        final String test_files_dir = "../../_test_config/";
+        final String test_files_dir = System.getenv("CONFIG_DIR");
         final String keyFile        = Paths.get(test_files_dir + "key.conf").toAbsolutePath().normalize().toString();
         final String confFile       = Paths.get(test_files_dir + "app.conf").toAbsolutePath().normalize().toString();
 

@@ -9,10 +9,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class ConfigLoaderTest {
-    private static final String TEST_CONFIG_DIR = "../../_test_config/";
+    private static final String CONFIG_DIR = System.getenv("CONFIG_DIR");
 
-    private static final String keyFile  = Paths.get(TEST_CONFIG_DIR + "key.conf").toAbsolutePath().normalize().toString();
-    private static final String confFile = Paths.get(TEST_CONFIG_DIR + "app.conf").toAbsolutePath().normalize().toString();
+    private static final String keyFile  = Paths.get(CONFIG_DIR + "key.conf").toAbsolutePath().normalize().toString();
+    private static final String confFile = Paths.get(CONFIG_DIR + "app.conf").toAbsolutePath().normalize().toString();
 
     @Test
     public void constructor_shouldThrowIOException_whenFilesDoNotExist() {

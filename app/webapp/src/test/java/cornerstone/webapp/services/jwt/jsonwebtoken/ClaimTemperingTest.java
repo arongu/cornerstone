@@ -30,7 +30,7 @@ public class ClaimTemperingTest {
 
     @BeforeAll
     public static void beforeAll() {
-        final String test_config_dir = "../../_test_config/";
+        final String test_config_dir = System.getenv("CONFIG_DIR");
         final String key_file        = Paths.get(test_config_dir + "key.conf").toAbsolutePath().normalize().toString();
         final String conf_file       = Paths.get(test_config_dir + "app.conf").toAbsolutePath().normalize().toString();
 
