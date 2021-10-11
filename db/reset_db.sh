@@ -36,24 +36,23 @@ function parseArguments() {
     done
 }
 
-function resetDB() {
+function executePsqlFile() {
     echo "${DB_PASSWORD}" | su -c "psql -f ${1}" postgres
 }
 
-function genResetSQL() {
+function resetDB() {
     local fileName=''
     case ${DB_TYPE} in
         work)
             fileName='work_reset.sql'
             ./gen_reset_sql.sh -db=work -sch=secure > "${fileName}"
-            resetDB "${fileName}"
-            echoFinalStep
+            executePsqlFile "${fileName}"
         ;;
 
         users)
             fileName='users_reset.sql'
             ./gen_reset_sql.sh -db=users -sch=user_data > "${fileName}"
-            resetDB "${fileName}"
+            executePsqlFile "${fileName}"
         ;;
 
         *)
@@ -61,12 +60,15 @@ function genResetSQL() {
           exit 2
         ;;
     esac
+
+    rm -v "${fileName}"
+    echoFinalStep
 }
 
 # parse arguments if all is OK, generate SQL
 if [ ${#} -eq 2 ]; then
   parseArguments "${@:1}"
-  genResetSQL
+  resetDB
 else
   echoHelp
 fi
