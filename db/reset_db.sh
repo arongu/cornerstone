@@ -4,9 +4,13 @@ DB_TYPE=''
 DB_PASSWORD=''
 
 function echoHelp() {
-  echo -e "BE CAREFUL! This scripts DESTROYS then RE-CREATES the given DATABASE!\n\tNote: -p / --password is the password of the 'postgres' user\n"
-  echo -e "Examples:\n${0} -t=work -p=postgres_password\n${0} -t=users -p=postgres_password"
-  echo -e "\n${0} --type=work --password=postgres_password\n${0} --type=users --password=postgres_password"
+    echo -e "BE CAREFUL! This scripts DESTROYS then RE-CREATES the given DATABASE!\n\tNote: -p / --password is the password of the 'postgres' user\n"
+    echo -e "Examples:\n${0} -t=work -p=postgres_password\n${0} -t=users -p=postgres_password"
+    echo -e "\n${0} --type=work --password=postgres_password\n${0} --type=users --password=postgres_password"
+}
+
+function echoFinalStep() {
+    echo -e "\n\nComplete!\nNow run flyway to start the database migration!\nGo inside the project dir db/users or db/work then execute the following command:\nmvn flyway:migrate -P<profile>"
 }
 
 function parseArguments() {
@@ -43,6 +47,7 @@ function genResetSQL() {
             fileName='work_reset.sql'
             ./gen_reset_sql.sh -db=work -sch=secure > "${fileName}"
             resetDB "${fileName}"
+            echoFinalStep
         ;;
 
         users)
