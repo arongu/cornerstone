@@ -45,13 +45,13 @@ function resetDB() {
     case ${DB_TYPE} in
         work)
             fileName='work_reset.sql'
-            ./gen_reset_sql.sh -db=work -sch=secure > "${fileName}"
+            ./00_gen_reset_sql.sh -db=work -sch=secure > "${fileName}"
             executePsqlFile "${fileName}"
         ;;
 
         users)
             fileName='users_reset.sql'
-            ./gen_reset_sql.sh -db=users -sch=user_data > "${fileName}"
+            ./00_gen_reset_sql.sh -db=users -sch=user_data > "${fileName}"
             executePsqlFile "${fileName}"
         ;;
 
@@ -65,7 +65,7 @@ function resetDB() {
     echoFinalStep
 }
 
-# parse arguments if all is OK, generate SQL
+# parse arguments if all is OK, reset DB
 if [ ${#} -eq 2 ]; then
   parseArguments "${@:1}"
   resetDB
