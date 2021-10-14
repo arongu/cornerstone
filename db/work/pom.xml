@@ -29,7 +29,7 @@
                     <url>${m2.db.work.db_url}</url>
 
                     <schemas>
-                        <schema>${m2.db.work.db_schemas.secure.schema_name}</schema>
+                        <schema>secure</schema>
                     </schemas>
 
                     <locations>
@@ -39,7 +39,6 @@
                     <placeholderReplacement>true</placeholderReplacement>
 
                     <placeholders>
-                        <schema_secure>${m2.db.work.db_schemas.secure.schema_name}</schema_secure>
                         <db_name>${m2.db.work.db_name}</db_name>
                         <db_password>${m2.db.work.db_password}</db_password>
                         <!-- flyway db.work var -->
