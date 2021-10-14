@@ -1,9 +1,9 @@
 ----------------------------------------------------------------------------
--- schema secure
+-- schema security
 ----------------------------------------------------------------------------
--- table secure.pubkeys
+-- table security.pubkeys
 ----------------------------------------------------------------------------
-CREATE TABLE IF NOT EXISTS secure.public_keys(
+CREATE TABLE IF NOT EXISTS security.public_keys(
     uuid uuid,
     node_name character varying(64) COLLATE pg_catalog."default" NOT NULL,
     ttl integer NOT NULL,
@@ -14,13 +14,13 @@ CREATE TABLE IF NOT EXISTS secure.public_keys(
     CONSTRAINT pkey_uuid PRIMARY KEY (uuid)
 );
 -- indices
-CREATE INDEX IF NOT EXISTS index_uuid ON secure.public_keys(uuid);
+CREATE INDEX IF NOT EXISTS index_uuid ON security.public_keys(uuid);
 
 ----------------------------------------------------------------------------
 -- trigger functions
 ----------------------------------------------------------------------------
 -- trigger function to re-calculate timestamps
-CREATE OR REPLACE FUNCTION secure.calculate_time_stamps() RETURNS TRIGGER AS $$
+CREATE OR REPLACE FUNCTION security.calculate_time_stamps() RETURNS TRIGGER AS $$
 BEGIN
     NEW.creation_ts = NOW();
     NEW.expire_ts = NEW.creation_ts + (NEW.ttl * interval '1' second);
@@ -29,7 +29,7 @@ END
 $$ LANGUAGE plpgsql;
 
 -- trigger function to re-calculate expire_ts
-CREATE OR REPLACE FUNCTION secure.recalculate_expire_ts() RETURNS TRIGGER AS $$
+CREATE OR REPLACE FUNCTION security.recalculate_expire_ts() RETURNS TRIGGER AS $$
 BEGIN
     NEW.expire_ts = OLD.creation_ts + (NEW.ttl * interval '1' second);
     RETURN NEW;
@@ -40,31 +40,31 @@ $$ LANGUAGE plpgsql;
 -- triggers
 ----------------------------------------------------------------------------
 -- trigger insert
-DROP TRIGGER IF EXISTS trigger_insert_table_public_keys ON secure.public_keys;
+DROP TRIGGER IF EXISTS trigger_insert_table_public_keys ON security.public_keys;
 CREATE TRIGGER trigger_insert_table_public_keys
-    BEFORE INSERT ON secure.public_keys
+    BEFORE INSERT ON security.public_keys
     FOR EACH ROW
-    EXECUTE PROCEDURE secure.calculate_time_stamps();
+    EXECUTE PROCEDURE security.calculate_time_stamps();
 
 -- trigger update ttl
-DROP TRIGGER IF EXISTS trigger_update_ttl ON secure.public_keys;
+DROP TRIGGER IF EXISTS trigger_update_ttl ON security.public_keys;
 CREATE TRIGGER trigger_update_ttl
-    BEFORE UPDATE OF ttl ON secure.public_keys
+    BEFORE UPDATE OF ttl ON security.public_keys
     FOR EACH ROW
-    EXECUTE PROCEDURE secure.recalculate_expire_ts();
+    EXECUTE PROCEDURE security.recalculate_expire_ts();
 
 -- trigger update base64_key
-DROP TRIGGER IF EXISTS trigger_update_base64_key ON secure.public_keys;
+DROP TRIGGER IF EXISTS trigger_update_base64_key ON security.public_keys;
 CREATE TRIGGER trigger_update_base64_key
-    BEFORE UPDATE OF base64_key ON secure.public_keys
+    BEFORE UPDATE OF base64_key ON security.public_keys
     FOR EACH ROW
-    EXECUTE PROCEDURE secure.calculate_time_stamps();
+    EXECUTE PROCEDURE security.calculate_time_stamps();
 
 ----------------------------------------------------------------------------
--- permissions of schema secure
+-- permissions of schema security
 ----------------------------------------------------------------------------
 DROP ROLE IF EXISTS ${db.user};
 CREATE USER ${db.user} WITH ENCRYPTED PASSWORD '${db_password}';
-GRANT USAGE ON SCHEMA secure TO ${db_user};
-GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA secure TO ${db_user};
-GRANT SELECT, INSERT, UPDATE, DELETE, TRIGGER ON secure.public_keys TO ${db_user};
+GRANT USAGE ON SCHEMA security TO ${db_user};
+GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA security TO ${db_user};
+GRANT SELECT, INSERT, UPDATE, DELETE, TRIGGER ON security.public_keys TO ${db_user};

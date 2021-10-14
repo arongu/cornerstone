@@ -29,7 +29,7 @@
                     <url>${m2.db.work.db_url}</url>
 
                     <schemas>
-                        <schema>secure</schema>
+                        <schema>security</schema>
                     </schemas>
 
                     <locations>
