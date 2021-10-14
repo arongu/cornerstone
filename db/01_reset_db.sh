@@ -51,7 +51,7 @@ function resetDB() {
 
         users)
             fileName='users_reset.sql'
-            ./00_gen_reset_sql.sh -db=users -sch=user_data > "${fileName}"
+            ./00_gen_reset_sql.sh -db=users -sch=system,users > "${fileName}"
             executePsqlFile "${fileName}"
         ;;
 
