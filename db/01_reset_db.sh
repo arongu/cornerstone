@@ -2,11 +2,12 @@
 
 DB_TYPE=''
 DB_PASSWORD=''
+DB_NAME=''
 
 function echoHelp() {
     echo -e "BE CAREFUL! This scripts DESTROYS then RE-CREATES the given DATABASE!\n\tNote: -p / --password is the password of the 'postgres' user\n"
-    echo -e "Examples:\n${0} -t=work -p=postgres_password\n${0} -t=users -p=postgres_password"
-    echo -e "\n${0} --type=work --password=postgres_password\n${0} --type=users --password=postgres_password"
+    echo -e "Examples:\n${0} -t=work -n=work -p=postgres_password\n${0} -t=users -n=users -p=postgres_password"
+    echo -e "\n${0} --type=work --name=dev_work --password=postgres_password\n${0} --type=users --name=dev_users --password=postgres_password"
 }
 
 function echoFinalStep() {
@@ -19,6 +20,11 @@ function parseArguments() {
         case ${keyword} in
             --type=*|-t=*)
                 DB_TYPE="${keyword#*=}"
+                shift
+            ;;
+
+            --name=*|-n=*)
+                DB_NAME="${keyword#*=}"
                 shift
             ;;
 
@@ -45,13 +51,13 @@ function resetDB() {
     case ${DB_TYPE} in
         work)
             fileName='work_reset.sql'
-            ./00_gen_reset_sql.sh -db=work -sch=security > "${fileName}"
+            ./00_gen_reset_sql.sh -db="${DB_NAME}" -sch=security > "${fileName}"
             executePsqlFile "${fileName}"
         ;;
 
         users)
             fileName='users_reset.sql'
-            ./00_gen_reset_sql.sh -db=users -sch=system,users > "${fileName}"
+            ./00_gen_reset_sql.sh -db="${DB_NAME}" -sch=system,users > "${fileName}"
             executePsqlFile "${fileName}"
         ;;
 
@@ -66,7 +72,7 @@ function resetDB() {
 }
 
 # parse arguments if all is OK, reset DB
-if [ ${#} -eq 2 ]; then
+if [ ${#} -eq 3 ]; then
   parseArguments "${@:1}"
   resetDB
 else
