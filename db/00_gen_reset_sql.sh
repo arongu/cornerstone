@@ -39,12 +39,12 @@ function generateCreateSchemas() {
     index=0
 
     for schema in "${@}"; do
-      if [ ${index} -eq ${max} ]; then
-          generated+="CREATE SCHEMA ${schema};"
-      else
-          generated+="CREATE SCHEMA ${schema};\n"
-      fi
-      index=$((index+1))
+        if [ ${index} -eq ${max} ]; then
+            generated+="CREATE SCHEMA ${schema};"
+        else
+            generated+="CREATE SCHEMA ${schema};\n"
+        fi
+        index=$((index+1))
     done
 
     echo -e "${generated}"

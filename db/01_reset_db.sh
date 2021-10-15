@@ -1,7 +1,7 @@
 #!/bin/bash
 
 DB_TYPE=''
-DB_PASSWORD=''
+POSTGRES_PASSWORD=''
 DB_NAME=''
 
 function echoHelp() {
@@ -29,7 +29,7 @@ function parseArguments() {
             ;;
 
             --password=*|-p=*)
-                DB_PASSWORD="${keyword#*=}"
+                POSTGRES_PASSWORD="${keyword#*=}"
                 shift
             ;;
 
@@ -43,7 +43,7 @@ function parseArguments() {
 }
 
 function executePsqlFile() {
-    echo "${DB_PASSWORD}" | su -c "psql -f ${1}" postgres
+    echo "${POSTGRES_PASSWORD}" | su -c "psql -f ${1}" postgres
 }
 
 function resetDB() {
