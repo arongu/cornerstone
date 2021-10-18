@@ -22,6 +22,8 @@ INSERT INTO system.roles VALUES (2, 'ADMIN');
 -- CREATION OF TABLE users.accounts
 ----------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS users.accounts(
+    -- user role in the system
+    role_id                   integer                  NOT NULL DEFAULT 1,
     account_id                uuid                     NOT NULL DEFAULT gen_random_uuid(),
     account_registration_ts   timestamptz              NOT NULL DEFAULT NOW(),
     -- account enable / disable
@@ -38,13 +40,11 @@ CREATE TABLE IF NOT EXISTS users.accounts(
     -- password change
     password_hash             character varying(128)   NOT NULL,
     password_hash_ts          timestamptz              NOT NULL DEFAULT NOW(),
-    -- user role in the system
-    system_role_id            integer                  NOT NULL DEFAULT 1,
     -- constraints
     CONSTRAINT accounts__account_id__pkey       PRIMARY KEY (account_id),
     CONSTRAINT accounts__email_address__unique  UNIQUE      (email_address),
     CONSTRAINT accounts__password_hash__unique  UNIQUE      (password_hash),
-    CONSTRAINT accounts__system_role_id__fg_key FOREIGN KEY (system_role_id) REFERENCES system.roles(id)
+    CONSTRAINT accounts__system_role_id__fg_key FOREIGN KEY (role_id) REFERENCES system.roles(id)
 );
 
 -- indices
