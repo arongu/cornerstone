@@ -1,58 +1,85 @@
 #!/bin/bash
-# names of the 'work' dbs
-readonly WORK_DBS=(work dev_work)
-# names of the 'user' dbs
-readonly USERS_DBS=(users dev_users)
-# maven profiles used for migration
-readonly MAVEN_PROFILES=(live dev)
+
+# pom files
 readonly PROJECT_ROOT_DIR="$(pwd)"
+readonly USERS_POM_FILE="${PROJECT_ROOT_DIR}/users/pom.xml";
+readonly WORK_POM_FILE="${PROJECT_ROOT_DIR}/work/pom.xml";
+
 # password for the postgresql
-readonly POSTGRES_PASSWORD='db'
+readonly POSTGRES_PASSWORD='db';
 
-function reset_work_dbs() {
-    for wdb in "${WORK_DBS[@]}"; do
-        echo "... Resetting ${wdb} ...";
-        ./01_reset_db.sh --type='work' --name="${wdb}" --password="${POSTGRES_PASSWORD}";
-    done
+function reset_db() {
+    t="${1}";
+    shift;
+    n="${2}";
+    shift;
+    p="${3}";
+    shift;
+
+    ./01_reset_db.sh --type="${t}" --name="${n}" --password="${p}";
 }
 
-function reset_user_dbs() {
-    for udb in "${USERS_DBS[@]}"; do
-        echo "... Resetting ${udb} ...";
-        ./01_reset_db.sh --type='users' --name="${udb}" --password="${POSTGRES_PASSWORD}";
-    done
+function migrate_db() {
+    proj_dir="${1}";
+    profile="${2}";
+    shift;
+    shift;
+
+    mvn -f "${proj_dir}" flyway:migrate -P"${profile}";
 }
 
-function migrate_users() {
-    for profile in "${MAVEN_PROFILES[@]}"; do
-        mvn -f "${PROJECT_ROOT_DIR}/users/pom.xml" flyway:migrate -P"${profile}";
-    done
+# reset dbs
+function reset_dev_dbs() {
+    ./01_reset_db.sh --type=work  --name=dev_work  --password="${POSTGRES_PASSWORD}";
+    ./01_reset_db.sh --type=users --name=dev_users --password="${POSTGRES_PASSWORD}";
 }
 
-function migrate_works() {
-    for profile in "${MAVEN_PROFILES[@]}"; do
-        mvn -f "${PROJECT_ROOT_DIR}/work/pom.xml" flyway:migrate -P"${profile}";
-    done
+function reset_live_dbs() {
+    ./01_reset_db.sh --type=work  --name=work  --password="${POSTGRES_PASSWORD}";
+    ./01_reset_db.sh --type=users --name=users --password="${POSTGRES_PASSWORD}";
+}
+
+# migrate dbs
+function migrate_dev_dbs() {
+    migrate_db "${USERS_POM_FILE}" "dev";
+    migrate_db "${WORK_POM_FILE}"  "dev";
+}
+
+function migrate_live_dbs() {
+    migrate_db "${USERS_POM_FILE}" "live";
+    migrate_db "${WORK_POM_FILE}"  "live";
 }
 
 function reset_all() {
-    reset_work_dbs
-    migrate_works
-    reset_user_dbs
-    migrate_users
+    reset_dev_dbs
+    reset_live_dbs
+    migrate_dev_dbs
+    migrate_live_dbs
 }
 
 # run script
-echo -e "... work dir: ${PROJECT_ROOT_DIR}\nDO YOU WANT RESET ALL DBs? THIS WILL DESTROY ALL DATA!!!";
-echo "Press 1 for YES, press 2 for NO!"
-select yn in YES NO; do
-    case $yn in
-        YES)
+echo -e "... work dir: ${PROJECT_ROOT_DIR}\nDO YOU WANT RESET DBs? THIS WILL DESTROY ALL DATA!!!";
+echo "Press 1 for 'dev', press 2 for 'live', press 3 for both, anything else to quit!"
+select choice in DEV LIVE ALL; do
+    case ${choice} in
+        ALL)
             reset_all;
             break;
         ;;
 
-        NO)
+        DEV)
+            reset_dev_dbs;
+            migrate_dev_dbs
+            break;
+        ;;
+
+        LIVE)
+            reset_live_dbs;
+            migrate_live_dbs
+            break;
+        ;;
+
+        *)
             exit;
         ;;
     esac
