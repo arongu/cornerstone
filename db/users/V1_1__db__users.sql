@@ -18,16 +18,39 @@ INSERT INTO system.roles VALUES (2, 'ADMIN');
 -- END OF CREATION OF TABLE system.system_roles
 ----------------------------------------------------------------------------
 
+
+----------------------------------------------------------------------------
+-- CREATION OF TABLE users.account_types
+----------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS users.account_types(
+    id   integer,
+    name varchar(20) NOT NULL,
+    -- constraints
+    CONSTRAINT account_types__role_id__pkey PRIMARY KEY (id),
+    CONSTRAINT account_types__name__unique  UNIQUE (name)
+);
+
+INSERT INTO users.account_types VALUES (0, 'SUB');
+INSERT INTO users.account_types VALUES (1, 'SINGLE');
+INSERT INTO users.account_types VALUES (2, 'MULTI');
+----------------------------------------------------------------------------
+-- END OF CREATION OF TABLE users.account_types
+----------------------------------------------------------------------------
+
+
 ----------------------------------------------------------------------------
 -- CREATION OF TABLE users.accounts
 ----------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS users.accounts(
     -- user role in the system
-    role_id                   integer                  NOT NULL DEFAULT 1,
-    account_id                uuid                     NOT NULL DEFAULT gen_random_uuid(),
+    role_id                   integer                  NOT NULL,
+    account_id                uuid                     NOT NULL,
     account_registration_ts   timestamptz              NOT NULL DEFAULT NOW(),
+    -- account_type will reference table (single, multi, sub)
+    account_type              integer                  NOT NULL,
+    account_type_ts           timestamptz              NOT NULL DEFAULT NOW(),
     -- account enable / disable
-    account_locked            boolean                  NOT NULL,
+    account_locked            boolean                  NOT NULL DEFAULT false,
     account_locked_ts         timestamptz              NOT NULL DEFAULT NOW(),
     account_lock_reason       character varying(2048),
     account_login_attempts    integer                  NOT NULL DEFAULT 0,
@@ -40,11 +63,16 @@ CREATE TABLE IF NOT EXISTS users.accounts(
     -- password change
     password_hash             character varying(128)   NOT NULL,
     password_hash_ts          timestamptz              NOT NULL DEFAULT NOW(),
+    -- references another uuid where account_type is set to 'multi'
+    sub_account_of            uuid                     NULL,
+
     -- constraints
     CONSTRAINT accounts__account_id__pkey       PRIMARY KEY (account_id),
     CONSTRAINT accounts__email_address__unique  UNIQUE      (email_address),
     CONSTRAINT accounts__password_hash__unique  UNIQUE      (password_hash),
-    CONSTRAINT accounts__system_role_id__fg_key FOREIGN KEY (role_id) REFERENCES system.roles(id)
+    CONSTRAINT accounts__system_role_id__fg_key FOREIGN KEY (role_id)        REFERENCES system.roles(id),
+    CONSTRAINT accounts__account_type__fg_key   FOREIGN KEY (account_type)   REFERENCES users.account_types(id),
+    CONSTRAINT accounts__sub_account_of__fg_key FOREIGN KEY (sub_account_of) REFERENCES users.accounts(account_id)
 );
 
 -- indices
@@ -64,7 +92,6 @@ CREATE TRIGGER account_enabled
     BEFORE UPDATE OF account_locked ON users.accounts
     FOR EACH ROW
     EXECUTE PROCEDURE users.update_account_enabled_ts();
--- end of account_enabled
 
 -- function && trigger for email_address update
 CREATE OR REPLACE FUNCTION users.update_email_address_ts() RETURNS TRIGGER AS $$
@@ -78,7 +105,6 @@ DROP   TRIGGER IF EXISTS email_address ON users.accounts;
 CREATE TRIGGER           email_address
     BEFORE UPDATE OF email_address ON users.accounts
     FOR EACH ROW EXECUTE PROCEDURE users.update_email_address_ts();
--- end of email_address
 
 -- function && trigger for password_hash update
 CREATE OR REPLACE FUNCTION users.update_password_hash_ts() RETURNS TRIGGER AS $$
@@ -91,7 +117,6 @@ $$ LANGUAGE plpgsql;
 DROP   TRIGGER IF EXISTS password_hash ON users.accounts;
 CREATE TRIGGER           password_hash BEFORE UPDATE OF password_hash ON users.accounts
 FOR EACH ROW EXECUTE PROCEDURE users.update_password_hash_ts();
--- end of password_hash_last
 
 -- function && trigger for email_address_verified update
 CREATE OR REPLACE FUNCTION users.update_email_address_verified_ts() RETURNS TRIGGER AS $$
@@ -107,8 +132,6 @@ CREATE TRIGGER          email_address_verified
     FOR EACH ROW
     EXECUTE PROCEDURE users.update_email_address_verified_ts();
 ----------------------------------------------------------------------------
--- end of email_address_verified
-----------------------------------------------------------------------------
 -- END OF CREATION OF TABLE users.accounts
 ----------------------------------------------------------------------------
 
@@ -117,16 +140,16 @@ CREATE TRIGGER          email_address_verified
 ----------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS users.account_http_method_permissions(
     account_id uuid,
-    delete  boolean NOT NULL DEFAULT TRUE,
-    get     boolean NOT NULL DEFAULT TRUE,
-    head    boolean NOT NULL DEFAULT TRUE,
-    options boolean NOT NULL DEFAULT TRUE,
-    patch   boolean NOT NULL DEFAULT TRUE,
-    post    boolean NOT NULL DEFAULT TRUE,
-    put     boolean NOT NULL DEFAULT TRUE,
+    delete  boolean NOT NULL,
+    get     boolean NOT NULL,
+    head    boolean NOT NULL,
+    options boolean NOT NULL,
+    patch   boolean NOT NULL,
+    post    boolean NOT NULL,
+    put     boolean NOT NULL,
     -- constraints
     CONSTRAINT account_http_method_permissions__account_id__pkey  PRIMARY KEY (account_id),
-    CONSTRAINT account_http_method_permissions__account_id__fgkey FOREIGN KEY (account_id) REFERENCES users.accounts(account_id)
+    CONSTRAINT account_http_method_permissions__account_id__fg_key FOREIGN KEY (account_id) REFERENCES users.accounts(account_id)
 );
 ----------------------------------------------------------------------------
 -- END OF CREATION OF TABLE users.account_http_method_permissions

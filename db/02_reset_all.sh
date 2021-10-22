@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 # pom files
 readonly PROJECT_ROOT_DIR="$(pwd)"
@@ -59,21 +60,21 @@ function reset_all() {
 
 # run script
 echo -e "... work dir: ${PROJECT_ROOT_DIR}\nDO YOU WANT RESET DBs? THIS WILL DESTROY ALL DATA!!!";
-echo "Press 1 for 'dev', press 2 for 'live', press 3 for both, anything else to quit!"
-select choice in DEV LIVE ALL; do
+echo "Enter 1 for 'dev', enter 2 for 'live', enter 3 for 'all' (anything else to quit)!"
+select choice in dev live all; do
     case ${choice} in
-        ALL)
+        all)
             reset_all;
             break;
         ;;
 
-        DEV)
+        dev)
             reset_dev_dbs;
             migrate_dev_dbs
             break;
         ;;
 
-        LIVE)
+        live)
             reset_live_dbs;
             migrate_live_dbs
             break;
