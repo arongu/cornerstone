@@ -8,6 +8,7 @@ public class TestHelper {
         try {
             accountManager.delete(email);
         } catch (final DeletionException | NoAccountException ignored) {
+
         }
     }
 }

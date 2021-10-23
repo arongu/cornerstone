@@ -3,76 +3,102 @@
 ----------------------------------------------------------------------------
 -- CREATION OF TABLE system.system_roles
 ----------------------------------------------------------------------------
-CREATE TABLE IF NOT EXISTS system.roles(
-    id   integer,
-    name varchar(20) NOT NULL,
+CREATE TABLE IF NOT EXISTS system.system_roles
+(
+    system_role_id   integer,
+    system_role_name varchar(20) NOT NULL,
     -- constraints
-    CONSTRAINT roles__role_id__pkey     PRIMARY KEY (id),
-    CONSTRAINT roles__role_name__unique UNIQUE (name)
+    CONSTRAINT system_roles__system_role_id__pkey     PRIMARY KEY (system_role_id),
+    CONSTRAINT system_roles__system_role_name__unique UNIQUE      (system_role_name)
 );
 
-INSERT INTO system.roles VALUES (0, 'NO-ROLE');
-INSERT INTO system.roles VALUES (1, 'USER');
-INSERT INTO system.roles VALUES (2, 'ADMIN');
+INSERT INTO system.system_roles VALUES (0, 'NONE');
+INSERT INTO system.system_roles VALUES (1, 'USER');
+INSERT INTO system.system_roles VALUES (2, 'ADMIN');
 ----------------------------------------------------------------------------
 -- END OF CREATION OF TABLE system.system_roles
 ----------------------------------------------------------------------------
 
-
 ----------------------------------------------------------------------------
--- CREATION OF TABLE users.account_types
+-- CREATION OF TABLE system.multi_account_roles
 ----------------------------------------------------------------------------
-CREATE TABLE IF NOT EXISTS users.account_types(
-    id   integer,
-    name varchar(20) NOT NULL,
+CREATE TABLE IF NOT EXISTS system.multi_account_roles
+(
+    multi_account_role_id   integer,
+    multi_account_role_name varchar(20) NOT NULL,
     -- constraints
-    CONSTRAINT account_types__role_id__pkey PRIMARY KEY (id),
-    CONSTRAINT account_types__name__unique  UNIQUE (name)
+    CONSTRAINT multi_account_roles__multi_account_role_id__pkey     PRIMARY KEY (multi_account_role_id),
+    CONSTRAINT multi_account_roles__multi_account_role_name__unique UNIQUE      (multi_account_role_name)
 );
 
-INSERT INTO users.account_types VALUES (0, 'SUB');
-INSERT INTO users.account_types VALUES (1, 'SINGLE');
-INSERT INTO users.account_types VALUES (2, 'MULTI');
+INSERT INTO system.multi_account_roles VALUES (0, 'NOT_APPLICABLE');
+INSERT INTO system.multi_account_roles VALUES (1, 'MULTI_ACCOUNT_USER');
+INSERT INTO system.multi_account_roles VALUES (2, 'MULTI_ACCOUNT_ADMIN');
+INSERT INTO system.multi_account_roles VALUES (3, 'MULTI_ACCOUNT_OWNER');
+
+----------------------------------------------------------------------------
+-- CREATION OF TABLE system.account_types
+----------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS system.account_types
+(
+    account_type_id   integer,
+    account_type_name varchar(20) NOT NULL,
+    -- constraints
+    CONSTRAINT account_types__account_type_id__pkey      PRIMARY KEY (account_type_id),
+    CONSTRAINT account_types__account_type_name__unique  UNIQUE      (account_type_name)
+);
+
+INSERT INTO system.account_types VALUES (0, 'SUB_ACCOUNT');
+INSERT INTO system.account_types VALUES (1, 'SINGLE_ACCOUNT');
+INSERT INTO system.account_types VALUES (2, 'MULTI_ACCOUNT');
 ----------------------------------------------------------------------------
 -- END OF CREATION OF TABLE users.account_types
 ----------------------------------------------------------------------------
 
 
 ----------------------------------------------------------------------------
+-- SCHEMA users
+----------------------------------------------------------------------------
 -- CREATION OF TABLE users.accounts
 ----------------------------------------------------------------------------
-CREATE TABLE IF NOT EXISTS users.accounts(
-    -- user role in the system
-    role_id                   integer                  NOT NULL,
-    account_id                uuid                     NOT NULL,
-    account_registration_ts   timestamptz              NOT NULL DEFAULT NOW(),
-    -- account_type will reference table (single, multi, sub)
-    account_type              integer                  NOT NULL,
-    account_type_ts           timestamptz              NOT NULL DEFAULT NOW(),
+CREATE TABLE IF NOT EXISTS users.accounts
+(
+    system_role_id            integer                                               NOT NULL,
+    -- account
+    account_id                uuid                                                  NOT NULL,
+    account_registration_ts   timestamptz                                           NOT NULL DEFAULT NOW(),
+    account_type_id           integer                                               NOT NULL,
+    account_type_id_ts        timestamptz                                           NOT NULL DEFAULT NOW(),
+
     -- account enable / disable
-    account_locked            boolean                  NOT NULL DEFAULT false,
-    account_locked_ts         timestamptz              NOT NULL DEFAULT NOW(),
-    account_lock_reason       character varying(2048),
-    account_login_attempts    integer                  NOT NULL DEFAULT 0,
+    account_locked            boolean                                               NOT NULL DEFAULT false,
+    account_locked_ts         timestamptz                                           NOT NULL DEFAULT NOW(),
+    account_lock_reason       character varying(2048)                               NULL,
+    account_login_attempts    integer                                               NOT NULL DEFAULT 0,
+
     -- email address
     email_address             character varying(250)   COLLATE pg_catalog."default" NOT NULL,
-    email_address_ts          timestamptz              NOT NULL DEFAULT NOW(),
+    email_address_ts          timestamptz                                           NOT NULL DEFAULT NOW(),
     -- email address verification
-    email_address_verified    boolean                  NOT NULL DEFAULT false,
-    email_address_verified_ts timestamptz,
+    email_address_verified    boolean                                               NOT NULL DEFAULT false,
+    email_address_verified_ts timestamptz                                           NULL,
+
     -- password change
-    password_hash             character varying(128)   NOT NULL,
-    password_hash_ts          timestamptz              NOT NULL DEFAULT NOW(),
+    password_hash             character varying(128)                                NOT NULL,
+    password_hash_ts          timestamptz                                           NOT NULL DEFAULT NOW(),
     -- references another uuid where account_type is set to 'multi'
-    sub_account_of            uuid                     NULL,
+    multi_account_role_id     int                                                   NULL,
+    parent_account            uuid                                                  NULL,
 
     -- constraints
     CONSTRAINT accounts__account_id__pkey       PRIMARY KEY (account_id),
     CONSTRAINT accounts__email_address__unique  UNIQUE      (email_address),
     CONSTRAINT accounts__password_hash__unique  UNIQUE      (password_hash),
-    CONSTRAINT accounts__system_role_id__fg_key FOREIGN KEY (role_id)        REFERENCES system.roles(id),
-    CONSTRAINT accounts__account_type__fg_key   FOREIGN KEY (account_type)   REFERENCES users.account_types(id),
-    CONSTRAINT accounts__sub_account_of__fg_key FOREIGN KEY (sub_account_of) REFERENCES users.accounts(account_id)
+    -- system role
+    CONSTRAINT accounts__system_role_id__fg_key  FOREIGN KEY (system_role_id)   REFERENCES system.system_roles(system_role_id),
+    CONSTRAINT accounts__account_type_id__fg_key FOREIGN KEY (account_type_id)  REFERENCES system.account_types(account_type_id),
+    -- multi account
+    CONSTRAINT accounts__parent_account__fg_key  FOREIGN KEY (parent_account)   REFERENCES users.accounts(account_id)
 );
 
 -- indices
@@ -138,7 +164,8 @@ CREATE TRIGGER          email_address_verified
 ----------------------------------------------------------------------------
 -- CREATION OF TABLE users.account_http_method_permissions
 ----------------------------------------------------------------------------
-CREATE TABLE IF NOT EXISTS users.account_http_method_permissions(
+CREATE TABLE IF NOT EXISTS users.account_http_method_permissions
+(
     account_id uuid,
     delete  boolean NOT NULL,
     get     boolean NOT NULL,
@@ -148,7 +175,7 @@ CREATE TABLE IF NOT EXISTS users.account_http_method_permissions(
     post    boolean NOT NULL,
     put     boolean NOT NULL,
     -- constraints
-    CONSTRAINT account_http_method_permissions__account_id__pkey  PRIMARY KEY (account_id),
+    CONSTRAINT account_http_method_permissions__account_id__pkey   PRIMARY KEY (account_id),
     CONSTRAINT account_http_method_permissions__account_id__fg_key FOREIGN KEY (account_id) REFERENCES users.accounts(account_id)
 );
 ----------------------------------------------------------------------------
@@ -177,7 +204,8 @@ CREATE USER ${db.user} WITH ENCRYPTED PASSWORD '${db_password}';
 ----------------------------------------------------------------------------
 -- PERMISSIONS OF SCHEMA system
 ----------------------------------------------------------------------------
-GRANT SELECT ON TABLE system.roles TO ${db.user};
+GRANT SELECT ON TABLE system.system_roles TO ${db.user};
+GRANT SELECT ON TABLE system.account_types TO ${db.user};
 ----------------------------------------------------------------------------
 -- END OF PERMISSIONS OF SCHEMA system
 ----------------------------------------------------------------------------

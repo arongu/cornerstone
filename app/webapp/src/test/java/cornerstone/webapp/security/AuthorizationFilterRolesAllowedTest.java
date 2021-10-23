@@ -1,6 +1,6 @@
 package cornerstone.webapp.security;
 
-import cornerstone.webapp.services.accounts.management.UserRole;
+import cornerstone.webapp.services.accounts.management.enums.SYSTEM_ROLE_ENUM;
 import io.jsonwebtoken.Claims;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -53,12 +53,12 @@ public class AuthorizationFilterRolesAllowedTest {
         final boolean isSecure        = false;
         final Claims claims           = null;
         final Principal principal     = new PrincipalImpl("DrDummy");
-        final Set<UserRole> userRoles = new HashSet<>();
-        userRoles.add(UserRole.ADMIN);
+        final Set<SYSTEM_ROLE_ENUM> roles = new HashSet<>();
+        roles.add(SYSTEM_ROLE_ENUM.ADMIN);
 
         // SecurityContext, ContainerRequestContext
         final ContainerRequestContext containerRequestContext = Mockito.mock(ContainerRequestContext.class);
-        final SecurityContext securityContext                 = new JwtSecurityContext(isSecure, principal, userRoles, claims);
+        final SecurityContext securityContext                 = new JwtSecurityContext(isSecure, principal, roles, claims);
         Mockito.when(containerRequestContext.getSecurityContext()).thenReturn(securityContext);
 
 
@@ -78,12 +78,12 @@ public class AuthorizationFilterRolesAllowedTest {
         final boolean isSecure        = false;
         final Claims claims           = null;
         final Principal principal     = new PrincipalImpl("DrDummy");
-        final Set<UserRole> userRoles = new HashSet<>();
-        userRoles.add(UserRole.USER);
+        final Set<SYSTEM_ROLE_ENUM> roles = new HashSet<>();
+        roles.add(SYSTEM_ROLE_ENUM.USER);
 
         // SecurityContext, ContainerRequestContext
         final ContainerRequestContext containerRequestContext = Mockito.mock(ContainerRequestContext.class);
-        final SecurityContext securityContext                 = new JwtSecurityContext(isSecure, principal, userRoles, claims);
+        final SecurityContext securityContext                 = new JwtSecurityContext(isSecure, principal, roles, claims);
         Mockito.when(containerRequestContext.getSecurityContext()).thenReturn(securityContext);
 
 

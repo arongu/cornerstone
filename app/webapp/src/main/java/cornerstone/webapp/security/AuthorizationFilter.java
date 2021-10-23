@@ -47,8 +47,9 @@ no annotation    DENY ALL      DEFAULT            :
 @PermitAll       PERMIT ALL    IF SET STOP/IGNORE :
 */
 
-@Provider
-@Priority(Priorities.AUTHORIZATION)
+// TODO fix me -- filtering is disabled until code is fixed
+//@Provider
+//@Priority(Priorities.AUTHORIZATION)
 public class AuthorizationFilter implements ContainerRequestFilter {
     private static final Logger logger = LoggerFactory.getLogger(AuthorizationFilter.class);
 
@@ -78,6 +79,23 @@ public class AuthorizationFilter implements ContainerRequestFilter {
         }
 
         return false;
+    }
+
+    private static void callIsThereAnAllowedRoleInSecurityContext(final String userName,
+                                                                  final String[] rolesFromAnnotation,
+                                                                  final SecurityContext securityContext,
+                                                                  final String allowReasonMessage,
+                                                                  final String denyReasonMessage) {
+
+        if ( isThereAnAllowedRoleInSecurityContext(rolesFromAnnotation, securityContext)) {
+            final String msg = CommonLogMessages.PREFIX_SECURITY + CommonLogMessages.PREFIX_FILTER + String.format(allowReasonMessage, userName, Arrays.toString(rolesFromAnnotation));
+            logger.info(msg);
+            return;
+        }
+
+        final String msgMethodRolesDeny = CommonLogMessages.PREFIX_SECURITY + CommonLogMessages.PREFIX_FILTER + String.format(denyReasonMessage, userName, Arrays.toString(rolesFromAnnotation));
+        logger.info(msgMethodRolesDeny);
+        throw new ForbiddenException();
     }
 
     @Context
@@ -117,7 +135,7 @@ public class AuthorizationFilter implements ContainerRequestFilter {
             throw new ForbiddenException();
         }
 
-        // get security context and set user name
+        // get security context and set username
         final SecurityContext securityContext = containerRequestContext.getSecurityContext();
         final String userName                 = securityContext.getUserPrincipal() != null ? securityContext.getUserPrincipal().getName() : "Anonymous";
 
@@ -137,16 +155,7 @@ public class AuthorizationFilter implements ContainerRequestFilter {
 
         if ( clazz.isAnnotationPresent(RolesAllowed.class)) {
             final String[] rolesAllowedOnClass = clazz.getAnnotation(RolesAllowed.class).value();
-
-            if ( isThereAnAllowedRoleInSecurityContext(rolesAllowedOnClass, securityContext)) {
-                final String msgRolesAllowed = CommonLogMessages.PREFIX_SECURITY + CommonLogMessages.PREFIX_FILTER + String.format(CLASS_ROLES_ALLOWED_ALLOW, userName, Arrays.toString(rolesAllowedOnClass));
-                logger.info(msgRolesAllowed);
-                return;
-            }
-
-            final String msgClassRolesDeny = CommonLogMessages.PREFIX_SECURITY + CommonLogMessages.PREFIX_FILTER + String.format(CLASS_ROLES_ALLOWED_DENY, userName, Arrays.toString(rolesAllowedOnClass));
-            logger.info(msgClassRolesDeny);
-            throw new ForbiddenException();
+            callIsThereAnAllowedRoleInSecurityContext(userName, rolesAllowedOnClass, securityContext, CLASS_ROLES_ALLOWED_ALLOW, CLASS_ROLES_ALLOWED_DENY);
         }
 
         if ( clazz.isAnnotationPresent(PermitAll.class)) {
@@ -166,15 +175,8 @@ public class AuthorizationFilter implements ContainerRequestFilter {
             final String[] rolesAllowedOnMethod = method.getAnnotation(RolesAllowed.class).value();
             final SecurityContext secContext    = containerRequestContext.getSecurityContext();
 
-            if ( isThereAnAllowedRoleInSecurityContext(rolesAllowedOnMethod, secContext)) {
-                final String msgMethodRolesAllow = CommonLogMessages.PREFIX_SECURITY + CommonLogMessages.PREFIX_FILTER + String.format(METHOD_ROLES_ALLOWED_ALLOW, userName, Arrays.toString(rolesAllowedOnMethod));
-                logger.info(msgMethodRolesAllow);
-                return;
-            }
-
-            final String msgMethodRolesDeny = CommonLogMessages.PREFIX_SECURITY + CommonLogMessages.PREFIX_FILTER + String.format(METHOD_ROLES_ALLOWED_DENY, userName, Arrays.toString(rolesAllowedOnMethod));
-            logger.info(msgMethodRolesDeny);
-            throw new ForbiddenException();
+            callIsThereAnAllowedRoleInSecurityContext(userName, rolesAllowedOnMethod, secContext, METHOD_ROLES_ALLOWED_ALLOW, METHOD_ROLES_ALLOWED_DENY);
+            return;
         }
 
         if ( method.isAnnotationPresent(PermitAll.class)) {

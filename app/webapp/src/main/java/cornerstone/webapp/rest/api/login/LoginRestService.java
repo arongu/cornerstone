@@ -47,43 +47,44 @@ public class LoginRestService {
     @PermitAll
     @POST
     public Response login(final AccountEmailPassword accountEmailPassword) throws SigningKeysException {
-        if ( accountEmailPassword == null || accountEmailPassword.getEmail() == null || accountEmailPassword.getPassword() == null ) {
-            return Response.status(Response.Status.BAD_REQUEST)
-                    .entity(new ErrorResponse(Response.Status.BAD_REQUEST.getStatusCode(), "Null value provided for email/password."))
-                    .build();
-        }
-
-        final AccountResultSet accountResultSet;
-        try {
-            accountResultSet = accountManager.login(accountEmailPassword.getEmail(), accountEmailPassword.getPassword());
-
-        } catch (final LockedException | UnverifiedEmailException | NoAccountException | BadPasswordException | RetrievalException e) {
-            final ErrorResponse errorResponse;
-            final Response.Status responseStatus;
-            final String logMsg = String.format(LOG_MESSAGE_TOKEN_DENIED, accountEmailPassword.getEmail(), e.getMessage());
-
-            if ( e instanceof RetrievalException ) {
-                logger.error(logMsg);
-                responseStatus = Response.Status.INTERNAL_SERVER_ERROR;
-                errorResponse = new ErrorResponse(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), e.getMessage());
-
-            } else {
-                logger.info(logMsg);
-                responseStatus = Response.Status.UNAUTHORIZED;
-                errorResponse = new ErrorResponse(Response.Status.UNAUTHORIZED.getStatusCode(), "Unauthorized.");
-            }
-
-            return Response.status(responseStatus.getStatusCode()).entity(errorResponse).build();
-        }
-
-
-        final Map<String, Object> claims = new HashMap<>();
-        claims.put("role", accountResultSet.role_name);
-
-        final String jwt = JWTService.createJws(accountEmailPassword.getPassword(), claims);
-        final String logMsg = String.format(LOG_MESSAGE_TOKEN_GRANTED, accountEmailPassword.getEmail(), claims);
-
-        logger.info(logMsg);
-        return Response.status(Response.Status.OK).entity(new TokenDTO(jwt)).build();
+//        if ( accountEmailPassword == null || accountEmailPassword.getEmail() == null || accountEmailPassword.getPassword() == null ) {
+//            return Response.status(Response.Status.BAD_REQUEST)
+//                    .entity(new ErrorResponse(Response.Status.BAD_REQUEST.getStatusCode(), "Null value provided for email/password."))
+//                    .build();
+//        }
+//
+//        final AccountResultSet accountResultSet;
+//        try {
+//            accountResultSet = accountManager.login(accountEmailPassword.getEmail(), accountEmailPassword.getPassword());
+//
+//        } catch (final LockedException | UnverifiedEmailException | NoAccountException | BadPasswordException | RetrievalException e) {
+//            final ErrorResponse errorResponse;
+//            final Response.Status responseStatus;
+//            final String logMsg = String.format(LOG_MESSAGE_TOKEN_DENIED, accountEmailPassword.getEmail(), e.getMessage());
+//
+//            if ( e instanceof RetrievalException ) {
+//                logger.error(logMsg);
+//                responseStatus = Response.Status.INTERNAL_SERVER_ERROR;
+//                errorResponse = new ErrorResponse(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), e.getMessage());
+//
+//            } else {
+//                logger.info(logMsg);
+//                responseStatus = Response.Status.UNAUTHORIZED;
+//                errorResponse = new ErrorResponse(Response.Status.UNAUTHORIZED.getStatusCode(), "Unauthorized.");
+//            }
+//
+//            return Response.status(responseStatus.getStatusCode()).entity(errorResponse).build();
+//        }
+//
+//
+//        final Map<String, Object> claims = new HashMap<>();
+//        claims.put("role", accountResultSet.role_name);
+//
+//        final String jwt = JWTService.createJws(accountEmailPassword.getPassword(), claims);
+//        final String logMsg = String.format(LOG_MESSAGE_TOKEN_GRANTED, accountEmailPassword.getEmail(), claims);
+//
+//        logger.info(logMsg);
+//        return Response.status(Response.Status.OK).entity(new TokenDTO(jwt)).build();
+        return null;
     }
 }
