@@ -6,20 +6,20 @@ DATABASE_NAME=''
 SCHEMA_LIST=''
 
 function echoHelp(){
-    echo "Example1: ${0} -db=mydb -sch=sch1"
-    echo "Example2: ${0} -db=mydb -sch=sch1,sch2"
+    echo "Example1: ${0} db=mydb sch=sch1"
+    echo "Example2: ${0} db=mydb sch=sch1,sch2"
 }
 
 function parseArguments(){
     for keyword in "${@}"; do
         local keyword="${1}"
         case ${keyword} in
-            --database=*|-db=*)
+            db=*)
                 DATABASE_NAME="${keyword#*=}"
                 shift
             ;;
 
-            --schemas=*|-sch=*)
+            sch=*)
                 SCHEMA_LIST="${keyword#*=}"
                 shift
             ;;
@@ -51,8 +51,8 @@ function generateCreateSchemas(){
 }
 
 function generateResetSQL(){
-  readonly database_name="${1}"
-  readonly schemas="${2}"
+    readonly database_name="${1}"
+    readonly schemas="${2}"
 
 cat << EOF
 SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity WHERE datname='${database_name}';
@@ -66,8 +66,8 @@ EOF
 
 # parse arguments if all is OK, generate SQL
 if [ ${#} -eq 2 ]; then
-  parseArguments "${@:1}"
-  generateResetSQL "${DATABASE_NAME}" "${SCHEMA_LIST}"
+    parseArguments "${@:1}"
+    generateResetSQL "${DATABASE_NAME}" "${SCHEMA_LIST}"
 else
-  echoHelp
+    echoHelp
 fi
