@@ -25,7 +25,7 @@ public interface AccountManager {
                final String                  lockReason,
                final boolean                 verified,
                final MULTI_ACCOUNT_ROLE_ENUM multiAccountRole,
-               final UUID                    parentAccount) throws CreationException, CreationDuplicateException, CreationNullException;
+               final UUID                    parentAccountId) throws CreationException, CreationDuplicateException, CreationNullException;
 
 //    int create(final List<AccountSetup> list) throws MultiCreationException, MultiCreationInitialException;
 

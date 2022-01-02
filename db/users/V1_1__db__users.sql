@@ -88,7 +88,7 @@ CREATE TABLE IF NOT EXISTS users.accounts
     password_hash_ts          timestamptz                                           NOT NULL DEFAULT NOW(),
     -- references another uuid where account_type is set to 'multi'
     multi_account_role_id     int                                                   NULL,
-    parent_account            uuid                                                  NULL,
+    parent_account_id         uuid                                                  NULL,
 
     -- constraints
     CONSTRAINT accounts__account_id__pkey       PRIMARY KEY (account_id),
@@ -98,7 +98,7 @@ CREATE TABLE IF NOT EXISTS users.accounts
     CONSTRAINT accounts__system_role_id__fg_key  FOREIGN KEY (system_role_id)   REFERENCES system.system_roles(system_role_id),
     CONSTRAINT accounts__account_type_id__fg_key FOREIGN KEY (account_type_id)  REFERENCES system.account_types(account_type_id),
     -- multi account
-    CONSTRAINT accounts__parent_account__fg_key  FOREIGN KEY (parent_account)   REFERENCES users.accounts(account_id)
+    CONSTRAINT accounts__parent_account__fg_key  FOREIGN KEY (parent_account_id)   REFERENCES users.accounts(account_id)
 );
 
 -- indices

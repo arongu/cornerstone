@@ -4,17 +4,17 @@ DB_TYPE=''
 POSTGRES_PASSWORD=''
 DB_NAME=''
 
-function echoHelp() {
+function echoHelp(){
     echo -e "BE CAREFUL! This scripts DESTROYS then RE-CREATES the given DATABASE!\n\tNote: -p / --password is the password of the 'postgres' user\n"
     echo -e "Examples:\n${0} -t=work -n=work -p=postgres_password\n${0} -t=users -n=users -p=postgres_password"
     echo -e "\n${0} --type=work --name=dev_work --password=postgres_password\n${0} --type=users --name=dev_users --password=postgres_password"
 }
 
-function echoFinalStep() {
+function echoFinalStep(){
     echo -e "\n\nComplete!\nNow run flyway to start the database migration!\nGo inside the project dir db/users or db/work then execute the following command:\nmvn flyway:migrate -P<profile>"
 }
 
-function parseArguments() {
+function parseArguments(){
     for keyword in "${@}"; do
         local keyword="${1}"
         case ${keyword} in
@@ -42,11 +42,11 @@ function parseArguments() {
     done
 }
 
-function executePsqlFile() {
+function executePsqlFile(){
     echo "${POSTGRES_PASSWORD}" | su -c "psql -f ${1}" postgres
 }
 
-function resetDB() {
+function resetDB(){
     local fileName=''
     case ${DB_TYPE} in
         work)
@@ -73,8 +73,9 @@ function resetDB() {
 
 # parse arguments if all is OK, reset DB
 if [ ${#} -eq 3 ]; then
-  parseArguments "${@:1}"
-  resetDB
+    parseArguments "${@:1}"
+    resetDB
 else
-  echoHelp
+    echo "Not enough arguments! 3 required, given=(${#})'"
+    echoHelp
 fi

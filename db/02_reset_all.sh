@@ -9,7 +9,7 @@ readonly WORK_POM_FILE="${PROJECT_ROOT_DIR}/work/pom.xml";
 # password for the postgresql
 readonly POSTGRES_PASSWORD='db';
 
-function reset_db() {
+function reset_db(){
     t="${1}";
     shift;
     n="${2}";
@@ -20,7 +20,7 @@ function reset_db() {
     ./01_reset_db.sh --type="${t}" --name="${n}" --password="${p}";
 }
 
-function migrate_db() {
+function migrate_db(){
     proj_dir="${1}";
     profile="${2}";
     shift;
@@ -30,28 +30,28 @@ function migrate_db() {
 }
 
 # reset dbs
-function reset_dev_dbs() {
+function reset_dev_dbs(){
     ./01_reset_db.sh --type=work  --name=dev_work  --password="${POSTGRES_PASSWORD}";
     ./01_reset_db.sh --type=users --name=dev_users --password="${POSTGRES_PASSWORD}";
 }
 
-function reset_live_dbs() {
+function reset_live_dbs(){
     ./01_reset_db.sh --type=work  --name=work  --password="${POSTGRES_PASSWORD}";
     ./01_reset_db.sh --type=users --name=users --password="${POSTGRES_PASSWORD}";
 }
 
 # migrate dbs
-function migrate_dev_dbs() {
+function migrate_dev_dbs(){
     migrate_db "${USERS_POM_FILE}" "dev";
     migrate_db "${WORK_POM_FILE}"  "dev";
 }
 
-function migrate_live_dbs() {
+function migrate_live_dbs(){
     migrate_db "${USERS_POM_FILE}" "live";
     migrate_db "${WORK_POM_FILE}"  "live";
 }
 
-function reset_all() {
+function reset_all(){
     reset_dev_dbs
     reset_live_dbs
     migrate_dev_dbs

@@ -37,7 +37,7 @@ public class AccountManagerImpl implements AccountManager {
     private static final String SQL_SELECT_ACCOUNT_BY_EMAIL                       = "SELECT roles.name AS role_name, accounts.*, account_http_method_permissions.delete, account_http_method_permissions.get, account_http_method_permissions.head, account_http_method_permissions.options, account_http_method_permissions.patch, account_http_method_permissions.post, account_http_method_permissions.put FROM users.accounts LEFT JOIN system.roles ON (accounts.role_id = roles.id) LEFT JOIN users.account_http_method_permissions ON (accounts.account_id = account_http_method_permissions.account_id) WHERE email_address=(?)";
     private static final String SQL_SELECT_ACCOUNT_BY_ID                          = "SELECT roles.name AS role_name, accounts.*, account_http_method_permissions.delete, account_http_method_permissions.get, account_http_method_permissions.head, account_http_method_permissions.options, account_http_method_permissions.patch, account_http_method_permissions.post, account_http_method_permissions.put FROM users.accounts LEFT JOIN system.roles ON (accounts.role_id = roles.id) LEFT JOIN users.account_http_method_permissions ON (accounts.account_id = account_http_method_permissions.account_id) WHERE account_id=(?)";
     private static final String SQL_SELECT_ACCOUNTS_ILIKE                         = "SELECT email_address FROM users.accounts WHERE email_address ILIKE (?)";
-    private static final String SQL_INSERT_ACCOUNT                                = "INSERT INTO users.accounts (system_role_id, account_id, account_type_id, account_locked, account_lock_reason, email_address, email_address_verified, password_hash, multi_account_role_id, parent_account) VALUES(?,?,?,?,?,?,?,?,?,?)";
+    private static final String SQL_INSERT_ACCOUNT                                = "INSERT INTO users.accounts (system_role_id, account_id, account_type_id, account_locked, account_lock_reason, email_address, email_address_verified, password_hash, multi_account_role_id, parent_account_id) VALUES(?,?,?,?,?,?,?,?,?,?)";
     private static final String SQL_DELETE_ACCOUNT_BY_EMAIL_ADDRESS               = "DELETE FROM users.accounts WHERE email_address=(?)";
     private static final String SQL_DELETE_ACCOUNT_BY_ACCOUNT_ID                  = "DELETE FROM users.accounts WHERE account_id=(?)";
     private static final String SQL_UPDATE_ACCOUNT_PASSWORD                       = "UPDATE users.accounts SET password_hash=(?) WHERE email_address=(?)";
@@ -167,14 +167,14 @@ public class AccountManagerImpl implements AccountManager {
                       final String                  lockReason,
                       final boolean                 verified,
                       final MULTI_ACCOUNT_ROLE_ENUM multiAccountRole,
-                      final UUID parentAccount) throws CreationException, CreationDuplicateException, CreationNullException {
+                      final UUID parentAccountId) throws CreationException, CreationDuplicateException, CreationNullException {
 
         // Throw exception if any of the mandatory variables are not set
         if (systemRole == null || accountId == null || accountType == null || email == null || password == null) {
             throw new CreationNullException();
         }
 
-        if ( multiAccountRole != MULTI_ACCOUNT_ROLE_ENUM.NOT_APPLICABLE && parentAccount == null) {
+        if ( multiAccountRole != MULTI_ACCOUNT_ROLE_ENUM.NOT_APPLICABLE && parentAccountId == null) {
             throw new CreationNullException("When multi account is being created the UUID of the parent account cannot be null!");
         }
 
@@ -188,7 +188,7 @@ public class AccountManagerImpl implements AccountManager {
             ps.setBoolean(7, verified);
             ps.setString (8, Crypt.crypt(password));
             ps.setInt    (9, multiAccountRole.getId());
-            ps.setObject (10, parentAccount);
+            ps.setObject (10, parentAccountId);
 
             final int updates = ps.executeUpdate();
             final String logMsg = String.format(CREATED, email);

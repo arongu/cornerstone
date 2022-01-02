@@ -5,12 +5,12 @@
 DATABASE_NAME=''
 SCHEMA_LIST=''
 
-function echoHelp() {
+function echoHelp(){
     echo "Example1: ${0} -db=mydb -sch=sch1"
     echo "Example2: ${0} -db=mydb -sch=sch1,sch2"
 }
 
-function parseArguments() {
+function parseArguments(){
     for keyword in "${@}"; do
         local keyword="${1}"
         case ${keyword} in
@@ -33,7 +33,7 @@ function parseArguments() {
     done
 }
 
-function generateCreateSchemas() {
+function generateCreateSchemas(){
     readonly max=$((${#} - 1))
     generated=''
     index=0
@@ -50,7 +50,7 @@ function generateCreateSchemas() {
     echo -e "${generated}"
 }
 
-function generateResetSQL() {
+function generateResetSQL(){
   readonly database_name="${1}"
   readonly schemas="${2}"
 
