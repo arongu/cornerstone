@@ -1,5 +1,5 @@
 #!/bin/bash
-# This script generates SQL scripts to bootstrap or reset databases for Cornerstone.
+# This script generates SQL scripts to initialize/reset databases for Cornerstone.
 
 # Global variables to be set
 DATABASE_NAME=''
@@ -33,7 +33,7 @@ function parseArguments(){
     done
 }
 
-function generateCreateSchemas(){
+function generateCreateSchemaStrings(){
     readonly max=$((${#} - 1))
     generated=''
     index=0
@@ -50,7 +50,7 @@ function generateCreateSchemas(){
     echo -e "${generated}"
 }
 
-function generateResetSQL(){
+function generateInitSql(){
     readonly database_name="${1}"
     readonly schemas="${2}"
 
@@ -59,7 +59,7 @@ SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity WHERE da
 DROP DATABASE IF EXISTS ${database_name};
 CREATE DATABASE ${database_name};
 \connect ${database_name};
-$(generateCreateSchemas $(echo "${schemas}" | tr ',' ' '))
+$(generateCreateSchemaStrings $(echo "${schemas}" | tr ',' ' '))
 DROP SCHEMA IF EXISTS public;
 EOF
 }
@@ -67,7 +67,7 @@ EOF
 # parse arguments if all is OK, generate SQL
 if [ ${#} -eq 2 ]; then
     parseArguments "${@:1}"
-    generateResetSQL "${DATABASE_NAME}" "${SCHEMA_LIST}"
+    generateInitSql "${DATABASE_NAME}" "${SCHEMA_LIST}"
 else
     echoHelp
 fi

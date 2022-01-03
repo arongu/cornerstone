@@ -17,7 +17,7 @@ function reset_db(){
     p="${3}";
     shift;
 
-    ./01_reset_db.sh --type="${t}" --name="${n}" --password="${p}";
+    ./01_init_db.sh type="${t}" name="${n}" password="${p}";
 }
 
 function migrate_db(){
@@ -31,13 +31,13 @@ function migrate_db(){
 
 # reset dbs
 function reset_dev_dbs(){
-    ./01_reset_db.sh --type=work  --name=dev_work  --password="${POSTGRES_PASSWORD}";
-    ./01_reset_db.sh --type=users --name=dev_users --password="${POSTGRES_PASSWORD}";
+    ./01_init_db.sh type=work  name=dev_work  password="${POSTGRES_PASSWORD}";
+    ./01_init_db.sh type=users name=dev_users password="${POSTGRES_PASSWORD}";
 }
 
 function reset_live_dbs(){
-    ./01_reset_db.sh --type=work  --name=work  --password="${POSTGRES_PASSWORD}";
-    ./01_reset_db.sh --type=users --name=users --password="${POSTGRES_PASSWORD}";
+    ./01_init_db.sh type=work  name=work  password="${POSTGRES_PASSWORD}";
+    ./01_init_db.sh type=users name=users password="${POSTGRES_PASSWORD}";
 }
 
 # migrate dbs

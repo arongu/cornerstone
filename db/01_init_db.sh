@@ -50,14 +50,14 @@ function resetDB(){
     local fileName=''
     case ${DB_TYPE} in
         work)
-            fileName='work_reset.sql'
-            ./00_gen_reset_sql.sh db="${DB_NAME}" sch=security > "${fileName}"
+            fileName='work_init.sql'
+            ./00_gen_init_sql.sh db="${DB_NAME}" sch=security > "${fileName}"
             executePsqlFile "${fileName}"
         ;;
 
         users)
-            fileName='users_reset.sql'
-            ./00_gen_reset_sql.sh db="${DB_NAME}" sch=system,users > "${fileName}"
+            fileName='users_init.sql'
+            ./00_gen_init_sql.sh db="${DB_NAME}" sch=system,users > "${fileName}"
             executePsqlFile "${fileName}"
         ;;
 
