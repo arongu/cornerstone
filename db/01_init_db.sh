@@ -6,9 +6,9 @@ DB_NAME=''
 HOST=''
 
 function echoHelp(){
-    echo -e "BE CAREFUL! This scripts DESTROYS then RE-CREATES the given DATABASE!\n\tNote: 'password' is the password of the 'postgres' user\n"
+    echo -e "BE CAREFUL! This scripts DESTROYS then RE-CREATES the given DATABASE!\nNote: 'password' is the password of the 'postgres' user\n"
     echo -e "Examples:\n${0} host=10.10.10.55 type=work name=work password=postgres_password"
-    echo -e "${0} host=10.10.10.55 type=users name=users password=postgres_password"
+    echo -e "${0} host=db100 type=users name=users password=postgres_password"
 }
 
 function echoFinalStep(){
@@ -40,7 +40,7 @@ function parseArguments(){
             ;;
 
             *)
-                echo "Unknown argument: '${keyword}'"
+                >&2 echo "Unknown argument: '${keyword}'"
                 echoHelp
                 exit 1
             ;;
@@ -70,7 +70,7 @@ function resetDB(){
         ;;
 
         *)
-          echoHelp
+          >&2 echo "Invalid database type: '${keyword}' (users/work)"
           exit 2
         ;;
     esac
@@ -84,6 +84,6 @@ if [ ${#} -eq 4 ]; then
     parseArguments "${@:1}"
     resetDB
 else
-    echo "Not enough arguments! 4 required, given=(${#})'"
+    >&2 echo "Not enough arguments! required=4, given=${#}"
     echoHelp
 fi
