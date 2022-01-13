@@ -4,6 +4,7 @@ DB_TYPE=''
 POSTGRES_PASSWORD=''
 DB_NAME=''
 HOST=''
+RESULT=''
 
 function echoHelp(){
     echo -e "BE CAREFUL! This scripts DESTROYS then RE-CREATES the given DATABASE!\nNote: 'password' is the password of the 'postgres' user\n"
@@ -51,6 +52,7 @@ function parseArguments(){
 function executePsqlFile(){
     export PGPASSWORD="${POSTGRES_PASSWORD}"
     psql --username='postgres' --host="${HOST}" --file="${1}"
+    RESULT="${?}"
     unset PGPASSWORD
 }
 
@@ -75,8 +77,10 @@ function resetDB(){
         ;;
     esac
 
-    rm -v "${fileName}"
-    echoFinalStep
+    rm  "${fileName}"
+    if [ ${RESULT} -eq 0 ]; then
+        echoFinalStep
+    fi
 }
 
 # parse arguments if all is OK, reset DB
