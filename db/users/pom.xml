@@ -41,10 +41,8 @@
 
                     <placeholders>
                         <db_name>${m2.db.users.db_name}</db_name>
-                        <db_password>${m2.db.users.db_password}</db_password>
-                        <!-- flyway db.user var -->
                         <db_user>${m2.db.users.db_user}</db_user>
-                        <db.user>${m2.db.users.db_user}</db.user>
+                        <db_password>${m2.db.users.db_password}</db_password>
                     </placeholders>
                 </configuration>
             </plugin>

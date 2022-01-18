@@ -41,9 +41,7 @@
                     <placeholders>
                         <db_name>${m2.db.work.db_name}</db_name>
                         <db_password>${m2.db.work.db_password}</db_password>
-                        <!-- flyway db.work var -->
                         <db_user>${m2.db.work.db_user}</db_user>
-                        <db.user>${m2.db.work.db_user}</db.user>
                     </placeholders>
                 </configuration>
             </plugin>

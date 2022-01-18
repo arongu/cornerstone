@@ -185,8 +185,8 @@ CREATE TABLE IF NOT EXISTS users.account_http_method_permissions
 ----------------------------------------------------------------------------
 -- CREATE ROLES/USERS
 ----------------------------------------------------------------------------
-DROP ROLE IF EXISTS ${db.user};
-CREATE USER ${db.user} WITH ENCRYPTED PASSWORD '${db_password}';
+DROP ROLE IF EXISTS ${db_user};
+CREATE USER ${db_user} WITH ENCRYPTED PASSWORD '${db_password}';
 ----------------------------------------------------------------------------
 -- END OF CREATION OF ROLES/USERS
 ----------------------------------------------------------------------------
@@ -204,8 +204,8 @@ CREATE USER ${db.user} WITH ENCRYPTED PASSWORD '${db_password}';
 ----------------------------------------------------------------------------
 -- PERMISSIONS OF SCHEMA system
 ----------------------------------------------------------------------------
-GRANT SELECT ON TABLE system.system_roles TO ${db.user};
-GRANT SELECT ON TABLE system.account_types TO ${db.user};
+GRANT SELECT ON TABLE system.system_roles TO ${db_user};
+GRANT SELECT ON TABLE system.account_types TO ${db_user};
 ----------------------------------------------------------------------------
 -- END OF PERMISSIONS OF SCHEMA system
 ----------------------------------------------------------------------------
@@ -213,15 +213,15 @@ GRANT SELECT ON TABLE system.account_types TO ${db.user};
 ----------------------------------------------------------------------------
 -- PERMISSIONS OF SCHEMA users
 ----------------------------------------------------------------------------
-GRANT USAGE ON SCHEMA users TO ${db.user};
+GRANT USAGE ON SCHEMA users TO ${db_user};
 -- sequences, functions (usage is required to call nextval function)
-GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA users TO ${db.user};
-GRANT EXECUTE       ON ALL FUNCTIONS IN SCHEMA users TO ${db.user};
-GRANT REFERENCES    ON ALL TABLES    IN SCHEMA users TO ${db.user};
+GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA users TO ${db_user};
+GRANT EXECUTE       ON ALL FUNCTIONS IN SCHEMA users TO ${db_user};
+GRANT REFERENCES    ON ALL TABLES    IN SCHEMA users TO ${db_user};
 
 -- TABLES
-GRANT SELECT, INSERT, UPDATE, DELETE, TRIGGER, REFERENCES ON TABLE users.accounts TO ${db.user};
-GRANT SELECT, INSERT, UPDATE, DELETE, TRIGGER, REFERENCES ON TABLE users.account_http_method_permissions TO ${db.user};
+GRANT SELECT, INSERT, UPDATE, DELETE, TRIGGER, REFERENCES ON TABLE users.accounts TO ${db_user};
+GRANT SELECT, INSERT, UPDATE, DELETE, TRIGGER, REFERENCES ON TABLE users.account_http_method_permissions TO ${db_user};
 ----------------------------------------------------------------------------
 -- END OF PERMISSIONS OF SCHEMA users
 ----------------------------------------------------------------------------
