@@ -149,14 +149,12 @@
                                 <echo>-------------------------------------------------------------------------------------------------</echo>
                                 <echo>m2.db.users.server_id                        = ${m2.db.users.server_id}</echo>
                                 <echo>m2.db.users.db_name                          = ${m2.db.users.db_name}</echo>
-                                <echo>m2.db.users.db_schemas.user_data.schema_name = ${m2.db.users.db_schemas.user_data.schema_name}</echo>
                                 <echo>m2.db.users.db_url                           = ${m2.db.users.db_url}</echo>
                                 <echo>m2.db.users.db_user                          = ${m2.db.users.db_user}</echo>
                                 <echo>m2.db.users.db_password                      = ${m2.db.users.db_password}</echo>
                                 <echo>-------------------------------------------------------------------------------------------------</echo>
                                 <echo>m2.db.work.server_id                         = ${m2.db.work.server_id}</echo>
                                 <echo>m2.db.work.db_name                           = ${m2.db.work.db_name}</echo>
-                                <echo>m2.db.work.db_schemas.user_data.schema_name  = ${m2.db.work.db_schemas.secure.schema_name}</echo>
                                 <echo>m2.db.work.db_url                            = ${m2.db.work.db_url}</echo>
                                 <echo>m2.db.work.db_user                           = ${m2.db.work.db_user}</echo>
                                 <echo>m2.db.work.db_password                       = ${m2.db.work.db_password}</echo>
