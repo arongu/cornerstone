@@ -63,7 +63,7 @@ CREATE TRIGGER trigger_update_base64_key
 ----------------------------------------------------------------------------
 -- permissions of schema security
 ----------------------------------------------------------------------------
-DROP ROLE IF EXISTS ${db.user};
+DROP ROLE IF EXISTS ${db_user};
 CREATE USER ${db_user} WITH ENCRYPTED PASSWORD '${db_password}';
 GRANT USAGE ON SCHEMA security TO ${db_user};
 GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA security TO ${db_user};
