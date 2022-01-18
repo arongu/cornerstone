@@ -22,6 +22,32 @@
     <build>
         <plugins>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.3</version>
+                <executions>
+                    <execution>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <tasks>
+                                <echo>-------------------------------------------------------------------------------------------------</echo>
+                                <echo>m2.db.users.server_id                         = ${m2.db.users.server_id}</echo>
+                                <echo>m2.db.users.db_name                           = ${m2.db.users.db_name}</echo>
+                                <echo>m2.db.users.db_url                            = ${m2.db.users.db_url}</echo>
+                                <echo>m2.db.users.db_user                           = ${m2.db.users.db_user}</echo>
+                                <echo>m2.db.users.db_password                       = ${m2.db.users.db_password}</echo>
+                                <echo>-------------------------------------------------------------------------------------------------</echo>
+                                <echo>If you see ${key} on the right as values it means maven profile is not selected. (Maven could not resolve/substitute the value.)</echo>
+                                <echo>Use a profile instead: mvn validate -Pdev / mvn flyway:migrate -Pdev</echo>
+                            </tasks>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
                 <groupId>org.flywaydb</groupId>
                 <artifactId>flyway-maven-plugin</artifactId>
                 <configuration>
