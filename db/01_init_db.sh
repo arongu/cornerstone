@@ -43,7 +43,7 @@ function parseArguments(){
             *)
                 >&2 echo "Unknown argument: '${keyword}'"
                 echoHelp
-                exit 1
+                exit 2
             ;;
         esac
     done
@@ -73,13 +73,16 @@ function resetDB(){
 
         *)
           >&2 echo "Invalid database type: '${keyword}' (users/work)"
-          exit 2
+          exit 3
         ;;
     esac
 
     rm  "${fileName}"
     if [ ${RESULT} -eq 0 ]; then
         echoFinalStep
+    else
+        >&2 echo 'An error occurred while trying to execute psql file!'
+        exit ${RESULT}
     fi
 }
 
@@ -90,4 +93,5 @@ if [ ${#} -eq 4 ]; then
 else
     >&2 echo "Not enough arguments! required=4, given=${#}"
     echoHelp
+    exit 1
 fi
