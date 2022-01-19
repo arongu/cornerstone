@@ -51,7 +51,14 @@ function parseArguments(){
 
 function executePsqlFile(){
     export PGPASSWORD="${POSTGRES_PASSWORD}"
-    psql --username='postgres' --host="${HOST}" --file="${1}"
+    # run psql without --host if target is localhost -> unix socket authentication is used instead of TCP
+    if grep "${HOST}" /etc/hosts | grep -e '127\.0\.[0-1]\.1'; then
+        psql --username='postgres' --file="${1}"
+    # if not the same host try to run psql with --host
+    else
+        psql --username='postgres' --host="${HOST}" --file="${1}"
+    fi
+
     RESULT="${?}"
     unset PGPASSWORD
 }
