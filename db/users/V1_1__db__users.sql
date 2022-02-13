@@ -61,16 +61,17 @@ CREATE TABLE IF NOT EXISTS users.account_members
     password_hash_ts           timestamptz                                           NOT NULL DEFAULT NOW(),
 
     -- constraints
-    CONSTRAINT account_members__account_id__fg_key     FOREIGN KEY (account_id)      REFERENCES users.accounts(account_id),
-    CONSTRAINT account_members__email_address__unique  UNIQUE      (email_address),
-    CONSTRAINT account_members__password_hash__unique  UNIQUE      (password_hash)
+    CONSTRAINT account_members__account_member_id__pkey PRIMARY KEY (account_member_id),
+    CONSTRAINT account_members__account_id__fg_key      FOREIGN KEY (account_id)        REFERENCES users.accounts(account_id),
+    CONSTRAINT account_members__email_address__unique   UNIQUE      (email_address),
+    CONSTRAINT account_members__password_hash__unique   UNIQUE      (password_hash)
 );
 ----------------------------------------------------------------------------
 -- END OF CREATION OF TABLE users.account_members
 ----------------------------------------------------------------------------
 -- CREATION OF TABLE users.http_method_permissions
 ----------------------------------------------------------------------------
-CREATE TABLE IF NOT EXISTS  users.account_permissions
+CREATE TABLE IF NOT EXISTS users.account_permissions
 (
     account_id        uuid      NOT NULL,
     account_member_id uuid      NOT NULL,
