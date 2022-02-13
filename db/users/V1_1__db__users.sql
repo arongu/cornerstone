@@ -88,3 +88,37 @@ CREATE TABLE IF NOT EXISTS  users.account_permissions
     CONSTRAINT account_permissions__account_id__fg_key            FOREIGN KEY (account_id)          REFERENCES users.account_members(account_id),
     CONSTRAINT account_permissions__account_member_id__fg_key     FOREIGN KEY (account_member_id)   REFERENCES users.account_members(account_member_id)
 );
+
+----------------------------------------------------------------------------
+-- CREATE ROLES/USERS
+----------------------------------------------------------------------------
+DROP ROLE IF EXISTS ${db_user};
+CREATE USER ${db_user} WITH ENCRYPTED PASSWORD '${db_password}';
+----------------------------------------------------------------------------
+-- END OF CREATION OF ROLES/USERS
+----------------------------------------------------------------------------
+
+----------------------------------------------------------------------------
+-- ____  _____ ____  __  __ ___ ____ ____ ___ ___  _   _ ____
+-- |  _ \| ____|  _ \|  \/  |_ _/ ___/ ___|_ _/ _ \| \ | / ___|
+-- | |_) |  _| | |_) | |\/| || |\___ \___ \| | | | |  \| \___ \
+-- |  __/| |___|  _ <| |  | || | ___) |__) | | |_| | |\  |___) |
+-- |_|   |_____|_| \_\_|  |_|___|____/____/___\___/|_| \_|____/
+----------------------------------------------------------------------------
+
+----------------------------------------------------------------------------
+-- PERMISSIONS OF SCHEMA users
+----------------------------------------------------------------------------
+GRANT USAGE ON SCHEMA users TO ${db_user};
+-- sequences, functions (usage is required to call nextval function)
+GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA users TO ${db_user};
+GRANT EXECUTE       ON ALL FUNCTIONS IN SCHEMA users TO ${db_user};
+GRANT REFERENCES    ON ALL TABLES    IN SCHEMA users TO ${db_user};
+
+-- TABLES
+GRANT SELECT, INSERT, UPDATE, DELETE, TRIGGER, REFERENCES ON TABLE users.accounts TO ${db_user};
+GRANT SELECT, INSERT, UPDATE, DELETE, TRIGGER, REFERENCES ON TABLE users.account_members TO ${db_user};
+GRANT SELECT, INSERT, UPDATE, DELETE, TRIGGER, REFERENCES ON TABLE users.account_permissions TO ${db_user};
+----------------------------------------------------------------------------
+-- END OF PERMISSIONS OF SCHEMA users
+----------------------------------------------------------------------------
