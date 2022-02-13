@@ -43,7 +43,7 @@ CREATE TRIGGER account_enabled
 CREATE TABLE IF NOT EXISTS users.account_members
 (
     -- account where the this email address belongs
-    account_id                 uuid                                                  NOT NULL,
+    account_id                 uuid                                                  NOT NULL UNIQUE,
     account_member_id          uuid                                                  NOT NULL,
     account_member_locked      boolean                                               NOT NULL DEFAULT false,
     account_member_locked_ts   timestamptz                                           NOT NULL DEFAULT NOW(),
@@ -62,7 +62,7 @@ CREATE TABLE IF NOT EXISTS users.account_members
 
     -- constraints
     CONSTRAINT account_members__account_member_id__pkey PRIMARY KEY (account_member_id),
-    CONSTRAINT account_members__account_id__fg_key      FOREIGN KEY (account_id)        REFERENCES users.accounts(account_id),
+    CONSTRAINT account_members__account_id__fg_key      FOREIGN KEY (account_id)       REFERENCES users.accounts(account_id),
     CONSTRAINT account_members__email_address__unique   UNIQUE      (email_address),
     CONSTRAINT account_members__password_hash__unique   UNIQUE      (password_hash)
 );
