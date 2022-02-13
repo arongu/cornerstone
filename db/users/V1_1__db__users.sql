@@ -44,6 +44,7 @@ CREATE TABLE IF NOT EXISTS users.account_members
 (
     -- account where the this email address belongs
     account_id                 uuid                                                  NOT NULL,
+    account_member_id          uuid                                                  NOT NULL,
     account_member_locked      boolean                                               NOT NULL DEFAULT false,
     account_member_locked_ts   timestamptz                                           NOT NULL DEFAULT NOW(),
     account_member_lock_reason character varying(2048)                               NULL,
@@ -64,4 +65,26 @@ CREATE TABLE IF NOT EXISTS users.account_members
     CONSTRAINT account_members__email_address__unique  UNIQUE      (email_address),
     CONSTRAINT account_members__password_hash__unique  UNIQUE      (password_hash)
 );
+----------------------------------------------------------------------------
+-- END OF CREATION OF TABLE users.account_members
+----------------------------------------------------------------------------
+-- CREATION OF TABLE users.http_method_permissions
+----------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS  users.account_permissions
+(
+    account_id        uuid      NOT NULL,
+    account_member_id uuid      NOT NULL,
 
+    -- http method permissions
+    http_read         boolean, -- get, head, options
+    http_write        boolean, -- patch, post, put
+    http_delete       boolean, -- delete
+
+    -- account level permissions
+    account_owner     boolean,
+    account_admin     boolean,
+
+    -- constraints
+    CONSTRAINT account_permissions__account_id__fg_key            FOREIGN KEY (account_id)          REFERENCES users.account_members(account_id),
+    CONSTRAINT account_permissions__account_member_id__fg_key     FOREIGN KEY (account_member_id)   REFERENCES users.account_members(account_member_id)
+);
