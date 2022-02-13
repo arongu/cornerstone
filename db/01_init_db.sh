@@ -76,7 +76,7 @@ function resetDB(){
 
         users)
             fileName='users_init.sql'
-            ./00_gen_init_sql.sh db="${DB_NAME}" sch=system,users > "${fileName}"
+            ./00_gen_init_sql.sh db="${DB_NAME}" sch=users > "${fileName}"
             executePsqlFile "${fileName}"
         ;;
 
