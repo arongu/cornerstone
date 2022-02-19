@@ -20,17 +20,17 @@ CREATE TABLE IF NOT EXISTS users.accounts
     -- if enabled multiple users can be assigned to the account
     organization              boolean                                               NOT NULL DEFAULT  false,
     -- constraints
-    CONSTRAINT accounts__account_id__pkey         PRIMARY KEY (account_id),
-    CONSTRAINT accounts__account_type__check      CHECK       (account_type in ('ADMIN', 'USER')),
+    CONSTRAINT pkey__account_id         PRIMARY KEY (account_id),
+    CONSTRAINT chk__account_type        CHECK       (account_type in ('ADMIN', 'USER')),
     -- 1 owner 1 account -- an email can only own 1 account
-    CONSTRAINT accounts__account_owner_id__uniq   UNIQUE      (account_owner_id),
-    CONSTRAINT accounts__contact_email__uniq      UNIQUE      (contact_email)
+    CONSTRAINT uniq__account_owner_id   UNIQUE      (account_owner_id),
+    CONSTRAINT uniq__contact_email      UNIQUE      (contact_email)
 );
 
 -- indices
-CREATE INDEX IF NOT EXISTS accounts__account_id    ON users.accounts (account_id);
-CREATE INDEX IF NOT EXISTS accounts__owner_id      ON users.accounts (account_owner_id);
-CREATE INDEX IF NOT EXISTS accounts__contact_email ON users.accounts (contact_email);
+CREATE INDEX IF NOT EXISTS account_id    ON users.accounts (account_id);
+CREATE INDEX IF NOT EXISTS owner_id      ON users.accounts (account_owner_id);
+CREATE INDEX IF NOT EXISTS contact_email ON users.accounts (contact_email);
 
 -- function && trigger for account_enabled update
 CREATE OR REPLACE FUNCTION users.update_account_enabled_ts() RETURNS TRIGGER AS $$
@@ -71,18 +71,18 @@ CREATE TABLE IF NOT EXISTS users.account_members
     password_hash_ts           timestamptz                                           NOT NULL DEFAULT NOW(),
 
     -- constraints
-    CONSTRAINT account_members__account_member_id__pkey PRIMARY KEY (member_id),
-    CONSTRAINT account_members__account_id__fg_key      FOREIGN KEY (account_id)     REFERENCES users.accounts(account_id),
-    CONSTRAINT account_members__email_address__unique   UNIQUE      (email_address),
-    CONSTRAINT account_members__password_hash__unique   UNIQUE      (password_hash)
+    CONSTRAINT pkey__member_id         PRIMARY KEY (member_id),
+    CONSTRAINT fkey__account_id        FOREIGN KEY (account_id)     REFERENCES users.accounts(account_id),
+    CONSTRAINT uniq__email_address     UNIQUE      (email_address),
+    CONSTRAINT uniq__password_hash     UNIQUE      (password_hash)
 );
 -- indices --
-CREATE INDEX IF NOT EXISTS account_members__account_id    ON users.account_members(account_id);
-CREATE INDEX IF NOT EXISTS account_members__member_id     ON users.account_members(member_id);
-CREATE INDEX IF NOT EXISTS account_members__email_address ON users.account_members(email_address);
+CREATE INDEX IF NOT EXISTS account_id    ON users.account_members(account_id);
+CREATE INDEX IF NOT EXISTS member_id     ON users.account_members(member_id);
+CREATE INDEX IF NOT EXISTS email_address ON users.account_members(email_address);
 
 -- once account_members table created, the back reference for owner can be created
-ALTER TABLE users.accounts ADD CONSTRAINT accounts__owner_id__fgkey FOREIGN KEY (account_owner_id) REFERENCES users.account_members(member_id);
+ALTER TABLE users.accounts ADD CONSTRAINT fkey__owner_id FOREIGN KEY (account_owner_id) REFERENCES users.account_members(member_id);
 ----------------------------------------------------------------------------
 -- END OF CREATION OF TABLE users.account_members
 ----------------------------------------------------------------------------
@@ -101,10 +101,10 @@ CREATE TABLE IF NOT EXISTS users.account_member_permissions
     account_admin     boolean,
 
     -- constraints
-    CONSTRAINT account_permissions__member_id__fg_key    FOREIGN KEY (member_id)   REFERENCES users.account_members(member_id)
+    CONSTRAINT fkey__member_id FOREIGN KEY (member_id) REFERENCES users.account_members(member_id)
 );
 -- indices --
-CREATE INDEX IF NOT EXISTS account_member_permission__member_id    ON users.account_member_permissions(member_id);
+CREATE INDEX IF NOT EXISTS member_id ON users.account_member_permissions(member_id);
 
 ----------------------------------------------------------------------------
 -- CREATE ROLES/USERS
