@@ -184,7 +184,6 @@ ALTER TABLE users.groups ADD CONSTRAINT fkey__owner_id FOREIGN KEY (group_owner_
 -- indices --
 CREATE INDEX IF NOT EXISTS account_id    ON users.accounts(account_id);
 CREATE INDEX IF NOT EXISTS email_address ON users.accounts(email_address);
-CREATE INDEX IF NOT EXISTS group_id      ON users.accounts(group_id);
 
 -- functions
 -- group_id
@@ -330,8 +329,6 @@ CREATE TABLE IF NOT EXISTS users.group_permissions
     -- constraints
     CONSTRAINT fkey__account_id FOREIGN KEY (account_id) REFERENCES users.accounts(account_id)
 );
--- indices --
-CREATE INDEX IF NOT EXISTS account_id ON users.group_permissions(account_id);
 ----------------------------------------------------------------------------
 -- END OF CREATION OF TABLE users.group_permissions
 ----------------------------------------------------------------------------
@@ -364,8 +361,8 @@ GRANT EXECUTE       ON ALL FUNCTIONS IN SCHEMA users TO ${db_user};
 GRANT REFERENCES    ON ALL TABLES    IN SCHEMA users TO ${db_user};
 
 -- TABLES
-GRANT SELECT, INSERT, UPDATE, DELETE, TRIGGER, REFERENCES ON TABLE users. TO ${db_user};
-GRANT SELECT, INSERT, UPDATE, DELETE, TRIGGER, REFERENCES ON TABLE users.accounts TO ${db_user};
+GRANT SELECT, INSERT, UPDATE, DELETE, TRIGGER, REFERENCES ON TABLE users.accounts          TO ${db_user};
+GRANT SELECT, INSERT, UPDATE, DELETE, TRIGGER, REFERENCES ON TABLE users.groups            TO ${db_user};
 GRANT SELECT, INSERT, UPDATE, DELETE, TRIGGER, REFERENCES ON TABLE users.group_permissions TO ${db_user};
 ----------------------------------------------------------------------------
 -- END OF PERMISSIONS OF SCHEMA users
