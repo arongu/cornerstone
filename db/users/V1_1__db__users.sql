@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS users.groups
 CREATE INDEX IF NOT EXISTS group_id       ON users.groups(group_id);
 CREATE INDEX IF NOT EXISTS group_owner_id ON users.groups(group_owner_id);
 
--- function && trigger for account_enabled update
+-- functions && triggers
 CREATE OR REPLACE FUNCTION users.group_locked_ts() RETURNS TRIGGER AS $$
     BEGIN
         NEW.locked_ts = NOW();
@@ -46,28 +46,26 @@ CREATE TRIGGER group_locked_ts
 ----------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS users.accounts
 (
-    -- account where the this member belongs
     group_id                        uuid                                           NOT NULL UNIQUE,
     id                              uuid                                           NOT NULL,
     locked                          boolean                                        NOT NULL DEFAULT false,
     locked_ts                       timestamptz                                    NOT NULL DEFAULT NOW(),
     lock_reason                     character varying(2048)                        NULL,
 
+    -- login
     login_attempts                  integer                                        NOT NULL,
     last_login_attempt_ip           character varying (32),
-    last_login_attempt_ts           timestamptz,
+    last_login_attempt_ip_ts        timestamptz,
     last_successful_login_ip        character varying(32),
     last_successful_login_ip_ts     timestamptz,
 
-
-    -- email address
+    -- email
     email_address              character varying(250)   COLLATE pg_catalog."default" NOT NULL,
     email_address_ts           timestamptz                                           NOT NULL DEFAULT NOW(),
-    -- email address verification
     email_address_verified     boolean                                               NOT NULL DEFAULT false,
     email_address_verified_ts  timestamptz                                           NULL,
 
-    -- password change
+    -- password
     password_hash              character varying(128)                                NOT NULL,
     password_hash_ts           timestamptz                                           NOT NULL DEFAULT NOW(),
 
@@ -81,6 +79,22 @@ CREATE TABLE IF NOT EXISTS users.accounts
 CREATE INDEX IF NOT EXISTS account_id    ON users.accounts(group_id);
 CREATE INDEX IF NOT EXISTS member_id     ON users.accounts(id);
 CREATE INDEX IF NOT EXISTS email_address ON users.accounts(email_address);
+
+-- functions && triggers
+CREATE OR REPLACE FUNCTION users.last_login_attempt_ip_ts() RETURNS TRIGGER AS $$
+    BEGIN
+        NEW.last_login_attempt_ip_ts = NOW();
+        RETURN NEW;
+    END
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION users.last_successful_login_ip_ts() RETURNS TRIGGER AS $$
+    BEGIN
+        NEW.last_successfull_login_ip_ts = NOW();
+        RETURN NEW;
+    END
+$$ LANGUAGE plpgsql;
+
 
 -- back reference group -> owner (back reference must be done with alter, because the two tables does not exist at creation time)
 ALTER TABLE users.groups ADD CONSTRAINT fkey__owner_id FOREIGN KEY (group_owner_id) REFERENCES users.accounts(id);
