@@ -95,7 +95,6 @@ CREATE OR REPLACE FUNCTION users.last_successful_login_ip_ts() RETURNS TRIGGER A
     END
 $$ LANGUAGE plpgsql;
 
-
 -- back reference group -> owner (back reference must be done with alter, because the two tables does not exist at creation time)
 ALTER TABLE users.groups ADD CONSTRAINT fkey__owner_id FOREIGN KEY (group_owner_id) REFERENCES users.accounts(id);
 ----------------------------------------------------------------------------
@@ -103,23 +102,24 @@ ALTER TABLE users.groups ADD CONSTRAINT fkey__owner_id FOREIGN KEY (group_owner_
 ----------------------------------------------------------------------------
 -- CREATION OF TABLE users.http_method_permissions
 ----------------------------------------------------------------------------
-CREATE TABLE IF NOT EXISTS users.account_member_permissions
+CREATE TABLE IF NOT EXISTS users.group_permissions
 (
-    member_id         uuid      NOT NULL,
-    -- http method permissions
-    http_read         boolean, -- get, head, options
-    http_write        boolean, -- patch, post, put
-    http_delete       boolean, -- delete
+    group_id          uuid      NOT NULL,
+    -- group permissions, which group of functions/services can be used
+    -- this roughly translates to (http methods)
+    read         boolean        NOT NULL default true, -- get, head, options
+    write        boolean        NOT NULL default true, -- patch, post, put
+    delete       boolean        NOT NULL default true, -- delete
 
-    -- account level permissions
-    account_owner     boolean,
-    account_admin     boolean,
+    -- group level permissions
+    group_owner     boolean     NOT NULL default false,
+    group_admin     boolean     NOT NULL default false,
 
     -- constraints
-    CONSTRAINT fkey__member_id FOREIGN KEY (member_id) REFERENCES users.accounts(id)
+    CONSTRAINT fkey__member_id FOREIGN KEY (group_id) REFERENCES users.accounts(id)
 );
 -- indices --
-CREATE INDEX IF NOT EXISTS member_id ON users.account_member_permissions(member_id);
+CREATE INDEX IF NOT EXISTS member_id ON users.group_permissions(group_id);
 
 ----------------------------------------------------------------------------
 -- CREATE ROLES/USERS
@@ -150,7 +150,7 @@ GRANT REFERENCES    ON ALL TABLES    IN SCHEMA users TO ${db_user};
 -- TABLES
 GRANT SELECT, INSERT, UPDATE, DELETE, TRIGGER, REFERENCES ON TABLE users. TO ${db_user};
 GRANT SELECT, INSERT, UPDATE, DELETE, TRIGGER, REFERENCES ON TABLE users.accounts TO ${db_user};
-GRANT SELECT, INSERT, UPDATE, DELETE, TRIGGER, REFERENCES ON TABLE users.account_member_permissions TO ${db_user};
+GRANT SELECT, INSERT, UPDATE, DELETE, TRIGGER, REFERENCES ON TABLE users.group_permissions TO ${db_user};
 ----------------------------------------------------------------------------
 -- END OF PERMISSIONS OF SCHEMA users
 ----------------------------------------------------------------------------
