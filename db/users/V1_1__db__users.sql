@@ -45,7 +45,7 @@ END
 $$ LANGUAGE plpgsql;
 
 -- group_owner_id
-CREATE OR REPLACE FUNCTION users.groups__owner_id_ts() RETURNS TRIGGER AS $$
+CREATE OR REPLACE FUNCTION users.groups__group_owner_id_ts() RETURNS TRIGGER AS $$
 BEGIN
     NEW.group_owner_id_ts = NOW();
     RETURN NEW;
@@ -55,12 +55,12 @@ $$ LANGUAGE plpgsql;
 -- group_name
 CREATE OR REPLACE FUNCTION users.groups__group_name_ts() RETURNS TRIGGER AS $$
 BEGIN
-    NEW.group_owner_name_ts = NOW();
+    NEW.group_name_ts = NOW();
     RETURN NEW;
 END
 $$ LANGUAGE plpgsql;
 
--- group_name
+-- group_notes
 CREATE OR REPLACE FUNCTION users.groups__group_notes_ts() RETURNS TRIGGER AS $$
 BEGIN
     NEW.group_notes_ts = NOW();
@@ -101,8 +101,38 @@ END
 $$ LANGUAGE plpgsql;
 
 -- triggers
+-- group_id
+DROP TRIGGER IF EXISTS update_group_id ON users.groups;
+CREATE TRIGGER         update_group_id BEFORE UPDATE OF group_id ON users.groups FOR EACH ROW EXECUTE PROCEDURE users.groups__group_id_ts();
+
+-- group_owner_id
+DROP TRIGGER IF EXISTS update_group_owner_id ON users.groups;
+CREATE TRIGGER         update_group_owner_id BEFORE UPDATE OF group_owner_id ON users.groups FOR EACH ROW EXECUTE PROCEDURE users.groups__group_owner_id_ts();
+
+-- group_name
+DROP TRIGGER IF EXISTS update_group_name ON users.groups;
+CREATE TRIGGER         update_group_name BEFORE UPDATE OF group_name ON users.groups FOR EACH ROW EXECUTE PROCEDURE users.groups__group_name_ts();
+
+-- group_notes
+DROP TRIGGER IF EXISTS update_group_notes ON users.groups;
+CREATE TRIGGER         update_group_notes BEFORE UPDATE OF group_notes ON users.groups FOR EACH ROW EXECUTE PROCEDURE users.groups__group_notes_ts();
+
+-- group_locked
 DROP TRIGGER IF EXISTS update_group_locked ON users.groups;
 CREATE TRIGGER         update_group_locked BEFORE UPDATE OF group_locked ON users.groups FOR EACH ROW EXECUTE PROCEDURE users.groups__group_locked_ts();
+
+-- group_lock_reason
+DROP TRIGGER IF EXISTS update_group_lock_reason ON users.groups;
+CREATE TRIGGER         update_group_lock_reason BEFORE UPDATE OF group_lock_reason ON users.groups FOR EACH ROW EXECUTE PROCEDURE users.groups__group_lock_reason_ts();
+
+-- max_users
+DROP TRIGGER IF EXISTS update_max_users ON users.groups;
+CREATE TRIGGER         update_max_users BEFORE UPDATE OF max_users ON users.groups FOR EACH ROW EXECUTE PROCEDURE users.groups__max_users_ts();
+
+-- current_users
+DROP TRIGGER IF EXISTS update_current_users ON users.groups;
+CREATE TRIGGER         update_current_users BEFORE UPDATE OF current_users ON users.groups FOR EACH ROW EXECUTE PROCEDURE users.groups__current_users_ts();
+
 ----------------------------------------------------------------------------
 -- END OF CREATION OF TABLE users.groups
 ----------------------------------------------------------------------------
@@ -121,6 +151,7 @@ CREATE TABLE IF NOT EXISTS users.accounts
     account_locked                  boolean                                                 NOT NULL DEFAULT false,
     account_locked_ts               timestamptz,
     account_lock_reason             character varying(2048),
+    account_lock_reason_ts          timestamptz,
 
     -- login
     login_attempts                  integer                                                 NOT NULL DEFAULT 0,
@@ -156,7 +187,7 @@ CREATE INDEX IF NOT EXISTS email_address ON users.accounts(email_address);
 CREATE INDEX IF NOT EXISTS group_id      ON users.accounts(group_id);
 
 -- functions
--- group_id_ts
+-- group_id
 CREATE OR REPLACE FUNCTION users.accounts__group_id_ts() RETURNS TRIGGER AS $$
 BEGIN
     NEW.group_id_ts = NOW();
@@ -164,7 +195,15 @@ BEGIN
 END
 $$ LANGUAGE plpgsql;
 
--- account_locked_ts
+-- account_id
+CREATE OR REPLACE FUNCTION users.accounts__account_id_ts() RETURNS TRIGGER AS $$
+BEGIN
+    NEW.account_id_ts = NOW();
+    RETURN NEW;
+END
+$$ LANGUAGE plpgsql;
+
+-- account_locked
 CREATE OR REPLACE FUNCTION users.accounts__account_locked_ts() RETURNS TRIGGER AS $$
     BEGIN
         NEW.account_locked_ts = NOW();
@@ -172,7 +211,15 @@ CREATE OR REPLACE FUNCTION users.accounts__account_locked_ts() RETURNS TRIGGER A
     END
 $$ LANGUAGE plpgsql;
 
--- last_login_attempt_ip_ts
+-- account_lock_reason
+CREATE OR REPLACE FUNCTION users.accounts__account_lock_reason_ts() RETURNS TRIGGER AS $$
+BEGIN
+    NEW.account_lock_reason_ts = NOW();
+    RETURN NEW;
+END
+$$ LANGUAGE plpgsql;
+
+-- last_login_attempt_ip
 CREATE OR REPLACE FUNCTION users.accounts__last_login_attempt_ip_ts() RETURNS TRIGGER AS $$
     BEGIN
         NEW.last_login_attempt_ip_ts = NOW();
@@ -180,7 +227,7 @@ CREATE OR REPLACE FUNCTION users.accounts__last_login_attempt_ip_ts() RETURNS TR
     END
 $$ LANGUAGE plpgsql;
 
--- last_successful_login_ip_ts
+-- last_successful_login_ip
 CREATE OR REPLACE FUNCTION users.accounts__last_successful_login_ip_ts() RETURNS TRIGGER AS $$
     BEGIN
         NEW.last_successful_login_ip_ts = NOW();
@@ -188,7 +235,7 @@ CREATE OR REPLACE FUNCTION users.accounts__last_successful_login_ip_ts() RETURNS
     END
 $$ LANGUAGE plpgsql;
 
--- email_address_ts
+-- email_address
 CREATE OR REPLACE FUNCTION users.accounts__email_address_ts() RETURNS TRIGGER AS $$
     BEGIN
         NEW.email_address_ts = NOW();
@@ -196,7 +243,7 @@ CREATE OR REPLACE FUNCTION users.accounts__email_address_ts() RETURNS TRIGGER AS
     END
 $$ LANGUAGE plpgsql;
 
--- email_address_verified_ts
+-- email_address_verified
 CREATE OR REPLACE FUNCTION users.accounts__email_address_verified_ts() RETURNS TRIGGER AS $$
     BEGIN
         NEW.email_address_verified_ts = NOW();
@@ -204,7 +251,7 @@ CREATE OR REPLACE FUNCTION users.accounts__email_address_verified_ts() RETURNS T
     END
 $$ LANGUAGE plpgsql;
 
--- password_hash_ts
+-- password_hash
 CREATE OR REPLACE FUNCTION users.accounts__password_hash_ts() RETURNS TRIGGER AS $$
 BEGIN
     NEW.password_hash_ts = NOW();
@@ -212,7 +259,7 @@ BEGIN
 END
 $$ LANGUAGE plpgsql;
 
--- password_hash_ts
+-- superuser
 CREATE OR REPLACE FUNCTION users.accounts__superuser_ts() RETURNS TRIGGER AS $$
 BEGIN
     NEW.superuser_ts = NOW();
@@ -223,11 +270,19 @@ $$ LANGUAGE plpgsql;
 -- triggers
 -- group_id
 DROP TRIGGER IF EXISTS update_group_id ON users.accounts;
-CREATE TRIGGER         update_group_id BEFORE UPDATE OF account_locked ON users.accounts FOR EACH ROW EXECUTE PROCEDURE users.accounts__group_id_ts();
+CREATE TRIGGER         update_group_id BEFORE UPDATE OF group_id ON users.accounts FOR EACH ROW EXECUTE PROCEDURE users.accounts__group_id_ts();
+
+-- account_id
+DROP TRIGGER IF EXISTS update_account_id ON users.accounts;
+CREATE TRIGGER         update_account_id BEFORE UPDATE OF account_id ON users.accounts FOR EACH ROW EXECUTE PROCEDURE users.accounts__account_id_ts();
 
 -- account_locked
 DROP TRIGGER IF EXISTS update_account_locked ON users.accounts;
 CREATE TRIGGER         update_account_update BEFORE UPDATE OF account_locked ON users.accounts FOR EACH ROW EXECUTE PROCEDURE users.accounts__account_locked_ts();
+
+-- account_lock_reason
+DROP TRIGGER IF EXISTS update_account_lock_reason ON users.accounts;
+CREATE TRIGGER         update_account_lock_reason BEFORE UPDATE OF account_lock_reason ON users.accounts FOR EACH ROW EXECUTE PROCEDURE users.accounts__account_lock_reason_ts();
 
 -- last_login_attempt_ip
 DROP TRIGGER IF EXISTS update_last_login_attempt_ip ON users.accounts;
