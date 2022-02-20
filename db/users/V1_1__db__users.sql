@@ -1,63 +1,64 @@
 ----------------------------------------------------------------------------
 -- SCHEMA users
 ----------------------------------------------------------------------------
--- CREATION OF TABLE users.accounts
+-- CREATION OF TABLE users.groups
 ----------------------------------------------------------------------------
-CREATE TABLE IF NOT EXISTS users.accounts
-(   -- account type 'ADMIN / USER'
-    account_type              character varying(5)                                  NOT NULL,
-    account_id                uuid                                                  NOT NULL,
-    account_owner_id          uuid                                                  NOT NULL,
-    account_registration_ts   timestamptz                                           NOT NULL DEFAULT NOW(),
-    account_description       character varying(250),
+CREATE TABLE IF NOT EXISTS users.groups
+(
+    group_id                   uuid                                                  NOT NULL,
+    group_owner_id             uuid                                                  NOT NULL,
+    group_name                 character varying(120),
+    group_notes                character varying(4096),
+    registration_ts            timestamptz                                           NOT NULL DEFAULT NOW(),
     -- account enable / disable
-    account_locked            boolean                                               NOT NULL DEFAULT false,
-    account_locked_ts         timestamptz                                           NOT NULL DEFAULT NOW(),
-    account_lock_reason       character varying(2048)                               NULL,
-    -- by default contact_email will be the owner of the account
-    contact_email             character varying(300)                                NOT NULL,
-    contact_phone             character varying(50),
-    -- if enabled multiple users can be assigned to the account
-    organization              boolean                                               NOT NULL DEFAULT  false,
+    group_locked               boolean                                               NOT NULL DEFAULT false,
+    locked_ts                  timestamptz                                           NOT NULL DEFAULT NOW(),
+    lock_reason                character varying(2048)                               NULL,
+    -- for multiple accounts
+    max_users                  integer                                               NOT NULL DEFAULT 1,
+    current_users              integer                                               NOT NULL DEFAULT 0,
     -- constraints
-    CONSTRAINT pkey__account_id         PRIMARY KEY (account_id),
-    CONSTRAINT chk__account_type        CHECK       (account_type in ('ADMIN', 'USER')),
-    -- 1 owner 1 account -- an email can only own 1 account
-    CONSTRAINT uniq__account_owner_id   UNIQUE      (account_owner_id),
-    CONSTRAINT uniq__contact_email      UNIQUE      (contact_email)
+    CONSTRAINT pkey__group_id  PRIMARY KEY (group_id),
+    CONSTRAINT uniq__user_id   UNIQUE      (group_owner_id)
 );
 
 -- indices
-CREATE INDEX IF NOT EXISTS account_id    ON users.accounts (account_id);
-CREATE INDEX IF NOT EXISTS owner_id      ON users.accounts (account_owner_id);
-CREATE INDEX IF NOT EXISTS contact_email ON users.accounts (contact_email);
+CREATE INDEX IF NOT EXISTS group_id       ON users.groups(group_id);
+CREATE INDEX IF NOT EXISTS group_owner_id ON users.groups(group_owner_id);
 
 -- function && trigger for account_enabled update
-CREATE OR REPLACE FUNCTION users.update_account_enabled_ts() RETURNS TRIGGER AS $$
+CREATE OR REPLACE FUNCTION users.group_locked_ts() RETURNS TRIGGER AS $$
     BEGIN
-        NEW.account_locked_ts = NOW();
+        NEW.locked_ts = NOW();
         RETURN NEW;
     END
 $$ LANGUAGE plpgsql;
 
-DROP   TRIGGER IF EXISTS account_enabled ON users.accounts;
-CREATE TRIGGER account_enabled
-    BEFORE UPDATE OF account_locked ON users.accounts
+DROP   TRIGGER IF EXISTS group_locked_ts ON users.groups;
+CREATE TRIGGER group_locked_ts
+    BEFORE UPDATE OF group_locked ON users.groups
     FOR EACH ROW
-    EXECUTE PROCEDURE users.update_account_enabled_ts();
+    EXECUTE PROCEDURE users.group_locked_ts();
 ----------------------------------------------------------------------------
--- END OF CREATION OF TABLE users.accounts
+-- END OF CREATION OF TABLE users.groups
 ----------------------------------------------------------------------------
--- CREATION OF TABLE users.account_members
+-- CREATION OF TABLE users.accounts
 ----------------------------------------------------------------------------
-CREATE TABLE IF NOT EXISTS users.account_members
+CREATE TABLE IF NOT EXISTS users.accounts
 (
     -- account where the this member belongs
-    account_id         uuid                                           NOT NULL UNIQUE,
-    member_id          uuid                                           NOT NULL,
-    member_locked      boolean                                        NOT NULL DEFAULT false,
-    member_locked_ts   timestamptz                                    NOT NULL DEFAULT NOW(),
-    member_lock_reason character varying(2048)                        NULL,
+    group_id                        uuid                                           NOT NULL UNIQUE,
+    id                              uuid                                           NOT NULL,
+    locked                          boolean                                        NOT NULL DEFAULT false,
+    locked_ts                       timestamptz                                    NOT NULL DEFAULT NOW(),
+    lock_reason                     character varying(2048)                        NULL,
+
+    login_attempts                  integer                                        NOT NULL,
+    last_login_attempt_ip           character varying (32),
+    last_login_attempt_ts           timestamptz,
+    last_successful_login_ip        character varying(32),
+    last_successful_login_ip_ts     timestamptz,
+
 
     -- email address
     email_address              character varying(250)   COLLATE pg_catalog."default" NOT NULL,
@@ -71,20 +72,20 @@ CREATE TABLE IF NOT EXISTS users.account_members
     password_hash_ts           timestamptz                                           NOT NULL DEFAULT NOW(),
 
     -- constraints
-    CONSTRAINT pkey__member_id         PRIMARY KEY (member_id),
-    CONSTRAINT fkey__account_id        FOREIGN KEY (account_id)     REFERENCES users.accounts(account_id),
+    CONSTRAINT pkey__id                PRIMARY KEY (id),
+    CONSTRAINT fkey__group_id          FOREIGN KEY (group_id)       REFERENCES users.groups(group_id),
     CONSTRAINT uniq__email_address     UNIQUE      (email_address),
     CONSTRAINT uniq__password_hash     UNIQUE      (password_hash)
 );
 -- indices --
-CREATE INDEX IF NOT EXISTS account_id    ON users.account_members(account_id);
-CREATE INDEX IF NOT EXISTS member_id     ON users.account_members(member_id);
-CREATE INDEX IF NOT EXISTS email_address ON users.account_members(email_address);
+CREATE INDEX IF NOT EXISTS account_id    ON users.accounts(group_id);
+CREATE INDEX IF NOT EXISTS member_id     ON users.accounts(id);
+CREATE INDEX IF NOT EXISTS email_address ON users.accounts(email_address);
 
--- once account_members table created, the back reference for owner can be created
-ALTER TABLE users.accounts ADD CONSTRAINT fkey__owner_id FOREIGN KEY (account_owner_id) REFERENCES users.account_members(member_id);
+-- back reference group -> owner (back reference must be done with alter, because the two tables does not exist at creation time)
+ALTER TABLE users.groups ADD CONSTRAINT fkey__owner_id FOREIGN KEY (group_owner_id) REFERENCES users.accounts(id);
 ----------------------------------------------------------------------------
--- END OF CREATION OF TABLE users.account_members
+-- END OF CREATION OF TABLE users.accounts
 ----------------------------------------------------------------------------
 -- CREATION OF TABLE users.http_method_permissions
 ----------------------------------------------------------------------------
@@ -101,7 +102,7 @@ CREATE TABLE IF NOT EXISTS users.account_member_permissions
     account_admin     boolean,
 
     -- constraints
-    CONSTRAINT fkey__member_id FOREIGN KEY (member_id) REFERENCES users.account_members(member_id)
+    CONSTRAINT fkey__member_id FOREIGN KEY (member_id) REFERENCES users.accounts(id)
 );
 -- indices --
 CREATE INDEX IF NOT EXISTS member_id ON users.account_member_permissions(member_id);
@@ -133,8 +134,8 @@ GRANT EXECUTE       ON ALL FUNCTIONS IN SCHEMA users TO ${db_user};
 GRANT REFERENCES    ON ALL TABLES    IN SCHEMA users TO ${db_user};
 
 -- TABLES
+GRANT SELECT, INSERT, UPDATE, DELETE, TRIGGER, REFERENCES ON TABLE users. TO ${db_user};
 GRANT SELECT, INSERT, UPDATE, DELETE, TRIGGER, REFERENCES ON TABLE users.accounts TO ${db_user};
-GRANT SELECT, INSERT, UPDATE, DELETE, TRIGGER, REFERENCES ON TABLE users.account_members TO ${db_user};
 GRANT SELECT, INSERT, UPDATE, DELETE, TRIGGER, REFERENCES ON TABLE users.account_member_permissions TO ${db_user};
 ----------------------------------------------------------------------------
 -- END OF PERMISSIONS OF SCHEMA users
