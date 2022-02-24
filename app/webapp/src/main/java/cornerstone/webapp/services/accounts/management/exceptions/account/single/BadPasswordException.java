@@ -1,4 +1,4 @@
-package cornerstone.webapp.services.accounts.management.exceptions.single;
+package cornerstone.webapp.services.accounts.management.exceptions.account.single;
 
 public class BadPasswordException extends Exception {
     public static final String EXCEPTION_MESSAGE_BAD_PASSWORD_PROVIDED = "Bad password provided for '%s'.";

@@ -2,21 +2,12 @@ package cornerstone.webapp.services.accounts.management;
 
 import cornerstone.webapp.configuration.ConfigLoader;
 import cornerstone.webapp.datasources.UsersDB;
-import cornerstone.webapp.services.accounts.management.enums.ACCOUNT_TYPE_ENUM;
-import cornerstone.webapp.services.accounts.management.enums.MULTI_ACCOUNT_ROLE_ENUM;
-import cornerstone.webapp.services.accounts.management.enums.SYSTEM_ROLE_ENUM;
-import cornerstone.webapp.services.accounts.management.exceptions.single.CreationDuplicateException;
-import cornerstone.webapp.services.accounts.management.exceptions.single.CreationNullException;
-import cornerstone.webapp.services.accounts.management.exceptions.single.NoAccountException;
-import org.apache.commons.codec.digest.Crypt;
+import cornerstone.webapp.services.accounts.management.exceptions.account.single.CreationNullException;
 import org.junit.jupiter.api.*;
 
 import java.io.IOException;
 import java.nio.file.Paths;
-import java.sql.Timestamp;
 import java.util.UUID;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class AccountManagerCrudTest {
@@ -39,6 +30,40 @@ public class AccountManagerCrudTest {
     }
 
     // -------------------------------------------- TCs --------------------------------------------
+    @Test
+    @Order(0)
+    public void createAccount() throws CreationNullException {
+        final UUID userId = UUID.randomUUID();
+        final String email = "aron3@xmail.com";
+        final String passwordHash = "hash3";
+
+        int n = accountManager.createAccount(userId, email, passwordHash);
+        System.out.println(n);
+    }
+
+    @Test
+    @Order(10)
+    public void x() throws CreationNullException {
+        final UUID groupId = UUID.randomUUID();
+        final UUID ownerId = UUID.randomUUID();
+        final String groupName = "group2";
+        final String notes = "notes";
+        int maxUsers = 15;
+
+        int n = accountManager.createGroup(groupId, UUID.fromString("dab84eb7-3a72-4e51-86b9-3b3d900c05d1"), groupName, notes, maxUsers);
+        System.out.println(n);
+    }
+
+    @Test
+    @Order(20)
+    public void x2() throws CreationNullException {
+        final UUID groupId = UUID.randomUUID();
+        final UUID ownerId = UUID.randomUUID();
+
+        int n = accountManager.createAccountAndAddToGroup(groupId, UUID.randomUUID(), "xadded_to_group_email", "2xxx");
+        System.out.println(n);
+    }
+
 //    @Test
 //    @Order(0)
 //    public void t00_get_shouldThrowAccountDoesNotExistException_whenAccountDoesNotExist() {
@@ -46,61 +71,61 @@ public class AccountManagerCrudTest {
 //        assertEquals("Account 'thereisnoway@suchemailexist.net' does not exist.", e.getMessage());
 //    }
 
-    @Test
-    @Order(10)
-    public void t01a_create_and_get_shouldCreateOneAccount_whenAccountDoesNotExist() throws Exception {
-        final SYSTEM_ROLE_ENUM        systemRole       = SYSTEM_ROLE_ENUM.USER;
-        final UUID                    accountId        = UUID.randomUUID();
-        final ACCOUNT_TYPE_ENUM       accountType      = ACCOUNT_TYPE_ENUM.SINGLE_ACCOUNT;
-        final String                  email            = "almafa@gmail.com";
-        final String                  password         = "password";
-        final boolean                 locked           = false;
-        final String                  lockReason       = null;
-        final boolean                 verified         = true;
-        final MULTI_ACCOUNT_ROLE_ENUM multiAccountRole = MULTI_ACCOUNT_ROLE_ENUM.NOT_APPLICABLE;
-        final UUID                    parantAccountId  = null;
-        // time
-        final Timestamp ts = new Timestamp(System.currentTimeMillis());
-        // results
-        final int number_of_accounts_created;
-        final AccountResultSet received_account;
-        // delete if exists
-        TestHelper.deleteAccount(accountManager, email);
-        number_of_accounts_created = accountManager.create(systemRole, accountId, accountType, email, password, locked, lockReason, verified, multiAccountRole, parantAccountId);
-//        received_account           = accountManager.get(email);
-//
-//
-//        // Knowable value tests
-//        assertEquals(1, number_of_accounts_created);
-//        assertEquals(email, received_account.email_address);
-//        assertEquals(locked, received_account.account_locked);
-//        assertNull(received_account.account_lock_reason);
-//        assertEquals(verified, received_account.email_address_verified);
-//        assertEquals(0, received_account.account_login_attempts);
-//        assertEquals(role.getId(), received_account.role_id);
-//        // Dynamic value tests
-//        assertTrue(received_account.account_id > 0);
-//        assertEquals(received_account.email_address_ts, received_account.account_registration_ts); // happens same time
-//        assertEquals(received_account.email_address_ts, received_account.password_hash_ts);        // happens same time
-//        assertTrue(ts.before(received_account.account_registration_ts));
-//        assertTrue(ts.before(received_account.account_locked_ts));
-//        assertTrue(ts.before(received_account.password_hash_ts));
-    }
+//    @Test
+//    @Order(10)
+//    public void t01a_create_and_get_shouldCreateOneAccount_whenAccountDoesNotExist() throws Exception {
+//        final SYSTEM_ROLE_ENUM        systemRole       = SYSTEM_ROLE_ENUM.USER;
+//        final UUID                    accountId        = UUID.randomUUID();
+//        final ACCOUNT_TYPE_ENUM       accountType      = ACCOUNT_TYPE_ENUM.SINGLE_ACCOUNT;
+//        final String                  email            = "almafa@gmail.com";
+//        final String                  password         = "password";
+//        final boolean                 locked           = false;
+//        final String                  lockReason       = null;
+//        final boolean                 verified         = true;
+//        final MULTI_ACCOUNT_ROLE_ENUM multiAccountRole = MULTI_ACCOUNT_ROLE_ENUM.NOT_APPLICABLE;
+//        final UUID                    parantAccountId  = null;
+//        // time
+//        final Timestamp ts = new Timestamp(System.currentTimeMillis());
+//        // results
+//        final int number_of_accounts_created;
+//        final AccountResultSet received_account;
+//        // delete if exists
+//        TestHelper.deleteAccount(accountManager, email);
+//        number_of_accounts_created = accountManager.create(systemRole, accountId, accountType, email, password, locked, lockReason, verified, multiAccountRole, parantAccountId);
+////        received_account           = accountManager.get(email);
+////
+////
+////        // Knowable value tests
+////        assertEquals(1, number_of_accounts_created);
+////        assertEquals(email, received_account.email_address);
+////        assertEquals(locked, received_account.account_locked);
+////        assertNull(received_account.account_lock_reason);
+////        assertEquals(verified, received_account.email_address_verified);
+////        assertEquals(0, received_account.account_login_attempts);
+////        assertEquals(role.getId(), received_account.role_id);
+////        // Dynamic value tests
+////        assertTrue(received_account.account_id > 0);
+////        assertEquals(received_account.email_address_ts, received_account.account_registration_ts); // happens same time
+////        assertEquals(received_account.email_address_ts, received_account.password_hash_ts);        // happens same time
+////        assertTrue(ts.before(received_account.account_registration_ts));
+////        assertTrue(ts.before(received_account.account_locked_ts));
+////        assertTrue(ts.before(received_account.password_hash_ts));
+//    }
 
-    @Test
-    @Order(11)
-    public void t01b_create_shouldThrowAccountCreationDuplicateException_whenAccountAlreadyExists() {
-        final CreationDuplicateException e = assertThrows(CreationDuplicateException.class, () -> {
-            final String email            = "almafa@gmail.com";
-            final String password         = "password";
-            final boolean locked          = false;
-            final boolean verified        = true;
-            final SYSTEM_ROLE_ENUM accountRole = SYSTEM_ROLE_ENUM.USER;
-
-            //accountManager.create(email, password, locked, verified, accountRole);
-        });
-        assertEquals("Failed to create 'almafa@gmail.com' (already exists).", e.getMessage());
-    }
+//    @Test
+//    @Order(11)
+//    public void t01b_create_shouldThrowAccountCreationDuplicateException_whenAccountAlreadyExists() {
+//        final CreationDuplicateException e = assertThrows(CreationDuplicateException.class, () -> {
+//            final String email            = "almafa@gmail.com";
+//            final String password         = "password";
+//            final boolean locked          = false;
+//            final boolean verified        = true;
+//            final SYSTEM_ROLE_ENUM accountRole = SYSTEM_ROLE_ENUM.USER;
+//
+//            //accountManager.create(email, password, locked, verified, accountRole);
+//        });
+//        assertEquals("Failed to create 'almafa@gmail.com' (already exists).", e.getMessage());
+//    }
 
 //    @Test
 //    @Order(20)

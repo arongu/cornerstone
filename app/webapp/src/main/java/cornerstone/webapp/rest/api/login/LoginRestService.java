@@ -1,10 +1,7 @@
 package cornerstone.webapp.rest.api.login;
 
 import cornerstone.webapp.rest.api.accounts.dtos.AccountEmailPassword;
-import cornerstone.webapp.rest.error_responses.ErrorResponse;
 import cornerstone.webapp.services.accounts.management.AccountManager;
-import cornerstone.webapp.services.accounts.management.AccountResultSet;
-import cornerstone.webapp.services.accounts.management.exceptions.single.*;
 import cornerstone.webapp.services.jwt.JWTService;
 import cornerstone.webapp.services.keys.stores.local.SigningKeysException;
 import org.slf4j.Logger;
@@ -19,8 +16,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Does not require authentication.

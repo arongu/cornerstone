@@ -1,4 +1,4 @@
-package cornerstone.webapp.services.accounts.management.exceptions.single;
+package cornerstone.webapp.services.accounts.management.exceptions.account.single;
 
 public class CreationNullException extends Exception {
     public CreationNullException() {

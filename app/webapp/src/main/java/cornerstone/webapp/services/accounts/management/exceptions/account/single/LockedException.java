@@ -1,4 +1,4 @@
-package cornerstone.webapp.services.accounts.management.exceptions.single;
+package cornerstone.webapp.services.accounts.management.exceptions.account.single;
 
 public class LockedException extends Exception {
     public static final String EXCEPTION_MESSAGE_ACCOUNT_IS_LOCKED = "Account is locked '%s'.";

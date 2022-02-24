@@ -1,26 +1,5 @@
 package cornerstone.webapp.rest.api.login;
 
-import cornerstone.webapp.configuration.ConfigLoader;
-import cornerstone.webapp.rest.api.accounts.dtos.AccountEmailPassword;
-import cornerstone.webapp.rest.error_responses.ErrorResponse;
-import cornerstone.webapp.services.accounts.management.AccountManager;
-import cornerstone.webapp.services.accounts.management.AccountManagerImpl;
-import cornerstone.webapp.services.accounts.management.AccountResultSet;
-import cornerstone.webapp.services.accounts.management.exceptions.single.BadPasswordException;
-import cornerstone.webapp.services.accounts.management.exceptions.single.LockedException;
-import cornerstone.webapp.services.accounts.management.exceptions.single.NoAccountException;
-import cornerstone.webapp.services.accounts.management.exceptions.single.UnverifiedEmailException;
-import cornerstone.webapp.services.jwt.JWTService;
-import cornerstone.webapp.services.jwt.JWTServiceImpl;
-import cornerstone.webapp.services.keys.rotation.KeyPairWithUUID;
-import cornerstone.webapp.services.keys.stores.local.LocalKeyStore;
-import cornerstone.webapp.services.keys.stores.local.LocalKeyStoreImpl;
-import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
-
-import javax.ws.rs.core.Response;
-import java.nio.file.Paths;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 /*
     accountEmailPassword          - null [ OK ]

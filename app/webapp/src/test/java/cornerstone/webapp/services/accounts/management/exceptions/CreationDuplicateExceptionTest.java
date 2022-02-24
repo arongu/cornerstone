@@ -1,6 +1,6 @@
 package cornerstone.webapp.services.accounts.management.exceptions;
 
-import cornerstone.webapp.services.accounts.management.exceptions.single.CreationDuplicateException;
+import cornerstone.webapp.services.accounts.management.exceptions.account.single.CreationDuplicateException;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

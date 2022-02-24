@@ -1,28 +1,5 @@
 package cornerstone.webapp.rest.api.accounts;
 
-import cornerstone.webapp.rest.api.accounts.dtos.AccountEmailPassword;
-import cornerstone.webapp.rest.api.accounts.dtos.AccountSearch;
-import cornerstone.webapp.rest.api.accounts.dtos.AccountSetup;
-import cornerstone.webapp.rest.error_responses.ErrorResponse;
-import cornerstone.webapp.rest.error_responses.MultiErrorResponse;
-import cornerstone.webapp.services.accounts.management.AccountManager;
-import cornerstone.webapp.services.accounts.management.AccountManagerImpl;
-import cornerstone.webapp.services.accounts.management.AccountResultSet;
-import cornerstone.webapp.services.accounts.management.enums.SYSTEM_ROLE_ENUM;
-import cornerstone.webapp.services.accounts.management.exceptions.multi.MultiCreationException;
-import cornerstone.webapp.services.accounts.management.exceptions.multi.MultiCreationInitialException;
-import cornerstone.webapp.services.accounts.management.exceptions.multi.MultiDeletionException;
-import cornerstone.webapp.services.accounts.management.exceptions.multi.MultiDeletionInitialException;
-import cornerstone.webapp.services.accounts.management.exceptions.single.*;
-import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
-
-import javax.ws.rs.core.Response;
-import java.sql.Timestamp;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.UUID;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class AccountManagerRestServiceTest {

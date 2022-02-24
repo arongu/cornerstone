@@ -143,10 +143,8 @@ CREATE TRIGGER         update_current_users BEFORE UPDATE OF current_users ON us
 CREATE TABLE IF NOT EXISTS users.accounts
 (
     group_id                        uuid,
-    group_id_ts                     timestamptz                                             NOT NULL DEFAULT NOW(),
     -- account
     account_id                      uuid                                                    NOT NULL UNIQUE,
-    account_id_ts                   timestamptz                                             NOT NULL DEFAULT NOW(),
     account_creation_ts             timestamptz                                             NOT NULL DEFAULT NOW(),
     account_locked                  boolean                                                 NOT NULL DEFAULT false,
     account_locked_ts               timestamptz,
@@ -168,11 +166,11 @@ CREATE TABLE IF NOT EXISTS users.accounts
 
     -- password
     password_hash                   character varying(128)                                  NOT NULL UNIQUE,
-    password_hash_ts                timestamptz                                             NOT NULL DEFAULT NOW(),
+    password_hash_ts                timestamptz,
 
     -- superuser
     superuser                       boolean                                                 NOT NULL DEFAULT false,
-    superuser_ts                    timestamptz                                             NOT NULL DEFAULT NOW(),
+    superuser_ts                    timestamptz,
 
     -- constraints
     CONSTRAINT pkey__id             PRIMARY KEY (account_id),
@@ -186,22 +184,6 @@ CREATE INDEX IF NOT EXISTS account_id    ON users.accounts(account_id);
 CREATE INDEX IF NOT EXISTS email_address ON users.accounts(email_address);
 
 -- functions
--- group_id
-CREATE OR REPLACE FUNCTION users.accounts__group_id_ts() RETURNS TRIGGER AS $$
-BEGIN
-    NEW.group_id_ts = NOW();
-    RETURN NEW;
-END
-$$ LANGUAGE plpgsql;
-
--- account_id
-CREATE OR REPLACE FUNCTION users.accounts__account_id_ts() RETURNS TRIGGER AS $$
-BEGIN
-    NEW.account_id_ts = NOW();
-    RETURN NEW;
-END
-$$ LANGUAGE plpgsql;
-
 -- account_locked
 CREATE OR REPLACE FUNCTION users.accounts__account_locked_ts() RETURNS TRIGGER AS $$
     BEGIN
@@ -267,14 +249,6 @@ END
 $$ LANGUAGE plpgsql;
 
 -- triggers
--- group_id
-DROP TRIGGER IF EXISTS update_group_id ON users.accounts;
-CREATE TRIGGER         update_group_id BEFORE UPDATE OF group_id ON users.accounts FOR EACH ROW EXECUTE PROCEDURE users.accounts__group_id_ts();
-
--- account_id
-DROP TRIGGER IF EXISTS update_account_id ON users.accounts;
-CREATE TRIGGER         update_account_id BEFORE UPDATE OF account_id ON users.accounts FOR EACH ROW EXECUTE PROCEDURE users.accounts__account_id_ts();
-
 -- account_locked
 DROP TRIGGER IF EXISTS update_account_locked ON users.accounts;
 CREATE TRIGGER         update_account_update BEFORE UPDATE OF account_locked ON users.accounts FOR EACH ROW EXECUTE PROCEDURE users.accounts__account_locked_ts();

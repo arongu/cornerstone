@@ -1,4 +1,4 @@
-package cornerstone.webapp.services.accounts.management.exceptions.single;
+package cornerstone.webapp.services.accounts.management.exceptions.account.single;
 
 public class LockUpdateException extends Exception {
     public static final String EXCEPTION_MESSAGE_UPDATE_LOCK_FAILED = "Failed to update lock for '%s'.";

@@ -1,6 +1,6 @@
 package cornerstone.webapp.services.accounts.management.exceptions;
 
-import cornerstone.webapp.services.accounts.management.exceptions.single.RetrievalException;
+import cornerstone.webapp.services.accounts.management.exceptions.account.single.RetrievalException;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

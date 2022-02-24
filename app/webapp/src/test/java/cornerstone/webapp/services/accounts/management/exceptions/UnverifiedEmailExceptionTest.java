@@ -1,6 +1,6 @@
 package cornerstone.webapp.services.accounts.management.exceptions;
 
-import cornerstone.webapp.services.accounts.management.exceptions.single.UnverifiedEmailException;
+import cornerstone.webapp.services.accounts.management.exceptions.account.single.UnverifiedEmailException;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

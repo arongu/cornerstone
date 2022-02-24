@@ -1,4 +1,4 @@
-package cornerstone.webapp.services.accounts.management.exceptions.single;
+package cornerstone.webapp.services.accounts.management.exceptions.account.single;
 
 public class RoleUpdateException extends Exception {
     public static final String EXCEPTION_MESSAGE_ACCOUNT_ROLE_UPDATE_FAILED = "Failed to update role for '%s' to '%s'.";
