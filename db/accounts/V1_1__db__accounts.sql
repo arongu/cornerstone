@@ -1,10 +1,9 @@
 ----------------------------------------------------------------------------
 -- SCHEMA accounts
 ----------------------------------------------------------------------------
--- CREATION OF TABLE accounts.groups
+-- CREATION OF TABLE accounts.account_groups
 ----------------------------------------------------------------------------
-CREATE TABLE IF NOT EXISTS accounts.account_groups
-(
+CREATE TABLE IF NOT EXISTS accounts.account_groups (
     account_group_created              timestamptz                                           NOT NULL DEFAULT NOW(),
     account_group_id                   uuid                                                  NOT NULL,
     account_group_owner_id             uuid                                                  NOT NULL UNIQUE,
@@ -36,7 +35,7 @@ CREATE TABLE IF NOT EXISTS accounts.account_groups
 CREATE INDEX IF NOT EXISTS group_id       ON accounts.account_groups (account_group_id);
 CREATE INDEX IF NOT EXISTS group_owner_id ON accounts.account_groups (account_group_owner_id);
 
--- functions && triggers
+-- functions & triggers
 -- account_group_owner_id update timestamp on change
 CREATE OR REPLACE FUNCTION accounts.account_groups__account_group_owner_id_ts() RETURNS TRIGGER AS $$
     BEGIN
@@ -133,14 +132,13 @@ DROP TRIGGER IF EXISTS update_account_group_members_max_ts ON accounts.account_g
         CREATE TRIGGER update_account_group_members_max_ts BEFORE UPDATE OF account_group_max_members ON accounts.account_groups
             FOR EACH ROW EXECUTE PROCEDURE accounts.account_groups__account_group_max_members_ts();
 ----------------------------------------------------------------------------
--- END OF CREATION OF TABLE accounts.groups
+-- END OF CREATION OF TABLE accounts.account_groups
 ----------------------------------------------------------------------------
 
 ----------------------------------------------------------------------------
 -- CREATION OF TABLE accounts.accounts
 ----------------------------------------------------------------------------
-CREATE TABLE IF NOT EXISTS accounts.accounts
-(
+CREATE TABLE IF NOT EXISTS accounts.accounts (
     account_group_id                uuid,
     -- account
     account_id                      uuid                                                    NOT NULL UNIQUE,
@@ -182,26 +180,44 @@ ALTER TABLE accounts.account_groups ADD CONSTRAINT fkey__owner_id FOREIGN KEY (a
 CREATE INDEX IF NOT EXISTS account_id    ON accounts.accounts(account_id);
 CREATE INDEX IF NOT EXISTS email_address ON accounts.accounts(email_address);
 
--- functions
--- account_locked
+-- functions & triggers
+-- account_locked update timestamp on change
 CREATE OR REPLACE FUNCTION accounts.accounts__account_locked_ts() RETURNS TRIGGER AS $$
-    BEGIN NEW.account_locked_ts = NOW();
+    BEGIN
+        NEW.account_locked_ts = NOW();
         RETURN NEW;
-    END $$ LANGUAGE plpgsql;
+    END
+$$ LANGUAGE plpgsql;
 
--- account_lock_reason
+DROP TRIGGER IF EXISTS update_account_locked_ts ON accounts.accounts;
+        CREATE TRIGGER update_account_update_ts BEFORE UPDATE OF account_locked ON accounts.accounts
+            FOR EACH ROW EXECUTE PROCEDURE accounts.accounts__account_locked_ts();
+
+-- account_lock_reason update timestamp on change
 CREATE OR REPLACE FUNCTION accounts.accounts__account_lock_reason_ts() RETURNS TRIGGER AS $$
-    BEGIN NEW.account_lock_reason_ts = NOW();
+    BEGIN
+        NEW.account_lock_reason_ts = NOW();
         RETURN NEW;
-    END $$ LANGUAGE plpgsql;
+    END
+$$ LANGUAGE plpgsql;
 
--- last_login_attempt_ip
+DROP TRIGGER IF EXISTS update_account_lock_reason_ts ON accounts.accounts;
+        CREATE TRIGGER update_account_lock_reason_ts BEFORE UPDATE OF account_lock_reason ON accounts.accounts
+            FOR EACH ROW EXECUTE PROCEDURE accounts.accounts__account_lock_reason_ts();
+
+-- last_login_attempt_ip update timestamp on change
 CREATE OR REPLACE FUNCTION accounts.accounts__last_login_attempt_ip_ts() RETURNS TRIGGER AS $$
-    BEGIN NEW.last_login_attempt_ip_ts = NOW();
+    BEGIN
+        NEW.last_login_attempt_ip_ts = NOW();
         RETURN NEW;
-    END $$ LANGUAGE plpgsql;
+    END
+$$ LANGUAGE plpgsql;
 
--- last_successful_login_ip
+DROP TRIGGER IF EXISTS update_last_login_attempt_ip_ts ON accounts.accounts;
+        CREATE TRIGGER update_last_login_attempt_ip_ts BEFORE UPDATE OF last_login_attempt_ip ON accounts.accounts
+            FOR ROW EXECUTE PROCEDURE accounts.accounts__last_login_attempt_ip_ts();
+
+-- last_successful_login_ip update timestamp on change
 CREATE OR REPLACE FUNCTION accounts.accounts__last_successful_login_ip_ts() RETURNS TRIGGER AS $$
     BEGIN
         NEW.last_successful_login_ip_ts = NOW();
@@ -209,7 +225,12 @@ CREATE OR REPLACE FUNCTION accounts.accounts__last_successful_login_ip_ts() RETU
     END
 $$ LANGUAGE plpgsql;
 
--- email_address
+-- last_successful_login_ip update timestamp on change
+DROP TRIGGER IF EXISTS update_last_successful_login_ip_ts ON accounts.accounts;
+        CREATE TRIGGER update_last_successful_login_ip_ts BEFORE UPDATE OF last_successful_login_ip ON accounts.accounts
+            FOR ROW EXECUTE PROCEDURE accounts.accounts__last_successful_login_ip_ts();
+
+-- email_address update timestamp on change
 CREATE OR REPLACE FUNCTION accounts.accounts__email_address_ts() RETURNS TRIGGER AS $$
     BEGIN
         NEW.email_address_ts = NOW();
@@ -217,7 +238,11 @@ CREATE OR REPLACE FUNCTION accounts.accounts__email_address_ts() RETURNS TRIGGER
     END
 $$ LANGUAGE plpgsql;
 
--- email_address_verified
+DROP TRIGGER IF EXISTS update_email_address_ts ON accounts.accounts;
+        CREATE TRIGGER update_email_address_ts BEFORE UPDATE OF email_address ON accounts.accounts
+            FOR ROW EXECUTE PROCEDURE accounts.accounts__email_address_ts();
+
+-- email_address_verified update timestamp on change
 CREATE OR REPLACE FUNCTION accounts.accounts__email_address_verified_ts() RETURNS TRIGGER AS $$
     BEGIN
         NEW.email_address_verified_ts = NOW();
@@ -225,54 +250,33 @@ CREATE OR REPLACE FUNCTION accounts.accounts__email_address_verified_ts() RETURN
     END
 $$ LANGUAGE plpgsql;
 
--- password_hash
+DROP TRIGGER IF EXISTS update_email_address_verified_ts ON accounts.accounts;
+        CREATE TRIGGER update_email_address_verified_ts BEFORE UPDATE OF email_address_verified ON accounts.accounts
+            FOR ROW EXECUTE PROCEDURE accounts.accounts__email_address_verified_ts();
+
+-- password_hash update timestamp on change
 CREATE OR REPLACE FUNCTION accounts.accounts__password_hash_ts() RETURNS TRIGGER AS $$
-BEGIN
-    NEW.password_hash_ts = NOW();
-    RETURN NEW;
-END
+    BEGIN
+        NEW.password_hash_ts = NOW();
+        RETURN NEW;
+    END
 $$ LANGUAGE plpgsql;
 
--- superuser
+DROP TRIGGER IF EXISTS update_password_hash_ts ON accounts.accounts;
+        CREATE TRIGGER update_password_hash_ts BEFORE UPDATE OF password_hash ON accounts.accounts
+            FOR ROW EXECUTE PROCEDURE accounts.accounts__password_hash_ts();
+
+-- superuser update timestamp on change
 CREATE OR REPLACE FUNCTION accounts.accounts__superuser_ts() RETURNS TRIGGER AS $$
-BEGIN
-    NEW.superuser_ts = NOW();
-    RETURN NEW;
-END
+    BEGIN
+        NEW.superuser_ts = NOW();
+        RETURN NEW;
+    END
 $$ LANGUAGE plpgsql;
 
--- triggers
--- account_locked
-DROP TRIGGER IF EXISTS update_account_locked ON accounts.accounts;
-CREATE TRIGGER         update_account_update BEFORE UPDATE OF account_locked ON accounts.accounts FOR EACH ROW EXECUTE PROCEDURE accounts.accounts__account_locked_ts();
-
--- account_lock_reason
-DROP TRIGGER IF EXISTS update_account_lock_reason ON accounts.accounts;
-CREATE TRIGGER         update_account_lock_reason BEFORE UPDATE OF account_lock_reason ON accounts.accounts FOR EACH ROW EXECUTE PROCEDURE accounts.accounts__account_lock_reason_ts();
-
--- last_login_attempt_ip
-DROP TRIGGER IF EXISTS update_last_login_attempt_ip ON accounts.accounts;
-CREATE TRIGGER         update_last_login_attempt_ip BEFORE UPDATE OF last_login_attempt_ip ON accounts.accounts FOR ROW EXECUTE PROCEDURE accounts.accounts__last_login_attempt_ip_ts();
-
--- last_successful_login_ip
-DROP TRIGGER IF EXISTS update_last_successful_login_ip ON accounts.accounts;
-CREATE TRIGGER         update_last_successful_login_ip BEFORE UPDATE OF last_successful_login_ip ON accounts.accounts FOR ROW EXECUTE PROCEDURE accounts.accounts__last_successful_login_ip_ts();
-
--- email_address
-DROP TRIGGER IF EXISTS update_email_address ON accounts.accounts;
-CREATE TRIGGER         update_email_address BEFORE UPDATE OF email_address ON accounts.accounts FOR ROW EXECUTE PROCEDURE accounts.accounts__email_address_ts();
-
--- email_address_verified
-DROP TRIGGER IF EXISTS update_email_address_verified ON accounts.accounts;
-CREATE TRIGGER         update_email_address_verified BEFORE UPDATE OF email_address_verified ON accounts.accounts FOR ROW EXECUTE PROCEDURE accounts.accounts__email_address_verified_ts();
-
--- password_hash
-DROP TRIGGER IF EXISTS update_password_hash ON accounts.accounts;
-CREATE TRIGGER         update_password_hash BEFORE UPDATE OF password_hash ON accounts.accounts FOR ROW EXECUTE PROCEDURE accounts.accounts__password_hash_ts();
-
--- superuser
-DROP TRIGGER IF EXISTS update_superuser ON accounts.accounts;
-CREATE TRIGGER         update_superuser BEFORE UPDATE OF password_hash ON accounts.accounts FOR ROW EXECUTE PROCEDURE accounts.accounts__superuser_ts();
+DROP TRIGGER IF EXISTS update_superuser_ts ON accounts.accounts;
+        CREATE TRIGGER update_superuser_ts BEFORE UPDATE OF password_hash ON accounts.accounts
+            FOR ROW EXECUTE PROCEDURE accounts.accounts__superuser_ts();
 ----------------------------------------------------------------------------
 -- END OF CREATION OF TABLE accounts.accounts
 ----------------------------------------------------------------------------
