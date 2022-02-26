@@ -34,14 +34,16 @@ CREATE TABLE IF NOT EXISTS accounts.account_groups
 
 -- indices
 CREATE INDEX IF NOT EXISTS group_id       ON accounts.account_groups (account_group_id);
-CREATE INDEX IF NOT EXISTS group_owner_id ON accounts.account_groups (group_owner_id);
+CREATE INDEX IF NOT EXISTS group_owner_id ON accounts.account_groups (account_group_owner_id);
 
 -- functions && triggers
 -- account_group_owner_id update timestamp on change
 CREATE OR REPLACE FUNCTION accounts.account_groups__account_group_owner_id_ts() RETURNS TRIGGER AS $$
-    BEGIN NEW.account_group_owner_id_ts = NOW();
+    BEGIN
+        NEW.account_group_owner_id_ts = NOW();
         RETURN NEW;
-    END $$ LANGUAGE plpgsql;
+    END
+$$ LANGUAGE plpgsql;
 
 DROP TRIGGER IF EXISTS update_account_group_owner_id_ts ON accounts.account_groups;
         CREATE TRIGGER update_account_group_owner_id_ts BEFORE UPDATE OF account_group_owner_id ON accounts.account_groups
@@ -49,9 +51,11 @@ DROP TRIGGER IF EXISTS update_account_group_owner_id_ts ON accounts.account_grou
 
 -- account_group_name update timestamp on change
 CREATE OR REPLACE FUNCTION accounts.account_groups__account_group_name_ts() RETURNS TRIGGER AS $$
-    BEGIN NEW.account_group_name_ts = NOW();
+    BEGIN
+        NEW.account_group_name_ts = NOW();
         RETURN NEW;
-    END $$ LANGUAGE plpgsql;
+    END
+$$ LANGUAGE plpgsql;
 
 DROP TRIGGER IF EXISTS update_account_group_name_ts ON accounts.account_groups;
         CREATE TRIGGER update_account_group_name_ts BEFORE UPDATE OF account_group_name ON accounts.account_groups
@@ -59,9 +63,11 @@ DROP TRIGGER IF EXISTS update_account_group_name_ts ON accounts.account_groups;
 
 -- account_group_name_alternative update timestamp on change
 CREATE OR REPLACE FUNCTION accounts.account_groups__account_group_name_alternative_ts() RETURNS TRIGGER AS $$
-    BEGIN NEW.account_group_name_alternative_ts = NOW();
+    BEGIN
+        NEW.account_group_name_alternative_ts = NOW();
         RETURN NEW;
-    END $$ LANGUAGE plpgsql;
+    END
+$$ LANGUAGE plpgsql;
 
 DROP TRIGGER IF EXISTS update_account_group_name_alternative_ts ON accounts.account_groups;
         CREATE TRIGGER update_account_group_name_alternative_ts BEFORE UPDATE OF account_group_name ON accounts.account_groups
@@ -69,9 +75,11 @@ DROP TRIGGER IF EXISTS update_account_group_name_alternative_ts ON accounts.acco
 
 -- account_group_notes update timestamp on change
 CREATE OR REPLACE FUNCTION accounts.account_groups__account_group_notes_ts() RETURNS TRIGGER AS $$
-    BEGIN NEW.account_group_notes_ts = NOW();
+    BEGIN
+        NEW.account_group_notes_ts = NOW();
         RETURN NEW;
-    END $$ LANGUAGE plpgsql;
+    END
+$$ LANGUAGE plpgsql;
 
 DROP TRIGGER IF EXISTS update_account_group_notes_ts ON accounts.account_groups;
         CREATE TRIGGER update_account_group_notes_ts BEFORE UPDATE OF account_group_notes ON accounts.account_groups
@@ -79,9 +87,11 @@ DROP TRIGGER IF EXISTS update_account_group_notes_ts ON accounts.account_groups;
 
 -- account_group_locked update timestamp on change
 CREATE OR REPLACE FUNCTION accounts.account_groups__account_group_locked_ts() RETURNS TRIGGER AS $$
-    BEGIN NEW.account_group_locked_ts = NOW();
+    BEGIN
+        NEW.account_group_locked_ts = NOW();
         RETURN NEW;
-    END $$ LANGUAGE plpgsql;
+    END
+$$ LANGUAGE plpgsql;
 
 DROP TRIGGER IF EXISTS update_account_group_locked_ts ON accounts.account_groups;
         CREATE TRIGGER update_account_group_locked_ts BEFORE UPDATE OF account_group_locked ON accounts.account_groups
@@ -89,9 +99,11 @@ DROP TRIGGER IF EXISTS update_account_group_locked_ts ON accounts.account_groups
 
 -- account_group_lock_reason update timestamp on change
 CREATE OR REPLACE FUNCTION accounts.account_groups__account_group_lock_reason_ts() RETURNS TRIGGER AS $$
-    BEGIN NEW.account_group_lock_reason_ts = NOW();
+    BEGIN
+        NEW.account_group_lock_reason_ts = NOW();
         RETURN NEW;
-    END $$ LANGUAGE plpgsql;
+    END
+$$ LANGUAGE plpgsql;
 
 DROP TRIGGER IF EXISTS update_account_group_lock_reason_ts ON accounts.account_groups;
         CREATE TRIGGER update_account_group_lock_reason_ts BEFORE UPDATE OF account_group_lock_reason ON accounts.account_groups
@@ -99,9 +111,11 @@ DROP TRIGGER IF EXISTS update_account_group_lock_reason_ts ON accounts.account_g
 
 -- account_group_current_members update timestamp on change
 CREATE OR REPLACE FUNCTION accounts.account_groups__account_group_current_members_ts() RETURNS TRIGGER AS $$
-    BEGIN NEW.account_group_current_members_ts = NOW();
+    BEGIN
+        NEW.account_group_current_members_ts = NOW();
         RETURN NEW;
-    END $$ LANGUAGE plpgsql;
+    END
+$$ LANGUAGE plpgsql;
 
 DROP TRIGGER IF EXISTS update_account_current_members_ts ON accounts.account_groups;
         CREATE TRIGGER update_account_current_members_ts BEFORE UPDATE OF account_group_current_members ON accounts.account_groups
@@ -109,9 +123,11 @@ DROP TRIGGER IF EXISTS update_account_current_members_ts ON accounts.account_gro
 
 -- account_group_max_members_ts update timestamp on change
 CREATE OR REPLACE FUNCTION accounts.account_groups__account_group_max_members_ts() RETURNS TRIGGER AS $$
-    BEGIN NEW.account_group_max_members_ts = NOW();
+    BEGIN
+        NEW.account_group_max_members_ts = NOW();
         RETURN NEW;
-    END $$ LANGUAGE plpgsql;
+    END
+$$ LANGUAGE plpgsql;
 
 DROP TRIGGER IF EXISTS update_account_group_members_max_ts ON accounts.account_groups;
         CREATE TRIGGER update_account_group_members_max_ts BEFORE UPDATE OF account_group_max_members ON accounts.account_groups
@@ -125,7 +141,7 @@ DROP TRIGGER IF EXISTS update_account_group_members_max_ts ON accounts.account_g
 ----------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS accounts.accounts
 (
-    group_id                        uuid,
+    account_group_id                uuid,
     -- account
     account_id                      uuid                                                    NOT NULL UNIQUE,
     account_creation_ts             timestamptz                                             NOT NULL DEFAULT NOW(),
@@ -157,10 +173,10 @@ CREATE TABLE IF NOT EXISTS accounts.accounts
 
     -- constraints
     CONSTRAINT pkey__id             PRIMARY KEY (account_id),
-    CONSTRAINT fkey__group_id       FOREIGN KEY (group_id)  REFERENCES accounts.account_groups(account_group_id)
+    CONSTRAINT fkey__group_id       FOREIGN KEY (account_group_id)  REFERENCES accounts.account_groups(account_group_id)
 );
 -- back reference group -> owner (back reference must be done with alter, because the two tables does not exist at creation time)
-ALTER TABLE accounts.account_groups ADD CONSTRAINT fkey__owner_id FOREIGN KEY (group_owner_id) REFERENCES accounts.accounts(account_id);
+ALTER TABLE accounts.account_groups ADD CONSTRAINT fkey__owner_id FOREIGN KEY (account_group_owner_id) REFERENCES accounts.accounts(account_id);
 
 -- indices --
 CREATE INDEX IF NOT EXISTS account_id    ON accounts.accounts(account_id);
@@ -169,27 +185,21 @@ CREATE INDEX IF NOT EXISTS email_address ON accounts.accounts(email_address);
 -- functions
 -- account_locked
 CREATE OR REPLACE FUNCTION accounts.accounts__account_locked_ts() RETURNS TRIGGER AS $$
-    BEGIN
-        NEW.account_locked_ts = NOW();
+    BEGIN NEW.account_locked_ts = NOW();
         RETURN NEW;
-    END
-$$ LANGUAGE plpgsql;
+    END $$ LANGUAGE plpgsql;
 
 -- account_lock_reason
 CREATE OR REPLACE FUNCTION accounts.accounts__account_lock_reason_ts() RETURNS TRIGGER AS $$
-BEGIN
-    NEW.account_lock_reason_ts = NOW();
-    RETURN NEW;
-END
-$$ LANGUAGE plpgsql;
+    BEGIN NEW.account_lock_reason_ts = NOW();
+        RETURN NEW;
+    END $$ LANGUAGE plpgsql;
 
 -- last_login_attempt_ip
 CREATE OR REPLACE FUNCTION accounts.accounts__last_login_attempt_ip_ts() RETURNS TRIGGER AS $$
-    BEGIN
-        NEW.last_login_attempt_ip_ts = NOW();
+    BEGIN NEW.last_login_attempt_ip_ts = NOW();
         RETURN NEW;
-    END
-$$ LANGUAGE plpgsql;
+    END $$ LANGUAGE plpgsql;
 
 -- last_successful_login_ip
 CREATE OR REPLACE FUNCTION accounts.accounts__last_successful_login_ip_ts() RETURNS TRIGGER AS $$
@@ -311,16 +321,16 @@ CREATE USER ${db_user} WITH ENCRYPTED PASSWORD '${db_password}';
 ----------------------------------------------------------------------------
 -- PERMISSIONS OF SCHEMA accounts
 ----------------------------------------------------------------------------
--- GRANT USAGE ON SCHEMA accounts TO ${db_user};
--- -- sequences, functions (usage is required to call nextval function)
--- GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA accounts TO ${db_user};
--- GRANT EXECUTE       ON ALL FUNCTIONS IN SCHEMA accounts TO ${db_user};
--- GRANT REFERENCES    ON ALL TABLES    IN SCHEMA accounts TO ${db_user};
---
--- -- TABLES
--- GRANT SELECT, INSERT, UPDATE, DELETE, TRIGGER, REFERENCES ON TABLE accounts.accounts          TO ${db_user};
--- GRANT SELECT, INSERT, UPDATE, DELETE, TRIGGER, REFERENCES ON TABLE accounts.groups            TO ${db_user};
--- GRANT SELECT, INSERT, UPDATE, DELETE, TRIGGER, REFERENCES ON TABLE accounts.group_permissions TO ${db_user};
+GRANT USAGE ON SCHEMA accounts TO ${db_user};
+-- sequences, functions (usage is required to call nextval function)
+GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA accounts TO ${db_user};
+GRANT EXECUTE       ON ALL FUNCTIONS IN SCHEMA accounts TO ${db_user};
+GRANT REFERENCES    ON ALL TABLES    IN SCHEMA accounts TO ${db_user};
+
+-- TABLES
+GRANT SELECT, INSERT, UPDATE, DELETE, TRIGGER, REFERENCES ON TABLE accounts.accounts          TO ${db_user};
+GRANT SELECT, INSERT, UPDATE, DELETE, TRIGGER, REFERENCES ON TABLE accounts.account_groups    TO ${db_user};
+GRANT SELECT, INSERT, UPDATE, DELETE, TRIGGER, REFERENCES ON TABLE accounts.group_permissions TO ${db_user};
 ----------------------------------------------------------------------------
 -- END OF PERMISSIONS OF SCHEMA accounts
 ----------------------------------------------------------------------------
