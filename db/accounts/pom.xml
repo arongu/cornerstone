@@ -34,13 +34,13 @@
                         <configuration>
                             <tasks>
                                 <echo>-------------------------------------------------------------------------------------------------</echo>
-                                <echo>m2.db.users.server_id                         = ${m2.db.users.server_id}</echo>
-                                <echo>m2.db.users.db_name                           = ${m2.db.users.db_name}</echo>
-                                <echo>m2.db.users.db_url                            = ${m2.db.users.db_url}</echo>
-                                <echo>m2.db.users.db_user                           = ${m2.db.users.db_user}</echo>
-                                <echo>m2.db.users.db_password                       = ${m2.db.users.db_password}</echo>
+                                <echo>m2.db.accounts.server_id                         = ${m2.db.accounts.server_id}</echo>
+                                <echo>m2.db.accounts.db_name                           = ${m2.db.accounts.db_name}</echo>
+                                <echo>m2.db.accounts.db_url                            = ${m2.db.accounts.db_url}</echo>
+                                <echo>m2.db.accounts.db_user                           = ${m2.db.accounts.db_user}</echo>
+                                <echo>m2.db.accounts.db_password                       = ${m2.db.accounts.db_password}</echo>
                                 <echo>-------------------------------------------------------------------------------------------------</echo>
-                                <echo>If you see ${key} on the right as values it means maven profile is not selected. (Maven could not resolve/substitute the value.)</echo>
+                                <echo>If you see \$\{key\} on the right as values it means maven profile is not selected. (Maven could not resolve/substitute the value.)</echo>
                                 <echo>Use a profile instead: mvn validate -Pdev / mvn flyway:migrate -Pdev</echo>
                             </tasks>
                         </configuration>
@@ -51,8 +51,8 @@
                 <groupId>org.flywaydb</groupId>
                 <artifactId>flyway-maven-plugin</artifactId>
                 <configuration>
-                    <serverId>${m2.db.users.server_id}</serverId>
-                    <url>${m2.db.users.db_url}</url>
+                    <serverId>${m2.db.accounts.server_id}</serverId>
+                    <url>${m2.db.accounts.db_url}</url>
 
                     <schemas>
                         <schema>system</schema>
@@ -66,9 +66,9 @@
                     <placeholderReplacement>true</placeholderReplacement>
 
                     <placeholders>
-                        <db_name>${m2.db.users.db_name}</db_name>
-                        <db_user>${m2.db.users.db_user}</db_user>
-                        <db_password>${m2.db.users.db_password}</db_password>
+                        <db_name>${m2.db.accounts.db_name}</db_name>
+                        <db_user>${m2.db.accounts.db_user}</db_user>
+                        <db_password>${m2.db.accounts.db_password}</db_password>
                     </placeholders>
                 </configuration>
             </plugin>

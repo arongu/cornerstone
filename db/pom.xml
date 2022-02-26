@@ -15,7 +15,7 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>users</module>
+        <module>accounts</module>
         <module>work</module>
     </modules>
 
