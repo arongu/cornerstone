@@ -22,10 +22,10 @@ CREATE TABLE IF NOT EXISTS accounts.account_groups (
     account_group_lock_reason_ts       character varying(2048),
 
     -- for multiple accounts
-    account_group_max_members                  integer                                             NOT NULL DEFAULT 1,
-    account_group_max_members_ts               timestamptz                                         NOT NULL DEFAULT NOW(),
-    account_group_current_members              integer                                             NOT NULL DEFAULT 1,
-    account_group_current_members_ts           timestamptz                                         NOT NULL DEFAULT NOW(),
+    account_group_max_members                  integer                                       NOT NULL DEFAULT 1,
+    account_group_max_members_ts               timestamptz                                   NOT NULL DEFAULT NOW(),
+    account_group_current_members              integer                                       NOT NULL DEFAULT 1,
+    account_group_current_members_ts           timestamptz                                   NOT NULL DEFAULT NOW(),
 
     -- constraints
     CONSTRAINT pkey__group_id  PRIMARY KEY (account_group_id)
@@ -165,9 +165,9 @@ CREATE TABLE IF NOT EXISTS accounts.accounts (
     password_hash                   character varying(128)                                  NOT NULL UNIQUE,
     password_hash_ts                timestamptz,
 
-    -- superuser
-    superuser                       boolean                                                 NOT NULL DEFAULT false,
-    superuser_ts                    timestamptz,
+    -- superpowers
+    superpowers                     character varying(2),
+    superpowers_ts                  timestamptz,
 
     -- constraints
     CONSTRAINT pkey__id             PRIMARY KEY (account_id),
@@ -269,7 +269,7 @@ DROP TRIGGER IF EXISTS update_password_hash_ts ON accounts.accounts;
 -- superuser update timestamp on change
 CREATE OR REPLACE FUNCTION accounts.accounts__superuser_ts() RETURNS TRIGGER AS $$
     BEGIN
-        NEW.superuser_ts = NOW();
+        NEW.superpowers_ts = NOW();
         RETURN NEW;
     END
 $$ LANGUAGE plpgsql;
@@ -284,10 +284,10 @@ DROP TRIGGER IF EXISTS update_superuser_ts ON accounts.accounts;
 ----------------------------------------------------------------------------
 -- CREATION OF TABLE accounts.group_permissions
 ----------------------------------------------------------------------------
-CREATE TABLE IF NOT EXISTS accounts.group_permissions
+CREATE TABLE IF NOT EXISTS accounts.account_group_permissions
 (
     -- unique 1 account can only have 1 set of permission
-    account_id      uuid        NOT NULL UNIQUE ,
+    account_id      uuid        NOT NULL UNIQUE,
 
     -- group permissions, which group of functions/services can be used roughly translates to (http methods)
     read            boolean     NOT NULL DEFAULT true, -- get, head, options
@@ -332,9 +332,9 @@ GRANT EXECUTE       ON ALL FUNCTIONS IN SCHEMA accounts TO ${db_user};
 GRANT REFERENCES    ON ALL TABLES    IN SCHEMA accounts TO ${db_user};
 
 -- TABLES
-GRANT SELECT, INSERT, UPDATE, DELETE, TRIGGER, REFERENCES ON TABLE accounts.accounts          TO ${db_user};
-GRANT SELECT, INSERT, UPDATE, DELETE, TRIGGER, REFERENCES ON TABLE accounts.account_groups    TO ${db_user};
-GRANT SELECT, INSERT, UPDATE, DELETE, TRIGGER, REFERENCES ON TABLE accounts.group_permissions TO ${db_user};
+GRANT SELECT, INSERT, UPDATE, DELETE, TRIGGER, REFERENCES ON TABLE accounts.accounts                  TO ${db_user};
+GRANT SELECT, INSERT, UPDATE, DELETE, TRIGGER, REFERENCES ON TABLE accounts.account_groups            TO ${db_user};
+GRANT SELECT, INSERT, UPDATE, DELETE, TRIGGER, REFERENCES ON TABLE accounts.account_group_permissions TO ${db_user};
 ----------------------------------------------------------------------------
 -- END OF PERMISSIONS OF SCHEMA accounts
 ----------------------------------------------------------------------------
