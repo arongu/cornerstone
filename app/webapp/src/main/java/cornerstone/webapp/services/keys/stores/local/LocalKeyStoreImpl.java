@@ -1,6 +1,6 @@
 package cornerstone.webapp.services.keys.stores.local;
 
-import cornerstone.webapp.logmsg.CommonLogMessages;
+import cornerstone.webapp.common.logmsg.CommonLogMessages;
 import cornerstone.webapp.services.keys.stores.logging.KeyRelatedMessageElements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

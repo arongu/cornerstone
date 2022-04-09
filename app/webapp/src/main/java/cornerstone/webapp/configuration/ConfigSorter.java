@@ -1,7 +1,7 @@
 package cornerstone.webapp.configuration;
 
 import cornerstone.webapp.configuration.enums.APP_ENUM;
-import cornerstone.webapp.configuration.enums.DB_USERS_ENUM;
+import cornerstone.webapp.configuration.enums.DB_ACCOUNTS_ENUM;
 import cornerstone.webapp.configuration.enums.DB_WORK_ENUM;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -82,11 +82,11 @@ public class ConfigSorter {
 
         // USERS DB
         properties_db_users = new Properties();
-        for ( final DB_USERS_ENUM db_users_enum : DB_USERS_ENUM.values()) {
+        for ( final DB_ACCOUNTS_ENUM db_users_enum : DB_ACCOUNTS_ENUM.values()) {
             if ( null != rawProperties.get(db_users_enum.key)) {
                 addKeyValueAndLogIt(
                         properties_db_users, db_users_enum.key,
-                        rawProperties.getProperty(db_users_enum.key), DB_USERS_ENUM.PREFIX_DB_USERS,
+                        rawProperties.getProperty(db_users_enum.key), DB_ACCOUNTS_ENUM.PREFIX_DB_ACCOUNTS,
                         db_users_enum.sensitiveValue
                 );
 

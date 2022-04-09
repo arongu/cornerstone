@@ -10,8 +10,6 @@ CREATE TABLE IF NOT EXISTS accounts.account_groups (
     account_group_owner_id_ts          timestamptz                                           NOT NULL DEFAULT NOW(),
     account_group_name                 character varying(120)                                NOT NULL UNIQUE,
     account_group_name_ts              timestamptz                                           NOT NULL DEFAULT NOW(),
-    account_group_name_alternative     character varying(120)                                UNIQUE,
-    account_group_name_alternative_ts  timestamptz,
     account_group_notes                character varying(4096),
     account_group_notes_ts             character varying(4096)                               NOT NULL DEFAULT NOW(),
 
@@ -59,18 +57,6 @@ $$ LANGUAGE plpgsql;
 DROP TRIGGER IF EXISTS update_account_group_name_ts ON accounts.account_groups;
         CREATE TRIGGER update_account_group_name_ts BEFORE UPDATE OF account_group_name ON accounts.account_groups
             FOR EACH ROW EXECUTE PROCEDURE accounts.account_groups__account_group_name_ts();
-
--- account_group_name_alternative update timestamp on change
-CREATE OR REPLACE FUNCTION accounts.account_groups__account_group_name_alternative_ts() RETURNS TRIGGER AS $$
-    BEGIN
-        NEW.account_group_name_alternative_ts = NOW();
-        RETURN NEW;
-    END
-$$ LANGUAGE plpgsql;
-
-DROP TRIGGER IF EXISTS update_account_group_name_alternative_ts ON accounts.account_groups;
-        CREATE TRIGGER update_account_group_name_alternative_ts BEFORE UPDATE OF account_group_name ON accounts.account_groups
-            FOR EACH ROW EXECUTE PROCEDURE accounts.account_groups__account_group_name_alternative_ts();
 
 -- account_group_notes update timestamp on change
 CREATE OR REPLACE FUNCTION accounts.account_groups__account_group_notes_ts() RETURNS TRIGGER AS $$

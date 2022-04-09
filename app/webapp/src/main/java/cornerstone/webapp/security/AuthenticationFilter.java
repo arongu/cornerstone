@@ -1,8 +1,7 @@
 package cornerstone.webapp.security;
 
-import cornerstone.webapp.logmsg.CommonLogMessages;
+import cornerstone.webapp.common.logmsg.CommonLogMessages;
 import cornerstone.webapp.services.accounts.management.enums.SYSTEM_ROLE_ENUM;
-import cornerstone.webapp.services.jwt.JWT_SERVICE_CLAIMS;
 import io.jsonwebtoken.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,10 +12,6 @@ import javax.ws.rs.ForbiddenException;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.core.Context;
-import javax.ws.rs.core.HttpHeaders;
-import java.security.Principal;
-import java.util.HashSet;
-import java.util.NoSuchElementException;
 import java.util.Set;
 
 // TODO - FIX IT, filters disabled until code is back and running

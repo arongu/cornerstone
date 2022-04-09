@@ -1,6 +1,6 @@
 package cornerstone.webapp.services.keys.rotation;
 
-import cornerstone.webapp.logmsg.CommonLogMessages;
+import cornerstone.webapp.common.logmsg.CommonLogMessages;
 import cornerstone.webapp.services.keys.stores.db.DatabaseKeyStore;
 import cornerstone.webapp.services.keys.stores.db.DatabaseKeyStoreException;
 import cornerstone.webapp.services.keys.stores.local.LocalKeyStore;

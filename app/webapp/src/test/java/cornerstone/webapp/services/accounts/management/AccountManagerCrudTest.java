@@ -1,68 +1,61 @@
 package cornerstone.webapp.services.accounts.management;
 
-import cornerstone.webapp.configuration.ConfigLoader;
-import cornerstone.webapp.datasources.UsersDB;
-import cornerstone.webapp.services.accounts.management.exceptions.account.single.CreationNullException;
 import org.junit.jupiter.api.*;
-
-import java.io.IOException;
-import java.nio.file.Paths;
-import java.util.UUID;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class AccountManagerCrudTest {
     private static AccountManager accountManager;
 
-    @BeforeAll
-    public static void setSystemProperties() {
-        final String test_files_dir = System.getenv("CONFIG_DIR");
-        final String keyFile        = Paths.get(test_files_dir + "key.conf").toAbsolutePath().normalize().toString();
-        final String confFile       = Paths.get(test_files_dir + "app.conf").toAbsolutePath().normalize().toString();
-
-        try {
-            final ConfigLoader cr = new ConfigLoader(keyFile, confFile);
-            final UsersDB ds      = new UsersDB(cr);
-            accountManager        = new AccountManagerImpl(ds, cr);
-
-        } catch (final IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    // -------------------------------------------- TCs --------------------------------------------
-    @Test
-    @Order(0)
-    public void createAccount() throws CreationNullException {
-        final UUID userId = UUID.randomUUID();
-        final String email = "aron3@xmail.com";
-        final String passwordHash = "hash3";
-
-        int n = accountManager.createAccount(userId, email, passwordHash);
-        System.out.println(n);
-    }
-
-    @Test
-    @Order(10)
-    public void x() throws CreationNullException {
-        final UUID groupId = UUID.randomUUID();
-        final UUID ownerId = UUID.randomUUID();
-        final String groupName = "group2";
-        final String notes = "notes";
-        int maxUsers = 15;
-
-        int n = accountManager.createGroup(groupId, UUID.fromString("dab84eb7-3a72-4e51-86b9-3b3d900c05d1"), groupName, notes, maxUsers);
-        System.out.println(n);
-    }
-
-    @Test
-    @Order(20)
-    public void x2() throws CreationNullException {
-        final UUID groupId = UUID.randomUUID();
-        final UUID ownerId = UUID.randomUUID();
-
-        int n = accountManager.createAccountAndAddToGroup(groupId, UUID.randomUUID(), "xadded_to_group_email", "2xxx");
-        System.out.println(n);
-    }
+//    @BeforeAll
+//    public static void setSystemProperties() {
+//        final String test_files_dir = System.getenv("CONFIG_DIR");
+//        final String keyFile        = Paths.get(test_files_dir + "key.conf").toAbsolutePath().normalize().toString();
+//        final String confFile       = Paths.get(test_files_dir + "app.conf").toAbsolutePath().normalize().toString();
+//
+//        try {
+//            final ConfigLoader cr = new ConfigLoader(keyFile, confFile);
+//            final UsersDB ds      = new UsersDB(cr);
+//            accountManager        = new AccountManagerImpl(ds, cr);
+//
+//        } catch (final IOException e) {
+//            e.printStackTrace();
+//        }
+//    }
+//
+//    // -------------------------------------------- TCs --------------------------------------------
+//    @Test
+//    @Order(0)
+//    public void createAccount() throws ParameterNotSetException {
+//        final UUID userId = UUID.randomUUID();
+//        final String email = "aron3@xmail.com";
+//        final String passwordHash = "hash3";
+//
+//        int n = accountManager.createAccount(userId, email, passwordHash);
+//        System.out.println(n);
+//    }
+//
+//    @Test
+//    @Order(10)
+//    public void x() throws ParameterNotSetException {
+//        final UUID groupId = UUID.randomUUID();
+//        final UUID ownerId = UUID.randomUUID();
+//        final String groupName = "group2";
+//        final String notes = "notes";
+//        int maxUsers = 15;
+//
+//        int n = accountManager.createGroup(groupId, UUID.fromString("dab84eb7-3a72-4e51-86b9-3b3d900c05d1"), groupName, notes, maxUsers);
+//        System.out.println(n);
+//    }
+//
+//    @Test
+//    @Order(20)
+//    public void x2() throws ParameterNotSetException {
+//        final UUID groupId = UUID.randomUUID();
+//        final UUID ownerId = UUID.randomUUID();
+//
+//        int n = accountManager.createSubAccount(groupId, UUID.randomUUID(), "xadded_to_group_email", "2xxx");
+//        System.out.println(n);
+//    }
 
 //    @Test
 //    @Order(0)

@@ -1,4 +1,4 @@
-package cornerstone.webapp.logmsg;
+package cornerstone.webapp.common.logmsg;
 
 public final class CommonLogMessages {
     private CommonLogMessages(){};

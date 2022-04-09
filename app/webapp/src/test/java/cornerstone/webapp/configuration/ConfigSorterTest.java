@@ -6,7 +6,7 @@ import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.core.Appender;
 
 import cornerstone.webapp.configuration.enums.APP_ENUM;
-import cornerstone.webapp.configuration.enums.DB_USERS_ENUM;
+import cornerstone.webapp.configuration.enums.DB_ACCOUNTS_ENUM;
 import cornerstone.webapp.configuration.enums.DB_WORK_ENUM;
 import cornerstone.webapp.testing.MemoryAppender;
 import org.junit.jupiter.api.AfterAll;
@@ -51,13 +51,13 @@ public class ConfigSorterTest {
         final Properties properties     = new Properties();
         final ConfigSorter configSorter = new ConfigSorter(properties);
 
-        properties.setProperty(DB_USERS_ENUM.DB_DRIVER.key, "driver");
-        properties.setProperty(DB_USERS_ENUM.DB_MAX_OPEN.key, "1000");
-        properties.setProperty(DB_USERS_ENUM.DB_MAX_IDLE.key, "30s");
-        properties.setProperty(DB_USERS_ENUM.DB_MIN_IDLE.key, "10s");
-        properties.setProperty(DB_USERS_ENUM.DB_URL.key, "jdbc:postgres://localhost/db");
-        properties.setProperty(DB_USERS_ENUM.DB_USERNAME.key, "username");
-        properties.setProperty(DB_USERS_ENUM.DB_PASSWORD.key, "password");
+        properties.setProperty(DB_ACCOUNTS_ENUM.DB_DRIVER.key, "driver");
+        properties.setProperty(DB_ACCOUNTS_ENUM.DB_MAX_OPEN.key, "1000");
+        properties.setProperty(DB_ACCOUNTS_ENUM.DB_MAX_IDLE.key, "30s");
+        properties.setProperty(DB_ACCOUNTS_ENUM.DB_MIN_IDLE.key, "10s");
+        properties.setProperty(DB_ACCOUNTS_ENUM.DB_URL.key, "jdbc:postgres://localhost/db");
+        properties.setProperty(DB_ACCOUNTS_ENUM.DB_USERNAME.key, "username");
+        properties.setProperty(DB_ACCOUNTS_ENUM.DB_PASSWORD.key, "password");
 
         properties.setProperty(DB_WORK_ENUM.DB_DRIVER.key, "driver");
         properties.setProperty(DB_WORK_ENUM.DB_MAX_OPEN.key, "1000");

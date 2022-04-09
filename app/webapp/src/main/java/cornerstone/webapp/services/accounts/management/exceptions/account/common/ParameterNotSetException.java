@@ -1,11 +1,12 @@
 package cornerstone.webapp.services.accounts.management.exceptions.account.common;
 
-public class CreationNullException extends Exception {
-    public CreationNullException() {
-        super("Failed to create account due to missing field(s).");
+public class ParameterNotSetException extends Exception {
+    static private final String message = "Unset parameter: '%s'";
+
+    public ParameterNotSetException() {
     }
 
-    public CreationNullException(final String message) {
-        super(message);
+    public ParameterNotSetException(final String parameterName) {
+        super(String.format(message, parameterName));
     }
 }

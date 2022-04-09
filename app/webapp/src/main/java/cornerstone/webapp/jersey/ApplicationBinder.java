@@ -2,7 +2,7 @@ package cornerstone.webapp.jersey;
 
 import cornerstone.webapp.configuration.ConfigDefaults;
 import cornerstone.webapp.configuration.ConfigLoader;
-import cornerstone.webapp.datasources.UsersDB;
+import cornerstone.webapp.datasources.AccountsDB;
 import cornerstone.webapp.datasources.WorkDB;
 import cornerstone.webapp.services.accounts.management.AccountManager;
 import cornerstone.webapp.services.accounts.management.AccountManagerImpl;
@@ -91,7 +91,7 @@ public class ApplicationBinder extends AbstractBinder {
             bind(new ConfigLoader(keyFile, confFile)).to(ConfigLoader.class).in(Singleton.class);
 
             // register data sources
-            bindAsContract(UsersDB.class).in(Singleton.class);
+            bindAsContract(AccountsDB.class).in(Singleton.class);
             bindAsContract (WorkDB.class).in(Singleton.class);
 
             // implementation -> interface bindings

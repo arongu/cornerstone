@@ -1,17 +1,5 @@
 package cornerstone.webapp.services.accounts.management;
 
-import cornerstone.webapp.configuration.ConfigLoader;
-import cornerstone.webapp.datasources.UsersDB;
-import cornerstone.webapp.services.accounts.management.enums.SYSTEM_ROLE_ENUM;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
-
-import java.io.IOException;
-import java.nio.file.Paths;
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
-
 public class AccountManagerSearchEmailTest {
     private static AccountManager accountManager;
 //

@@ -1,7 +1,7 @@
 package cornerstone.webapp.services.keys.stores.db;
 
 import cornerstone.webapp.datasources.WorkDB;
-import cornerstone.webapp.logmsg.CommonLogMessages;
+import cornerstone.webapp.common.logmsg.CommonLogMessages;
 import cornerstone.webapp.services.keys.common.PublicKeyData;
 import cornerstone.webapp.services.keys.stores.logging.KeyRelatedMessageElements;
 import org.slf4j.Logger;

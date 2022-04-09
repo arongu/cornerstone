@@ -1,15 +1,17 @@
 package cornerstone.webapp.services.accounts.management;
 
-import cornerstone.webapp.services.accounts.management.exceptions.account.single.CreationNullException;
+import cornerstone.webapp.services.accounts.management.exceptions.account.common.ParameterNotSetException;
+import cornerstone.webapp.services.accounts.management.exceptions.account.single.CreationException;
 
 import java.util.UUID;
 
 public interface AccountManager {
     // TODO add accountId based delete update etc
-    int createGroup(final UUID groupId, final UUID ownerId, final String groupName, final String groupNotes, final int maxUsers) throws CreationNullException;
+    int createGroup(final UUID groupId, final UUID groupOwnerId, final String groupName, final String groupNotes, final int currentMembers, final int maxMembers) throws ParameterNotSetException;
 
-    int createAccount(final UUID accountId, final String email, final String passwordHash) throws CreationNullException;
-    int createAccountAndAddToGroup(final UUID groupId, final UUID accountId, final String email, final String passwordHash) throws CreationNullException;
+    // createSuperAccount
+    int createAccount                       (final UUID accountId, final String email, final String passwordHash) throws ParameterNotSetException, CreationException;
+    int createSubAccount(final UUID groupId, final UUID accountId, final String email, final String passwordHash) throws ParameterNotSetException;
 
     //    int createSuper(final UUID groupId, final UUID accountId, final String email, final String passwordHash, final boolean emailVerified);
 

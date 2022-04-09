@@ -1,6 +1,6 @@
 package cornerstone.webapp.rest.api.accounts;
 
-import cornerstone.webapp.logmsg.CommonLogMessages;
+import cornerstone.webapp.common.logmsg.CommonLogMessages;
 import cornerstone.webapp.rest.api.accounts.dtos.AccountEmailPassword;
 import cornerstone.webapp.rest.api.accounts.dtos.AccountSearch;
 import cornerstone.webapp.rest.api.accounts.dtos.AccountSetup;
@@ -26,7 +26,7 @@ public class AccountManagerRestService {
     @Inject
     public AccountManagerRestService(final AccountManager accountManager) {
         this.accountManager = accountManager;
-        logger.info(String.format(CommonLogMessages.MESSAGE_CONSTRUCTOR_CALLED, getClass().getName()));
+        //logger.info(String.format(CommonLogMessages.MESSAGE_CONSTRUCTOR_CALLED, getClass().getName()));
     }
 
     // to use wild cards add key%

@@ -1,6 +1,6 @@
 package cornerstone.webapp.services.jwt;
 
-import cornerstone.webapp.logmsg.CommonLogMessages;
+import cornerstone.webapp.common.logmsg.CommonLogMessages;
 import cornerstone.webapp.services.keys.stores.logging.KeyRelatedMessageElements;
 import cornerstone.webapp.services.keys.stores.manager.KeyManager;
 import cornerstone.webapp.services.keys.stores.manager.KeyManagerException;
