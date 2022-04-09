@@ -2,6 +2,8 @@ package cornerstone.webapp.services.accounts.management;
 
 import cornerstone.webapp.services.accounts.management.exceptions.account.common.ParameterNotSetException;
 import cornerstone.webapp.services.accounts.management.exceptions.account.single.CreationException;
+import cornerstone.webapp.services.accounts.management.exceptions.account.single.AccountNotExistsException;
+import cornerstone.webapp.services.accounts.management.exceptions.account.single.AccountRetrievalException;
 
 import java.util.UUID;
 
@@ -12,21 +14,10 @@ public interface AccountManager {
     // createSuperAccount
     int createAccount                       (final UUID accountId, final String email, final String passwordHash) throws ParameterNotSetException, CreationException;
     int createSubAccount(final UUID groupId, final UUID accountId, final String email, final String passwordHash) throws ParameterNotSetException;
-
     //    int createSuper(final UUID groupId, final UUID accountId, final String email, final String passwordHash, final boolean emailVerified);
-
-//    int create(final ACCOUNT_TYPE_ENUM accountType,
-//               final UUID accountId,
-//               final UUID ownerId,
-//               final String description,
-//               final String contactMail,
-//               final boolean organization,
-//               final boolean ) throws CreationException, CreationDuplicateException, CreationNullException;
-
-    //int createSuper();
-
 //    int create(final List<AccountSetup> list) throws MultiCreationException, MultiCreationInitialException;
-//    AccountResultSet get(final String email)          throws RetrievalException, NoAccountException;
+
+      AccountResultSet get(final String email) throws AccountRetrievalException, AccountNotExistsException, ParameterNotSetException;
 //    AccountResultSet get(final UUID account_id)       throws RetrievalException, NoAccountException;
 //
 //    List<String> searchAccounts(final String keyword) throws AccountSearchException;

@@ -1,79 +1,69 @@
 package cornerstone.webapp.services.accounts.management;
 
 import java.sql.Timestamp;
-import java.util.UUID;
 
 public class AccountResultSet {
-    public final String    role_name;
-    public final int       role_id;
+    public final String    account_group_id;
     public final String    account_id;
-    public final Timestamp account_registration_ts;
+    public final Timestamp account_creation_ts;
     public final boolean   account_locked;
     public final Timestamp account_locked_ts;
     public final String    account_lock_reason;
-    public final int       account_login_attempts;
+    public final Timestamp account_lock_reason_ts;
+    public final int       login_attempts;
+    public final String    last_login_attempt_ip;
+    public final Timestamp last_login_attempt_ip_ts;
+    public final String    last_successful_login_ip;
+    public final Timestamp last_successful_login_ip_ts;
     public final String    email_address;
     public final Timestamp email_address_ts;
     public final boolean   email_address_verified;
     public final Timestamp email_address_verified_ts;
     public final String    password_hash;
     public final Timestamp password_hash_ts;
-    public final boolean   delete;
-    public final boolean   get;
-    public final boolean   head;
-    public final boolean   options;
-    public final boolean   patch;
-    public final boolean   post;
-    public final boolean   put;
+    public final String    superpowers;
+    public final Timestamp superpowers_ts;
 
-    public AccountResultSet(final String    system_role_name,
-                            final int       system_role_id,
+    public AccountResultSet(final String    account_group_id,
                             final String    account_id,
-                            final Timestamp account_registration_ts,
-                            final int       account_type_id,
-                            final String    account_type_name,
+                            final Timestamp account_creation_ts,
                             final boolean   account_locked,
                             final Timestamp account_locked_ts,
                             final String    account_lock_reason,
-                            final int       account_login_attempts,
+                            final Timestamp account_lock_reason_ts,
+                            final int       login_attempts,
+                            final String    last_login_attempt_ip,
+                            final Timestamp last_login_attempt_ip_ts,
+                            final String    last_successful_login_ip,
+                            final Timestamp last_successful_login_ip_ts,
                             final String    email_address,
                             final Timestamp email_address_ts,
                             final boolean   email_address_verified,
                             final Timestamp email_address_verified_ts,
-                            final String    password_hash,
+                            final String password_hash,
                             final Timestamp password_hash_ts,
-                            final boolean   delete,
-                            final boolean   get,
-                            final boolean   head,
-                            final boolean   options,
-                            final boolean   patch,
-                            final boolean   post,
-                            final boolean   put) {
+                            final String    superpowers,
+                            final Timestamp superpowers_ts) {
 
-        this.role_name                 = system_role_name;
-        this.account_id                = account_id;
-        this.account_registration_ts   = account_registration_ts;
-
-        this.account_locked            = account_locked;
-        this.account_locked_ts         = account_locked_ts;
-        this.account_lock_reason       = account_lock_reason;
-        this.account_login_attempts    = account_login_attempts;
-
-        this.email_address             = email_address;
-        this.email_address_ts          = email_address_ts;
-        this.email_address_verified    = email_address_verified;
-        this.email_address_verified_ts = email_address_verified_ts;
-
-        this.password_hash             = password_hash;
-        this.password_hash_ts          = password_hash_ts;
-        this.role_id                   = system_role_id;
-
-        this.delete                    = delete;
-        this.get                       = get;
-        this.head                      = head;
-        this.options                   = options;
-        this.patch                     = patch;
-        this.post                      = post;
-        this.put                       = put;
+        this.account_group_id            = account_group_id;
+        this.account_id                  = account_id;
+        this.account_creation_ts         = account_creation_ts;
+        this.account_locked              = account_locked;
+        this.account_locked_ts           = account_locked_ts;
+        this.account_lock_reason         = account_lock_reason;
+        this.account_lock_reason_ts      = account_lock_reason_ts;
+        this.login_attempts              = login_attempts;
+        this.last_login_attempt_ip       = last_login_attempt_ip;
+        this.last_login_attempt_ip_ts    = last_login_attempt_ip_ts;
+        this.last_successful_login_ip    = last_successful_login_ip;
+        this.last_successful_login_ip_ts = last_successful_login_ip_ts;
+        this.email_address               = email_address;
+        this.email_address_ts            = email_address_ts;
+        this.email_address_verified      = email_address_verified;
+        this.email_address_verified_ts   = email_address_verified_ts;
+        this.password_hash               = password_hash;
+        this.password_hash_ts            = password_hash_ts;
+        this.superpowers                 = superpowers;
+        this.superpowers_ts              = superpowers_ts;
     }
 }

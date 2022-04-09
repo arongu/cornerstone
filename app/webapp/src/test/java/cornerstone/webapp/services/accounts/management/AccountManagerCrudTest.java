@@ -1,38 +1,55 @@
 package cornerstone.webapp.services.accounts.management;
 
+import cornerstone.webapp.configuration.ConfigLoader;
+import cornerstone.webapp.datasources.AccountsDB;
+import cornerstone.webapp.services.accounts.management.exceptions.account.common.ParameterNotSetException;
+import cornerstone.webapp.services.accounts.management.exceptions.account.single.AccountNotExistsException;
+import cornerstone.webapp.services.accounts.management.exceptions.account.single.AccountRetrievalException;
+import cornerstone.webapp.services.accounts.management.exceptions.account.single.CreationException;
 import org.junit.jupiter.api.*;
+
+import java.io.IOException;
+import java.nio.file.Paths;
+import java.util.UUID;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class AccountManagerCrudTest {
     private static AccountManager accountManager;
+    private static final String test_email = "aron3@xmail.com";
 
-//    @BeforeAll
-//    public static void setSystemProperties() {
-//        final String test_files_dir = System.getenv("CONFIG_DIR");
-//        final String keyFile        = Paths.get(test_files_dir + "key.conf").toAbsolutePath().normalize().toString();
-//        final String confFile       = Paths.get(test_files_dir + "app.conf").toAbsolutePath().normalize().toString();
-//
-//        try {
-//            final ConfigLoader cr = new ConfigLoader(keyFile, confFile);
-//            final UsersDB ds      = new UsersDB(cr);
-//            accountManager        = new AccountManagerImpl(ds, cr);
-//
-//        } catch (final IOException e) {
-//            e.printStackTrace();
-//        }
-//    }
-//
-//    // -------------------------------------------- TCs --------------------------------------------
-//    @Test
-//    @Order(0)
-//    public void createAccount() throws ParameterNotSetException {
-//        final UUID userId = UUID.randomUUID();
-//        final String email = "aron3@xmail.com";
-//        final String passwordHash = "hash3";
-//
-//        int n = accountManager.createAccount(userId, email, passwordHash);
-//        System.out.println(n);
-//    }
+    @BeforeAll
+    public static void setSystemProperties() throws IOException {
+        final String test_files_dir = System.getenv("CONFIG_DIR");
+        final String keyFile        = Paths.get(test_files_dir + "key.conf").toAbsolutePath().normalize().toString();
+        final String confFile       = Paths.get(test_files_dir + "app.conf").toAbsolutePath().normalize().toString();
+        final AccountsDB accountsDB = new AccountsDB(new ConfigLoader(keyFile, confFile));
+        accountManager              = new AccountManagerImpl(accountsDB);
+    }
+
+    // -------------------------------------------- TCs --------------------------------------------
+    @Test
+    @Order(1)
+    public void getAccount_shouldThrowException_whenAccountDoesNotExist() throws AccountRetrievalException, ParameterNotSetException, AccountNotExistsException {
+        final AccountNotExistsException e = assertThrows(AccountNotExistsException.class, () -> accountManager.get("aron3@xmail.com"));
+        assertEquals("Account 'aron3@xmail.com' does not exist.", e.getMessage());
+    }
+
+    @Test
+    @Order(2)
+    public void createAccount_shouldCreateAccount_whenAccountDoesNotExistYet() throws ParameterNotSetException, CreationException {
+        final UUID accountId      = UUID.randomUUID();
+        final String email        = "aron3@xmail.com";
+        final String passwordHash = "hash3";
+
+
+        int n = accountManager.createAccount(accountId, email, passwordHash);
+
+
+        assertEquals(1, n);
+    }
 //
 //    @Test
 //    @Order(10)
