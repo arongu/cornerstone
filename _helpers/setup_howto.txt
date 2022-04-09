@@ -1,71 +1,38 @@
 ===================================================================================
-# DB
+Step #1 (DB init)
 ===================================================================================
-# First before any migration happens the databases and their schemas must exist!
-# To create/re-create the databases, run the 'bootstrap_sql_generator.py' script!
+# To initialize database (!!! DESTRUCTIVE, DROPS DATABASE !!!)
+# Run 01_init_db.sh script (depends on 00_gen_init_sql.sh) manually
+# or http://jenkins-master:8080/job/cornerstone/job/db-init/ jenkins job!
 ===================================================================================
-dev:
-    python3 bootstrap_sql_generator.py dev
-live:
-    python3 bootstrap_sql_generator.py live
-
+    ~/01_init_db.sh host="db100" type="work"     name="work"     password=<db_admin_password>
+    ~/01_init_db.sh host="db100" type="accounts" name="accounts" password=<db_admin_password>
 
 ===================================================================================
-# The scripts generates the SQL files to create the databases!
+Step #2 (DB migrate) 2 database (accounts, work)
 ===================================================================================
-dev:
-    bootstrap__dev_users.sql
-    bootstrap__dev_work.sql
-live:
-    bootstrap__users.sql
-    bootstrap__work.sql
+# To migrate the database run flyway manually or the jenkins job (schemas can change, update them if needed)
+  db/accounts
+  mvn flyway:migrate -Dflyway.url=jdbc:postgresql://db100:5432/accounts" \
+                     -Dflyway.user="postgres" \
+                     -Dflyway.password="db" \
+                     -Dflyway.schemas="accounts" \
+                     -Dflyway.placeholders.db_name="accounts" \
+                     -Dflyway.placeholders.db_password="usr123#" \
+                     -Dflyway.placeholders.db_user="usr"
 
+  db/work
+  mvn flyway:migrate -Dflyway.url=jdbc:postgresql://db100:5432/work" \
+                     -Dflyway.user="postgres" \
+                     -Dflyway.password="db" \
+                     -Dflyway.schemas="security" \
+                     -Dflyway.placeholders.db_name="work" \
+                     -Dflyway.placeholders.db_password="wrk123#" \
+                     -Dflyway.placeholders.db_user="wrk"
 
-===================================================================================
-# Switch to postgres user and run the script files (DESTRUCTIVE)!
-# This will destroy any existing database and create a new one instead!
-===================================================================================
-su postgres
-
-dev:
-    psql -f bootstrap__dev_users.sql
-    psql -f bootstrap__dev_work.sql
-
-live:
-    psql -f bootstrap__users.sql
-    psql -f bootstrap__work.sql
-
-
-===================================================================================
-# Before you migrate make sure that the postgres user used by flyway is set!
-# This user must have admin access to create the schemas and databases !
--------------------------------------------------
-su root -> su postgres -> psql
-ALTER USER postgres PASSWORD '<PSQL PASSWORD>';
--------------------------------------------------
-# Migrate the database, migration will take care of the rest!
-# Migration creates the databases, schemas, tables, functions, triggers etc. and also sets the app user's permissions!
-# There are two profiles for this: live and dev .
-# The properties of each profile are read from .m2/settings.xml
-# An example .m2/settings.xml can be found under _helpers/m2 with these profiles.
-# Copy it under your home dir, ~/.m2/ and edit it to match the desired configuration!
-===================================================================================
-# Remember to use the same settings when encrypting the data for cornerstone!
-===================================================================================
-    To migrate the users db:
-        cornerstone/db/db_users
-        dev:
-            mvn flyway:migrate -Pdev
-        live:
-            mvn flyway:migrate -Plive
-
-    To migrate the work db:
-        cornerstone/db/work
-        dev:
-            mvn flyway:migrate -Pdev
-        live:
-            mvn flyway:migrate -Plive
-
+# Or run the jenkins jobs:
+  http://jenkins-master:8080/job/cornerstone/job/db-migrate-accounts/
+  http://jenkins-master:8080/job/cornerstone/job/db-migrate-work/
 
 ===================================================================================
 # APP
@@ -82,5 +49,4 @@ ALTER USER postgres PASSWORD '<PSQL PASSWORD>';
 
     Encrypt with the key, and save it to app.conf:
         java -jar cli.jar enc -c app_unencrypted.conf -k key.conf -s app.conf
-
 
