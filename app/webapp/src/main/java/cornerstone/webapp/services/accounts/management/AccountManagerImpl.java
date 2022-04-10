@@ -22,15 +22,16 @@ public class AccountManagerImpl implements AccountManager {
 
     private static final String SQL_ACCOUNT_CREATE                  = "INSERT INTO accounts.accounts (account_id, email_address, password_hash) VALUES (?,?,?)";
     private static final String SQL_ACCOUNT_SELECT_BY_EMAIL_ADDRESS = "SELECT * FROM accounts.accounts WHERE email_address=?";
-    private static final String SQL_CREATE_SUB_ACCOUNT   = "INSERT INTO accounts.accounts (acaccount_group_id, account_id, email_address, password_hash) VALUES (?,?,?,?)";
-    private static final String SQL_CREATE_ACCOUNT_GROUP = "INSERT INTO accounts.account_groups (account_group_id, account_group_owner_id, account_group_name, account_group_notes) VALUES (?,?,?,?)";
+    private static final String SQL_ACCOUNT_SELECT_BY_ACCOUNT_ID    = "SELECT * FROM accounts.accounts WHERE account_id=?";
+    private static final String SQL_CREATE_SUB_ACCOUNT              = "INSERT INTO accounts.accounts (acaccount_group_id, account_id, email_address, password_hash) VALUES (?,?,?,?)";
+    private static final String SQL_CREATE_ACCOUNT_GROUP            = "INSERT INTO accounts.account_groups (account_group_id, account_group_owner_id, account_group_name, account_group_notes) VALUES (?,?,?,?)";
 
     // Log messages
-    private static final String LOG_INF_ACCOUNT_CREATION   = "Account created '%s'";
-    private static final String LOG_ERR_ACCOUNT_CREATION   = "Failed to create account '%s', message: '%s', SQL state: '%s'";
-    private static final String LOG_INF_ACCOUNT_SELECTION  = "Account retrieved '%s'";
-    private static final String LOG_INF_ACCOUNT_NOT_EXISTS = "Account does not exist '%s'";
-    private static final String LOG_ERR_ACCOUNT_SELECTION  = "Failed to select account '%s', message: '%s', SQL state: '%s'";
+    private static final String LOG_INF_ACCOUNT_CREATION   = "Account created '%s'.";
+    private static final String LOG_ERR_ACCOUNT_CREATION   = "Failed to create account '%s', message: '%s', SQL state: '%s'.";
+    private static final String LOG_INF_ACCOUNT_RETRIEVED  = "Account retrieved '%s'.";
+    private static final String LOG_INF_ACCOUNT_NOT_EXISTS = "Account does not exist '%s'.";
+    private static final String LOG_ERR_ACCOUNT_SELECTION  = "Failed to select account '%s', message: '%s', SQL state: '%s'.";
 
     private final AccountsDB accountsDB;
 
@@ -73,6 +74,31 @@ public class AccountManagerImpl implements AccountManager {
         return 0;
     }
 
+    private AccountResultSet toAccountResultSet(final ResultSet rs) throws SQLException {
+        return new AccountResultSet(
+                rs.getString   ("account_group_id"),
+                rs.getString   ("account_id"),
+                rs.getTimestamp("account_creation_ts"),
+                rs.getBoolean  ("account_locked"),
+                rs.getTimestamp("account_locked_ts"),
+                rs.getString   ("account_lock_reason"),
+                rs.getTimestamp("account_lock_reason_ts"),
+                rs.getInt      ("login_attempts"),
+                rs.getString   ("last_login_attempt_ip"),
+                rs.getTimestamp("last_login_attempt_ip_ts"),
+                rs.getString   ("last_successful_login_ip"),
+                rs.getTimestamp("last_successful_login_ip_ts"),
+                rs.getString   ("email_address"),
+                rs.getTimestamp("email_address_ts"),
+                rs.getBoolean  ("email_address_verified"),
+                rs.getTimestamp("email_address_verified_ts"),
+                rs.getString   ("password_hash"),
+                rs.getTimestamp("password_hash_ts"),
+                rs.getString   ("superpowers"),
+                rs.getTimestamp("superpowers_ts")
+        );
+    }
+
     @Override
     public AccountResultSet get(final String email) throws AccountRetrievalException, AccountNotExistsException, ParameterNotSetException {
         if ( email == null) throw new ParameterNotSetException("email");
@@ -80,30 +106,10 @@ public class AccountManagerImpl implements AccountManager {
         try (final Connection conn = accountsDB.getConnection(); final PreparedStatement ps = conn.prepareStatement(SQL_ACCOUNT_SELECT_BY_EMAIL_ADDRESS)) {
             ps.setString(1, email);
             final ResultSet rs = ps.executeQuery();
-            if ( rs != null && rs.next()) {
-                return new AccountResultSet(
-                        rs.getString   ("account_group_id"),
-                        rs.getString   ("account_id"),
-                        rs.getTimestamp("account_creation_ts"),
-                        rs.getBoolean  ("account_locked"),
-                        rs.getTimestamp("account_locked_ts"),
-                        rs.getString   ("account_lock_reason"),
-                        rs.getTimestamp("account_lock_reason_ts"),
-                        rs.getInt      ("login_attempts"),
-                        rs.getString   ("last_login_attempt_ip"),
-                        rs.getTimestamp("last_login_attempt_ip_ts"),
-                        rs.getString   ("last_successful_login_ip"),
-                        rs.getTimestamp("last_successful_login_ip_ts"),
-                        rs.getString   ("email_address"),
-                        rs.getTimestamp("email_address_ts"),
-                        rs.getBoolean  ("email_address_verified"),
-                        rs.getTimestamp("email_address_verified_ts"),
-                        rs.getString   ("password_hash"),
-                        rs.getTimestamp("password_hash_ts"),
-                        rs.getString   ("superpowers"),
-                        rs.getTimestamp("superpowers_ts")
-                );
 
+            if ( rs != null && rs.next()) {
+                logger.info(String.format(LOG_INF_ACCOUNT_RETRIEVED, email));
+                return toAccountResultSet(rs);
             } else {
                 logger.info(String.format(LOG_INF_ACCOUNT_NOT_EXISTS, email));
                 throw new AccountNotExistsException(email);
@@ -113,6 +119,29 @@ public class AccountManagerImpl implements AccountManager {
             final String errorLog = String.format(LOG_ERR_ACCOUNT_SELECTION, email, e.getMessage(), e.getSQLState());
             logger.error(errorLog);
             throw new AccountRetrievalException(email);
+        }
+    }
+
+    @Override
+    public AccountResultSet get(final UUID account_id) throws AccountRetrievalException, AccountNotExistsException, ParameterNotSetException {
+        if ( account_id == null) throw new ParameterNotSetException("account_id");
+
+        try (final Connection conn = accountsDB.getConnection(); final PreparedStatement ps = conn.prepareStatement(SQL_ACCOUNT_SELECT_BY_ACCOUNT_ID)) {
+            ps.setObject(1, account_id);
+            final ResultSet rs = ps.executeQuery();
+
+            if ( rs != null && rs.next()) {
+                logger.info(String.format(LOG_INF_ACCOUNT_RETRIEVED, account_id));
+                return toAccountResultSet(rs);
+            } else {
+                logger.info(String.format(LOG_INF_ACCOUNT_NOT_EXISTS, account_id));
+                throw new AccountNotExistsException(account_id.toString());
+            }
+
+        } catch (final SQLException e) {
+            final String errorLog = String.format(LOG_ERR_ACCOUNT_SELECTION, account_id, e.getMessage(), e.getSQLState());
+            logger.error(errorLog);
+            throw new AccountRetrievalException(account_id.toString());
         }
     }
 }

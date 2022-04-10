@@ -12,13 +12,12 @@ public interface AccountManager {
     int createGroup(final UUID groupId, final UUID groupOwnerId, final String groupName, final String groupNotes, final int currentMembers, final int maxMembers) throws ParameterNotSetException;
 
     // createSuperAccount
-    int createAccount                       (final UUID accountId, final String email, final String passwordHash) throws ParameterNotSetException, CreationException;
+    int createAccount   (final UUID accountId, final String email, final String passwordHash) throws ParameterNotSetException, CreationException;
     int createSubAccount(final UUID groupId, final UUID accountId, final String email, final String passwordHash) throws ParameterNotSetException;
-    //    int createSuper(final UUID groupId, final UUID accountId, final String email, final String passwordHash, final boolean emailVerified);
-//    int create(final List<AccountSetup> list) throws MultiCreationException, MultiCreationInitialException;
-
-      AccountResultSet get(final String email) throws AccountRetrievalException, AccountNotExistsException, ParameterNotSetException;
-//    AccountResultSet get(final UUID account_id)       throws RetrievalException, NoAccountException;
+    //int createSuper(final UUID groupId, final UUID accountId, final String email, final String passwordHash, final boolean emailVerified);
+    //int create(final List<AccountSetup> list) throws MultiCreationException, MultiCreationInitialException;
+    AccountResultSet get(final String email)    throws AccountRetrievalException, AccountNotExistsException, ParameterNotSetException;
+    AccountResultSet get(final UUID account_id) throws AccountRetrievalException, AccountNotExistsException, ParameterNotSetException;
 //
 //    List<String> searchAccounts(final String keyword) throws AccountSearchException;
 //

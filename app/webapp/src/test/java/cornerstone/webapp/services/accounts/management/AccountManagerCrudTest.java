@@ -18,7 +18,10 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class AccountManagerCrudTest {
     private static AccountManager accountManager;
-    private static final String test_email = "aron3@xmail.com";
+
+    private static final String test_email         = "aron3@xmail.com";
+    private static final UUID   test_uuid          = UUID.fromString("0688f32f-6f86-4f7e-a96d-d76cae9d2102");
+    private static final String test_password_hash = "hash3";
 
     @BeforeAll
     public static void setSystemProperties() throws IOException {
@@ -32,23 +35,36 @@ public class AccountManagerCrudTest {
     // -------------------------------------------- TCs --------------------------------------------
     @Test
     @Order(1)
-    public void getAccount_shouldThrowException_whenAccountDoesNotExist() throws AccountRetrievalException, ParameterNotSetException, AccountNotExistsException {
-        final AccountNotExistsException e = assertThrows(AccountNotExistsException.class, () -> accountManager.get("aron3@xmail.com"));
-        assertEquals("Account 'aron3@xmail.com' does not exist.", e.getMessage());
+    public void getAccount_shouldThrowException_whenAccountDoesNotExist() {
+        final AccountNotExistsException e = assertThrows(AccountNotExistsException.class, () -> accountManager.get(test_email));
+        assertEquals("Account '" + test_email + "' does not exist.", e.getMessage());
     }
 
     @Test
     @Order(2)
     public void createAccount_shouldCreateAccount_whenAccountDoesNotExistYet() throws ParameterNotSetException, CreationException {
-        final UUID accountId      = UUID.randomUUID();
-        final String email        = "aron3@xmail.com";
-        final String passwordHash = "hash3";
-
-
-        int n = accountManager.createAccount(accountId, email, passwordHash);
-
-
+        int n = accountManager.createAccount(test_uuid, test_email, test_password_hash);
         assertEquals(1, n);
+    }
+
+    @Test
+    @Order(3)
+    public void getAccountByEmail_shouldGetAccount_whenExists() throws AccountRetrievalException, ParameterNotSetException, AccountNotExistsException {
+        final AccountResultSet accountResultSet = accountManager.get(test_email);
+
+        assertEquals(test_email,           accountResultSet.email_address);
+        assertEquals(test_uuid.toString(), accountResultSet.account_id);
+        assertEquals(test_password_hash,   accountResultSet.password_hash);
+    }
+
+    @Test
+    @Order(4)
+    public void getAccountByUuid_shouldGetAccount_whenExists() throws AccountRetrievalException, ParameterNotSetException, AccountNotExistsException {
+        final AccountResultSet accountResultSet = accountManager.get(test_uuid);
+
+        assertEquals(test_email,           accountResultSet.email_address);
+        assertEquals(test_uuid.toString(), accountResultSet.account_id);
+        assertEquals(test_password_hash,   accountResultSet.password_hash);
     }
 //
 //    @Test
