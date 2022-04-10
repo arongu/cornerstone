@@ -21,6 +21,7 @@ import java.util.UUID;
 public class AccountManagerImpl implements AccountManager {
     private static final Logger logger = LoggerFactory.getLogger(AccountManagerImpl.class);
 
+    // Prepared statement templates
     private static final String SQL_ACCOUNT_CREATE                  = "INSERT INTO accounts.accounts (account_id, email_address, password_hash) VALUES (?,?,?)";
     private static final String SQL_ACCOUNT_DELETE_BY_ACCOUNT_ID    = "DELETE FROM accounts.accounts WHERE account_id=?";
     private static final String SQL_ACCOUNT_DELETE_BY_EMAIL_ADDRESS = "DELETE FROM accounts.accounts WHERE email_address=?";
@@ -35,8 +36,8 @@ public class AccountManagerImpl implements AccountManager {
     private static final String LOG_INF_ACCOUNT_DELETION   = "Account deleted '%s'.";
     private static final String LOG_ERR_ACCOUNT_DELETION   = "Failed to delete account '%s', message: '%s', SQL state: '%s'.";
     private static final String LOG_INF_ACCOUNT_RETRIEVED  = "Account retrieved '%s' - '%s'.";
-    private static final String LOG_INF_ACCOUNT_NOT_EXISTS = "Account does not exist '%s'.";
-    private static final String LOG_ERR_ACCOUNT_SELECTION  = "Failed to select account '%s', message: '%s', SQL state: '%s'.";
+    private static final String LOG_ERR_ACCOUNT_RETRIEVAL  = "Failed to retrieve account '%s', message: '%s', SQL state: '%s'.";
+    private static final String LOG_INF_ACCOUNT_NOT_EXISTS = "Account does not exist '%s'. (%s)";
 
     private final AccountsDB accountsDB;
 
@@ -116,12 +117,12 @@ public class AccountManagerImpl implements AccountManager {
                 logger.info(String.format(LOG_INF_ACCOUNT_RETRIEVED, email, rs.getString("account_id")));
                 return toAccountResultSet(rs);
             } else {
-                logger.info(String.format(LOG_INF_ACCOUNT_NOT_EXISTS, email));
+                logger.info(String.format(LOG_INF_ACCOUNT_NOT_EXISTS, email, "GET"));
                 throw new AccountNotExistsException(email);
             }
 
         } catch (final SQLException e) {
-            final String errorLog = String.format(LOG_ERR_ACCOUNT_SELECTION, email, e.getMessage(), e.getSQLState());
+            final String errorLog = String.format(LOG_ERR_ACCOUNT_RETRIEVAL, email, e.getMessage(), e.getSQLState());
             logger.error(errorLog);
             throw new AccountRetrievalException(email);
         }
@@ -139,12 +140,12 @@ public class AccountManagerImpl implements AccountManager {
                 logger.info(String.format(LOG_INF_ACCOUNT_RETRIEVED, rs.getString("email_address"), account_id));
                 return toAccountResultSet(rs);
             } else {
-                logger.info(String.format(LOG_INF_ACCOUNT_NOT_EXISTS, account_id));
+                logger.info(String.format(LOG_INF_ACCOUNT_NOT_EXISTS, account_id, "GET"));
                 throw new AccountNotExistsException(account_id.toString());
             }
 
         } catch (final SQLException e) {
-            final String errorLog = String.format(LOG_ERR_ACCOUNT_SELECTION, account_id, e.getMessage(), e.getSQLState());
+            final String errorLog = String.format(LOG_ERR_ACCOUNT_RETRIEVAL, account_id, e.getMessage(), e.getSQLState());
             logger.error(errorLog);
             throw new AccountRetrievalException(account_id.toString());
         }
@@ -166,7 +167,7 @@ public class AccountManagerImpl implements AccountManager {
             }
 
         } catch (final SQLException e) {
-            final String errorLog = String.format(LOG_ERR_ACCOUNT_SELECTION, email, e.getMessage(), e.getSQLState());
+            final String errorLog = String.format(LOG_ERR_ACCOUNT_DELETION, email, e.getMessage(), e.getSQLState());
             logger.error(errorLog);
             throw new AccountDeletionException(email);
         }
@@ -181,6 +182,7 @@ public class AccountManagerImpl implements AccountManager {
             final int deletes = ps.executeUpdate();
 
             if ( deletes < 1) {
+                logger.info(String.format(LOG_INF_ACCOUNT_NOT_EXISTS, account_id, "DELETE"));
                 throw new AccountNotExistsException(account_id.toString());
             } else {
                 logger.info(String.format(LOG_INF_ACCOUNT_DELETION, account_id));
@@ -188,7 +190,7 @@ public class AccountManagerImpl implements AccountManager {
             }
 
         } catch (final SQLException e) {
-            final String errorLog = String.format(LOG_ERR_ACCOUNT_SELECTION, account_id, e.getMessage(), e.getSQLState());
+            final String errorLog = String.format(LOG_ERR_ACCOUNT_DELETION, account_id, e.getMessage(), e.getSQLState());
             logger.error(errorLog);
             throw new AccountDeletionException(account_id.toString());
         }
