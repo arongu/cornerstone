@@ -3,6 +3,7 @@ package cornerstone.webapp.services.accounts.management;
 import cornerstone.webapp.configuration.ConfigLoader;
 import cornerstone.webapp.datasources.AccountsDB;
 import cornerstone.webapp.services.accounts.management.exceptions.account.common.ParameterNotSetException;
+import cornerstone.webapp.services.accounts.management.exceptions.account.single.AccountDeletionException;
 import cornerstone.webapp.services.accounts.management.exceptions.account.single.AccountNotExistsException;
 import cornerstone.webapp.services.accounts.management.exceptions.account.single.AccountRetrievalException;
 import cornerstone.webapp.services.accounts.management.exceptions.account.single.CreationException;
@@ -19,9 +20,14 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 public class AccountManagerCrudTest {
     private static AccountManager accountManager;
 
-    private static final String test_email         = "aron3@xmail.com";
-    private static final UUID   test_uuid          = UUID.fromString("0688f32f-6f86-4f7e-a96d-d76cae9d2102");
-    private static final String test_password_hash = "hash3";
+    private static final String test_email           = "aron3@xmail.com";
+    private static final String test_password_hash   = "hash3";
+    private static final UUID   test_uuid            = UUID.fromString("0688f32f-6f86-4f7e-a96d-d76cae9d2102");
+
+    private static final String test_email_2         = "aaaa@zzzz.com";
+    private static final String test_password_hash_2 = "hash3";
+    private static final UUID   test_uuid_2          = UUID.fromString("fccaffff-8888-afff-aaaa-b22faaff1111");
+
 
     @BeforeAll
     public static void setSystemProperties() throws IOException {
@@ -35,20 +41,27 @@ public class AccountManagerCrudTest {
     // -------------------------------------------- TCs --------------------------------------------
     @Test
     @Order(1)
-    public void getAccount_shouldThrowException_whenAccountDoesNotExist() {
+    public void getAccountByEmail_shouldThrowException_whenAccountDoesNotExist() {
         final AccountNotExistsException e = assertThrows(AccountNotExistsException.class, () -> accountManager.get(test_email));
         assertEquals("Account '" + test_email + "' does not exist.", e.getMessage());
     }
 
     @Test
     @Order(2)
+    public void getAccountByUuid_shouldThrowException_whenAccountDoesNotExist() {
+        final AccountNotExistsException e = assertThrows(AccountNotExistsException.class, () -> accountManager.get(test_uuid));
+        assertEquals("Account '" + test_uuid + "' does not exist.", e.getMessage());
+    }
+
+    @Test
+    @Order(3)
     public void createAccount_shouldCreateAccount_whenAccountDoesNotExistYet() throws ParameterNotSetException, CreationException {
         int n = accountManager.createAccount(test_uuid, test_email, test_password_hash);
         assertEquals(1, n);
     }
 
     @Test
-    @Order(3)
+    @Order(4)
     public void getAccountByEmail_shouldGetAccount_whenExists() throws AccountRetrievalException, ParameterNotSetException, AccountNotExistsException {
         final AccountResultSet accountResultSet = accountManager.get(test_email);
 
@@ -58,7 +71,7 @@ public class AccountManagerCrudTest {
     }
 
     @Test
-    @Order(4)
+    @Order(5)
     public void getAccountByUuid_shouldGetAccount_whenExists() throws AccountRetrievalException, ParameterNotSetException, AccountNotExistsException {
         final AccountResultSet accountResultSet = accountManager.get(test_uuid);
 
@@ -66,6 +79,60 @@ public class AccountManagerCrudTest {
         assertEquals(test_uuid.toString(), accountResultSet.account_id);
         assertEquals(test_password_hash,   accountResultSet.password_hash);
     }
+
+    @Test
+    @Order(6)
+    public void deleteAccountByEmail_shouldDeleteAccount_whenExists() throws AccountDeletionException, AccountNotExistsException, ParameterNotSetException {
+        final int deletes = accountManager.delete(test_email);
+
+        assertEquals(1, deletes);
+        assertThrows(AccountNotExistsException.class, () -> accountManager.get(test_email));
+    }
+
+    @Test
+    @Order(7)
+    public void deleteAccountByUuid_shouldDeleteAccount_whenExists() throws AccountDeletionException,
+                                                                            AccountNotExistsException,
+                                                                            AccountRetrievalException,
+                                                                            CreationException,
+                                                                            ParameterNotSetException {
+
+        final int create_first     = accountManager.createAccount(test_uuid_2, test_email_2, test_password_hash_2);
+        final AccountResultSet ars = accountManager.get(test_uuid_2);
+        final int delete_first     = accountManager.delete(test_uuid_2);
+        assertThrows(AccountNotExistsException.class, () -> accountManager.delete(test_uuid_2));
+        assertThrows(AccountNotExistsException.class, () -> accountManager.get(test_uuid_2));
+
+
+        assertEquals(1, create_first);
+        assertEquals(1, delete_first);
+        assertEquals(test_uuid_2.toString(), ars.account_id);
+        assertEquals(test_email_2,           ars.email_address);
+        assertEquals(test_password_hash_2,   ars.password_hash);
+    }
+
+//    @Test
+//    @Order(8)
+//    public void deleteAccountByUuid_shouldDeleteAccount_whenExists() throws AccountDeletionException,
+//            AccountNotExistsException,
+//            AccountRetrievalException,
+//            CreationException,
+//            ParameterNotSetException {
+//
+//        final int create_first     = accountManager.createAccount(test_uuid_2, test_email_2, test_password_hash_2);
+//        final AccountResultSet ars = accountManager.get(test_uuid_2);
+//        final int delete_first     = accountManager.delete(test_uuid_2);
+//        final int delete_second    = accountManager.delete(test_uuid_2);
+//        assertThrows(AccountNotExistsException.class, () -> accountManager.get(test_email));
+//
+//
+//        assertEquals(1, create_first);
+//        assertEquals(1, delete_first);
+//        assertEquals(0, delete_second);
+//        assertEquals(test_uuid_2.toString(), ars.account_id);
+//        assertEquals(test_email_2,           ars.email_address);
+//        assertEquals(test_password_hash_2,   ars.password_hash);
+//    }
 //
 //    @Test
 //    @Order(10)

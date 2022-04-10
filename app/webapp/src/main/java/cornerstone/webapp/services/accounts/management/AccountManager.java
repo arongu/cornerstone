@@ -4,6 +4,7 @@ import cornerstone.webapp.services.accounts.management.exceptions.account.common
 import cornerstone.webapp.services.accounts.management.exceptions.account.single.CreationException;
 import cornerstone.webapp.services.accounts.management.exceptions.account.single.AccountNotExistsException;
 import cornerstone.webapp.services.accounts.management.exceptions.account.single.AccountRetrievalException;
+import cornerstone.webapp.services.accounts.management.exceptions.account.single.AccountDeletionException;
 
 import java.util.UUID;
 
@@ -31,8 +32,8 @@ public interface AccountManager {
 //    int lock  (final String email, final String reason) throws LockUpdateException;
 //    int unlock(final String email)                      throws LockUpdateException;
 //
-//      int delete(final String email)        throws DeletionException, NoAccountException;
-//      int delete(final UUID account_id)     throws DeletionException, NoAccountException;
+      int delete(final String email)        throws AccountDeletionException, AccountNotExistsException, ParameterNotSetException;
+      int delete(final UUID account_id)     throws AccountDeletionException, AccountNotExistsException, ParameterNotSetException;
 //    int delete(final List<String> emails) throws MultiDeletionException, MultiDeletionInitialException;
 //
 //    AccountResultSet login(final String email, final String password) throws LockedException, UnverifiedEmailException, NoAccountException, RetrievalException, BadPasswordException;
